@@ -1,0 +1,15 @@
+#	Graphics Library of Views (GLV) - GUI Building Toolkit
+#	See COPYRIGHT file for authors and license information
+
+project glv/test
+    : source-location $(TOP)/test
+    : requirements
+      <include>$(TOP)/include
+      <link>static
+    ;
+
+
+exe test_glv : test_glv.cpp : <define>GLV_BINDING_H=\\\"glv_binding_glut.h\\\" <library>../lib//lib_glv  ;
+
+obj test_glv_pimpl_obj : test_glv.cpp : <define>GLV_BINDING_H=\\\"glv_pimpl_binding.h\\\" ;
+exe test_glv_pimpl : test_glv_pimpl_obj : <library>../lib//lib_glv_pimpl ;
