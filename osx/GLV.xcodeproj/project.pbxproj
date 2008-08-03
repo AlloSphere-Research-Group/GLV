@@ -48,7 +48,7 @@
 		16D3607E0D9B2927003E59D0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657E5D30B7AC4D5005858EE /* OpenGL.framework */; };
 		16D3607F0D9B2927003E59D0 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657EA1B0B7B1995005858EE /* AGL.framework */; };
 		16D360800D9B2927003E59D0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E55D4C30CCE80FC00196525 /* GLUT.framework */; };
-		16D360910D9B2981003E59D0 /* test_examples.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D360670D9B2915003E59D0 /* test_examples.cpp */; };
+		16D376A90E46540100BCCD39 /* test_examples.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D360670D9B2915003E59D0 /* test_examples.cpp */; };
 		16D5B48D0D95B5E2005092B6 /* glv_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */; };
 		16D5E7620D91F43B001153DA /* glv_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5E7610D91F43B001153DA /* glv_layout.cpp */; };
 		16D5E7630D91F43B001153DA /* glv_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5E7610D91F43B001153DA /* glv_layout.cpp */; };
@@ -243,6 +243,7 @@
 		161B38830DE359DD00936BA0 /* glv_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_widget.h; sourceTree = "<group>"; };
 		16D360670D9B2915003E59D0 /* test_examples.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_examples.cpp; sourceTree = "<group>"; };
 		16D360840D9B2927003E59D0 /* TestExamples_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestExamples_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		16D3761B0E46418A00BCCD39 /* test_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_window.cpp; sourceTree = "<group>"; };
 		16D5B30D0D95925C005092B6 /* glv_conf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_conf.h; sourceTree = "<group>"; };
 		16D5E71F0D91BD2D001153DA /* design.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = design.txt; path = ../doc/design.txt; sourceTree = SOURCE_ROOT; };
 		16D5E75C0D91F3B8001153DA /* glv_layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_layout.h; sourceTree = "<group>"; };
@@ -549,6 +550,7 @@
 				16D629DF0BB635700073BA8A /* test_icon.cpp */,
 				16D62A8C0BB63D650073BA8A /* test_widgets.cpp */,
 				16DF86430D8F2B2E00BDFDCD /* test_signals.cpp */,
+				16D3761B0E46418A00BCCD39 /* test_window.cpp */,
 			);
 			name = test;
 			path = ../test;
@@ -872,7 +874,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16D360910D9B2981003E59D0 /* test_examples.cpp in Sources */,
 				16D360720D9B2927003E59D0 /* glv_color.cpp in Sources */,
 				16D360730D9B2927003E59D0 /* glv_glv.cpp in Sources */,
 				16D360740D9B2927003E59D0 /* glv_inputdevice.cpp in Sources */,
@@ -885,6 +886,7 @@
 				16D3607B0D9B2927003E59D0 /* glv_layout.cpp in Sources */,
 				16D3607C0D9B2927003E59D0 /* glv_textview.cpp in Sources */,
 				DFE898010DD4EE1100D266E2 /* glv_buttons.cpp in Sources */,
+				16D376A90E46540100BCCD39 /* test_examples.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

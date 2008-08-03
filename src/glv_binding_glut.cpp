@@ -187,7 +187,24 @@ void Window::platformFullscreen(){
 	
 //		compact mode [ width "x" height ][ ":" bitsPerPixel ][ "@" videoRate ]
 
-		glutGameModeString("1024x768:24@60");
+		// get current screen resolution
+		int sw = glutGet(GLUT_SCREEN_WIDTH);
+		int sh = glutGet(GLUT_SCREEN_HEIGHT);
+
+		// use current resolution and refresh rate
+		if(sw && sh){
+			char buf[32];
+			snprintf(buf, sizeof(buf), "%dx%d:24", sw, sh);
+			glutGameModeString(buf);
+			
+			//int refresh = glutGameModeGet(GLUT_GAME_MODE_REFRESH_RATE);
+			//printf("%d\n", refresh);
+		}
+		
+		// otherwise, use sensible defaults
+		else{
+			glutGameModeString("1024x768:24");
+		}
 		
 		mIsActive = false;
 		glutEnterGameMode();
