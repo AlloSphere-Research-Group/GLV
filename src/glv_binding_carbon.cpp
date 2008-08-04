@@ -10,6 +10,8 @@
 	#define debug(format, args...)
 #endif
 
+#define C2CFSTR(cstr) CFStringCreateWithCString(kCFAllocatorDefault, cstr, kCFStringEncodingMacRoman)	
+
 namespace glv{
 
 EventHandlerRef *	Application :: carbonApplicationHandlerRef;
@@ -818,3 +820,4 @@ OSStatus Window :: carbonWindowHandler(EventHandlerCallRef nextHandler, EventRef
 } // end namespace glv
 
 #undef debug
+#undef C2CFSTR

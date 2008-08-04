@@ -4,6 +4,10 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+
+// NOTE: these implementations are deprecated in favor of the PIMPL
+// bindings.
+
 namespace glv{
 
 class GLV;

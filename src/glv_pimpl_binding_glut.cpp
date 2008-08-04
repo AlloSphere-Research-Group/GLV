@@ -18,6 +18,7 @@
 
 namespace glv {
 
+// GLUT window implementation
 class WindowImpl
 {
 public:
@@ -78,13 +79,15 @@ private:
 bool WindowImpl::mGLUTInitialized = false;
 std::map<int, WindowImpl *> WindowImpl::mWindows;
 
-void Application::quit(){
-}
 
-void Application::run(){
-    GLV_PLATFORM_INIT
+
+void Application::implQuit(){}
+
+void Application::implRun(){
 	glutMainLoop();	
 }
+
+
 
 static void glutDisplayCB(){
 	// this is empty because we are using a periodic timer for drawing
@@ -225,7 +228,7 @@ Window::Window(
     mImpl->scheduleDraw();
 }
 
-void Window::platformFullscreen(){
+void Window::implFullscreen(){
 
 // glutFullScreen() just maximizes the window.  We want use game mode to get rid
 // of the OS toolbars.
@@ -299,15 +302,15 @@ void Window::platformFullscreen(){
 	}
 }
 
-void Window::platformHideCursor(bool v){
+void Window::implHideCursor(bool v){
 	glutSetCursor(v ? GLUT_CURSOR_NONE : GLUT_CURSOR_INHERIT);
 }
 
-void Window::platformResize(int width, int height){
+void Window::implResize(int width, int height){
 	glutReshapeWindow(width, height);
 }
 
-void Window::platformShowHide(){ }
+void Window::implShowHide(){ }
 
 void WindowImpl::draw(){
 	if(mWindow->shouldDraw()){

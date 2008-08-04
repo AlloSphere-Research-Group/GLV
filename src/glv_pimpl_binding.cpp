@@ -8,6 +8,18 @@
 namespace glv{
 
 
+void Application::run(){
+	GLV_PLATFORM_INIT
+	implRun();
+}
+
+void Application::quit(){
+	implQuit();
+}
+
+
+
+
 void Window::setGLV(GLV & g){ 
 	glv = &g;
 	g.extent(w, h);
@@ -18,7 +30,7 @@ void Window::fullscreen(bool on){
 	if(on && !mFullscreen){
 		wwin = w, hwin = h;
 		mFullscreen = true;
-		platformFullscreen();
+		implFullscreen();
 		onContextChange();
 	}
 	else if(!on && mFullscreen){
@@ -26,7 +38,7 @@ void Window::fullscreen(bool on){
 		w = wwin; h = hwin;
 		if(glv) glv->extent(w, h);
 		mFullscreen = false;
-		platformFullscreen();
+		implFullscreen();
 		onContextChange();
 	}
 }
@@ -35,7 +47,7 @@ void Window::fullscreenToggle(){ fullscreen(!mFullscreen); }
 
 void Window::hideCursor(bool hide){
 	mHideCursor = hide;
-	platformHideCursor(hide);
+	implHideCursor(hide);
 }
 
 void Window::onContextChange(){
@@ -45,14 +57,14 @@ void Window::onContextChange(){
 void Window::resize(int width, int height){
 	w = width; h = height;
 	if(glv) glv->extent(w, h);
-	platformResize(w, h);
+	implResize(w, h);
 }
 
 bool Window::shouldDraw(){ return glv && mIsActive && mVisible; }
 
 void Window::show(bool v){
 	mVisible = v;
-	platformShowHide();
+	implShowHide();
 }
 
 } // glv::

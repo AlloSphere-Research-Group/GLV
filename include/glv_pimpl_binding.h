@@ -9,6 +9,8 @@
 namespace glv{
 
 class GLV;
+class WindowImpl;	// binding-specific window implementation
+
 
 /// Display mode bit masks
 enum{
@@ -22,8 +24,9 @@ enum{
 	DefaultBuf	= DoubleBuf|AlphaBuf|DepthBuf
 };
 
-class WindowImpl;
 
+
+/// A window with an assignable GLV context
 class Window{
 
 public:
@@ -62,11 +65,11 @@ protected:
 	
 	void onContextChange();
 
-	// These will be implemented in the the specific bindings
-	void platformFullscreen();
-	void platformHideCursor(bool hide);
-	void platformResize(int width, int height);	// platform specific resize stuff
-	void platformShowHide();						// platform specific show/hide stuff
+	// These are to be implemented by the specific binding
+	void implFullscreen();
+	void implHideCursor(bool hide);
+	void implResize(int width, int height);	// platform specific resize stuff
+	void implShowHide();						// platform specific show/hide stuff
     
     // pointer to the binding-specific implementation
     std::auto_ptr<WindowImpl> mImpl;
@@ -79,15 +82,22 @@ private:
 
 
 
+/// Singleton GLV application
 class Application{
 public:
 
-	static void			run();
-	static void			quit();
-//	static void			windowNotify(Notifier * sender, void * userdata);
+	/// Run main application event loop. This is a blocking call.
+	static void	run();
+
+	static void	quit();
+//	static void	windowNotify(Notifier * sender, void * userdata);
 
 protected:
 	static Window *focusedWindow;
+	
+	// These are to be implemented by the specific binding
+	static void implRun();
+	static void implQuit();
 };
 
 typedef Window AbstractWindow;

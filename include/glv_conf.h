@@ -27,8 +27,6 @@
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
 	#include <OpenGL/glu.h>
-	
-	#define C2CFSTR(cstr) CFStringCreateWithCString(kCFAllocatorDefault, cstr, kCFStringEncodingMacRoman)	
 
 	#define GLV_PLATFORM_INIT\
 		GLint MacHackVBL = 1;\
