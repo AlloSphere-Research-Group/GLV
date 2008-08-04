@@ -28,9 +28,11 @@
 	#include <OpenGL/glext.h>
 	#include <OpenGL/glu.h>
 
-	#define GLV_PLATFORM_INIT\
+	#define GLV_PLATFORM_INIT_CONTEXT\
+		/* prevents tearing */\
 		GLint MacHackVBL = 1;\
-		CGLSetParameter(CGLGetCurrentContext(),  kCGLCPSwapInterval, &MacHackVBL);
+		CGLContextObj ctx = CGLGetCurrentContext();\
+		CGLSetParameter(ctx,  kCGLCPSwapInterval, &MacHackVBL);
 
 #endif
 
@@ -42,7 +44,7 @@
 	#include <GL/glu.h>
 	#include <time.h>
 
-	#define GLV_PLATFORM_INIT
+	#define GLV_PLATFORM_INIT_CONTEXT
 
 #endif
 
@@ -59,7 +61,7 @@
 	#pragma comment( lib, "opengl32.lib" )
 	#pragma comment( lib, "glu32.lib" )
 	
-	#define GLV_PLATFORM_INIT
+	#define GLV_PLATFORM_INIT_CONTEXT
 
 #endif
 

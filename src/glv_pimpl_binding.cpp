@@ -9,7 +9,6 @@ namespace glv{
 
 
 void Application::run(){
-	GLV_PLATFORM_INIT
 	implRun();
 }
 
@@ -51,7 +50,10 @@ void Window::hideCursor(bool hide){
 }
 
 void Window::onContextChange(){
-	if(mIsActive && glv) glv->broadcastEvent(Event::ContextChange);
+	if(mIsActive){
+		GLV_PLATFORM_INIT_CONTEXT
+		if(glv) glv->broadcastEvent(Event::ContextChange);
+	}
 }
 
 void Window::resize(int width, int height){
