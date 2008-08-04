@@ -24,6 +24,7 @@ public:
     WindowImpl(Window *window, int window_id)
         : mWindow(window)
         , mGLUTWindowId(window_id)
+        , mGLUTInFullScreen(false)
     {
         mWindows[mGLUTWindowId]=this;
     }
@@ -34,7 +35,7 @@ public:
 	void draw();	// GLUT draw function
     void scheduleDraw()
     {
-        scheduleDrawStatic(mGLUTWindowId);
+        scheduleDrawStatic(mGLUTInFullScreen?mGLUTFullscreenWindowId:mGLUTWindowId);
     }
     static WindowImpl *getWindowImpl()
     {
@@ -58,7 +59,8 @@ private:
             glutSetWindow(window_id);
             impl->draw();
             glutTimerFunc((unsigned int)(1000.0/WindowImpl::getWindow()->fps()), scheduleDrawStatic, window_id);
-            glutSetWindow(current);
+            if(current)
+	            glutSetWindow(current);
         }
     }
 
@@ -67,6 +69,8 @@ private:
 
     Window *mWindow;
     int mGLUTWindowId;
+    int mGLUTFullscreenWindowId;
+    bool mGLUTInFullScreen;
     
     friend class Window;
 };
@@ -277,15 +281,19 @@ void Window::platformFullscreen(){
 		}
 		
 		mIsActive = false;
-		int fs_id = glutEnterGameMode();
-		WindowImpl::mWindows[fs_id]=mImpl.get();
+		mImpl->mGLUTFullscreenWindowId = glutEnterGameMode();
+		WindowImpl::mWindows[mImpl->mGLUTFullscreenWindowId]=mImpl.get();
+		mImpl->mGLUTInFullScreen = true;
 		registerCBs();
+		mImpl->scheduleDraw();
 		mIsActive = true;
 		
 		hideCursor(mHideCursor);
 	}
 	else{
 		mIsActive = false;
+		WindowImpl::mWindows.erase(mImpl->mGLUTFullscreenWindowId);
+		mImpl->mGLUTInFullScreen = false;
 		glutLeaveGameMode();
 		mIsActive = true;
 	}
