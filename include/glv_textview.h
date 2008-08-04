@@ -15,6 +15,20 @@ namespace glv{
 class Label : public View{
 public:
 
+	/// Prototype for constructor
+	struct Spec{
+		Spec(Place::t posAnch, space_t dx, space_t dy, float size=8, bool vert=false)
+		:	posAnch(posAnch), dx(dx), dy(dy), size(size), vert(vert)
+		{}
+		
+		Place::t posAnch;
+		space_t dx, dy;
+		float size;
+		bool vert;
+	};
+
+	Label(const std::string& str, const Spec& spec);
+
 	/// @param[in] str		Label string
 	/// @param[in] vert		Whether to draw label vertically
 	Label(const std::string& str, bool vert);

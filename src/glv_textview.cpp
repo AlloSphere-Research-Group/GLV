@@ -14,6 +14,16 @@ namespace glv{
 	label(str);\
 	vertical(vert);
 
+Label::Label(const std::string& str, const Spec& s)
+:	View(0,0,0,0)
+{
+	disable(CropSelf | DrawBack | DrawBorder | HitTest);
+	label(str);
+	vertical(s.vert);
+	size(s.size);
+	pos(s.posAnch, s.dx, s.dy).anchor(s.posAnch);
+}
+
 Label::Label(const std::string& str, bool vert)
 :	View(0,0,0,0), CTOR_LIST
 {	CTOR_BODY }
@@ -63,6 +73,11 @@ void Label::fitExtent(){
 		default: tw += 8; if(tw > mw) mw=tw;
 		}
 	}
+	
+	space_t dw = mw*mSize - w;
+	space_t dh = th*mSize - h;
+	posAdd(-dw*mAnchorX, -dh*mAnchorY);
+	
 	extent(mw*mSize, th*mSize);
 	if(mVertical) rotateRect();
 }
