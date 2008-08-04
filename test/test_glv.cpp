@@ -58,8 +58,7 @@ int main(int argc, char ** argv){
 				<< new Label("Colorful View", 0, -10)
 				<< (new Label("Hue"))->size(6).anchor(Place::BC).pos(Place::TC,0,4)
 				<< (new Label("Saturation", true))->size(6).anchor(Place::CL).pos(Place::CR,-4);
-
-	
+    
 	Application::run();
 	return 0;
 }

@@ -14,20 +14,65 @@
 	#include <GL/glut.h>
 #endif
 
+#include <map>
+
 namespace glv {
 
 class WindowImpl
 {
 public:
-    WindowImpl(Window *window)
-        : mWindow(window) {}
+    WindowImpl(Window *window, int window_id)
+        : mWindow(window)
+        , mGLUTWindowId(window_id)
+    {
+        mWindows[mGLUTWindowId]=this;
+    }
+    ~WindowImpl()
+    {
+        mWindows.erase(mGLUTWindowId);
+    }
 	void draw();	// GLUT draw function
-    Window *window()
-    {   return mWindow; }
-    
+    void scheduleDraw()
+    {
+        scheduleDrawStatic(mGLUTWindowId);
+    }
+    static WindowImpl *getWindowImpl()
+    {
+        return mWindows[glutGetWindow()];
+    }
+    static WindowImpl *getWindowImpl(int window_id)
+    {
+        return mWindows[window_id];
+    }
+    static Window *getWindow()
+    {
+        return getWindowImpl()->mWindow;
+    }
+private:
+    static void scheduleDrawStatic(int window_id)
+    {
+        WindowImpl *impl = WindowImpl::getWindowImpl(window_id);
+        if(impl)
+        {
+            int current = glutGetWindow();
+            glutSetWindow(window_id);
+            impl->draw();
+            glutTimerFunc((unsigned int)(1000.0/WindowImpl::getWindow()->fps()), scheduleDrawStatic, window_id);
+            glutSetWindow(current);
+        }
+    }
+
+    static std::map<int, WindowImpl *> mWindows;
+    static bool mGLUTInitialized;
+
     Window *mWindow;
+    int mGLUTWindowId;
+    
+    friend class Window;
 };
 
+bool WindowImpl::mGLUTInitialized = false;
+std::map<int, WindowImpl *> WindowImpl::mWindows;
 
 void Application::quit(){
 }
@@ -37,10 +82,6 @@ void Application::run(){
 	glutMainLoop();	
 }
 
-
-
-static WindowImpl * singletonWindowImpl = NULL;
-
 static void glutDisplayCB(){
 	// this is empty because we are using a periodic timer for drawing
 }
@@ -48,7 +89,8 @@ static void glutDisplayCB(){
 // this must be called whenever a GLUT input event for a keyboard or mouse
 // callback is generated.
 static void modToGLV(){
-	GLV * glv = singletonWindowImpl->window()->glv;
+    
+	GLV * glv = WindowImpl::getWindow()->glv;
 	int mod = glutGetModifiers();	
 	glv->keyboard.alt  (mod & GLUT_ACTIVE_ALT);
 	glv->keyboard.ctrl (mod & GLUT_ACTIVE_CTRL);
@@ -57,7 +99,7 @@ static void modToGLV(){
 
 static void keyToGLV(unsigned int key, bool down, bool special){
 	//printf("GLUT: keyboard event k:%d d:%d s:%d\n", key, down, special);
-	GLV * glv = singletonWindowImpl->window()->glv;
+	GLV * glv = WindowImpl::getWindow()->glv;
 	if(special){
 
 		#define CS(glut, glv) case GLUT_KEY_##glut: key = Key::glv; break;
@@ -85,7 +127,7 @@ static void glutSpecialUpCB(int key, int x, int y){ keyToGLV(key, false, true); 
 
 static void glutMouseCB(int btn, int state, int ax, int ay){
 	//printf("GLUT: mouse event x:%d y:%d bt:#%d,%d\n", ax,ay, btn, state==GLUT_DOWN);
-	GLV * glv = singletonWindowImpl->window()->glv;
+	GLV * glv = WindowImpl::getWindow()->glv;
 	space_t x = (space_t)ax;
 	space_t y = (space_t)ay;
 	space_t relx = x;
@@ -109,7 +151,7 @@ static void glutMouseCB(int btn, int state, int ax, int ay){
 static void glutMotionCB(int ax, int ay){
 	//printf("GLUT: motion event x:%d y:%d\n", ax, ay);
 
-	GLV * glv = singletonWindowImpl->window()->glv;
+	GLV * glv = WindowImpl::getWindow()->glv;
 	space_t x = (space_t)ax;
 	space_t y = (space_t)ay;
 	space_t relx = x;
@@ -123,7 +165,7 @@ static void glutMotionCB(int ax, int ay){
 }
 
 static void glutReshapeCB(int w, int h){
-	singletonWindowImpl->window()->resize(w, h);
+	WindowImpl::getWindow()->resize(w, h);
 }
 
 static void registerCBs(){
@@ -137,11 +179,6 @@ static void registerCBs(){
 	glutSpecialUpFunc(glutSpecialUpCB);
 }
 
-static void scheduleDraw(int value){
-	singletonWindowImpl->draw();
-	glutTimerFunc((unsigned int)(1000.0/singletonWindowImpl->window()->fps()), scheduleDraw, 0);
-}
-
 Window::Window(
 	unsigned int w, unsigned int h, char * title, GLV * glv, double framerate, int mode
 )
@@ -153,33 +190,35 @@ Window::Window(
 {
 	if(glv) setGLV(*glv);
     
-	int argc = 0;
-	char * argv[] = {0};
-	if(singletonWindowImpl == NULL){
-		glutInit(&argc,argv);
-		glutInitWindowSize(w, h);
-		//glutInitWindowPosition (100, 100);
-		
-		int bits = 
-			(enabled(SingleBuf ) ? GLUT_SINGLE :0) |
-			(enabled(DoubleBuf ) ? GLUT_DOUBLE :0) |
-			(enabled(AccumBuf  ) ? GLUT_ACCUM  :0) |
-			(enabled(AlphaBuf  ) ? GLUT_ALPHA  :0) |
-			(enabled(DepthBuf  ) ? GLUT_DEPTH  :0) |
-			(enabled(StencilBuf) ? GLUT_STENCIL:0) |
-			(enabled(Stereo    ) ? GLUT_STEREO :0);
-		
-		glutInitDisplayMode(GLUT_RGBA | bits);
-		glutCreateWindow(title);
+    if(!WindowImpl::mGLUTInitialized)
+    {
+        int argc = 0;
+        char * argv[] = {0};
 
-		registerCBs();
+        glutInit(&argc,argv);
+        WindowImpl::mGLUTInitialized = true;
+    }
+    glutInitWindowSize(w, h);
+    //glutInitWindowPosition (100, 100);
 		
-		glutIgnoreKeyRepeat(1);
+    int bits = 
+        (enabled(SingleBuf ) ? GLUT_SINGLE :0) |
+        (enabled(DoubleBuf ) ? GLUT_DOUBLE :0) |
+        (enabled(AccumBuf  ) ? GLUT_ACCUM  :0) |
+        (enabled(AlphaBuf  ) ? GLUT_ALPHA  :0) |
+        (enabled(DepthBuf  ) ? GLUT_DEPTH  :0) |
+        (enabled(StencilBuf) ? GLUT_STENCIL:0) |
+        (enabled(Stereo    ) ? GLUT_STEREO :0);
 		
-        mImpl.reset(new WindowImpl(this));
-		singletonWindowImpl = mImpl.get();
-		scheduleDraw(0);
-	}
+    glutInitDisplayMode(GLUT_RGBA | bits);
+    int window_id = glutCreateWindow(title);
+		
+    glutIgnoreKeyRepeat(1);
+		
+    mImpl.reset(new WindowImpl(this, window_id));
+
+	registerCBs();
+    mImpl->scheduleDraw();
 }
 
 void Window::platformFullscreen(){
@@ -218,7 +257,24 @@ void Window::platformFullscreen(){
 	
 //		compact mode [ width "x" height ][ ":" bitsPerPixel ][ "@" videoRate ]
 
-		glutGameModeString("1024x768:24@60");
+		// get current screen resolution
+		int sw = glutGet(GLUT_SCREEN_WIDTH);
+		int sh = glutGet(GLUT_SCREEN_HEIGHT);
+
+		// use current resolution and refresh rate
+		if(sw && sh){
+			char buf[32];
+			snprintf(buf, sizeof(buf), "%dx%d:24", sw, sh);
+			glutGameModeString(buf);
+			
+			//int refresh = glutGameModeGet(GLUT_GAME_MODE_REFRESH_RATE);
+			//printf("%d\n", refresh);
+		}
+		
+		// otherwise, use sensible defaults
+		else{
+			glutGameModeString("1024x768:24");
+		}
 		
 		mIsActive = false;
 		glutEnterGameMode();
@@ -244,7 +300,7 @@ void Window::platformResize(int width, int height){
 
 void Window::platformShowHide(){ }
 
-void WindowImpl::draw(){	
+void WindowImpl::draw(){
 	if(mWindow->shouldDraw()){
 		mWindow->glv->drawGLV(mWindow->w, mWindow->h);
 		glutSwapBuffers();

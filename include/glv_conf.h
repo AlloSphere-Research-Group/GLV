@@ -11,15 +11,7 @@
 // Macros for binding GLV to a specific platform's windowing system.
 // Type "#include GLV_BINDING_H" in the source files that need it.
 #ifndef GLV_BINDING_H
-	#if defined (__APPLE__) || defined (OSX)
-		#define GLV_BINDING_H "glv_binding_carbon.h"
-	#endif
-	#if defined(__linux__)
-		#define GLV_BINDING_H "glv_binding_glut.h"
-	#endif
-	#ifdef WIN32
-		#define GLV_BINDING_H ""
-	#endif
+    #define GLV_BINDING_H "glv_pimpl_binding.h"
 #endif
 
 

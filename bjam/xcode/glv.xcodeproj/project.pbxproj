@@ -43,6 +43,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
+		08A47D050E450FF000A688A1 /* test_multi_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_multi_window.cpp; sourceTree = "<group>"; };
 		08AF40DE0E40360400F3153B /* glv_pimpl_binding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_pimpl_binding.h; sourceTree = "<group>"; };
 		08AF40E00E40364800F3153B /* COPYRIGHT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = COPYRIGHT; path = ../../COPYRIGHT; sourceTree = SOURCE_ROOT; };
 		08AF40E40E4038F300F3153B /* glv_pimpl_binding.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_pimpl_binding.cpp; sourceTree = "<group>"; };
@@ -239,6 +240,7 @@
 				08C288B70E382E4D00399FD4 /* test_icon.cpp */,
 				08C288B80E382E4D00399FD4 /* test_signals.cpp */,
 				08C288B90E382E4D00399FD4 /* test_widgets.cpp */,
+				08A47D050E450FF000A688A1 /* test_multi_window.cpp */,
 			);
 			name = test;
 			path = ../../test;

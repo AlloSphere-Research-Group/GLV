@@ -3,8 +3,8 @@ include config.mk
 SRCDIR = ./src
 
 SRC = \
-	  ${SRCDIR}/glv_abstract_binding.cpp \
-	  ${SRCDIR}/glv_binding_glut.cpp \
+	  ${SRCDIR}/glv_pimpl_binding.cpp \
+	  ${SRCDIR}/glv_pimpl_binding_glut.cpp \
 	  ${SRCDIR}/glv_color.cpp \
 	  ${SRCDIR}/glv_core.cpp \
 	  ${SRCDIR}/glv_draw.cpp \

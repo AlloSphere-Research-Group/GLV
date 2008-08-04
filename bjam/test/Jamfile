@@ -13,3 +13,5 @@ exe test_glv : test_glv.cpp : <define>GLV_BINDING_H=\\\"glv_binding_glut.h\\\" <
 
 obj test_glv_pimpl_obj : test_glv.cpp : <define>GLV_BINDING_H=\\\"glv_pimpl_binding.h\\\" ;
 exe test_glv_pimpl : test_glv_pimpl_obj : <library>../lib//lib_glv_pimpl ;
+
+exe test_multi_window : test_multi_window.cpp : <define>GLV_BINDING_H=\\\"glv_pimpl_binding.h\\\" <library>../lib//lib_glv_pimpl ;

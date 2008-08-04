@@ -4,9 +4,6 @@
 #include "glv.h"
 #include GLV_BINDING_H
 
-#define Rect glv::Rect
-#define Button glv::Button
-
 namespace glv{
 
 
