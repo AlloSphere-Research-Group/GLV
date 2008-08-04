@@ -139,7 +139,7 @@ public:
 	Slider(const Rect& r=Rect(20)): super(r, 1, 1, false){}
 	
 	float value() const { return super::value()[0]; }
-	Slider& value(bool v){ super::value()[0] = v; return *this; }
+	Slider& value(float v){ super::value()[0] = v; return *this; }
 };
 
 
