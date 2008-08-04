@@ -277,7 +277,8 @@ void Window::platformFullscreen(){
 		}
 		
 		mIsActive = false;
-		glutEnterGameMode();
+		int fs_id = glutEnterGameMode();
+		WindowImpl::mWindows[fs_id]=mImpl.get();
 		registerCBs();
 		mIsActive = true;
 		
