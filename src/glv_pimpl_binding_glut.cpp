@@ -27,30 +27,41 @@ public:
         , mGLUTWindowId(window_id)
         , mGLUTInFullScreen(false)
     {
-        mWindows[mGLUTWindowId]=this;
+		windows()[mGLUTWindowId] = this;
     }
+	
     ~WindowImpl()
     {
-        mWindows.erase(mGLUTWindowId);
+        windows().erase(mGLUTWindowId);
     }
+	
 	void draw();	// GLUT draw function
+	
     void scheduleDraw()
     {
         scheduleDrawStatic(mGLUTInFullScreen?mGLUTFullscreenWindowId:mGLUTWindowId);
     }
+	
     static WindowImpl *getWindowImpl()
     {
-        return mWindows[glutGetWindow()];
+        return windows()[glutGetWindow()];
     }
+	
     static WindowImpl *getWindowImpl(int window_id)
     {
-        return mWindows[window_id];
+        return windows()[window_id];
     }
+	
     static Window *getWindow()
     {
         return getWindowImpl()->mWindow;
     }
+	
+
 private:
+
+	typedef std::map<int, WindowImpl *> WindowsMap;
+
     static void scheduleDrawStatic(int window_id)
     {
         WindowImpl *impl = WindowImpl::getWindowImpl(window_id);
@@ -65,8 +76,12 @@ private:
         }
     }
 
-    static std::map<int, WindowImpl *> mWindows;
-    static bool mGLUTInitialized;
+	// Map of windows constructed on first use to avoid static intialization
+	// order problems.
+	static WindowsMap& windows(){
+		static WindowsMap* ans = new WindowsMap;
+		return *ans;
+	}
 
     Window *mWindow;
     int mGLUTWindowId;
@@ -75,9 +90,6 @@ private:
     
     friend class Window;
 };
-
-bool WindowImpl::mGLUTInitialized = false;
-std::map<int, WindowImpl *> WindowImpl::mWindows;
 
 
 
@@ -196,18 +208,19 @@ Window::Window(
 	mFullscreen(false), mVisible(true), mIsActive(true)
 {
 	if(glv) setGLV(*glv);
-    
-    if(!WindowImpl::mGLUTInitialized)
-    {
-        int argc = 0;
-        char * argv[] = {0};
 
-        glutInit(&argc,argv);
-        WindowImpl::mGLUTInitialized = true;
-    }
+   // if(!WindowImpl::mGLUTInitialized)
+	if(0 == WindowImpl::windows().size())
+	{
+		int argc = 0;
+		char * argv[] = {0};
+
+		glutInit(&argc,argv);
+		//WindowImpl::mGLUTInitialized = true;
+	}
     glutInitWindowSize(w, h);
     //glutInitWindowPosition (100, 100);
-		
+
     int bits = 
         (enabled(SingleBuf ) ? GLUT_SINGLE :0) |
         (enabled(DoubleBuf ) ? GLUT_DOUBLE :0) |
@@ -221,7 +234,7 @@ Window::Window(
     int window_id = glutCreateWindow(title);
 		
     glutIgnoreKeyRepeat(1);
-		
+
     mImpl.reset(new WindowImpl(this, window_id));
 
 	registerCBs();
@@ -285,7 +298,7 @@ void Window::implFullscreen(){
 		
 		mIsActive = false;
 		mImpl->mGLUTFullscreenWindowId = glutEnterGameMode();
-		WindowImpl::mWindows[mImpl->mGLUTFullscreenWindowId]=mImpl.get();
+		WindowImpl::windows()[mImpl->mGLUTFullscreenWindowId]=mImpl.get();
 		mImpl->mGLUTInFullScreen = true;
 		registerCBs();
 		mImpl->scheduleDraw();
@@ -295,7 +308,7 @@ void Window::implFullscreen(){
 	}
 	else{
 		mIsActive = false;
-		WindowImpl::mWindows.erase(mImpl->mGLUTFullscreenWindowId);
+		WindowImpl::windows().erase(mImpl->mGLUTFullscreenWindowId);
 		mImpl->mGLUTInFullScreen = false;
 		glutLeaveGameMode();
 		mIsActive = true;
