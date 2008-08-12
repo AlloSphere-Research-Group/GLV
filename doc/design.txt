@@ -155,17 +155,24 @@ and range symmetry (e.g. [0,1] vs. [-1,1]).
 Most widgets have very similar underlying algorithms with the main differences
 being value type, presentation, and control.
 
-			Value Model				Control			Presentation
+				Value Model				Control			Presentation
 
-Widget		Range	Bound	Step	Click	Drag
----------	---------------------	--------------	
-Button		[0,1]	wrap	1		toggle	none	symbol (on/off)
-Slider		[0,1]	clip	any		set		inc		rect
-Dial		[0,1]	wrap	any		set		inc		circle
-NumberBox	[a,b]	any		any		none	none	text
+	Widget		Range	Bound	Step	Click	Drag
+	---------	---------------------	--------------	
+	Button		[0,1]	wrap	1		toggle	none	symbol (on/off)
+	Slider		[0,1]	clip	any		set		inc		rect
+	Dial		[0,1]	wrap	any		set		inc		circle
+	NumberBox	[a,b]	any		any		none	none	text
 
 
 For the control and presentation of widgets, we could use a strategy pattern to
 change behaviors at run-time. For presentation, we could have a list of strategies.
 This would be useful for sliders to display both the bar and its value.
-	
+
+
+
+Notifications
+-------------
+
+
+

@@ -85,4 +85,137 @@ void Label::fitExtent(){
 void Label::rotateRect(){ t += w - h; transpose(); }
 
 
+
+
+
+NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac)
+:	View(r), mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0)
+{	
+	resize(numInt, numFrac);
+	mMax = pow(10, mNI+mNF)-1;
+	mMin =-mMax;
+	dig(mNI);
+}
+
+NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min)
+:	View(r), mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0)
+{	
+	resize(numInt, numFrac);
+	range(max, min);
+	dig(mNI);
+}
+
+
+
+NumberDialer& NumberDialer::range(double max, double min){
+	mMin = convert(min);
+	mMax = convert(max);
+	return *this;
+}
+
+double NumberDialer::value() const{ return mVal * mValMul; }
+NumberDialer& NumberDialer::value(double v){ valSet(convert(v)); return *this; }
+
+void NumberDialer::onDraw(){ //printf("% g\n", value());
+	using namespace glv::draw;
+	float dx = w/size();
+	
+	// draw box at position (only if focused)
+	if(enabled(Focused)){
+		color(colors().fore, colors().fore.a*0.5);
+		rect(dig()*dx, 0, (dig()+1)*dx, h);
+	}
+	
+	// draw number
+	int absVal = mVal < 0 ? -mVal : mVal;
+	int msd = mNF;	// most significant digit
+	
+	if(absVal > 0){
+		msd = (int)log10(absVal);
+		msd = msd < mNF ? mNF : msd > size()-2 ? size()-2 : msd;
+	}
+	
+	color(colors().text);
+	draw::push();
+		float sf = (h - 2*mPad)/Glyph::baseline();
+		scale(sf, sf);
+
+		float tdx = Glyph::width()*0.5*sf;
+		float x = (w - dx*0.5)*sf - tdx;
+		float y = mPad*sf;
+		dx *= sf;
+		
+		int power = 1;
+		bool drawChar = false; // don't draw until non-zero or past decimal point
+
+		begin(Lines);
+			if(mNF  > 0) character('.', dx*(mNI+1) - tdx, y);
+			if(mVal < 0) character('-', dx*0.5 - tdx, y);
+			
+			for(int i=0; i<=msd; ++i){
+				char c = '0' + (absVal % (power*10))/power;
+				power *= 10;
+				if(c!='0' || i>=mNF) drawChar = true;
+				if(drawChar) character(c, x, y);
+				x -= dx;
+			}
+		end();
+	draw::pop();
+}
+
+
+bool NumberDialer::onEvent(Event::t e, GLV& g){
+
+	Keyboard& k = g.keyboard;
+	Mouse& m    = g.mouse;
+
+	switch(e){
+	case Event::MouseDown:
+		mAcc = 0;
+		int oldDig = dig();
+		dig((int)(m.xRel()/w * size()));
+		if(dig() == 0 && oldDig == 0) flipSign();
+		return false;
+	
+	case Event::MouseDrag:
+		if(onNumber()){
+			mAcc += 0.25 * fabs(m.dy());
+			if(mAcc > 1){
+				int mul = (int)mAcc;
+				valAdd((m.dy() > 0.f ? -mag() : mag())*mul);
+				mAcc -= mul;
+			}
+		}
+		return false;
+	
+	case Event::KeyDown:
+	
+		if(k.isNumber() && onNumber()){
+			int v = mVal < 0 ? -mVal : mVal;
+			int p = mag();
+			v += (k.keyAsNumber() - ((v / p) % 10)) * p;
+			valSet(mVal < 0 ? -v : v);
+			return false;
+		}
+		else{
+			switch(k.key()){
+			case 'a': onNumber() ? valAdd( mag()) : flipSign(); return false;
+			case 'z': onNumber() ? valAdd(-mag()) : flipSign(); return false;
+			case '-': flipSign(); return false;
+			case Key::Right: dig(dig()+1); return false;
+			case Key::Left:  dig(dig()-1); return false;
+			}
+		}
+		break;
+		
+	default:;
+	}
+
+	return true;
+}
+
+
+
+
+
 } // glv::

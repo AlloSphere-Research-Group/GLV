@@ -18,9 +18,9 @@ Sliders sliders1(Rect(100), 10, 1, true), sliders2(sliders1, 1, 10, true);
 
 ButtonBase<Values<bool, 4, 4> > btv(Rect(80));
 ButtonBase<Array<bool> > bta(Rect(80), 1, 1);
-NumberBoxBase<Values<float, 1, 4> > nb14(Rect(64, 64));
-NumberBoxBase<Values<float, 4, 4> > nb44(Rect(64*4, 64));
-CopyCat copyCat(tabs);
+//NumberBoxBase<Values<float, 1, 4> > nb14(Rect(64, 64));
+//NumberBoxBase<Values<float, 4, 4> > nb44(Rect(64*4, 64));
+NumberDialer nd1(Rect(12*5, 12), 4,0), nd2(nd1, 1,3, 8, 0);
 
 FunctionGraph fg(Rect(200, 100), 4, 10);
 
@@ -32,9 +32,6 @@ void drawCB(View * v){
 	push3D(v->w, v->h);		// push into 3-D mode passing in width and height of view
 	
 	pop3D();
-	
-	View * f = ((GLV*)v)->focusedView();
-	if(f && f != v) copyCat.source(*f);
 }
 
 
@@ -68,11 +65,8 @@ int main (int argc, char ** argv){
 	groups[6] << sliders2.pos(Place::BL, 4).anchor(Place::CC);
 	groups[7] << (new Label("Horizontal"))->pos(Place::BL).anchor(Place::CC);
 	groups[7] << (new Label("Vertical", true))->pos(Place::BR,-16).anchor(Place::CC);
-	
-//	groups[8] << btv.pos(Place::BL).anchor(Place::CC);
-//	groups[8] << bta.pos(Place::BR,-4).anchor(Place::CC);
-	groups[8] << nb14.pos(Place::BL).anchor(Place::CC);
-	groups[8] << nb44.pos(Place::TL, 0, 4).anchor(Place::CC);
+	groups[8] << nd1.pos(Place::BL).anchor(Place::CC);
+	groups[8] << nd2.pos(Place::TL, 0, 4).anchor(Place::CC);
 
 	tabs << (new Label("Button"		  ))->anchor(0.5, 1./(tabs.size()*2)).pos(Place::CC);
 	tabs << (new Label("Buttons"	  ))->anchor(0.5, 3./(tabs.size()*2)).pos(Place::CC);
@@ -82,13 +76,10 @@ int main (int argc, char ** argv){
 	tabs << (new Label("SliderGrid"	  ))->anchor(0.5,11./(tabs.size()*2)).pos(Place::CC);
 	tabs << (new Label("Sliders"	  ))->anchor(0.5,13./(tabs.size()*2)).pos(Place::CC);
 	tabs << (new Label("Label"	      ))->anchor(0.5,15./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("NumberBox"	  ))->anchor(0.5,17./(tabs.size()*2)).pos(Place::CC);
+	tabs << (new Label("NumberDialer" ))->anchor(0.5,17./(tabs.size()*2)).pos(Place::CC);
 	top << tabs;
 	
 	tabs(Event::MouseDrag, Behavior::mouseResize);
-
-	copyCat.extent(60);
-	//top << copyCat.pos(Place::BR).anchor(Place::BR);
 
 	//#define PRINT_SIZE(x) printf("sizeof(%s) = %d\n", #x, sizeof(x));
 	//PRINT_SIZE(View) PRINT_SIZE(Notifier) PRINT_SIZE(Rect)

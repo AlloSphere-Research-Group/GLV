@@ -11,21 +11,6 @@ namespace glv {
 class Notifier;
 
 
-//class Notification{
-//
-//protected:
-//	Notifier * mSender;
-//	void * mReceiver;
-//};
-//
-//class ValueNotification : public Notification{
-//
-//protected
-//}
-//
-//typedef Notification FocusNotification;
-
-
 /// Notification update types
 namespace Update{
 	enum t{
@@ -103,6 +88,29 @@ protected:
 };
 
 
+
+
+
+//class Notification{
+//
+//protected:
+//	Notifier * mSender;
+//	void * mReceiver;
+//};
+//
+//class ValueNotification : public Notification{
+//
+//protected:
+//	int mWhich;
+//	T mValue;
+//}
+//
+//typedef Notification FocusNotification;
+
+
+//void update(const ValueNotification<float>& n){
+//
+//}
 
 
 
