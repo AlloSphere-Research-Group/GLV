@@ -260,7 +260,7 @@ View * View::findTarget(space_t &x, space_t &y){
 void View::focused(bool b){
 	property(Focused, b);
 	if(b) makeLastSibling(); // move to end of chain, so drawn last
-	notify();
+	notify(Update::Focus);
 }
 
 

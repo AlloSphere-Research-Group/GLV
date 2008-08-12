@@ -330,12 +330,11 @@ TEMV bool Slider1DBase<V>::onEvent(Event::t e, GLV& g){
 				value()[selected()] = this->clip1(mAcc);
 			}
 
-			notify();
+			notify(Update::Value);
 			return false;
 			
 		case Event::MouseDown:
 			selectSlider(g, true);
-			notify();
 			return false;
 			
 		case Event::KeyDown:{
@@ -368,7 +367,10 @@ TEMV void Slider1DBase<V>::selectSlider(GLV& g, bool click){
 	int idx = selected();
 	
 	// if left-button, set value
-	if(m.left() && !m.right()) value()[idx] = val;
+	if(m.left() && !m.right()){
+		value()[idx] = val;
+		notify(Update::Value);
+	}
 	
 	// if click or new slider, reset accumulator
 	if(click || (oldIdx != idx)){

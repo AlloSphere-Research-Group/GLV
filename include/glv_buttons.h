@@ -80,7 +80,8 @@ public:
 				
 				if(enabled(MutualExc))	value().zero();
 				if(enabled(Toggleable))	value()[selected()] ^= true;
-				else value()[selected()]  = true;
+				else					value()[selected()] = true;
+				notify(Update::Value);
 				return false;
 			}
 			break;
@@ -99,7 +100,10 @@ public:
 			
 		case Event::MouseUp:
 			if(g.mouse.button() == Mouse::Left){
-				if(!enabled(Toggleable)) value()[selected()] = false;
+				if(!enabled(Toggleable)){
+					value()[selected()] = false;
+					notify(Update::Value);
+				}
 			}
 			break;
 			

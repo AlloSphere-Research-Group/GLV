@@ -41,7 +41,7 @@ Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool ve
 #undef CTOR_LIST
 #undef CTOR_BODY
 
-Label& Label::label(const std::string& s){ mLabel = s; fitExtent(); return *this; }
+Label& Label::label(const std::string& s){ mLabel = s; fitExtent(); notify(Update::Value); return *this; }
 Label& Label::size(float pixels){ mSize = pixels/8.; fitExtent(); return *this; }
 
 Label& Label::vertical(bool v){

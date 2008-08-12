@@ -21,7 +21,7 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 		case Event::MouseDrag:
 			valueAdd( g.mouse.dx()/w * sens(g), 0);
 			valueAdd(-g.mouse.dy()/h * sens(g), 1); 		
-			notify();
+			notify(Update::Value);
 			break;
 			
 		case Event::MouseDown:
@@ -29,17 +29,17 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 				value(      g.mouse.xRel() / w, 0);
 				value(1.f - g.mouse.yRel() / h, 1);
 			}
-			notify();
+			notify(Update::Value);
 			break;
 			
 		case Event::MouseUp: clipAccs(); break;
 			
 		case Event::KeyDown:
 			switch(g.keyboard.key()){
-				case Key::Left:		valueAdd(-1. / w, 0); notify(); break;
-				case Key::Right:	valueAdd( 1. / w, 0); notify(); break;
-				case Key::Up:		valueAdd( 1. / h, 1); notify(); break;
-				case Key::Down:		valueAdd(-1. / h, 1); notify(); break;
+				case Key::Left:		valueAdd(-1. / w, 0); notify(Update::Value); break;
+				case Key::Right:	valueAdd( 1. / w, 0); notify(Update::Value); break;
+				case Key::Up:		valueAdd( 1. / h, 1); notify(Update::Value); break;
+				case Key::Down:		valueAdd(-1. / h, 1); notify(Update::Value); break;
 				default: return true;
 			}
 			break;
