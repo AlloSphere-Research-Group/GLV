@@ -25,6 +25,10 @@ public:
 		Spec(Place::t posAnch, space_t dx, space_t dy, float size=8, bool vert=false)
 		:	posAnch(posAnch), dx(dx), dy(dy), size(size), vert(vert)
 		{}
+
+		Spec& set(Place::t posAnch_, space_t dx_, space_t dy_, float size_=8, bool vert_=false){
+			posAnch=posAnch_; dx=dx_; dy=dy_; size=size_; vert=vert_;
+		}
 		
 		Place::t posAnch;
 		space_t dx, dy;
