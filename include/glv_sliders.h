@@ -15,6 +15,12 @@ namespace glv {
 // individual l,t,w,h components since it's more flexible for layout and 
 // only requires writing one constructor.
 
+
+/// Type for slider value changes
+typedef ChangedValue<float> SliderChange;
+
+
+
 /// Abstract multidimensional slider
 
 /// The foreground color determines the color of the slider.
@@ -43,23 +49,16 @@ protected:
 	void clipAccs(){ for(int i=0; i<Dim; ++i) clip(mAcc[i]); }
 	bool validDim(int dim) const { return (dim < Dim) && (dim >= 0); }
 	float sens(const GLV& g){ return (g.mouse.left() && g.mouse.right()) ? 0.25 : 1; }
+
+	void updateValue(float v, int i, SliderBase& (SliderBase::* func)(float v, int i)){
+		float prevVal = value(i);
+		(this->*func)(v,i);
+		if(value(i) != prevVal)
+			notify(Update::Value, SliderChange(value(i), i));
+	}
 };
 
 
-
-/// A 1-D slider
-//class Slider : public SliderBase<1>{
-//public:
-//
-//	/// Constructor
-//	Slider(const Rect& r=Rect(200,20), float val=0);
-//
-//	float value() const { return SliderBase<1>::value(0); }		///< Return slider value
-//	Slider& value(float v){ SliderBase<1>::value(v,0); return *this; }		///< Set slider value
-//
-//	virtual void onDraw();
-//	virtual bool onEvent(Event::t e, GLV & glv);
-//};
 
 
 
@@ -75,9 +74,9 @@ public:
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV & glv);
 	
-	static void drawKnob(const Slider2D& s);
-	
+	static void drawKnob(const Slider2D& s);	
 };
+
 
 
 
@@ -111,6 +110,8 @@ protected:
 
 
 
+
+/// Base class for 1-D slider types
 template <class V>
 class Slider1DBase: public ValueWidget<V>{
 public:
@@ -128,7 +129,17 @@ protected:
 
 	void selectSlider(GLV& g, bool click);
 	bool isVertical() const { return this->dy() > this->dx(); }
+	
+	// set currently selected value and send notification
+	void setValueNotify(float v){
+		v = this->clip1(v);
+		if(v == value()[selected()]) return;
+		value()[selected()] = v;
+		notify(Update::Value, SliderChange(v, selected()));
+	}
 };
+
+
 
 
 /// Single slider
@@ -143,8 +154,11 @@ public:
 };
 
 
+
+
 /// Multiple sliders
 typedef Slider1DBase<Array<float> > Sliders;
+
 
 
 
@@ -230,6 +244,8 @@ protected:
 };
 
 
+
+
 // Implementation ______________________________________________________________
 
 // SliderBase
@@ -256,6 +272,7 @@ TEM inline SliderBase<Dim>& SliderBase<Dim>::valueAdd(float add, int dim){
 	float acc = mAcc[dim] + add;
 	mAcc[dim] = mVal[dim] = acc;
 	clip(mVal[dim]);	// clip in [0, 1]
+
 	return *this;
 }
 
@@ -327,10 +344,9 @@ TEMV bool Slider1DBase<V>::onEvent(Event::t e, GLV& g){
 				
 				// accumulate differences
 				mAcc += (isVertical() ? -g.mouse.dy()*sizeY()/h : g.mouse.dx()*sizeX()/w) * this->sens(g.mouse);
-				value()[selected()] = this->clip1(mAcc);
+				setValueNotify(mAcc);
 			}
-
-			notify(Update::Value);
+			
 			return false;
 			
 		case Event::MouseDown:
@@ -343,8 +359,10 @@ TEMV bool Slider1DBase<V>::onEvent(Event::t e, GLV& g){
 
 			switch(g.keyboard.key()){
 			case 'x':
-			case 'a': value()[i] = this->clip1(value()[i] + 1/32.); return false;
-			case 'z': value()[i] = this->clip1(value()[i] - 1/32.); return false;
+//			case 'a': value()[i] = this->clip1(value()[i] + 1/32.); return false;
+//			case 'z': value()[i] = this->clip1(value()[i] - 1/32.); return false;
+			case 'a': setValueNotify(value()[i] + 1/32.); return false;
+			case 'z': setValueNotify(value()[i] - 1/32.); return false;
 			default:;
 			}
 		}
@@ -363,13 +381,11 @@ TEMV void Slider1DBase<V>::selectSlider(GLV& g, bool click){
 	ValueWidget<V>::onSelectClick(g);
 	
 	float val = isVertical() ? 1-(m.yRel()*sizeY()/h - selectedY()) : m.xRel()*sizeX()/w - selectedX();
-	
 	int idx = selected();
 	
 	// if left-button, set value
 	if(m.left() && !m.right()){
-		value()[idx] = val;
-		notify(Update::Value);
+		setValueNotify(val);
 	}
 	
 	// if click or new slider, reset accumulator
@@ -455,8 +471,8 @@ TEM bool SliderGrid<Dim>::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 	case Event::MouseDrag:
-					valueAdd( g.mouse.dx()/w * sens(g) * Dim, cx);
-		if(cx!=cy)	valueAdd(-g.mouse.dy()/h * sens(g) * Dim, cy);
+					updateValue( g.mouse.dx()/w * sens(g) * Dim, cx, &SliderGrid<Dim>::valueAdd);
+		if(cx!=cy)	updateValue(-g.mouse.dy()/h * sens(g) * Dim, cy, &SliderGrid<Dim>::valueAdd);
 		break;
 		
 	case Event::MouseDown:

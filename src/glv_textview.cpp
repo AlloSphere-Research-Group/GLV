@@ -7,7 +7,7 @@
 
 namespace glv{
 
-#define CTOR_LIST mSize(1), mVertical(false)
+#define CTOR_LIST mSize(1), mAlignX(0), mAlignY(0), mVertical(false)
 
 #define CTOR_BODY\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
@@ -15,7 +15,7 @@ namespace glv{
 	vertical(vert);
 
 Label::Label(const std::string& str, const Spec& s)
-:	View(0,0,0,0)
+:	View(0,0,0,0), mAlignX(0), mAlignY(0)
 {
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);
 	label(str);
@@ -41,7 +41,15 @@ Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool ve
 #undef CTOR_LIST
 #undef CTOR_BODY
 
-Label& Label::label(const std::string& s){ mLabel = s; fitExtent(); notify(Update::Value); return *this; }
+Label& Label::align(float vx, float vy){ mAlignX=vx; mAlignY=vy; return *this; }
+
+Label& Label::label(const std::string& s){
+	mLabel = s;
+	fitExtent();
+	if(numObservers(Update::Value)) notify(Update::Value, LabelChange(s));
+	return *this;
+}
+
 Label& Label::size(float pixels){ mSize = pixels/8.; fitExtent(); return *this; }
 
 Label& Label::vertical(bool v){
@@ -76,7 +84,7 @@ void Label::fitExtent(){
 	
 	space_t dw = mw*mSize - w;
 	space_t dh = th*mSize - h;
-	posAdd(-dw*mAnchorX, -dh*mAnchorY);
+	posAdd(-dw*mAlignX, -dh*mAlignY);
 	
 	extent(mw*mSize, th*mSize);
 	if(mVertical) rotateRect();

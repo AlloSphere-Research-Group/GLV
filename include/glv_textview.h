@@ -11,6 +11,11 @@
 
 namespace glv{
 
+
+typedef ChangedValue<std::string> LabelChange;
+typedef ChangedValue<double> NumberDialerChange;
+
+
 /// Basic label widget
 class Label : public View{
 public:
@@ -37,7 +42,7 @@ public:
 	/// @param[in] l		Left position
 	/// @param[in] t		Top position
 	/// @param[in] vert		Whether to draw label vertically
-	Label(const std::string& str, space_t l=0, space_t t=0, bool vert=false);
+	Label(const std::string& str="", space_t l=0, space_t t=0, bool vert=false);
 
 	/// Ctor for adding label to inside of another View
 
@@ -48,15 +53,17 @@ public:
 	/// @param[in] vert		Whether to draw label vertically
 	Label(const std::string& str, Place::t posAnch, space_t px, space_t py, bool vert=false);
 
-	Label& label(const std::string& s);
-	Label& size(float pixels);
-	Label& vertical(bool v);
+	Label& align(float vx, float vy);		///< Set alignment factors for label area
+	Label& label(const std::string& s);		///< Set label string
+	Label& size(float pixels);				///< Set label size
+	Label& vertical(bool v);				///< Set whether label is displayed vertically
 
 	virtual void onDraw();
 
 protected:
 	std::string mLabel;		// The label string
 	float mSize;
+	float mAlignX, mAlignY;
 	bool mVertical;
 	
 	void fitExtent();
@@ -112,7 +119,11 @@ protected:
 	void dig(int v){ mPos = v < 0 ? 0 : v >= size() ? size()-1 : v; }
 	int size() const { return mNI + mNF + 1; }
 	void valAdd(int v){	valSet(v + mVal); }
-	void valSet(int v){ mVal = v < mMin ? mMin : v > mMax ? mMax : v; notify(Update::Value); }
+	void valSet(int v){
+		int prev = mVal;
+		mVal = v < mMin ? mMin : v > mMax ? mMax : v;
+		if(mVal != prev) notify(Update::Value, NumberDialerChange(value()));
+	}
 	void flipSign(){ valSet(-mVal); }
 	
 	void resize(int numInt, int numFrac){

@@ -18,6 +18,8 @@ namespace glv {
 typedef void (* iconFunc)(float l, float t, float r, float b);
 
 
+typedef ChangedValue<bool> ButtonChange;
+
 
 template <class V>
 class ButtonBase: public ValueWidget<V>{
@@ -79,9 +81,8 @@ public:
 				ValueWidget<V>::onSelectClick(g);
 				
 				if(enabled(MutualExc))	value().zero();
-				if(enabled(Toggleable))	value()[selected()] ^= true;
-				else					value()[selected()] = true;
-				notify(Update::Value);
+				if(enabled(Toggleable))	setValueNotify(!value()[selected()]);
+				else					setValueNotify(true);
 				return false;
 			}
 			break;
@@ -101,8 +102,7 @@ public:
 		case Event::MouseUp:
 			if(g.mouse.button() == Mouse::Left){
 				if(!enabled(Toggleable)){
-					value()[selected()] = false;
-					notify(Update::Value);
+					setValueNotify(false);
 				}
 			}
 			break;
@@ -115,6 +115,11 @@ public:
 protected:
 	iconFunc mIconOff, mIconOn;	// state icons
 
+	void setValueNotify(bool v){
+		if(v == value()[selected()]) return;
+		value()[selected()] = v;
+		notify(Update::Value, ButtonChange(v, selected()));
+	}
 };
 
 

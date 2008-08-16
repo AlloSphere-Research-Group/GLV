@@ -21,22 +21,42 @@ namespace Update{
 }
 
 
+/// Generic index/value struct to pass for widget notifications
+template <class T>
+class ChangedValue{
+public:
+	
+	ChangedValue(const T& v, int i=0): mValue(v), mIndex(i){}
+	
+	T value() const { return mValue; }
+	int index() const { return mIndex; }
+
+private:
+	int mIndex;
+	T mValue;
+};
+
+
+
 /// Notification object
-///
+
 /// This is passed into notification callbacks
+///
 class Notification{
 public:
 
-	Notification(Notifier * sndr, void * rcvr=0)
-	:	mSender(sndr), mReceiver(rcvr)
+	Notification(Notifier * sndr, void * rcvr=0, const void * data=0)
+	:	mSender(sndr), mReceiver(rcvr), mData(data)
 	{}
 
 	Notifier * sender() const { return mSender; }
 	void * receiver() const { return mReceiver; }
+	const void * data() const { return mData; }
 
 protected:
 	Notifier * mSender;
 	void * mReceiver;
+	const void * mData;
 };
 
 
@@ -65,15 +85,26 @@ public:
 
 
 	/// Notify observers of a specific update type
-	void notify(Update::t n){
+	void notify(Update::t n, void * data=0){
 		if(mHandlers[n].empty()) return;
 		
 		// call handlers in FIFO order
 		int i=mHandlers[n].size();
 		while (i--){
 			Handler& h = mHandlers[n][i];
-			if(h.handler) h.handler(Notification(this, h.receiver));
+			if(h.handler) h.handler(Notification(this, h.receiver, data));
 		}		
+	}
+	
+	/// Notify observers of a specific update type
+	template <class T>
+	void notify(Update::t n, const ChangedValue<T>& v){
+		notify(n, (void *)&v);		
+	}
+
+	/// Returns number of observers for this update type
+	int numObservers(Update::t n) const {
+		return mHandlers[n].size();
 	}
 
 protected:
@@ -87,92 +118,5 @@ protected:
 	std::vector<Handler> mHandlers[Update::NumTypes];
 };
 
-
-
-
-
-//class Notification{
-//
-//protected:
-//	Notifier * mSender;
-//	void * mReceiver;
-//};
-//
-//class ValueNotification : public Notification{
-//
-//protected:
-//	int mWhich;
-//	T mValue;
-//}
-//
-//typedef Notification FocusNotification;
-
-
-//void update(const ValueNotification<float>& n){
-//
-//}
-
-
-
-//class Notifier;
-//
-//typedef void (*glvHandler)(Notifier * sender, void * userdata); ///< Handler type
-//
-///// Handler functor
-//class HandlerFunctor{
-//public:
-//	HandlerFunctor(glvHandler a, void * v=0){ handler=a; udata=v; }
-//
-//	glvHandler handler;
-//	void * udata;
-//};
-//
-//
-//
-///// Notifier
-//class Notifier{
-//public:
-//	void attachHandler(glvHandler a, void * userdata=0);
-//	void detachHandler(glvHandler a, void * userdata=0);
-//	void notify();
-//	
-//protected:
-//	std::vector<HandlerFunctor> mHandlers;
-//};
-//
-//
-//
-//// Implementation ______________________________________________________________
-//
-//inline
-//void Notifier :: notify()
-//{
-//	if(mHandlers.empty()) return;
-//	
-//	int i=mHandlers.size(); // call handlers in FIFO order
-//	while (i--)	
-//	{
-//		if (mHandlers[i].handler) mHandlers[i].handler(this, mHandlers[i].udata);
-//	}
-//}
-//
-//inline
-//void Notifier :: attachHandler (glvHandler a, void * userdata) 
-//{
-//	mHandlers.push_back(HandlerFunctor(a, userdata));
-//}
-//
-//inline
-//void Notifier :: detachHandler (glvHandler a, void * userdata) 
-//{
-//	for(unsigned int i=0; i<mHandlers.size(); i++)
-//	{
-//		if (mHandlers[i].handler == a && mHandlers[i].udata == userdata) mHandlers.erase(mHandlers.begin() + i);
-//	}
-//}
-
-
 } // glv::
-
 #endif
-
