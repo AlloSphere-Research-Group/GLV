@@ -8,7 +8,6 @@
 namespace glv{
 
 #define CTOR_LIST mSize(1), mAlignX(0), mAlignY(0), mVertical(false)
-
 #define CTOR_BODY\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
 	label(str);\
@@ -93,31 +92,44 @@ void Label::fitExtent(){
 void Label::rotateRect(){ t += w - h; transpose(); }
 
 
-
-
+#define CTOR_LIST mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0)
+#define CTOR_BODY\
+	resize(numInt, numFrac);\
+	dig(mNI);
 
 NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac)
-:	View(r), mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0)
+:	View(r), CTOR_LIST
 {	
-	resize(numInt, numFrac);
-	mMax = pow(10, mNI+mNF)-1;
+	CTOR_BODY
+	mMax = maxVal();
 	mMin =-mMax;
-	dig(mNI);
 }
 
 NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min)
-:	View(r), mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0)
+:	View(r), CTOR_LIST
 {	
-	resize(numInt, numFrac);
-	range(max, min);
-	dig(mNI);
+	CTOR_BODY
+	range(max, min);	
 }
 
+NumberDialer::NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min)
+:	View(Rect(l,t, h*(numInt+numFrac+1), h)), CTOR_LIST
+{
+	CTOR_BODY
+	range(max, min);
+}
 
+#undef CTOR_LIST
+#undef CTOR_BODY
+
+NumberDialer& NumberDialer::padding(space_t v){ mPad=v; return *this; }
 
 NumberDialer& NumberDialer::range(double max, double min){
 	mMin = convert(min);
 	mMax = convert(max);
+	int m = maxVal();	// do not allow numbers larger than can be displayed
+	if(mMin<-m) mMin=-m;
+	if(mMax> m) mMax= m; 
 	return *this;
 }
 
@@ -130,7 +142,7 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 	
 	// draw box at position (only if focused)
 	if(enabled(Focused)){
-		color(colors().fore, colors().fore.a*0.5);
+		color(colors().fore, colors().fore.a*0.4);
 		rect(dig()*dx, 0, (dig()+1)*dx, h);
 	}
 	
@@ -143,15 +155,19 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 		msd = msd < mNF ? mNF : msd > size()-2 ? size()-2 : msd;
 	}
 	
+	if(mNI == 0) msd-=1;
+
 	color(colors().text);
 	draw::push();
-		float sf = (h - 2*mPad)/Glyph::baseline();
-		scale(sf, sf);
+		float sx = (dx- 2.f*mPad)/Glyph::width();
+		float sy = (h - 2.f*mPad)/Glyph::baseline();
+		scale(sx, sy);
+		sx = 1.f/sx;
 
-		float tdx = Glyph::width()*0.5*sf;
-		float x = (w - dx*0.5)*sf - tdx;
-		float y = mPad*sf;
-		dx *= sf;
+		float tdx = Glyph::width()*0.5f;
+		float x = (w - dx*0.5f)*sx - tdx;
+		float y = mPad/sy;
+		dx *= sx;
 		
 		int power = 1;
 		bool drawChar = false; // don't draw until non-zero or past decimal point

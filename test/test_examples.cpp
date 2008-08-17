@@ -18,8 +18,6 @@ Sliders sliders1(Rect(100), 10, 1, true), sliders2(sliders1, 1, 10, true);
 
 ButtonBase<Values<bool, 4, 4> > btv(Rect(80));
 ButtonBase<Array<bool> > bta(Rect(80), 1, 1);
-//NumberBoxBase<Values<float, 1, 4> > nb14(Rect(64, 64));
-//NumberBoxBase<Values<float, 4, 4> > nb44(Rect(64*4, 64));
 NumberDialer nd1(Rect(12*5, 12), 4,0), nd2(nd1, 1,3, 8, 0);
 
 FunctionGraph fg(Rect(200, 100), 4, 10);

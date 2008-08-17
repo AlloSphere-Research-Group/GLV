@@ -56,7 +56,9 @@ int main(int argc, char ** argv){
 	Slider slider(Rect(10, 10, 100, 20));
 	Slider2D slider2(Rect(10, 40, 100, 100));
 	SliderGrid<4> sliderGrid(Rect(100));
-	NumberDialer numberDialer(Rect(12*4, 12), 1,2);
+	//NumberDialer numberDialer(Rect(12*4, 12), 1,2);
+	NumberDialer numberDialer(12,0,0, 1,2, 10,-10);
+	numberDialer.padding(2);
 
 	// Create labels for update notifications
 	Label::Spec spec(Place::CR, 10, 0);

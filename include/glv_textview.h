@@ -25,9 +25,9 @@ public:
 		Spec(Place::t posAnch, space_t dx, space_t dy, float size=8, bool vert=false)
 		:	posAnch(posAnch), dx(dx), dy(dy), size(size), vert(vert)
 		{}
-
+		
 		Spec& set(Place::t posAnch_, space_t dx_, space_t dy_, float size_=8, bool vert_=false){
-			posAnch=posAnch_; dx=dx_; dy=dy_; size=size_; vert=vert_;
+			posAnch=posAnch_; dx=dx_; dy=dy_; size=size_; vert=vert_; return *this;
 		}
 		
 		Place::t posAnch;
@@ -83,6 +83,10 @@ protected:
 /// or decrease the value of the number. The keyboard can also be used to edit
 /// the currently focused digit. The sign on the left side can be toggled by 
 /// clicking it.
+/// The digits are scaled according to the dimensions of the view. The padding
+/// amount determines the spacing around the digits. For best looking
+/// characters use a Rect dimension ns x s where 'n' is the number of digits
+/// and 's' is the character size plus padding amount.
 class NumberDialer : public View{
 public:
 
@@ -98,10 +102,15 @@ public:
 	/// @param[in] min		Minimum value
 	NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min=0);
 
+	NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min=0);
+
 	/// Get value
 	double value() const;
 	
-	/// Set max and min output range
+	/// Set padding amount from top and bottom.
+	NumberDialer& padding(space_t v);
+	
+	/// Set max and min output range. Values larger than displayable range will be clipped.
 	NumberDialer& range(double max, double min=0);
 
 	/// Set value
@@ -113,7 +122,8 @@ public:
 protected:
 	int mNI, mNF, mPos;
 	int mVal, mMin, mMax;
-	float mPad, mAcc;
+	space_t mPad;
+	float mAcc;
 	double mValMul;
 
 	int convert(double v) const { return v / mValMul + (v>0. ? 0.5:-0.5); }
@@ -121,6 +131,7 @@ protected:
 	bool onNumber() const { return mPos != 0; }
 	int dig() const { return mPos; }
 	void dig(int v){ mPos = v < 0 ? 0 : v >= size() ? size()-1 : v; }
+	int maxVal() const { return pow(10, mNI+mNF)-1; }
 	int size() const { return mNI + mNF + 1; }
 	void valAdd(int v){	valSet(v + mVal); }
 	void valSet(int v){
@@ -128,7 +139,10 @@ protected:
 		mVal = v < mMin ? mMin : v > mMax ? mMax : v;
 		if(mVal != prev) notify(Update::Value, NumberDialerChange(value()));
 	}
-	void flipSign(){ valSet(-mVal); }
+	void flipSign(){
+		if((mVal>0 && -mVal>=mMin) || (mVal<0 && -mVal<=mMax))
+			valSet(-mVal);
+	}
 	
 	void resize(int numInt, int numFrac){
 		mNI = numInt; mNF = numFrac;

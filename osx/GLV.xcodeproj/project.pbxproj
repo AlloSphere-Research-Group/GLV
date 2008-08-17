@@ -302,7 +302,7 @@
 		16D629D50BB634D10073BA8A /* TestIcon_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestIcon_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16D629DF0BB635700073BA8A /* test_icon.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = test_icon.cpp; sourceTree = "<group>"; };
 		16D62A8C0BB63D650073BA8A /* test_widgets.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = test_widgets.cpp; sourceTree = "<group>"; };
-		16DF865A0D8F2B5600BDFDCD /* TestSignals_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestSignals_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		16DF865A0D8F2B5600BDFDCD /* TestNotifications_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestNotifications_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16E050850D7E943000C521D0 /* TestGLV_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestGLV_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16E051290D7E990F00C521D0 /* glv_behavior.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = glv_behavior.h; sourceTree = "<group>"; };
 		16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = glv_draw.cpp; sourceTree = "<group>"; };
@@ -525,7 +525,7 @@
 				3618F3D30BDD717900A0E692 /* GLV.framework */,
 				7E55D4780CCE7E1000196525 /* TestWidgets_GLUT.app */,
 				16E050850D7E943000C521D0 /* TestGLV_GLUT.app */,
-				16DF865A0D8F2B5600BDFDCD /* TestSignals_GLUT.app */,
+				16DF865A0D8F2B5600BDFDCD /* TestNotifications_GLUT.app */,
 				16D360840D9B2927003E59D0 /* TestExamples_GLUT.app */,
 				36320ADF0DB3D8500085BE86 /* TestCarbonWithFramework.app */,
 				088740280E46758D00E4D193 /* libglv_noFontGL.a */,
@@ -803,7 +803,7 @@
 			);
 			name = TestNotifications_GLUT;
 			productName = TestCarbon;
-			productReference = 16DF865A0D8F2B5600BDFDCD /* TestSignals_GLUT.app */;
+			productReference = 16DF865A0D8F2B5600BDFDCD /* TestNotifications_GLUT.app */;
 			productType = "com.apple.product-type.application";
 		};
 		16E050710D7E943000C521D0 /* TestGLV_GLUT */ = {
