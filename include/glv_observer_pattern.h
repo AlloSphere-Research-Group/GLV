@@ -26,7 +26,7 @@ template <class T>
 class ChangedValue{
 public:
 	
-	ChangedValue(const T& v, int i=0): mValue(v), mIndex(i){}
+	ChangedValue(const T& v, int i=0): mIndex(i), mValue(v){}
 	
 	T value() const { return mValue; }
 	int index() const { return mIndex; }

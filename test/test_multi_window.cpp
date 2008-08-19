@@ -20,11 +20,11 @@ public:
         passive_slider = new glv::Slider(glv::Rect(300,300));
         layout << *passive_slider;
         *passive_slider << new glv::Label("This one is manipulated by other window");
-        slider->attachHandler(onNotify, this);
+        slider->attach(onNotify, glv::Update::Value, this);
     }
-    static void onNotify(Notifier * sender, void * userdata)
+    static void onNotify(const glv::Notification& n)
     {
-        TestWindow *this_ = static_cast<TestWindow *>(userdata);
+        TestWindow *this_ = static_cast<TestWindow *>(n.receiver());
         std::cout << this_->slider->value() << std::endl;
         if(this_->other)
             this_->other->passive_slider->value(this_->slider->value());

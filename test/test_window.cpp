@@ -1,3 +1,6 @@
+/*	Graphics Library of Views (GLV) - GUI Building Toolkit
+	See COPYRIGHT file for authors and license information */
+
 #include "test_glv.h"
 
 using namespace glv;
@@ -8,9 +11,9 @@ bool show = false;
 
 void drawCB(View * v){
 
-	GLV& g = *(GLV *)v;
-	Mouse& m = g.mouse;
-	Keyboard& k = g.keyboard;
+	//GLV& g = *(GLV *)v;
+	//Mouse& m = g.mouse;
+	//Keyboard& k = g.keyboard;
 
 	using namespace draw;
 	
@@ -23,7 +26,7 @@ void drawCB(View * v){
 
 
 bool keydown(View * v, GLV& g){
-	g.keyboard.print();
+	//g.keyboard.print();
 	switch(g.keyboard.key()){
 		case Key::Escape: win.fullscreenToggle(); break;
 		case 'c': win.hideCursor(cursor^=true); break;

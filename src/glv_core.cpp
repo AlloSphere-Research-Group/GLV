@@ -12,7 +12,7 @@ namespace Event{
 		switch(e){
 			CS(Null)
 			CS(Quit)
-			CS(GetFocus) CS(LoseFocus)
+			CS(FocusGained) CS(FocusLost)
 			CS(MouseDown) CS(MouseUp) CS(MouseMove) CS(MouseDrag) CS(MouseWheel)
 			CS(KeyDown) CS(KeyUp) CS(KeyRepeat)
 			CS(Unused)

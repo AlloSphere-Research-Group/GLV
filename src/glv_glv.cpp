@@ -60,7 +60,7 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 
 void GLV::doFocusCallback(bool get){
 
-	Event::t e = get ? Event::GetFocus : Event::LoseFocus;
+	Event::t e = get ? Event::FocusGained : Event::FocusLost;
 
 	if(mFocusedView){
 		mFocusedView->focused(get);

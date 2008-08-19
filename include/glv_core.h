@@ -90,8 +90,8 @@ namespace Event{
 		ContextChange,	/**< New graphics context */
 		
 		// view events
-		GetFocus,	/**< View got focus */
-		LoseFocus,	/**< View lost focus */
+		FocusGained,/**< View got focus */
+		FocusLost,	/**< View lost focus */
 		
 		// mouse events
 		MouseDown,	/**< Mouse button pressed */

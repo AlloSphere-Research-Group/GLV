@@ -1,4 +1,6 @@
-#include <math.h>
+/*	Graphics Library of Views (GLV) - GUI Building Toolkit
+	See COPYRIGHT file for authors and license information */
+
 #include "test_glv.h"
 
 using namespace glv;

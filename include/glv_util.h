@@ -56,7 +56,7 @@ template <class T>
 class Array{
 public:
 
-	Array(): mVal(0), mSizeX(0), mSizeY(0){}
+	Array(): mSizeX(0), mSizeY(0), mVal(0){}
 	Array(int nx, int ny=1): mSizeX(0), mSizeY(0), mVal(0) { resize(nx, ny); }
 	
 	~Array(){ clear(); }

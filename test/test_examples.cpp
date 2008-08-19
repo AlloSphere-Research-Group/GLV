@@ -1,3 +1,6 @@
+/*	Graphics Library of Views (GLV) - GUI Building Toolkit
+	See COPYRIGHT file for authors and license information */
+
 #include "test_glv.h"
 
 using namespace glv;
@@ -18,7 +21,7 @@ Sliders sliders1(Rect(100), 10, 1, true), sliders2(sliders1, 1, 10, true);
 
 ButtonBase<Values<bool, 4, 4> > btv(Rect(80));
 ButtonBase<Array<bool> > bta(Rect(80), 1, 1);
-NumberDialer nd1(Rect(12*5, 12), 4,0), nd2(nd1, 1,3, 8, 0);
+NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,3, 8,0);
 
 FunctionGraph fg(Rect(200, 100), 4, 10);
 

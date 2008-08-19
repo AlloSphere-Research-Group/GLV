@@ -113,7 +113,7 @@ NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac, double max, d
 }
 
 NumberDialer::NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min)
-:	View(Rect(l,t, h*(numInt+numFrac+1), h)), CTOR_LIST
+:	View(Rect(l,t, (h-2)*(numInt+numFrac+1), h)), CTOR_LIST
 {
 	CTOR_BODY
 	range(max, min);
@@ -159,7 +159,7 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 
 	color(colors().text);
 	draw::push();
-		float sx = (dx- 2.f*mPad)/Glyph::width();
+		float sx = (dx- 1.f*mPad)/Glyph::width();
 		float sy = (h - 2.f*mPad)/Glyph::baseline();
 		scale(sx, sy);
 		sx = 1.f/sx;
