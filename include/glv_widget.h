@@ -44,47 +44,45 @@ template <class V>
 class ValueWidget : public View{
 public:
 
+	/// @param[in] r		geometry
+	/// @param[in] nx		number along x (ignored by fixed size value types)
+	/// @param[in] ny		number along y (ignored by fixed size value types)
+	/// @param[in] pad		padding from border
+	/// @param[in] toggles	whether the value elements toggle
+	/// @param[in] mutExc	whether value elements operate mutually exclusively
+	/// @param[in] drawGrid	whether to draw grid separater for multiple elements
 	ValueWidget(const Rect& r, int nx, int ny, space_t pad, bool toggles, bool mutExc, bool drawGrid=true)
 	:	View(r),
 		mPadding(pad), sx(0), sy(0)
 	{
 		value().resize(nx, ny);	// req'd for dynamically sized values
-		//valueMin();
 		value().zero();
-		
 		property(DrawGrid, drawGrid);
 		property(MutualExc, mutExc);
 		property(Toggleable, toggles);
 	}
 
-	int size () const { return value().size (); }
-	int sizeX() const { return value().sizeX(); }
-	int sizeY() const { return value().sizeY(); }
+	int size () const { return value().size (); }	///< Get total number of elements
+	int sizeX() const { return value().sizeX(); }	///< Get number of elements along x
+	int sizeY() const { return value().sizeY(); }	///< Get number of elements along y
 	
-	V& value(){ return mVal; }
-	const V& value() const { return mVal; }
+	V& value(){ return mVal; }						///< Set value object
+	const V& value() const { return mVal; }			///< Get value object
 
+	/// Returns whether this element coordinate is selected
 	bool isSelected(int x, int y) const { return x == selectedX() && y == selectedY(); }
-
-	int lastClicked() const { return index(sx, sy); }
 	
-	space_t padding() const { return mPadding; }
-	ValueWidget& padding(space_t v){ mPadding=v; return *this; }
+	space_t padding() const { return mPadding; }	///< Get element padding amount
+	ValueWidget& padding(space_t v){ mPadding=v; return *this; } ///< Set element padding amount
 
-	int selected() const { return index(sx, sy); }
-	int selectedX() const { return sx; }
-	int selectedY() const { return sy; }
-
-	//ValueWidget& valueMin(){ value().zero(); return *this; }
-	//ValueWidget& valueMid(){ for(int i=0; i<size(); ++i) value()[i]=0.5; return *this; }
-	//ValueWidget& valueMax(){ for(int i=0; i<size(); ++i) value()[i]=1.0; return *this; }
-
+	int selected() const { return index(sx, sy); }	///< Get selected element index
+	int selectedX() const { return sx; }			///< Get selected element x coordinate
+	int selectedY() const { return sy; }			///< Get selected element y coordinate
 
 protected:
 	V mVal;
 	space_t mPadding;			// num pixels to inset icon
 	int sx, sy;					// last clicked position
-
 
 	float dx() const { return w/sizeX(); }
 	float dy() const { return h/sizeY(); }

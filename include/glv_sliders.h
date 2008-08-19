@@ -66,7 +66,10 @@ protected:
 class Slider2D : public SliderBase<2>{
 public:
 
-	/// Constructor
+	/// @param[in] r			geometry
+	/// @param[in] valX			initial value along x
+	/// @param[in] valY			initial value along y
+	/// @param[in] knobSize		size of slider knob in pixels
 	Slider2D(const Rect& r, float valX=0, float valY=0, space_t knobSize=12);
 
 	space_t knobSize;	///< Size of slider knob
@@ -96,7 +99,8 @@ public:
 	using SliderBase<Dim>::clipAccs;
 	using SliderBase<Dim>::sens;
 
-	/// Constructor
+	/// @param[in] r			geometry
+	/// @param[in] knobSize		size of slider knob in pixels
 	SliderGrid(const Rect& r, space_t knobSize=4);
 
 	space_t knobSize; ///< Knob size
@@ -117,6 +121,10 @@ class Slider1DBase: public ValueWidget<V>{
 public:
 	GLV_INHERIT_VALUEWIDGET
 
+	/// @param[in] r			geometry
+	/// @param[in] nx			number along x (ignored by fixed size value types)
+	/// @param[in] ny			number along y (ignored by fixed size value types)
+	/// @param[in] dragSelect	whether new sliders are selected while dragging
 	Slider1DBase(const Rect& r, int nx, int ny, bool dragSelect=false);
 
 	virtual ~Slider1DBase(){}
@@ -147,9 +155,14 @@ class Slider : public Slider1DBase<Values<float> >{
 public:
 	typedef Slider1DBase<Values<float> > super;
 
-	Slider(const Rect& r=Rect(20)): super(r, 1, 1, false){}
+	/// @param[in] r	geometry
+	/// @param[in] v	initial value between 0 and 1
+	Slider(const Rect& r=Rect(20), float v=0): super(r, 1, 1, false){ value(v); }
 	
+	/// Get value
 	float value() const { return super::value()[0]; }
+	
+	/// Set value
 	Slider& value(float v){ super::value()[0] = v; return *this; }
 };
 

@@ -21,6 +21,7 @@ typedef void (* iconFunc)(float l, float t, float r, float b);
 typedef ChangedValue<bool> ButtonChange;
 
 
+/// Generic base class for buttons
 template <class V>
 class ButtonBase: public ValueWidget<V>{
 public:
@@ -129,11 +130,18 @@ struct Button : public ButtonBase<Values<bool> >{
 
 	typedef ButtonBase<Values<bool> > super;
 
+	/// @param[in] r		geometry
+	/// @param[in] toggles	whether the button toggles
+	/// @param[in] on		the on state icon
+	/// @param[in] off		the off state icon
 	Button(const Rect& r=Rect(20), bool toggles=true, iconFunc on=draw::rect, iconFunc off=0)
 	:	super(r, 1, 1, toggles, false, on, off)
 	{}
 	
+	/// Get value
 	bool value() const { return super::value()[0]; }
+	
+	/// Set value
 	Button& value(bool v){ super::value()[0] = v; return *this; }
 };
 

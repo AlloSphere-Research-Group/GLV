@@ -22,10 +22,11 @@ public:
 
 	/// Prototype for constructor
 	struct Spec{
+		/// Constructor
 		Spec(Place::t posAnch, space_t dx, space_t dy, float size=8, bool vert=false)
-		:	posAnch(posAnch), dx(dx), dy(dy), size(size), vert(vert)
-		{}
+		:	posAnch(posAnch), dx(dx), dy(dy), size(size), vert(vert){}
 		
+		/// Set all members
 		Spec& set(Place::t posAnch_, space_t dx_, space_t dy_, float size_=8, bool vert_=false){
 			posAnch=posAnch_; dx=dx_; dy=dy_; size=size_; vert=vert_; return *this;
 		}
@@ -36,6 +37,10 @@ public:
 		bool vert;
 	};
 
+	/// Create label using a prototype
+
+	/// @param[in] str		Label string
+	/// @param[in] spec		Label spec prototype
 	Label(const std::string& str, const Spec& spec);
 
 	/// @param[in] str		Label string

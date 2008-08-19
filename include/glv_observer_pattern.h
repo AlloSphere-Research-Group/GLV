@@ -14,22 +14,28 @@ class Notifier;
 /// Notification update types
 namespace Update{
 	enum t{
-		Focus=0,
-		Value,
+		Focus=0,	/**< Focus update */
+		Value,		/**< Value update */
 		NumTypes
 	};
 }
 
 
-/// Generic index/value struct to pass for widget notifications
+/// Generic index/value struct for widget notifications
+
+/// Since some widgets have multiple values, an index is used to specify which
+/// element corresponds to the update. If a widget only has one value, an index
+/// of zero is used.
 template <class T>
 class ChangedValue{
 public:
 	
+	/// @param[in] v	value
+	/// @param[in] i	index of value
 	ChangedValue(const T& v, int i=0): mIndex(i), mValue(v){}
 	
-	T value() const { return mValue; }
-	int index() const { return mIndex; }
+	T value() const { return mValue; }		///< Get value
+	int index() const { return mIndex; }	///< Get index of value
 
 private:
 	int mIndex;
@@ -45,13 +51,16 @@ private:
 class Notification{
 public:
 
+	/// @param[in] sndr		Pointer to sending object (subject)
+	/// @param[in] rcvr		Pointer to receiving object (observer)
+	/// @param[in] data		Pointer to data object
 	Notification(Notifier * sndr, void * rcvr=0, const void * data=0)
 	:	mSender(sndr), mReceiver(rcvr), mData(data)
 	{}
 
-	Notifier * sender() const { return mSender; }
-	void * receiver() const { return mReceiver; }
-	const void * data() const { return mData; }
+	Notifier * sender() const { return mSender; }	///< Get pointer to sending object
+	void * receiver() const { return mReceiver; }	///< Get pointer to receiving object
+	const void * data() const { return mData; }		///< Get pointer to data object
 
 protected:
 	Notifier * mSender;

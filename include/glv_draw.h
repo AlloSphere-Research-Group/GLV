@@ -177,20 +177,31 @@ bool character(int c, float dx=0, float dy=0);
 void text(const char * s, float l=0, float t=0, float lineSpacing=1, unsigned int tabSpaces=4);
 
 
+
 /// Functor for disabling rendering capabilities
 struct Disable{
+	/// Disable a capability
 	const Disable& operator() (int cap) const { glDisable(cap); return *this; }
+	
+	/// Disable a capability
 	const Disable& operator<< (int cap) const { return (*this)(cap); }
 };
 
+/// Global Disable functor
 static Disable disable;
+
+
 
 /// Functor for enabling rendering capabilities
 struct Enable{
+	/// Enable a capability
 	const Enable& operator() (int cap) const { glEnable(cap); return *this; }
+	
+	/// Enable a capability
 	const Enable& operator<< (int cap) const { return (*this)(cap); }
 };
 
+/// Global Enable functor
 static Enable enable;
 
 

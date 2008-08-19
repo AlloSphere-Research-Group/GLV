@@ -8,29 +8,31 @@
 
 namespace glv{
 
-// 2-D texture
+/// 2-D texture
 class Texture2{
 public:
+
+	/// Constructor
 	Texture2(
 		GLsizei width, GLsizei height, GLvoid * pixels=0,
 		GLenum format=GL_RGB, GLenum type=GL_UNSIGNED_BYTE,
 		bool doesLoad=false);
 	virtual ~Texture2();
 
-	GLsizei width() const { return w; }
-	GLsizei height() const { return h; }
+	GLsizei width() const { return w; }		///< Get width
+	GLsizei height() const { return h; }	///< Get height
 
-	void bind();											// Bind self to current context.
-	void draw(												// Draw texture to rectangular quad
+	void bind();											///< Bind self to current context.
+	void draw(												///< Draw texture to rectangular quad
 		float ql, float qt, float qr, float qb,
 		float tl=0, float tt=1, float tr=1, float tb=0
 	);
-	void load(GLsizei w, GLsizei h, GLvoid * pixels = 0);	// Resizes texture on graphics card.
-	void reload();											// Reload texture onto GPU
-	void send();											// Send pointed to pixels to GPU
+	void load(GLsizei w, GLsizei h, GLvoid * pixels = 0);	///< Resizes texture on graphics card.
+	void reload();											///< Reload texture onto GPU
+	void send();											///< Send pointed to pixels to GPU
 
-	Texture2& format(GLenum v);
-	Texture2& type(GLenum v);
+	Texture2& format(GLenum v);								///< Set the color format
+	Texture2& type(GLenum v);								///< Set the color data type
 	
 private:
 	GLuint mID;
