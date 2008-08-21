@@ -32,7 +32,7 @@ public:
 	
     ~WindowImpl()
     {
-		printf("~Impl\n");
+		//printf("~Impl\n");
         windows().erase(mGLUTWindowId);
     }
 	
