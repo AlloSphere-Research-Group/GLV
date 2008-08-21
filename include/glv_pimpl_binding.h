@@ -4,13 +4,13 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-#include <memory>
+//#include <memory>
+#include <vector>
 
 namespace glv{
 
-class GLV;
 class WindowImpl;	// binding-specific window implementation
-
+class GLV;
 
 /// Display mode bit masks
 enum{
@@ -44,7 +44,7 @@ public:
 	void show(bool v);						///< Show/hide window
 	void hideCursor(bool hide=true);		///< Show/hide cursor
 
-	void setGLV(GLV & g);					///< Set top GLV View
+	void setGLV(GLV& g);					///< Set top GLV View
 
 	double fps(){ return mFPS; }			///< Get requested framerate
 	unsigned int height(){ return h; }		///< Get height
@@ -54,7 +54,7 @@ public:
 	
 protected:	
 	double mFPS;
-	char * mLabel;
+	char * mTitle;
 	unsigned int w, h, wwin, hwin;
 	int mDispMode;		// display mode bit field
 	bool mFullscreen;
@@ -67,13 +67,16 @@ protected:
 	void onContextChange();
 
 	// These are to be implemented by the specific binding
+	void implCtor();	// this should manually create the mImpl object
+	void implDtor();	// this should manually delete the mImpl object
 	void implFullscreen();
 	void implHideCursor(bool hide);
 	void implResize(int width, int height);	// platform specific resize stuff
 	void implShowHide();						// platform specific show/hide stuff
     
     // pointer to the binding-specific implementation
-    std::auto_ptr<WindowImpl> mImpl;
+	//std::auto_ptr<WindowImpl> mImpl;
+	WindowImpl * mImpl;
     // with the auto_ptr for the implementation, disallow assignment and copy
 private:
     const Window& operator=(const Window&);
@@ -90,11 +93,18 @@ public:
 	/// Run main application event loop. This is a blocking call.
 	static void	run();
 
+	/// Quit main application.
+	
+	/// This can potentially cause the program to exit directly, so use 
+	/// Event::Quit callbacks to handle any exiting code.
 	static void	quit();
-//	static void	windowNotify(Notifier * sender, void * userdata);
-
+	
 protected:
+	friend class Window;
 	static Window *focusedWindow;
+
+	// Returns a vector of all created windows
+	static std::vector<Window *>& windows();
 	
 	// These are to be implemented by the specific binding
 	static void implRun();

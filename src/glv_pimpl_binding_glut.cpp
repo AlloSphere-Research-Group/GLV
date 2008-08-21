@@ -32,6 +32,7 @@ public:
 	
     ~WindowImpl()
     {
+		printf("~Impl\n");
         windows().erase(mGLUTWindowId);
     }
 	
@@ -93,7 +94,9 @@ private:
 
 
 
-void Application::implQuit(){}
+void Application::implQuit(){
+	exit(0);
+}
 
 void Application::implRun(){
 	glutMainLoop();	
@@ -198,16 +201,10 @@ static void registerCBs(){
 	glutSpecialUpFunc(glutSpecialUpCB);
 }
 
-Window::Window(
-	unsigned int w, unsigned int h, char * title, GLV * glv, double framerate, int mode
-)
-:	glv(0), mFPS(framerate),
-	mLabel(title), 
-	w(w), h(h),
-	mDispMode(mode),
-	mFullscreen(false), mVisible(true), mIsActive(true)
-{
-	if(glv) setGLV(*glv);
+
+
+
+void Window::implCtor(){
 
    // if(!WindowImpl::mGLUTInitialized)
 	if(0 == WindowImpl::windows().size())
@@ -231,14 +228,19 @@ Window::Window(
         (enabled(Stereo    ) ? GLUT_STEREO :0);
 		
     glutInitDisplayMode(GLUT_RGBA | bits);
-    int window_id = glutCreateWindow(title);
+    int window_id = glutCreateWindow(mTitle);
 		
     glutIgnoreKeyRepeat(1);
 
-    mImpl.reset(new WindowImpl(this, window_id));
-
+    //mImpl.reset(new WindowImpl(this, window_id));
+	mImpl = new WindowImpl(this, window_id);
+	
 	registerCBs();
     mImpl->scheduleDraw();
+}
+
+void Window::implDtor(){
+	if(mImpl){ delete mImpl; mImpl=0; }
 }
 
 void Window::implFullscreen(){
@@ -298,7 +300,8 @@ void Window::implFullscreen(){
 		
 		mIsActive = false;
 		mImpl->mGLUTFullscreenWindowId = glutEnterGameMode();
-		WindowImpl::windows()[mImpl->mGLUTFullscreenWindowId]=mImpl.get();
+		//WindowImpl::windows()[mImpl->mGLUTFullscreenWindowId]=mImpl.get();
+		WindowImpl::windows()[mImpl->mGLUTFullscreenWindowId] = mImpl;
 		mImpl->mGLUTInFullScreen = true;
 		registerCBs();
 		mImpl->scheduleDraw();
@@ -332,8 +335,5 @@ void WindowImpl::draw(){
 	}
 }
 
-Window::~Window()
-{}
 
-
-} // end namespace glv
+} // glv::

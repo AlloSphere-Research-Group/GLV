@@ -13,11 +13,45 @@ void Application::run(){
 }
 
 void Application::quit(){
+	
+	// Send out Quit event to all GLV views
+	for(int i=0; i<windows().size(); ++i){
+		Window& w = *windows()[i];
+		if(w.glv) w.glv->broadcastEvent(Event::Quit);
+	}
+	
 	implQuit();
 }
 
+std::vector<Window *>& Application::windows(){
+	static std::vector<Window *> * ans = new std::vector<Window *>;
+	return *ans;
+}
 
 
+Window::Window(unsigned int width, unsigned int height, char * title, GLV * glv_, double framerate, int mode)
+:	glv(0), mFPS(framerate),
+	mTitle(title), 
+	w(width), h(height),
+	mDispMode(mode),
+	mFullscreen(false), mVisible(true), mIsActive(true), mHideCursor(true)
+{
+	if(glv_) setGLV(*glv_);
+	Application::windows().push_back(this);
+	implCtor();
+}
+
+Window::~Window(){
+	// remove self from application's list
+	for(int i=0; i<Application::windows().size(); ++i){
+		if(Application::windows()[i] == this){
+			Application::windows().erase(Application::windows().begin() + i);
+			break;
+		}
+	}
+	
+	implDtor();
+}
 
 void Window::setGLV(GLV & g){ 
 	glv = &g;
