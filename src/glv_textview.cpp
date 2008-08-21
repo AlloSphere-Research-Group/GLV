@@ -194,12 +194,13 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 	Mouse& m    = g.mouse;
 
 	switch(e){
-	case Event::MouseDown:
+	case Event::MouseDown:{
 		mAcc = 0;
 		int oldDig = dig();
 		dig((int)(m.xRel()/w * size()));
 		if(dig() == 0 && oldDig == 0) flipSign();
 		return false;
+	}
 	
 	case Event::MouseDrag:
 		if(onNumber()){
