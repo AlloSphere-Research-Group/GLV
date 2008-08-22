@@ -34,7 +34,7 @@ Window::Window(unsigned int width, unsigned int height, char * title, GLV * glv_
 	mTitle(title), 
 	w(width), h(height),
 	mDispMode(mode),
-	mFullscreen(false), mVisible(true), mIsActive(true), mHideCursor(true)
+	mFullscreen(false), mVisible(true), mIsActive(true), mHideCursor(false)
 {
 	if(glv_) setGLV(*glv_);
 	Application::windows().push_back(this);
