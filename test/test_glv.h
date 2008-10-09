@@ -2,7 +2,7 @@
 #define INC_TEST_GLV_H
 
 #include "glv.h"
-#include GLV_BINDING_H
+#include "glv_pimpl_binding.h"
 
 namespace glv{
 

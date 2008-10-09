@@ -299,11 +299,11 @@
 		16D5E71F0D91BD2D001153DA /* design.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = design.txt; path = ../doc/design.txt; sourceTree = SOURCE_ROOT; };
 		16D5E75C0D91F3B8001153DA /* glv_layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_layout.h; sourceTree = "<group>"; };
 		16D5E7610D91F43B001153DA /* glv_layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_layout.cpp; sourceTree = "<group>"; };
-		16D629D50BB634D10073BA8A /* TestIcon_GLUT.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TestIcon_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		16D629D50BB634D10073BA8A /* TestIcon_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestIcon_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16D629DF0BB635700073BA8A /* test_icon.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = test_icon.cpp; sourceTree = "<group>"; };
 		16D62A8C0BB63D650073BA8A /* test_widgets.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = test_widgets.cpp; sourceTree = "<group>"; };
-		16DF865A0D8F2B5600BDFDCD /* TestNotifications_GLUT.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TestNotifications_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		16E050850D7E943000C521D0 /* TestGLV_GLUT.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TestGLV_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		16DF865A0D8F2B5600BDFDCD /* TestNotifications_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestNotifications_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		16E050850D7E943000C521D0 /* TestGLV_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestGLV_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16E051290D7E990F00C521D0 /* glv_behavior.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = glv_behavior.h; sourceTree = "<group>"; };
 		16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = glv_draw.cpp; sourceTree = "<group>"; };
 		16ED62570E5791F6006231EC /* test_notifications.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = test_notifications.cpp; sourceTree = "<group>"; };
@@ -322,7 +322,7 @@
 		7E4DABD90DAAEF44009D2272 /* glv_texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_texture.h; sourceTree = "<group>"; };
 		7E4DABDE0DAAEFC7009D2272 /* glv_texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_texture.cpp; sourceTree = "<group>"; };
 		7E55D1DE0CCE5A4400196525 /* glv_draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_draw.h; sourceTree = "<group>"; };
-		7E55D4780CCE7E1000196525 /* TestWidgets_GLUT.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TestWidgets_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E55D4780CCE7E1000196525 /* TestWidgets_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestWidgets_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E55D4980CCE7F2B00196525 /* glv_binding_glut.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glv_binding_glut.h; path = ../include/glv_binding_glut.h; sourceTree = SOURCE_ROOT; };
 		7E55D49B0CCE7F3900196525 /* glv_binding_glut.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glv_binding_glut.cpp; path = ../src/glv_binding_glut.cpp; sourceTree = SOURCE_ROOT; };
 		7E55D4C30CCE80FC00196525 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
