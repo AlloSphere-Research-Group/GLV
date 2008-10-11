@@ -15,7 +15,7 @@ void Application::run(){
 void Application::quit(){
 	
 	// Send out Quit event to all GLV views
-	for(int i=0; i<windows().size(); ++i){
+	for(unsigned i=0; i<windows().size(); ++i){
 		Window& w = *windows()[i];
 		if(w.glv) w.glv->broadcastEvent(Event::Quit);
 	}
@@ -43,7 +43,7 @@ Window::Window(unsigned int width, unsigned int height, char * title, GLV * glv_
 
 Window::~Window(){
 	// remove self from application's list
-	for(int i=0; i<Application::windows().size(); ++i){
+	for(unsigned i=0; i<Application::windows().size(); ++i){
 		if(Application::windows()[i] == this){
 			Application::windows().erase(Application::windows().begin() + i);
 			break;
