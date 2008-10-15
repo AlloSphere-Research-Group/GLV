@@ -112,6 +112,7 @@ void rotate(float degx, float degy, float degz);
 void rotateX(float deg);
 void rotateY(float deg);
 void rotateZ(float deg);
+void scale(float v);								///< Scale all dimensions by amount
 void scale(float x, float y, float z=1.f);
 void scissor(float x, float y, float w, float h);
 void texCoord(float x, float y);
@@ -309,6 +310,8 @@ inline void push(int mode){ matrixMode(mode); push(); }
 inline void rotate(float degx, float degy, float degz){
 	rotateX(degx); rotateY(degy); rotateZ(degz);
 }
+
+inline void scale(float v){ scale(v,v,v); }
 
 inline void translateX(float x){ translate(x, 0, 0); }
 inline void translateY(float y){ translate(0, y, 0); }
