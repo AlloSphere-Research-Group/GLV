@@ -53,30 +53,30 @@ int main (int argc, char ** argv){
 
 
 	//---- Add labels
-	sg31 << (new Label("Color"))->anchor(Place::CR).pos(Place::CL, 4);
+	sg31 << (new Label("Color"))->anchor(Place::CR).pos(Place::CL, 4,0);
 	sg31 << (new Label("H"))->size(6).anchor(1/3., 3/3.).pos(Place::BR, -4, -4);
 	sg31 << (new Label("S"))->size(6).anchor(2/3., 2/3.).pos(Place::BR, -4, -4);
 	sg31 << (new Label("V"))->size(6).anchor(3/3., 1/3.).pos(Place::BR, -4, -4);
-	sg32 << (new Label("Translate"))->anchor(Place::CR).pos(Place::CL, 4);
+	sg32 << (new Label("Translate"))->anchor(Place::CR).pos(Place::CL, 4,0);
 	sg32 << (new Label("x"))->size(6).anchor(1/3., 3/3.).pos(Place::BR, -4, -4);
 	sg32 << (new Label("y"))->size(6).anchor(2/3., 2/3.).pos(Place::BR, -4, -4);
 	sg32 << (new Label("z"))->size(6).anchor(3/3., 1/3.).pos(Place::BR, -4, -4);
-	sg33 << (new Label("Rotate"))->anchor(Place::CR).pos(Place::CL, 4);
+	sg33 << (new Label("Rotate"))->anchor(Place::CR).pos(Place::CL, 4,0);
 	sg33 << (new Label("x"))->size(6).anchor(1/3., 3/3.).pos(Place::BR, -4, -4);
 	sg33 << (new Label("y"))->size(6).anchor(2/3., 2/3.).pos(Place::BR, -4, -4);
 	sg33 << (new Label("z"))->size(6).anchor(3/3., 1/3.).pos(Place::BR, -4, -4);
-	sg21 << (new Label("Scale"))->anchor(Place::CR).pos(Place::CL, 4);
+	sg21 << (new Label("Scale"))->anchor(Place::CR).pos(Place::CL, 4,0);
 	sg21 << (new Label("x"))->size(6).anchor(1/2., 2/2.).pos(Place::BR, -4, -4);
 	sg21 << (new Label("y"))->size(6).anchor(2/2., 1/2.).pos(Place::BR, -4, -4);
 
-	sl11 << (new Label("Slider"))->anchor(Place::CL).pos(Place::CR, -4);
-	sl21 << (new Label("Slider2D"))->anchor(Place::CL).pos(Place::CR, -4);
+	sl11 << (new Label("Slider"))->anchor(Place::CL).pos(Place::CR, -4,0);
+	sl21 << (new Label("Slider2D"))->anchor(Place::CL).pos(Place::CR, -4,0);
 	sl21 << (new Label("X Param"))->size(6).anchor(Place::BC).pos(Place::BC, 0, -4);
-	sl21 << (new Label("Y Param", true))->size(6).anchor(Place::CL).pos(Place::CL, 4);
+	sl21 << (new Label("Y Param", true))->size(6).anchor(Place::CL).pos(Place::CL, 4,0);
 	
-	btn1 << (new Label("Button"))->anchor(Place::CR).pos(Place::CL, 4);
-	btn2 << (new Label("Toggle"))->anchor(Place::CR).pos(Place::CL, 4);
-	btn3 << (new Label("Checkbox"))->anchor(Place::CR).pos(Place::CL, 4);
+	btn1 << (new Label("Button"))->anchor(Place::CR).pos(Place::CL, 4,0);
+	btn2 << (new Label("Toggle"))->anchor(Place::CR).pos(Place::CL, 4,0);
+	btn3 << (new Label("Checkbox"))->anchor(Place::CR).pos(Place::CL, 4,0);
 	
 	sg31.valueMid();
 	sg32.valueMid();
@@ -116,7 +116,7 @@ int main (int argc, char ** argv){
 	for(int i=0; i<8; ++i){
 		char c[] = {'1' + i, 0};
 		vsb[i].anchor(Place::TR).extent(100, 10);
-		layout << (vsb[i] << (new Label(c))->anchor(Place::CL).pos(Place::CL, 4));
+		layout << (vsb[i] << (new Label(c))->anchor(Place::CL).pos(Place::CL, 4,0));
 	}
 
 

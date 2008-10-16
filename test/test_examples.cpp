@@ -52,20 +52,20 @@ int main (int argc, char ** argv){
 	fg.tension(1.);
 	
 	groups[0] << bt1.pos(Place::BL).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);
-	groups[0] << bt2.pos(Place::BR, -4).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);
-	groups[1] << bts14.pos(Place::BR, -4).anchor(Place::CC);
+	groups[0] << bt2.pos(Place::BR, -4,0).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);
+	groups[1] << bts14.pos(Place::BR, -4,0).anchor(Place::CC);
 	groups[1] << bts41.pos(Place::TL, 0, 4).anchor(Place::CC);
 	groups[1] << bts44.pos(Place::BL).anchor(Place::CC);
 	groups[2] << fg.pos(Place::BL).anchor(Place::CC);
 	groups[3] << sl1H.pos(Place::BL).anchor(Place::CC);
-	groups[3] << sl1V.pos(Place::BR, -4).anchor(Place::CC);
+	groups[3] << sl1V.pos(Place::BR, -4,0).anchor(Place::CC);
 	groups[4] << sl2.pos(Place::BL).anchor(Place::CC);
 	groups[5] << sg3.pos(Place::BL).anchor(Place::CC);
 	groups[5] << sg4.pos(Place::TL, 0, 4).anchor(Place::CC);
 	groups[6] << sliders1.pos(Place::BR).anchor(Place::CC); 
-	groups[6] << sliders2.pos(Place::BL, 4).anchor(Place::CC);
+	groups[6] << sliders2.pos(Place::BL, 4,0).anchor(Place::CC);
 	groups[7] << (new Label("Horizontal"))->pos(Place::BL).anchor(Place::CC);
-	groups[7] << (new Label("Vertical", true))->pos(Place::BR,-16).anchor(Place::CC);
+	groups[7] << (new Label("Vertical", true))->pos(Place::BR,-16,0).anchor(Place::CC);
 	groups[8] << nd1.pos(Place::BL).anchor(Place::CC);
 	groups[8] << nd2.pos(Place::TL, 0, 4).anchor(Place::CC);
 
