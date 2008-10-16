@@ -374,7 +374,9 @@ public:
 	virtual bool onEvent(Event::t e, GLV& glv);	///< Main event callback
 	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
 
-	View& pos(Place::t p, space_t x=0, space_t y=0);///< Set position according to a specific place on rect
+	using Rect::pos;							// template "inheritance" fix
+	View& pos(Place::t p, space_t x, space_t y);///< Position a specific place at point (x,y)
+	View& pos(Place::t p);						///< Position a specific place at point (0,0)
 	View& property(int prop, bool v);			///< Set property flag(s) to a specfic value	
 	View& stretch(space_t mx, space_t my);		///< Set parent resize stretch factors
 	void style(Style * style);					///< Set pointer to style	

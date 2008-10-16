@@ -300,6 +300,8 @@ void View::onResize(space_t dx, space_t dy){
 }
 
 
+View& View::pos(Place::t p){ return pos(p,0,0); }
+
 View& View::pos(Place::t p, space_t x, space_t y){
 	using namespace glv::Place;
 	
