@@ -53,6 +53,14 @@ public:
 	void pos(T left, T top);		///< Set left-top position.
 	void posAdd(T x, T y);			///< Translate by [x, y] units.
 	void posUnder(const TRect<T>& r, T by=0);
+	
+	/// Position myself relative to another rect.
+	
+	/// rxf and ryf determine the fractional position along the source r. xf and xy
+	/// determine the fractional position along this rect. x and y are absolute
+	/// offsets.
+	void posRelTo(const Rect& r, float rxf, float ryf, float xf, float yf, float x=0, float y=0);
+	
 	void posRightOf(const TRect<T>& r, T by=0);
 	void resizeLeftTo(T v);			///< Resize by moving left edge to value.
 	void resizeTopTo(T v);			///< Resize by moving top edge to value.
@@ -142,6 +150,13 @@ TEM inline void TRect<T>::fixNegativeExtent(){
 TEM inline void TRect<T>::pos(T le, T to){ l = le; t = to; }
 TEM inline void TRect<T>::posAdd(T x, T y){ l += x; t += y; }
 TEM inline void TRect<T>::posRightOf(const TRect<T> & r, T by){ pos(r.right() + by, r.t); }
+
+TEM inline void TRect<T>::posRelTo(const Rect& r, float rxf, float ryf, float xf, float yf, float x=0, float y=0){
+	l = r.l + r.w*rxf - w*xf + x;
+	t = r.t + r.h*ryf - h*yf + y;
+	return *this;
+}
+
 TEM inline void TRect<T>::posUnder(const TRect<T> & r, T by){ pos(r.l, r.bottom() + by); }
 TEM inline void TRect<T>::resizeLeftTo(T v){ T dl = l-v; w += dl; l = v; onResize(dl, 0); }
 TEM inline void TRect<T>::resizeTopTo(T v){	T dt = t-v; h += dt; t = v; onResize(0, dt); }
