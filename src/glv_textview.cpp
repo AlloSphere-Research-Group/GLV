@@ -103,6 +103,7 @@ NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac)
 	CTOR_BODY
 	mMax = maxVal();
 	mMin =-mMax;
+	valSet(mVal);
 }
 
 NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min)
@@ -129,7 +130,8 @@ NumberDialer& NumberDialer::range(double max, double min){
 	mMax = convert(max);
 	int m = maxVal();	// do not allow numbers larger than can be displayed
 	if(mMin<-m) mMin=-m;
-	if(mMax> m) mMax= m; 
+	if(mMax> m) mMax= m;
+	valSet(mVal);
 	return *this;
 }
 
@@ -139,6 +141,7 @@ NumberDialer& NumberDialer::value(double v){ valSet(convert(v)); return *this; }
 void NumberDialer::onDraw(){ //printf("% g\n", value());
 	using namespace glv::draw;
 	float dx = w/size();
+	lineWidth(1);
 	
 	// draw box at position (only if focused)
 	if(enabled(Focused)){
