@@ -91,7 +91,7 @@ void color(float r, float g, float b, float a=1);		///< Set current draw color
 void color(const Color& c);							///< Set current draw color
 void color(const Color& c, float a);				///< Set current draw color, but override alpha component
 void end();											///< End vertex group delimitation
-void fog(float end, float start, float density=1);	///< Set linear fog parameters
+void fog(float end, float start, float density=1, const Color& c=Color(0));	///< Set linear fog parameters
 void identity();									///< Load identity transform matrix
 void lineStipple(char factor, short pattern);		///< Specify line stipple pattern
 void lineWidth(float val);							///< Set width of lines
@@ -391,9 +391,11 @@ inline void blendFunc(int sfactor, int dfactor){ glBlendFunc(sfactor, dfactor); 
 inline void blendTrans(){ blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
 inline void blendAdd(){ blendFunc(GL_SRC_COLOR, GL_ONE); }
 
-inline void fog(float end, float start, float density){
+inline void fog(float end, float start, float density, const Color& c){
 	glFogi(GL_FOG_MODE, GL_LINEAR); 
 	glFogf(GL_FOG_DENSITY, density); glFogf(GL_FOG_START, start); glFogf(GL_FOG_END, end);
+	float fogColor[4] = {c.r, c.g, c.b, c.a};
+	glFogfv(GL_FOG_COLOR, fogColor);
 }
 
 inline void identity(){ glLoadIdentity(); }

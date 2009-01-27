@@ -226,7 +226,7 @@ void Window::implCtor(){
         (enabled(DepthBuf  ) ? GLUT_DEPTH  :0) |
         (enabled(StencilBuf) ? GLUT_STENCIL:0) |
         (enabled(Stereo    ) ? GLUT_STEREO :0);
-		
+
     glutInitDisplayMode(GLUT_RGBA | bits);
     int window_id = glutCreateWindow(mTitle);
 		
