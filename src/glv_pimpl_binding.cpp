@@ -34,11 +34,13 @@ Window::Window(unsigned int width, unsigned int height, char * title, GLV * glv_
 	mTitle(title), 
 	w(width), h(height),
 	mDispMode(mode),
-	mFullscreen(false), mVisible(true), mIsActive(true), mHideCursor(false)
+	mFullscreen(false), mVisible(true), mIsActive(false), mHideCursor(false)
 {
-	if(glv_) setGLV(*glv_);
 	Application::windows().push_back(this);
 	implCtor();
+
+	mIsActive = true;	// assume that window has been successfully created
+	if(glv_) setGLV(*glv_);
 }
 
 Window::~Window(){
