@@ -9,6 +9,19 @@
 
 namespace glv{
 
+
+/// View used for forming a group of child Views.
+
+/// By default, a Group will not be drawn to screen nor interact with any 
+/// user input. It is meant to simply act as an invisible frame for child Views.
+struct Group : public View{
+	Group(const Rect& r=Rect(0))
+	:	View(r)
+	{	disable(DrawBack | DrawBorder | CropChildren | FocusHighlight | HitTest); }
+};
+
+
+
 /// View placer
 
 /// A Placer is used for aligning a series of views. It can position views

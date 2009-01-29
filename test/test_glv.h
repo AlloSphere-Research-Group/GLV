@@ -6,16 +6,6 @@
 
 namespace glv{
 
-
-struct Group : public View{
-	Group(const Rect& r=Rect(0))
-	:	View(r)
-	{
-		disable(DrawBack | DrawBorder | CropChildren | FocusHighlight | HitTest);
-	}
-};
-
-
 struct CharView : public View{
 	CharView(const Rect& r=Rect(80, 110))
 	:	View(r), input(0), thickness(2)

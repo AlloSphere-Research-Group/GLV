@@ -327,8 +327,8 @@
 		7E55D4980CCE7F2B00196525 /* glv_binding_glut.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glv_binding_glut.h; path = ../include/glv_binding_glut.h; sourceTree = SOURCE_ROOT; };
 		7E55D49B0CCE7F3900196525 /* glv_binding_glut.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glv_binding_glut.cpp; path = ../src/glv_binding_glut.cpp; sourceTree = SOURCE_ROOT; };
 		7E55D4C30CCE80FC00196525 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
-		7E8BD4EB0D81ECA800D3B32C /* GLV_APPL-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "GLV_APPL-Info.plist"; sourceTree = "<group>"; };
-		7E8BD4EC0D81ECA800D3B32C /* GLV_FMWK-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "GLV_FMWK-Info.plist"; sourceTree = "<group>"; };
+		7E8BD4EB0D81ECA800D3B32C /* GLV_APPL-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "GLV_APPL-Info.plist"; sourceTree = "<group>"; };
+		7E8BD4EC0D81ECA800D3B32C /* GLV_FMWK-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "GLV_FMWK-Info.plist"; sourceTree = "<group>"; };
 		7EE965A50C064D370010FEFA /* glv_binding_carbon.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glv_binding_carbon.h; path = ../include/glv_binding_carbon.h; sourceTree = SOURCE_ROOT; };
 		7EE965A60C064D3F0010FEFA /* glv_binding_carbon.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glv_binding_carbon.cpp; path = ../src/glv_binding_carbon.cpp; sourceTree = SOURCE_ROOT; };
 		7EE965BF0C067A310010FEFA /* glv_binding_fltk.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glv_binding_fltk.h; path = ../include/glv_binding_fltk.h; sourceTree = SOURCE_ROOT; };
