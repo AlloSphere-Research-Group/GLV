@@ -162,27 +162,49 @@ p2  x  .      .
 "d | b"
 */
 
-
+/// Table class for doing complex rectangular layouts.
 class Table : public Group{
 public:
 
-	Table(const char * alignment, space_t padX=2, space_t padY=2);
+	/// @param[in] arrangement	Arrangement string (see arrangement())
+	/// @param[in] padX			Padding in x-direction between cells
+	/// @param[in] padY			Padding in y-direction between cells
+	/// @param[in] r			Geometry
+	Table(const char * arrangement, space_t padX=2, space_t padY=2, const Rect& r=Rect(0));
 
-	/// Align child Views according to alignment specification.
-	void alignChildren();
-	void alignment(const char * v);
+	/// Arrange child Views according to cell arrangement specification.
+	void arrangeChildren();
+	
+	/// Set table cell arrangement.
+	
+	/// The arrangement string specifies where Views will lie in the table, the
+	/// alignment within each cell, and how cells should span multiple columns
+	/// and/or rows. The string cell alignment characters are:
+	/// 
+	/// p ^ q     top-left     top-center     top-right
+	/// < x >     center-left  center-center  center-right
+	/// b v d     bottom-left  bottom-center  bottom-right
+	///
+	/// The string layout characters are:
+	///
+	/// .         empty cell
+	/// -         span cell horizontally
+	/// |         span cell vertically
+	/// ,         end of column
+	///
+	/// Views added as children will fill in the cells with an alignment 
+	/// specification starting at the top-left cell and then proceeding 
+	/// column-by-column, row-by-row.
+	///
+	void arrangement(const char * v);
 
 protected:
 
 	struct Cell{
-	
 		Cell(int posX, int posY, int spanX, int spanY, char code_, View * view_=0)
-		:	view(view_), x(posX), y(posY), w(spanX), h(spanY), code(code_)
-		{}
+		:	view(view_), x(posX), y(posY), w(spanX), h(spanY), code(code_){}
 	
-		View * view;
-		int x,y,w,h;
-		char code;
+		View * view; int x,y,w,h; char code;
 	};
 
 	int mSize1, mSize2;
@@ -199,7 +221,7 @@ protected:
 	
 	space_t sumSpan(const space_t * src, int end, int begin=0){
 		space_t r=0;
-		for(int i=begin; i<end; ++i) r+= src[i];
+		for(int i=begin; i<end; ++i) r += src[i];
 		return r;
 	}
 };

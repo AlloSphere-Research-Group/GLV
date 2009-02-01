@@ -135,12 +135,12 @@ Rect& LayoutGrid::operator()(){
 
 
 
-Table::Table(const char * v, space_t padX, space_t padY)
-:	mSize1(0), mSize2(0), mAlign(0), mPad1(padX), mPad2(padY)
-{	alignment(v); }
+Table::Table(const char * a, space_t padX, space_t padY, const Rect& r)
+:	Group(r), mSize1(0), mSize2(0), mAlign(0), mPad1(padX), mPad2(padY)
+{	arrangement(a); }
 
 
-void Table::alignChildren(){
+void Table::arrangeChildren(){
 	View * vp = child;
 	int ind = 0;
 
@@ -240,7 +240,7 @@ void Table::alignChildren(){
 }
 
 
-void Table::alignment(const char * va){
+void Table::arrangement(const char * va){
 	
 	mAlign = va;
 	mCells.clear();
