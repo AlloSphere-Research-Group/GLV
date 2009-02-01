@@ -168,10 +168,10 @@ public:
 	///
 	/// The string layout characters are:
 	///
-	/// .         empty cell
-	/// -         span cell horizontally
-	/// |         span cell vertically
-	/// ,         end of column
+	/// .         empty region
+	/// -         span cell to left horizontally (can be used recursively)
+	/// |         span cell above vertically (can be used recursively)
+	/// ,         end of row
 	///
 	/// Views added as children will fill in the cells with an alignment 
 	/// specification starting at the top-left cell and then proceeding 
