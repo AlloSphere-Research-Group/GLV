@@ -141,26 +141,7 @@ protected:
 };
 
 
-/*
 
-Aligment codes:
-p ^ q
-< x >
-b v d
-
-		  p1
-       a      b
-p2  x  .      .
-    y  .      .
-
-". . v -,"
-". . v v,"
-"> > x x,"
-"| > x x"
-
-"q x p",
-"d | b"
-*/
 
 /// Table class for doing complex rectangular layouts.
 class Table : public Group{
