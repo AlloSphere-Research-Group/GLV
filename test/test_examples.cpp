@@ -5,7 +5,7 @@
 
 using namespace glv;
 
-const int pages = 9;
+const int pages = 10;
 Buttons tabs(Rect(110, pages*20), 1, pages, true, true);
 Group groups[pages];
 
@@ -24,6 +24,12 @@ ButtonBase<Array<bool> > bta(Rect(80), 1, 1);
 NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,3, 8,0);
 
 FunctionGraph fg(Rect(200, 100), 4, 10);
+
+Table table(	". v - -,"
+				"> p ^ q,"
+				"| < x >,"
+				"| b v d", 12, 6);
+
 
 void drawCB(View * v){
 	using namespace glv::draw;
@@ -50,34 +56,43 @@ int main (int argc, char ** argv){
 	}
 	
 	fg.tension(1.);
-	
+
+	table	<< new Label("col span") << new Label("row span", true)
+			<< new Label("top-left") << new Label("top-center") << new Label("top-right") 
+			<< new Label("center-left") << new Label("center-center") << new Label("center-right")
+			<< new Label("bottom-left") << new Label("bottom-center") << new Label("bottom-right");
+	table.alignChildren();
+	//table.enable(DrawBorder);
+
 	groups[0] << bt1.pos(Place::BL).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);
 	groups[0] << bt2.pos(Place::BR, -4,0).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);
 	groups[1] << bts14.pos(Place::BR, -4,0).anchor(Place::CC);
 	groups[1] << bts41.pos(Place::TL, 0, 4).anchor(Place::CC);
 	groups[1] << bts44.pos(Place::BL).anchor(Place::CC);
 	groups[2] << fg.pos(Place::BL).anchor(Place::CC);
-	groups[3] << sl1H.pos(Place::BL).anchor(Place::CC);
-	groups[3] << sl1V.pos(Place::BR, -4,0).anchor(Place::CC);
-	groups[4] << sl2.pos(Place::BL).anchor(Place::CC);
-	groups[5] << sg3.pos(Place::BL).anchor(Place::CC);
-	groups[5] << sg4.pos(Place::TL, 0, 4).anchor(Place::CC);
-	groups[6] << sliders1.pos(Place::BR).anchor(Place::CC); 
-	groups[6] << sliders2.pos(Place::BL, 4,0).anchor(Place::CC);
-	groups[7] << (new Label("Horizontal"))->pos(Place::BL).anchor(Place::CC);
-	groups[7] << (new Label("Vertical", true))->pos(Place::BR,-16,0).anchor(Place::CC);
-	groups[8] << nd1.pos(Place::BL).anchor(Place::CC);
-	groups[8] << nd2.pos(Place::TL, 0, 4).anchor(Place::CC);
+	groups[3] << (new Label("Horizontal"))->pos(Place::BL).anchor(Place::CC);
+	groups[3] << (new Label("Vertical", true))->pos(Place::BR,-16,0).anchor(Place::CC);
+	groups[4] << nd1.pos(Place::BL).anchor(Place::CC);
+	groups[4] << nd2.pos(Place::TL, 0, 4).anchor(Place::CC);
+	groups[5] << sl1H.pos(Place::BL).anchor(Place::CC);
+	groups[5] << sl1V.pos(Place::BR, -4,0).anchor(Place::CC);
+	groups[6] << sl2.pos(Place::BL).anchor(Place::CC);
+	groups[7] << sg3.pos(Place::BL).anchor(Place::CC);
+	groups[7] << sg4.pos(Place::TL, 0, 4).anchor(Place::CC);
+	groups[8] << sliders1.pos(Place::BR).anchor(Place::CC); 
+	groups[8] << sliders2.pos(Place::BL, 4,0).anchor(Place::CC);
+	groups[9] << table.pos(Place::BC).anchor(Place::CC);
 
 	tabs << (new Label("Button"		  ))->anchor(0.5, 1./(tabs.size()*2)).pos(Place::CC);
 	tabs << (new Label("Buttons"	  ))->anchor(0.5, 3./(tabs.size()*2)).pos(Place::CC);
 	tabs << (new Label("FunctionGraph"))->anchor(0.5, 5./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("Slider"		  ))->anchor(0.5, 7./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("Slider2D"	  ))->anchor(0.5, 9./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("SliderGrid"	  ))->anchor(0.5,11./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("Sliders"	  ))->anchor(0.5,13./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("Label"	      ))->anchor(0.5,15./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("NumberDialer" ))->anchor(0.5,17./(tabs.size()*2)).pos(Place::CC);
+	tabs << (new Label("Label"	      ))->anchor(0.5, 7./(tabs.size()*2)).pos(Place::CC);
+	tabs << (new Label("NumberDialer" ))->anchor(0.5, 9./(tabs.size()*2)).pos(Place::CC);
+	tabs << (new Label("Slider"		  ))->anchor(0.5,11./(tabs.size()*2)).pos(Place::CC);
+	tabs << (new Label("Slider2D"	  ))->anchor(0.5,13./(tabs.size()*2)).pos(Place::CC);
+	tabs << (new Label("SliderGrid"	  ))->anchor(0.5,15./(tabs.size()*2)).pos(Place::CC);
+	tabs << (new Label("Sliders"	  ))->anchor(0.5,17./(tabs.size()*2)).pos(Place::CC);
+	tabs << (new Label("Table"        ))->anchor(0.5,19./(tabs.size()*2)).pos(Place::CC);
 	top << tabs;
 	
 	tabs(Event::MouseDrag, Behavior::mouseResize);

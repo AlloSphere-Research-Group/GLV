@@ -141,6 +141,70 @@ protected:
 };
 
 
+/*
+
+Aligment codes:
+p ^ q
+< x >
+b v d
+
+		  p1
+       a      b
+p2  x  .      .
+    y  .      .
+
+". . v -,"
+". . v v,"
+"> > x x,"
+"| > x x"
+
+"q x p",
+"d | b"
+*/
+
+
+class Table : public Group{
+public:
+
+	Table(const char * alignment, space_t padX=2, space_t padY=2);
+
+	/// Align child Views according to alignment specification.
+	void alignChildren();
+	void alignment(const char * v);
+
+protected:
+
+	struct Cell{
+	
+		Cell(int posX, int posY, int spanX, int spanY, char code_, View * view_=0)
+		:	view(view_), x(posX), y(posY), w(spanX), h(spanY), code(code_)
+		{}
+	
+		View * view;
+		int x,y,w,h;
+		char code;
+	};
+
+	int mSize1, mSize2;
+	std::vector<Cell> mCells;
+	const char * mAlign;
+	space_t mPad1, mPad2;
+	
+	bool isAlignCode(char c){
+		return	c=='<' || c=='>' || c=='^' || c=='v' || c=='x' || 
+				c=='p' || c=='q' || c=='b' || c=='d';
+	}
+	
+	int size() const { return mSize1*mSize2; }
+	
+	space_t sumSpan(const space_t * src, int end, int begin=0){
+		space_t r=0;
+		for(int i=begin; i<end; ++i) r+= src[i];
+		return r;
+	}
+};
+
+
 
 } // glv::
 
