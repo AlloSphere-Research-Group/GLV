@@ -17,7 +17,7 @@ namespace glv{
 struct Group : public View{
 	Group(const Rect& r=Rect(0))
 	:	View(r)
-	{	disable(DrawBack | DrawBorder | CropChildren | FocusHighlight | HitTest); }
+	{	disable(DrawBack | DrawBorder | CropChildren | FocusHighlight | Controllable); }
 };
 
 
