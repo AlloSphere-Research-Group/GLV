@@ -12,13 +12,19 @@ namespace glv{
 class Texture2{
 public:
 
+	Texture2(
+		GLsizei width, GLsizei height, 
+		GLenum format=GL_RGB, GLenum type=GL_UNSIGNED_BYTE);
+
 	/// Constructor
 	Texture2(
 		GLsizei width, GLsizei height, GLvoid * pixels=0,
 		GLenum format=GL_RGB, GLenum type=GL_UNSIGNED_BYTE,
 		bool doesLoad=false);
+
 	virtual ~Texture2();
 
+	GLvoid * buffer() const { return mBuffer; }
 	GLsizei width() const { return w; }		///< Get width
 	GLsizei height() const { return h; }	///< Get height
 
@@ -37,13 +43,17 @@ public:
 private:
 	GLuint mID;
 	GLsizei w, h;
-	GLvoid * mPixels;	// the client-side pixel data (0 if none)
+	GLvoid * mPixels;	// pointer to the client-side pixel data (0 if none)
+	GLvoid * mBuffer;	// internally allocated pixel buffer
 	GLenum mFormat;		// format of the pixel data:
 						//   GL_COLOR_INDEX, GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA, 
 						//   GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_LUMINANCE, and GL_LUMINANCE_ALPHA.
 					
 	GLenum mType;		// type of the pixel data:
 						//   GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_FLOAT
+						
+	void freeMem();
+	void allocMem();
 };
 
 
