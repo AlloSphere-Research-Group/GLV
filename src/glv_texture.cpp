@@ -2,17 +2,74 @@
 	See COPYRIGHT file for authors and license information */
 
 #include "glv_texture.h"
+#include <stdlib.h>
 
 namespace glv{
 
+Texture2::Texture2(GLsizei w, GLsizei h, GLenum format, GLenum type)
+	: mID(0), w(w), h(h), mPixels(0), mBuffer(0), mFormat(format), mType(type)
+{
+	allocMem();
+}
+
 Texture2::Texture2(GLsizei w, GLsizei h, GLvoid * pixs, GLenum format, GLenum type, bool doesLoad)
-	: mID(0), w(w), h(h), mPixels(pixs), mFormat(format), mType(type)
+	: mID(0), w(w), h(h), mPixels(pixs), mBuffer(0), mFormat(format), mType(type)
 {
 	if(doesLoad) load(w, h, mPixels);
 }
 
 Texture2::~Texture2(){
 	glDeleteTextures(1, &mID);
+	freeMem();
+}
+
+
+void Texture2::freeMem(){
+	if(mBuffer) free(mBuffer); mBuffer=0;
+}
+
+void Texture2::allocMem(){
+	freeMem();
+	
+	int n=1;
+	switch(mFormat){
+		case GL_RGB:				n=3; break;
+		case GL_RGBA:				n=4; break;
+		case GL_LUMINANCE:	
+		case GL_RED:
+		case GL_GREEN:
+		case GL_BLUE:
+		case GL_ALPHA:				n=1; break;
+		case GL_LUMINANCE_ALPHA:	n=2; break;
+	};
+	
+	n *= w*h;
+	
+//	switch(mType){
+//		case GL_BYTE:			mBuffer = new char[n]; break;
+//		case GL_UNSIGNED_BYTE:	mBuffer = new unsigned char[n]; break;
+//		case GL_SHORT:			mBuffer = new short[n]; break;
+//		case GL_UNSIGNED_SHORT:	mBuffer = new unsigned short[n]; break;
+//		case GL_INT:			mBuffer = new int[n]; break;
+//		case GL_UNSIGNED_INT:	mBuffer = new unsigned int[n]; break;
+//		case GL_FLOAT:			mBuffer = new float[n]; break;
+//		case GL_DOUBLE:			mBuffer = new double[n]; break;
+//	};
+
+	#define CS(a,b) case a: mBuffer = malloc(n * sizeof(b)); break;
+	switch(mType){
+		CS(GL_BYTE, char)
+		CS(GL_UNSIGNED_BYTE, unsigned char)
+		CS(GL_SHORT, short)
+		CS(GL_UNSIGNED_SHORT, unsigned short)
+		CS(GL_INT, int)
+		CS(GL_UNSIGNED_INT, unsigned int)
+		CS(GL_FLOAT, float)
+		CS(GL_DOUBLE, double)
+	};
+	#undef CS
+
+	mPixels = mBuffer;
 }
 
 void Texture2::bind(){ glBindTexture(GL_TEXTURE_2D, mID); }
