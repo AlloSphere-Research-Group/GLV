@@ -34,6 +34,7 @@ struct Color{
 	// Setters
 	
 	Color& operator= (const HSV& hsv);				///< Set color from HSV values
+	Color& operator*=(float v);						///< Multiply RGB values by argument
 	Color  operator* (float v) const;				///< Multiplies RGB components by argument
 	Color  operator+ (const Color& c) const;		///< Adds argument RGB components
 	Color  operator- (const Color& c) const;		///< Subtracts argument RGB components
@@ -101,6 +102,7 @@ inline Color& Color::operator=(const HSV& hsv){
 inline Color Color::operator* (float v) const { return Color(r*v, g*v, b*v, a); }
 inline Color Color::operator+ (const Color& c) const { return Color(r+c.r, g+c.g, b+c.b, a); }
 inline Color Color::operator- (const Color& c) const { return Color(r-c.r, g-c.g, b-c.b, a); }
+inline Color& Color::operator*=(float v){ set(r*v, g*v, b*v, a); return *this; }
 
 inline void	Color::set(float re, float gr, float bl, float al){
 	r = re; g = gr; b = bl; a = al;
