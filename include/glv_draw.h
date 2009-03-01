@@ -115,6 +115,7 @@ void rotateZ(float deg);
 void scale(float v);								///< Scale all dimensions by amount
 void scale(float x, float y, float z=1.f);
 void scissor(float x, float y, float w, float h);
+void stroke(float w);								///< Sets width of lines and points
 void texCoord(float x, float y);
 void translate(float x, float y, float z=0.f);
 void translateX(float x);
@@ -271,6 +272,8 @@ inline void shape(int primitive, float x0, float y0, float x1, float y1, float x
 		vertex(x0, y0); vertex(x1, y1); vertex(x2, y2); vertex(x3, y3);
 	end();
 }
+
+inline void stroke(float w){ lineWidth(w); pointSize(w); }
 
 inline void triangleD(float l, float t, float r, float b){	
 	shape(Triangles, 0.5*(l+r),b, r,t, l,t);
