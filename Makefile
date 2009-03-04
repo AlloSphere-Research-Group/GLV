@@ -14,8 +14,7 @@ SRC = \
 	  ${SRCDIR}/glv_sliders.cpp \
 	  ${SRCDIR}/glv_texture.cpp \
 	  ${SRCDIR}/glv_textview.cpp \
-	  ${SRCDIR}/glv_view.cpp \
-	  ${SRCDIR}/FontGL/FontGL.cpp
+	  ${SRCDIR}/glv_view.cpp
 
 OBJ = ${SRC:.cpp=.o}
 
@@ -34,7 +33,7 @@ test: libglv.a
 	@cd test && make all
 
 clean:
-	rm -f ${OBJ} libglv.a
+	@rm -f ${OBJ} libglv.a
 	@cd test && make clean
 #	cd tests && make clean
 

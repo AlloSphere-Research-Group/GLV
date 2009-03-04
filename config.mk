@@ -9,8 +9,8 @@ MANPREFIX = ${PREFIX}/share/man
 LIBS = -L${PREFIX}/lib -L/usr/lib
 
 # Linux/BSD
-CFLAGS = -g -Wall -I. -I./include -I${PREFIX}/include -I/usr/include -I./src/FontGL -I/usr/include/freetype2/
-LDFLAGS = ${LIBS} -lfreetype -lglut
+CFLAGS = -O3 -I. -I./include -I${PREFIX}/include -I/usr/include
+LDFLAGS = ${LIBS} -lglut
 
 AR = ar cr
 CC = g++
