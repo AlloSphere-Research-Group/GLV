@@ -25,7 +25,6 @@
 
 /* Begin PBXBuildFile section */
 		08873F4B0E466FDA00E4D193 /* glv_pimpl_binding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F070E465E8F001A58ED /* glv_pimpl_binding.cpp */; };
-		08873F6C0E46705A00E4D193 /* FontGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7510BA2434200E819AF /* FontGL.cpp */; };
 		08873FBD0E46727B00E4D193 /* glv_pimpl_binding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F070E465E8F001A58ED /* glv_pimpl_binding.cpp */; };
 		08873FBF0E46728F00E4D193 /* glv_pimpl_binding_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F080E465E8F001A58ED /* glv_pimpl_binding_glut.cpp */; };
 		08873FC30E4672A400E4D193 /* glv_pimpl_binding_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F080E465E8F001A58ED /* glv_pimpl_binding_glut.cpp */; };
@@ -313,10 +312,9 @@
 		3657E4C40B7AC005005858EE /* TestCarbon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestCarbon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3657E5D20B7AC4D5005858EE /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		3657E5D30B7AC4D5005858EE /* OpenGL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		3657E6CF0B7ACD06005858EE /* main.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = main.nib; path = ../main.nib; sourceTree = "<group>"; };
-		3657E6D00B7ACD06005858EE /* main~.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = "main~.nib"; path = "../main~.nib"; sourceTree = "<group>"; };
+		3657E6CF0B7ACD06005858EE /* main.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = main.nib; sourceTree = "<group>"; };
+		3657E6D00B7ACD06005858EE /* main~.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = "main~.nib"; sourceTree = "<group>"; };
 		3657EA1B0B7B1995005858EE /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
-		366442D40BDD739300ACBACF /* ProFontWindows.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ProFontWindows.ttf; sourceTree = "<group>"; };
 		3690AA370BB2006C0042D232 /* TestGLUTWithFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestGLUTWithFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E0A10ED0E47935300E2E2ED /* glv_pimpl_binding.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = glv_pimpl_binding.h; sourceTree = "<group>"; };
 		7E40B0030D92EB3A00219F2C /* glv_textview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_textview.cpp; sourceTree = "<group>"; };
@@ -336,8 +334,6 @@
 		7EE966000C067F330010FEFA /* libfltk_gl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_gl.a; path = /usr/local/lib/libfltk_gl.a; sourceTree = "<absolute>"; };
 		7EE966010C067F330010FEFA /* libfltk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk.a; path = /usr/local/lib/libfltk.a; sourceTree = "<absolute>"; };
 		B917A7410BA2432E00E819AF /* todo */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = todo; path = ../doc/todo; sourceTree = SOURCE_ROOT; };
-		B917A7510BA2434200E819AF /* FontGL.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FontGL.cpp; sourceTree = "<group>"; };
-		B917A7520BA2434200E819AF /* FontGL.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FontGL.h; sourceTree = "<group>"; };
 		B917A7530BA2434200E819AF /* glv_abstract_binding.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glv_abstract_binding.cpp; path = ../src/glv_abstract_binding.cpp; sourceTree = "<group>"; };
 		B917A7540BA2434200E819AF /* glv_color.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = glv_color.cpp; sourceTree = "<group>"; };
 		B917A7550BA2434200E819AF /* glv_glv.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = glv_glv.cpp; sourceTree = "<group>"; };
@@ -500,6 +496,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		16BE815E0F5E40A200204A3D /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				3657E6CF0B7ACD06005858EE /* main.nib */,
+				3657E6D00B7ACD06005858EE /* main~.nib */,
+			);
+			name = resources;
+			sourceTree = "<group>";
+		};
 		360718700B7ABDBB00D732E8 = {
 			isa = PBXGroup;
 			children = (
@@ -507,7 +512,7 @@
 				B9183C940B9E36B100D8DA81 /* include */,
 				B917A7430BA2434200E819AF /* src */,
 				7EE965A00C064D1D0010FEFA /* binding */,
-				3657E6CC0B7ACCDF005858EE /* resources */,
+				16BE815E0F5E40A200204A3D /* resources */,
 				3657E5D10B7AC4B9005858EE /* Libraries & Frameworks */,
 				3657E4C50B7AC005005858EE /* Products */,
 				B917A7410BA2432E00E819AF /* todo */,
@@ -552,16 +557,6 @@
 			name = "Libraries & Frameworks";
 			sourceTree = "<group>";
 		};
-		3657E6CC0B7ACCDF005858EE /* resources */ = {
-			isa = PBXGroup;
-			children = (
-				366442D40BDD739300ACBACF /* ProFontWindows.ttf */,
-				3657E6CF0B7ACD06005858EE /* main.nib */,
-				3657E6D00B7ACD06005858EE /* main~.nib */,
-			);
-			path = resources;
-			sourceTree = "<group>";
-		};
 		7E0A11480E479D4A00E2E2ED /* old */ = {
 			isa = PBXGroup;
 			children = (
@@ -589,7 +584,6 @@
 		B917A7430BA2434200E819AF /* src */ = {
 			isa = PBXGroup;
 			children = (
-				B917A7500BA2434200E819AF /* FontGL */,
 				DFE897FD0DD4EE1000D266E2 /* glv_buttons.cpp */,
 				B917A7540BA2434200E819AF /* glv_color.cpp */,
 				160969BC0D8DDE98003B36BD /* glv_core.cpp */,
@@ -606,15 +600,6 @@
 			name = src;
 			path = ../src;
 			sourceTree = SOURCE_ROOT;
-		};
-		B917A7500BA2434200E819AF /* FontGL */ = {
-			isa = PBXGroup;
-			children = (
-				B917A7510BA2434200E819AF /* FontGL.cpp */,
-				B917A7520BA2434200E819AF /* FontGL.h */,
-			);
-			path = FontGL;
-			sourceTree = "<group>";
 		};
 		B9183C940B9E36B100D8DA81 /* include */ = {
 			isa = PBXGroup;
@@ -1246,7 +1231,6 @@
 				7E4DABDF0DAAEFC7009D2272 /* glv_texture.cpp in Sources */,
 				DFE898000DD4EE1100D266E2 /* glv_buttons.cpp in Sources */,
 				08873F4B0E466FDA00E4D193 /* glv_pimpl_binding.cpp in Sources */,
-				08873F6C0E46705A00E4D193 /* FontGL.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
