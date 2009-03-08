@@ -5,6 +5,7 @@
 	See COPYRIGHT file for authors and license information */
 
 #include <math.h>
+#include <stdio.h>
 #include "glv_conf.h"
 #include "glv_color.h"
 
@@ -103,6 +104,7 @@ void pop(int matrixMode);							///< Pop a transform matrix stack also setting a
 void pop2D();										///< Pop 2-D pixel space
 void pop3D();										///< Pop 3-D signed normalized cartesian space
 void popAttrib();									///< Pop last pushed attributes from stack
+int printError(const char * pre="", bool verbose=true, FILE * out=stdout); ///< Print rendering errors to file
 void push();										///< Push current transform matrix stack 
 void push(int matrixMode);							///< Push a transform matrix stack also setting as current matrix
 template <class T> void push2D(T w, T h);			///< Push 2-D pixel space

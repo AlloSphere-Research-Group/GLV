@@ -160,18 +160,18 @@ public:
 	
 	/// The arrangement string specifies where Views will lie in the table, the
 	/// alignment within each cell, and how cells should span multiple columns
-	/// and/or rows. The string cell alignment characters are:
-	/// 
-	/// p ^ q     top-left     top-center     top-right
-	/// < x >     center-left  center-center  center-right
-	/// b v d     bottom-left  bottom-center  bottom-right
-	///
-	/// The string layout characters are:
-	///
+	/// and/or rows. The string cell alignment characters are: \n
+	///	\verbatim
+	///	p ^ q     top-left     top-center     top-right
+	///	< x >     center-left  center-center  center-right
+	///	b v d     bottom-left  bottom-center  bottom-right \endverbatim
+	///	
+	/// The string layout characters are: \n
+	/// \verbatim
 	/// .         empty region
 	/// -         span cell to left horizontally (can be used recursively)
 	/// |         span cell above vertically (can be used recursively)
-	/// ,         end of row
+	/// ,         end of row \endverbatim
 	///
 	/// Views added as children will fill in the cells with an alignment 
 	/// specification starting at the top-left cell and then proceeding 
