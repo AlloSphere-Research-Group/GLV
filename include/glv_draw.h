@@ -107,8 +107,8 @@ void popAttrib();									///< Pop last pushed attributes from stack
 int printError(const char * pre="", bool verbose=true, FILE * out=stdout); ///< Print rendering errors to file
 void push();										///< Push current transform matrix stack 
 void push(int matrixMode);							///< Push a transform matrix stack also setting as current matrix
-template <class T> void push2D(T w, T h);			///< Push 2-D pixel space
-template <class T> void push3D(T w, T h, T near=0.1, T far=100);	///< Push 3-D signed normalized cartesian space
+void push2D(float w, float h);						///< Push 2-D pixel space
+void push3D(float w, float h, float near=0.1, float far=100, float fovy=45);	///< Push 3-D signed normalized cartesian space
 void pushAttrib(int attribs);						///< Push current attributes onto stack
 void rotate(float degx, float degy, float degz);
 void rotateX(float deg);
@@ -136,17 +136,17 @@ void vertex(T * xs, T * ys, unsigned long len, int prim = LineStrip);
 
 
 // icons
-void check		(float l, float t, float r, float b);
-template <int N> void dot(float l, float t, float r, float b);
-void frame		(float l, float t, float r, float b);
-void minus		(float l, float t, float r, float b);
-void plus		(float l, float t, float r, float b);
-void rect		(float l, float t, float r, float b);
-void triangleR	(float l, float t, float r, float b);
-void triangleL	(float l, float t, float r, float b);
-void triangleU	(float l, float t, float r, float b);
-void triangleD	(float l, float t, float r, float b);
-void x			(float l, float t, float r, float b);
+void check		(float l, float t, float r, float b);			///< Check mark
+template <int N> void disc(float l, float t, float r, float b);	///< Disc with N edges
+void frame		(float l, float t, float r, float b);			///< Rectangular frame
+void minus		(float l, float t, float r, float b);			///< Minus
+void plus		(float l, float t, float r, float b);			///< Plus
+void rect		(float l, float t, float r, float b);			///< Solid rectangle
+void triangleR	(float l, float t, float r, float b);			///< Right pointing triangle
+void triangleL	(float l, float t, float r, float b);			///< Left pointing triangle
+void triangleU	(float l, float t, float r, float b);			///< Upward pointing triangle
+void triangleD	(float l, float t, float r, float b);			///< Downward pointing triangle
+void x			(float l, float t, float r, float b);			///< X mark
 
 /// Parallel horizontal and vertical lines
 void grid(float l, float t, float w, float h, float divx, float divy, bool incEnds=true);
@@ -212,13 +212,12 @@ static Enable enable;
 
 // Implementation ______________________________________________________________
 
-inline void check(float l, float t, float r, float b){
-	shape(LineStrip, l,0.5*(t+b), l+(r-l)*0.3,b, r,t);
-}
+inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5*(t+b), l+(r-l)*0.3,b, r,t); }
 
 template <int N>
-void dot(float l, float t, float r, float b){
-	float px=1, py=0, rx=cos(6.28318530718/N), ry=sin(6.28318530718/N);
+void disc(float l, float t, float r, float b){
+	static const double theta = C_2PI/N;
+	float px=1, py=0, rx=cos(theta), ry=sin(theta);
 	float mx=0.5*(l+r), my=0.5*(t+b), sx=(r-l)*0.5, sy=(b-t)*0.5;
 	
 	begin(TriangleFan);
@@ -232,14 +231,8 @@ void dot(float l, float t, float r, float b){
 	end();
 }
 
-inline void frame(float l, float t, float r, float b){
-	shape(LineLoop, l, t, l, b, r, b, r, t);
-}
-
-inline void minus(float l, float t, float r, float b){
-	float my = 0.5*(t+b);
-	shape(Lines, l,my, r,my);
-}
+inline void frame(float l, float t, float r, float b){ shape(LineLoop, l, t, l, b, r, b, r, t); }
+inline void minus(float l, float t, float r, float b){ float my=0.5*(t+b); shape(Lines, l,my, r,my); }
 
 // [-2,-1) -> -1.5
 // [-1, 0) -> -0.5
@@ -251,10 +244,6 @@ inline void plus(float l, float t, float r, float b){
 	float mx = 0.5*(l+r);
 	float my = 0.5*(t+b);
 	shape(Lines, mx,t, mx,b, l,my, r,my);
-}
-
-inline void rect(float l, float t, float r, float b){
-	glRectf(r, b, l, t);
 }
 
 inline void shape(int primitive, float x0, float y0, float x1, float y1){
@@ -276,48 +265,21 @@ inline void shape(int primitive, float x0, float y0, float x1, float y1, float x
 }
 
 inline void stroke(float w){ lineWidth(w); pointSize(w); }
-
-inline void triangleD(float l, float t, float r, float b){	
-	shape(Triangles, 0.5*(l+r),b, r,t, l,t);
-}
-
-inline void triangleL(float l, float t, float r, float b){	
-	shape(Triangles, l,0.5*(t+b), r,b, r,t);
-}
-
-inline void triangleR(float l, float t, float r, float b){
-	shape(Triangles, r,0.5*(t+b), l,t, l,b);
-}
-
-inline void triangleU(float l, float t, float r, float b){
-	shape(Triangles, 0.5*(l+r),t, l,b, r,b);
-}
-
-inline void x(float l, float t, float r, float b){
-	shape(Lines, l,t, r,b, l,b, r,t);
-}
-
-
-
-
+inline void triangleD(float l, float t, float r, float b){ shape(Triangles, 0.5*(l+r),b, r,t, l,t); }
+inline void triangleL(float l, float t, float r, float b){ shape(Triangles, l,0.5*(t+b), r,b, r,t); }
+inline void triangleR(float l, float t, float r, float b){ shape(Triangles, r,0.5*(t+b), l,t, l,b); }
+inline void triangleU(float l, float t, float r, float b){ shape(Triangles, 0.5*(l+r),t, l,b, r,b); }
+inline void x(float l, float t, float r, float b){ shape(Lines, l,t, r,b, l,b, r,t); }
 
 
 // core drawing routines
 inline void color(float v, float a){ color(v,v,v,a); }
-
 inline void color(const Color& c){ color(c.r, c.g, c.b, c.a); }
-
 inline void color(const Color& c, float a){ color(c.r, c.g, c.b, a); }
-
 inline void pop(int mode){ matrixMode(mode); pop(); }
 inline void push(int mode){ matrixMode(mode); push(); }
-
-inline void rotate(float degx, float degy, float degz){
-	rotateX(degx); rotateY(degy); rotateZ(degz);
-}
-
+inline void rotate(float degx, float degy, float degz){	rotateX(degx); rotateY(degy); rotateZ(degz); }
 inline void scale(float v){ scale(v,v,v); }
-
 inline void translateX(float x){ translate(x, 0, 0); }
 inline void translateY(float y){ translate(0, y, 0); }
 inline void translateZ(float z){ translate(0, 0, z); }
@@ -342,67 +304,14 @@ void vertex(T * xs, T * ys, unsigned long len, int prim){
 
 
 // platform dependent
-
-inline void begin(int primitive){ glBegin(primitive); }
+inline void begin(int prim){ glBegin(prim); }
+inline void blendFunc(int sfactor, int dfactor){ glBlendFunc(sfactor, dfactor); }
+inline void blendAdd(){ blendFunc(GL_SRC_COLOR, GL_ONE); }
+inline void blendTrans(){ blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
 inline void clear(int mask){ glClear(mask); }
 inline void clearColor(float r, float g, float b, float a){ glClearColor(r,g,b,a); }
 inline void color(float r, float g, float b, float a){ glColor4f(r,g,b,a); }
 inline void end(){ glEnd(); }
-
-// we need to push and pop matrices and viewport bit
-template <class T>
-void push2D(T w, T h){
-							// to ensure polygon edges blend properly
-	disable << DepthTest << PolygonSmooth;
-	enable << Blend << LineSmooth;
-	blendTrans();
-
-	push(Projection); pushAttrib(ViewPortBit); identity();
-		viewport(0, 0, w, h);
-		ortho(0, w, h, 0);		// flat 2D world dimension L,R,B,T
-	
-	push(Model); identity();
-}
-
-
-inline void pop2D(){
-	popAttrib();					// for popping GL_VIEWPORT_BIT
-	pop(Projection);
-	pop(Model);
-}
-
-
-template <class T>
-void push3D(T w, T h, T near, T far){
-	//pushAttrib(DepthBufferBit);
-	pushAttrib(ColorBufferBit | DepthBufferBit | EnableBit);
-	enable(DepthTest);
-	
-	push(Projection); identity();
-		gluPerspective(45, w/(GLfloat)h, near, far);
-	
-	push(Model); identity();
-		translate(0, 0, -2.42);
-}
-
-
-inline void pop3D(){
-	popAttrib();					// for popping GL_DEPTH_BUFFER_BIT
-	pop(Projection);
-	pop(Model);
-}
-
-inline void blendFunc(int sfactor, int dfactor){ glBlendFunc(sfactor, dfactor); }
-inline void blendTrans(){ blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
-inline void blendAdd(){ blendFunc(GL_SRC_COLOR, GL_ONE); }
-
-inline void fog(float end, float start, const Color& c){
-	glFogi(GL_FOG_MODE, GL_LINEAR); 
-	glFogf(GL_FOG_START, start); glFogf(GL_FOG_END, end);
-	float fogColor[4] = {c.r, c.g, c.b, c.a};
-	glFogfv(GL_FOG_COLOR, fogColor);
-}
-
 inline void identity(){ glLoadIdentity(); }
 inline void lineStipple(char factor, short pattern){ glLineStipple(factor, pattern); }
 inline void lineWidth(float v){ glLineWidth(v); }
@@ -413,6 +322,7 @@ inline void push(){ glPushMatrix(); }
 inline void pushAttrib(int attribs){ glPushAttrib(attribs); }
 inline void pop() { glPopMatrix(); }
 inline void popAttrib(){ glPopAttrib(); }
+inline void rect(float l, float t, float r, float b){ glRectf(r, b, l, t); }
 inline void rotateX(float deg){ glRotatef(deg, 1.f, 0.f, 0.f); }
 inline void rotateY(float deg){ glRotatef(deg, 0.f, 1.f, 0.f); }
 inline void rotateZ(float deg){ glRotatef(deg, 0.f, 0.f, 1.f); }

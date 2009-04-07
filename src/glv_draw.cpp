@@ -161,6 +161,15 @@ bool character(int c, float dx, float dy){
 	return c == ' ';
 }
 
+
+void fog(float end, float start, const Color& c){
+	glFogi(GL_FOG_MODE, GL_LINEAR); 
+	glFogf(GL_FOG_START, start); glFogf(GL_FOG_END, end);
+	float fogColor[4] = {c.r, c.g, c.b, c.a};
+	glFogfv(GL_FOG_COLOR, fogColor);
+}
+
+
 void grid(float l, float t, float w, float h, float divx, float divy, bool incEnds){
 	double inc, r=l+w, b=t+h;
 	begin(Lines);
@@ -217,6 +226,47 @@ void pgon(float l, float t, float w, float h, int n, float a){
 		vertex(cos(p), sin(p));
 	}
 	end(); pop();
+}
+
+
+// we need to push and pop matrices and viewport bit
+void push2D(float w, float h){
+							// to ensure polygon edges blend properly
+	disable << DepthTest << PolygonSmooth;
+	enable << Blend << LineSmooth;
+	blendTrans();
+
+	push(Projection); pushAttrib(ViewPortBit); identity();
+		viewport(0, 0, w, h);
+		ortho(0, w, h, 0);		// flat 2D world dimension L,R,B,T
+	
+	push(Model); identity();
+}
+
+
+void pop2D(){
+	popAttrib();					// for popping GL_VIEWPORT_BIT
+	pop(Projection);
+	pop(Model);
+}
+
+
+void push3D(float w, float h, float near, float far, float fovy){
+	pushAttrib(ColorBufferBit | DepthBufferBit | EnableBit | ViewPortBit);
+	enable(DepthTest);
+	
+	push(Projection); identity();
+		gluPerspective(fovy, w/(GLfloat)h, near, far);
+	
+	push(Model); identity();
+		translate(0, 0, -2.42);
+}
+
+
+void pop3D(){
+	popAttrib();					// for popping GL_DEPTH_BUFFER_BIT
+	pop(Projection);
+	pop(Model);
 }
 
 
