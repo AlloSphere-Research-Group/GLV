@@ -181,6 +181,7 @@ public:
 
 protected:
 
+	// struct for storing info about a table cell
 	struct Cell{
 		Cell(int posX, int posY, int spanX, int spanY, char code_, View * view_=0)
 		:	view(view_), x(posX), y(posY), w(spanX), h(spanY), code(code_){}

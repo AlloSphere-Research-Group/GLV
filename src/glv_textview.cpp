@@ -120,6 +120,13 @@ NumberDialer::NumberDialer(space_t h, space_t l, space_t t, int numInt, int numF
 	range(max, min);
 }
 
+NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
+:	View(Rect(0,0, (12-2)*(numInt+numFrac+1), 12)), CTOR_LIST
+{
+	CTOR_BODY
+	range(max, min);
+} 
+
 #undef CTOR_LIST
 #undef CTOR_BODY
 

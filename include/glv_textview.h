@@ -105,9 +105,11 @@ public:
 	/// @param[in] numFrac	Number of places in fraction part
 	/// @param[in] max		Maximum value
 	/// @param[in] min		Minimum value
-	NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min=0);
+	NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min);
 
-	NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min=0);
+	NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min);
+
+	NumberDialer(int numInt, int numFrac, double max, double min);
 
 	/// Get value
 	double value() const;
