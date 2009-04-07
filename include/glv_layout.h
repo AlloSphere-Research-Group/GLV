@@ -154,6 +154,9 @@ public:
 	Table(const char * arrangement, space_t padX=2, space_t padY=2, const Rect& r=Rect(0));
 
 	/// Arrange child Views according to cell arrangement specification.
+	
+	/// If there are more children than the arrangement accounts for, then the
+	/// arrangement string will copied the appropriate number of times.
 	void arrangeChildren();
 	
 	/// Set table cell arrangement.
@@ -179,9 +182,11 @@ public:
 	///
 	void arrangement(const char * v);
 
+	/// Get arrangement string
+	const char * arrangement() const { return mAlign; }
+
 protected:
 
-	// struct for storing info about a table cell
 	struct Cell{
 		Cell(int posX, int posY, int spanX, int spanY, char code_, View * view_=0)
 		:	view(view_), x(posX), y(posY), w(spanX), h(spanY), code(code_){}

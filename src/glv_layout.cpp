@@ -144,6 +144,19 @@ void Table::arrangeChildren(){
 	View * vp = child;
 	int ind = 0;
 
+	// Check if we have more children than the arrangement string accounts for.
+	// If so, then "fix" the string by creating additional copies.
+	int numChildren=0;
+	while(vp){ ++numChildren; vp=vp->sibling; }
+	
+	if(numChildren > (int)mCells.size()){
+		std::string a = mAlign;
+		int numCopies = (numChildren-1)/mCells.size();
+		for(int i=0; i<numCopies; ++i){ a+=","; a+=mAlign; }
+		arrangement(a.c_str());
+	}
+	
+
 	// compute extent of table
 	space_t * colWs = new space_t[mSize1];
 	space_t * rowHs = new space_t[mSize2];
@@ -153,12 +166,13 @@ void Table::arrangeChildren(){
 	// resize table according to non-spanning cells
 	vp = child; ind=0;
 	while(vp){
-		View& v = *vp;
+		View& v = *vp;		
 		Cell& c = mCells[ind];
 
 		int i1=c.x, i2=c.y;
 		c.view = vp;
 
+		// c.w or c.h equal to 1 mean contents span 1 cell
 		if(c.w == 1 && v.w > colWs[i1]) colWs[i1] = v.w;
 		if(c.h == 1 && v.h > rowHs[i2]) rowHs[i2] = v.h;
 
@@ -179,7 +193,7 @@ void Table::arrangeChildren(){
 			
 			if(v.w > cur){
 				space_t add = (v.w - cur)/c.w;
-				for(int i=beg; i<end; ++i) colWs[i] += add;			
+				for(int j=beg; j<end; ++j) colWs[j] += add;			
 			}
 		}
 
@@ -190,11 +204,9 @@ void Table::arrangeChildren(){
 			
 			if(v.h > cur){
 				space_t add = (v.h - cur)/c.h;
-				for(int i=beg; i<end; ++i) rowHs[i] += add;
+				for(int j=beg; j<end; ++j) rowHs[j] += add;
 			}
 		}
-
-		vp = vp->sibling; ++ind;
 	}
 
 	space_t accW = sumSpan(colWs, mSize1) + mPad1*(mSize1+1);
@@ -202,10 +214,10 @@ void Table::arrangeChildren(){
 	extent(accW, accH);
 
 
+	// position child views	
 	for(unsigned i=0; i<mCells.size(); ++i){
 
 		Cell& c = mCells[i];
-
 		if(0 == c.view) continue;
 		View& v = *c.view;
 
@@ -222,17 +234,19 @@ void Table::arrangeChildren(){
 		space_t cx = (pr-pl)*0.5;
 		space_t cy = (pb-pt)*0.5;
 
+		#define CS(c, p, x, y) case c: v.anchor(Place::p).pos(Place::p, x, y); break;
 		switch(c.code){
-		case 'x': v.anchor(Place::CC).pos(Place::CC, pl + cx, pt + cy); break;
-		case '<': v.anchor(Place::CL).pos(Place::CL, pl, pt + cy); break;
-		case '>': v.anchor(Place::CR).pos(Place::CR, pr, pt + cy); break;
-		case '^': v.anchor(Place::TC).pos(Place::TC, pl + cx, pt); break;
-		case 'v': v.anchor(Place::BC).pos(Place::BC, pl + cx, pb); break;
-		case 'p': v.anchor(Place::TL).pos(Place::TL, pl, pt); break;
-		case 'q': v.anchor(Place::TR).pos(Place::TR, pr, pt); break;
-		case 'b': v.anchor(Place::BL).pos(Place::BL, pl, pb); break;
-		case 'd': v.anchor(Place::BR).pos(Place::BR, pr, pb); break;
+		CS('x', CC, pl+cx,	pt+cy)
+		CS('<', CL, pl,		pt+cy)
+		CS('>', CR, pr,		pt+cy)
+		CS('^', TC, pl+cx,	pt)
+		CS('v', BC, pl+cx,	pb)
+		CS('p', TL, pl,		pt)
+		CS('q', TR, pr,		pt)
+		CS('b', BL, pl,		pb)
+		CS('d', BR, pr,		pb)
 		};
+		#undef CS
 	}
 
 	delete[] colWs;
@@ -249,6 +263,7 @@ void Table::arrangement(const char * va){
 	
 	bool count1=true;
 	
+	// derive the number of rows and columns from the arrangement string
 	const char * v = va;
 	while(*v){
 		
@@ -263,6 +278,7 @@ void Table::arrangement(const char * va){
 		}
 	}
 
+	// compute and store geometry of table cells
 	v = va;
 	int ind=-1, indCell=-1;
 	while(*v){
