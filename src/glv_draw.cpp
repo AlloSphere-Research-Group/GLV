@@ -7,6 +7,23 @@
 namespace glv{
 namespace draw{
 
+int printError(const char * pre, bool verbose, FILE * out){
+	GLenum err = glGetError();
+	#define CS(v, desc) case GL_##v: printf("%s%s%s\n", pre, #v, verbose?": "desc :""); break;	
+	switch(err){
+		CS(INVALID_ENUM, "An unacceptable value is specified for an enumerated argument.")
+		CS(INVALID_VALUE, "A numeric argument is out of range.")
+		CS(INVALID_OPERATION, "The specified operation is not allowed in the current state.")
+		CS(STACK_OVERFLOW, "This command would cause a stack overflow.")
+		CS(STACK_UNDERFLOW, "This command would cause a stack underflow.")
+		CS(OUT_OF_MEMORY, "There is not enough memory left to execute the command.")
+		CS(TABLE_TOO_LARGE, "The specified table exceeds the implementation's maximum supported table size.")
+		default:;
+	}
+	#undef CS
+	return int(err);
+}
+
 // graphical ASCII characters lie in decimal range [33, 126]
 static Glyph glyphs[94] = {
 	{Glyph::Once | Glyph::Dot1 | 2, {3,4,4}, {7,0,5}},		// !
@@ -24,7 +41,7 @@ static Glyph glyphs[94] = {
 	{2, {1,7}, {5,5}},										// -	
 	{Glyph::Dot1, {3}, {7}},								// .
 	{Glyph::Once | 2, {6,2}, {0,8.5}},						// /
-	{6, {6,1,1,6,6,1}, {0,0,8,8,0,8}},						// 0
+	{6, {6,1,1,6,6,1}, {0,0,8,8,0,6}},						// 0
 	{3, {2,4,4}, {1,0,8.5}},								// 1
 	{6, {1,2,5,6,1,6}, {2,0,0,2,8,8}},						// 2
 	{7, {1,6,6,2,6,6,1}, {0,0,2,3,4,7,8}},					// 3
