@@ -99,6 +99,7 @@ void lineWidth(float val);							///< Set width of lines
 void matrixMode(int mode);							///< Set current transform matrix
 void ortho(float l, float r, float b, float t);		///< Set orthographic projection mode
 void pointSize(float val);							///< Set size of points
+void pointAtten(float c2=0, float c1=0, float c0=1); ///< Set distance attenuation of points
 void pop();											///< Pop current transform matrix stack
 void pop(int matrixMode);							///< Pop a transform matrix stack also setting as current matrix
 void pop2D();										///< Pop 2-D pixel space
@@ -318,6 +319,10 @@ inline void lineWidth(float v){ glLineWidth(v); }
 inline void matrixMode(int mode){ glMatrixMode(mode); }
 inline void ortho(float l, float r, float b, float t){ gluOrtho2D(l,r,b,t); }
 inline void pointSize(float v){ glPointSize(v); }
+inline void pointAtten(float c2, float c1, float c0){
+	GLfloat att[3] = {c0, c1, c2};
+	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, att);
+}
 inline void push(){ glPushMatrix(); }
 inline void pushAttrib(int attribs){ glPushAttrib(attribs); }
 inline void pop() { glPopMatrix(); }
