@@ -39,13 +39,15 @@ struct Color{
 	Color  operator+ (const Color& c) const;		///< Adds argument RGB components
 	Color  operator- (const Color& c) const;		///< Subtracts argument RGB components
 
+	void clamp();									///< Clamp RGB components into [0,1]
+	void invert();									///< Invert colors
+	void scale(float amount);						///< Scale RGB components
 	void set(float r, float g, float b, float a);	///< Set RGBA components
 	void set(float r, float g, float b);			///< Set RGB components
 	void set(const Color& other, float rgbScale=1);	///< Copy another Color's colors
 	void set(float gray);							///< Set as gray color
 	void set(float gray, float alpha);				///< Set as gray color with alpha
-	void invert();									///< Invert colors
-	void scale(float amount);						///< Scale RGB components
+
 	
 	/// Set color from HSV values in [0, 1]
 	void setHSV(float h, float s, float v);
@@ -71,9 +73,7 @@ struct HSV{
 	HSV(float h, float s, float v): h(h), s(s), v(v){}
 	HSV(const Color& c){ *this = c; }
 	
-	HSV& operator=(const Color& c){
-		c.getHSV(h, s, v); return *this;
-	}
+	HSV& operator=(const Color& c){ c.getHSV(h, s, v); return *this; }
 };
 
 
@@ -104,6 +104,15 @@ inline Color Color::operator+ (const Color& c) const { return Color(r+c.r, g+c.g
 inline Color Color::operator- (const Color& c) const { return Color(r-c.r, g-c.g, b-c.b, a); }
 inline Color& Color::operator*=(float v){ set(r*v, g*v, b*v, a); return *this; }
 
+inline void	Color::clamp(){
+	r<0.f ? r=0.f : (r>1.f ? r=1.f : 0);
+	g<0.f ? g=0.f : (g>1.f ? g=1.f : 0);
+	b<0.f ? b=0.f : (b>1.f ? b=1.f : 0);
+}
+
+inline void	Color::invert(){ set(1.f - r, 1.f - g, 1.f - b); }
+inline void	Color::scale(float v){ set(r*v, g*v, b*v); }
+
 inline void	Color::set(float re, float gr, float bl, float al){
 	r = re; g = gr; b = bl; a = al;
 }
@@ -116,8 +125,7 @@ inline void	Color::set(const Color & c, float rgbScale){
 }
 inline void	Color::set(float v){ set(v,v,v); }
 inline void	Color::set(float v, float al){ set(v,v,v,al); }
-inline void	Color::invert(){ set(1.f - r, 1.f - g, 1.f - b); }
-inline void	Color::scale(float v){ set(r*v, g*v, b*v); }
+
 
 inline void Color::setHSV(float h, float s, float v){
 	setHSV6(h * 6.f, s, v);		
