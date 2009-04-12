@@ -44,17 +44,6 @@ void Texture2::allocMem(){
 	};
 	
 	n *= w*h;
-	
-//	switch(mType){
-//		case GL_BYTE:			mBuffer = new char[n]; break;
-//		case GL_UNSIGNED_BYTE:	mBuffer = new unsigned char[n]; break;
-//		case GL_SHORT:			mBuffer = new short[n]; break;
-//		case GL_UNSIGNED_SHORT:	mBuffer = new unsigned short[n]; break;
-//		case GL_INT:			mBuffer = new int[n]; break;
-//		case GL_UNSIGNED_INT:	mBuffer = new unsigned int[n]; break;
-//		case GL_FLOAT:			mBuffer = new float[n]; break;
-//		case GL_DOUBLE:			mBuffer = new double[n]; break;
-//	};
 
 	#define CS(a,b) case a: mBuffer = malloc(n * sizeof(b)); break;
 	switch(mType){
@@ -72,10 +61,10 @@ void Texture2::allocMem(){
 	mPixels = mBuffer;
 }
 
-void Texture2::bind(){ glBindTexture(GL_TEXTURE_2D, mID); }
+Texture2& Texture2::bind(){ glBindTexture(GL_TEXTURE_2D, mID); return *this; }
 
 
-void Texture2::draw(
+Texture2& Texture2::draw(
 	float ql, float qt, float qr, float qb,
 	float tl, float tt, float tr, float tb
 ){	
@@ -85,11 +74,12 @@ void Texture2::draw(
 		glTexCoord2f(tr,tb); glVertex2f(qr,qb);
 		glTexCoord2f(tr,tt); glVertex2f(qr,qt);
 	glEnd();
+	return *this;
 }
 
 Texture2& Texture2::format(GLenum v){ mFormat=v; return *this; }
 
-void Texture2::load(GLsizei width, GLsizei height, GLvoid * pixs){
+Texture2& Texture2::load(GLsizei width, GLsizei height, GLvoid * pixs){
 	w = width;
 	h = height;
 	mPixels = pixs;
@@ -100,11 +90,12 @@ void Texture2::load(GLsizei width, GLsizei height, GLvoid * pixs){
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, mFormat, mType, mPixels);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	return *this;
 }
 
-void Texture2::reload(){ load(w,h, mPixels); }
+Texture2& Texture2::reload(){ load(w,h, mPixels); return *this; }
 
-void Texture2::send(){
+Texture2& Texture2::send(){
 
 /*	void glTexSubImage2D(	GLenum target,
 							GLint level,
@@ -114,6 +105,7 @@ void Texture2::send(){
 							const GLvoid *pixels ) */
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, mFormat, mType, mPixels);
+	return *this;
 }
 
 Texture2& Texture2::type(GLenum v){ mType=v; return *this; }
