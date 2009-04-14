@@ -44,7 +44,7 @@ protected:
 		isHSV() ? value(HSV(c1,c2,c3)) : value(Color(c1,c2,c3));
 		if(mControlsAlpha) mColor.a = mCompA.value();
 		mStyle.color.fore = mColor;
-		value().print();
+		//value().print();
 	}
 
 	static void updateComp(const Notification& n){
