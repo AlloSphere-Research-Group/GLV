@@ -31,7 +31,7 @@ public:
 	
 	bool isHSV() const { return mIsHSV; }
 	const Color& value() const { return mColor; }
-	ColorSliders& value(const Color& c){ mColor=c; return *this; }
+	ColorSliders& value(const Color& c){ setColor(c); return *this; }
 	
 protected:
 	Color mColor;
@@ -39,9 +39,20 @@ protected:
 	Slider mComp1, mComp2, mComp3, mCompA;
 	bool mIsHSV, mControlsAlpha;
 
+	void setColor(const Color& c){
+		float c1,c2,c3;
+		if(isHSV()){ HSV h=c; c1=h.h; c2=h.s; c3=h.v; }
+		else{ c1=c.r; c2=c.g; c3=c.b; }
+		// assuming value() does not send notification...
+		mComp1.value(c1); mComp2.value(c2); mComp3.value(c3);
+		mCompA.value(c.a);
+		setColor();
+	}
+
 	void setColor(){
 		float c1=mComp1.value(), c2=mComp2.value(), c3=mComp3.value();
-		isHSV() ? value(HSV(c1,c2,c3)) : value(Color(c1,c2,c3));
+		if(isHSV()){	mColor = HSV(c1,c2,c3);}
+		else{			mColor.set(c1,c2,c3);}
 		if(mControlsAlpha) mColor.a = mCompA.value();
 		mStyle.color.fore = mColor;
 		//value().print();
