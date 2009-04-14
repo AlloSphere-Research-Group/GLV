@@ -339,9 +339,10 @@ void View::reanchor(space_t dx, space_t dy){
 View& View::stretch(space_t mx, space_t my){ mStretchX=mx; mStretchY=my; return *this; }
 
 
-void View::style(Style * style){
+View& View::style(Style * style){
 	mStyle->smartDelete();
 	mStyle = style;
+	return *this;
 }
 
 

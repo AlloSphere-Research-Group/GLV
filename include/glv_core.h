@@ -379,7 +379,7 @@ public:
 	View& pos(Place::t p);						///< Position a specific place at point (0,0)
 	View& property(int prop, bool v);			///< Set property flag(s) to a specfic value	
 	View& stretch(space_t mx, space_t my);		///< Set parent resize stretch factors
-	void style(Style * style);					///< Set pointer to style	
+	View& style(Style * style);					///< Set pointer to style	
 	View& toggle(int prop);						///< Toggle property flag(s)
 	
 protected:
