@@ -69,8 +69,7 @@ struct HSV{
 
 	float h, s, v;
 
-	HSV(): h(0), s(1), v(1){}
-	HSV(float h, float s, float v): h(h), s(s), v(v){}
+	HSV(float h=0, float s=1, float v=1): h(h), s(s), v(v){}
 	HSV(const Color& c){ *this = c; }
 	
 	HSV& operator=(const Color& c){ c.getHSV(h, s, v); return *this; }
