@@ -38,6 +38,7 @@ struct Color{
 	Color  operator* (float v) const;				///< Multiplies RGB components by argument
 	Color  operator+ (const Color& c) const;		///< Adds argument RGB components
 	Color  operator- (const Color& c) const;		///< Subtracts argument RGB components
+	Color inverse() const;							///< Returns inverted color
 
 	void clamp();									///< Clamp RGB components into [0,1]
 	void invert();									///< Invert colors
@@ -102,6 +103,8 @@ inline Color Color::operator* (float v) const { return Color(r*v, g*v, b*v, a); 
 inline Color Color::operator+ (const Color& c) const { return Color(r+c.r, g+c.g, b+c.b, a); }
 inline Color Color::operator- (const Color& c) const { return Color(r-c.r, g-c.g, b-c.b, a); }
 inline Color& Color::operator*=(float v){ set(r*v, g*v, b*v, a); return *this; }
+
+inline Color Color::inverse() const { return Color(1.f-r, 1.f-g, 1.f-b, a); }
 
 inline void	Color::clamp(){
 	r<0.f ? r=0.f : (r>1.f ? r=1.f : 0);
