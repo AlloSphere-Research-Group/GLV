@@ -40,6 +40,8 @@ public:
 	{
 	}
 	
+	virtual const char * className() const { return "ButtonBase"; }
+	
 	virtual void onDraw(){
 		using namespace glv::draw;
 
@@ -143,6 +145,8 @@ struct Button : public ButtonBase<Values<bool> >{
 	
 	/// Set value
 	Button& value(bool v){ super::value()[0] = v; return *this; }
+	
+	virtual const char * className() const { return "Button"; }
 };
 
 

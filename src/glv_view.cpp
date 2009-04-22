@@ -32,13 +32,12 @@ View::~View(){
 	mStyle->smartDelete();
 	
 	// remove myself from the view hierarchy
-	if (parent) remove();
+	if(parent) remove();
 	
 	// TODO: make sure this isn't causing a space leak
-	if (child) {
+	if(child){
 		// delete children
-		while (child->sibling) 
-		{
+		while(child->sibling) {
 			// note that delete View also calls remove() automatically
 			delete child->sibling;
 		}
@@ -320,6 +319,40 @@ View& View::pos(Place::t p, space_t x, space_t y){
 	return *this;
 }
 
+
+void View::printDescendents() const{
+	//printf("%p\n", this);
+	
+	int level=0;
+	View * v = child;
+	
+	// go to down to child first
+	// when bottom is reached, go across siblings
+	// when siblings are traversed, go up and look for sibling
+	//	if sibling found, go to sibling
+	//	if back at top, stop
+	while(v){
+		for(int i=0; i<level; ++i) printf("|\t");
+		printf("%s %x\n", v->className(), v);
+		
+		if(v->child){			// down stage
+			level++;
+			v = v->child;
+		}
+		else if(v->sibling){	// across stage
+			v = v->sibling;
+		}
+		else{					// up and over stage
+			while(v->parent){
+				level--;
+				v = v->parent;
+				if(v==this) return;
+				else if(v->sibling){ v = v->sibling; break; }
+			}
+		}
+		
+	}
+}
 
 void View::printFlags() const{
 	//printf("\n%p: (%x)\n", this, mFlags);

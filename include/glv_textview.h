@@ -67,6 +67,7 @@ public:
 	Label& size(float pixels);				///< Set label size
 	Label& vertical(bool v);				///< Set whether label is displayed vertically
 
+	virtual const char * className() const { return "Label"; }
 	virtual void onDraw();
 
 protected:
@@ -123,6 +124,7 @@ public:
 	/// Set value
 	NumberDialer& value(double v);
 
+	virtual const char * className() const { return "NumberDialer"; }
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& g);
 

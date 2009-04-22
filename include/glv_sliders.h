@@ -74,6 +74,7 @@ public:
 
 	space_t knobSize;	///< Size of slider knob
 	
+	virtual const char * className() const { return "Slider2D"; }
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV & glv);
 	
@@ -105,6 +106,7 @@ public:
 
 	space_t knobSize; ///< Knob size
 
+	virtual const char * className() const { return "SliderGrid"; }
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& glv);
 
@@ -128,7 +130,7 @@ public:
 	Slider1DBase(const Rect& r, int nx, int ny, bool dragSelect=false);
 
 	virtual ~Slider1DBase(){}
-	
+
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& glv);
 	
@@ -164,6 +166,8 @@ public:
 	
 	/// Set value
 	Slider& value(float v){ super::value()[0] = v; return *this; }
+	
+	virtual const char * className() const { return "Slider"; }
 };
 
 
@@ -206,6 +210,7 @@ public:
 	FunctionGraph(const Rect& r, int nKnots, int res);
 	virtual ~FunctionGraph();
 	
+	virtual const char * className() const { return "FunctionGraph"; }
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& glv);
 
