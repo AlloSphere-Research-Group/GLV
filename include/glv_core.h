@@ -370,6 +370,7 @@ public:
 	void move(space_t x, space_t y);			///< Translate constraining within parent.
 	void on(Event::t e, eventCallback cb=0);	///< Set first callback for a specific event type.
 
+	virtual const char * className() const { return "View"; }
 	virtual void onDraw();						///< Main drawing callback
 	virtual bool onEvent(Event::t e, GLV& glv);	///< Main event callback
 	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
@@ -413,6 +414,7 @@ public:
 	/// Send this event to everyone in tree
 	void broadcastEvent(Event::t e);
 
+	virtual const char * className() const { return "GLV"; }
 	
 	/// GLV MAIN RENDER LOOP: draw all Views in the GLV
 	/// The assumption is that we are inside an OpenGL context of size [w, h]
