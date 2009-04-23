@@ -34,10 +34,10 @@ struct Color{
 	// Setters
 	
 	Color& operator= (const HSV& hsv);				///< Set color from HSV values
-	Color& operator*=(float v);						///< Multiply RGB values by argument
-	Color  operator* (float v) const;				///< Multiplies RGB components by argument
-	Color  operator+ (const Color& c) const;		///< Adds argument RGB components
-	Color  operator- (const Color& c) const;		///< Subtracts argument RGB components
+	Color& operator*=(float v);						///< Multiply RGBA values by argument
+	Color  operator* (float v) const;				///< Multiplies RGBA components by argument
+	Color  operator+ (const Color& c) const;		///< Adds argument RGBA components
+	Color  operator- (const Color& c) const;		///< Subtracts argument RGBA components
 	Color inverse() const;							///< Returns inverted color
 
 	void clamp();									///< Clamp RGB components into [0,1]
@@ -99,10 +99,10 @@ inline Color& Color::operator=(const HSV& hsv){
 	setHSV(hsv.h, hsv.s, hsv.v); return *this;
 }
 
-inline Color Color::operator* (float v) const { return Color(r*v, g*v, b*v, a); }
-inline Color Color::operator+ (const Color& c) const { return Color(r+c.r, g+c.g, b+c.b, a); }
-inline Color Color::operator- (const Color& c) const { return Color(r-c.r, g-c.g, b-c.b, a); }
-inline Color& Color::operator*=(float v){ set(r*v, g*v, b*v, a); return *this; }
+inline Color Color::operator* (float v) const { return Color(r*v, g*v, b*v, a*v); }
+inline Color Color::operator+ (const Color& c) const { return Color(r+c.r, g+c.g, b+c.b, a+c.a); }
+inline Color Color::operator- (const Color& c) const { return Color(r-c.r, g-c.g, b-c.b, a-c.a); }
+inline Color& Color::operator*=(float v){ set(r*v, g*v, b*v, a*v); return *this; }
 
 inline Color Color::inverse() const { return Color(1.f-r, 1.f-g, 1.f-b, a); }
 
@@ -110,6 +110,7 @@ inline void	Color::clamp(){
 	r<0.f ? r=0.f : (r>1.f ? r=1.f : 0);
 	g<0.f ? g=0.f : (g>1.f ? g=1.f : 0);
 	b<0.f ? b=0.f : (b>1.f ? b=1.f : 0);
+	a<0.f ? a=0.f : (a>1.f ? a=1.f : 0);
 }
 
 inline void	Color::invert(){ set(1.f - r, 1.f - g, 1.f - b); }
