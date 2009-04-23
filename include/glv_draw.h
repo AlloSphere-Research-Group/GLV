@@ -307,8 +307,8 @@ void vertex(T * xs, T * ys, unsigned long len, int prim){
 // platform dependent
 inline void begin(int prim){ glBegin(prim); }
 inline void blendFunc(int sfactor, int dfactor){ glBlendFunc(sfactor, dfactor); }
-inline void blendAdd(){ blendFunc(GL_SRC_COLOR, GL_ONE); }
-inline void blendTrans(){ blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
+inline void blendAdd(){ glBlendEquation(GL_FUNC_ADD); blendFunc(GL_SRC_COLOR, GL_ONE); }
+inline void blendTrans(){ glBlendEquation(GL_FUNC_ADD); blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
 inline void clear(int mask){ glClear(mask); }
 inline void clearColor(float r, float g, float b, float a){ glClearColor(r,g,b,a); }
 inline void color(float r, float g, float b, float a){ glColor4f(r,g,b,a); }
