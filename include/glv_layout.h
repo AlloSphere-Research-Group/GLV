@@ -18,6 +18,8 @@ struct Group : public View{
 	Group(const Rect& r=Rect(0))
 	:	View(r)
 	{	disable(DrawBack | DrawBorder | CropChildren | FocusHighlight | Controllable); }
+	
+	virtual const char * className() const { return "Group"; }
 };
 
 
@@ -151,7 +153,7 @@ public:
 	/// @param[in] padX			Padding in x-direction between cells
 	/// @param[in] padY			Padding in y-direction between cells
 	/// @param[in] r			Geometry
-	Table(const char * arrangement, space_t padX=2, space_t padY=2, const Rect& r=Rect(0));
+	Table(const char * arrangement, space_t padX=4, space_t padY=4, const Rect& r=Rect(0));
 
 	/// Arrange child Views according to cell arrangement specification.
 	
@@ -184,6 +186,8 @@ public:
 
 	/// Get arrangement string
 	const char * arrangement() const { return mAlign; }
+
+	virtual const char * className() const { return "Table"; }
 
 protected:
 
