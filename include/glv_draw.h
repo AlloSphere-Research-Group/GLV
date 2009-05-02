@@ -127,7 +127,8 @@ void translateZ(float z);
 void viewport(float x, float y, float w, float h);
 
 template <class V3> void vertex(const V3& v);		///< Send single vertex given 3-element array accessible object
-void vertex(float x, float y, float z=0);			///< Send single vertex
+void vertex(float x, float y);						///< Send single xy vertex
+void vertex(float x, float y, float z);				///< Send single xyz vertex
 
 template <class T>
 void vertexY(T * ys, unsigned long len, T xInc=1, int prim = LineStrip);
@@ -336,6 +337,7 @@ inline void scissor(float x, float y, float w, float h){ glScissor((GLint)x,(GLi
 inline void texCoord(float x, float y){ glTexCoord2f(x,y); }
 inline void translate(float x, float y, float z){ glTranslatef(x,y,z); }
 inline void viewport(float x, float y, float w, float h){ glViewport((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h); }
+inline void vertex(float x, float y){ glVertex2f(x,y); }
 inline void vertex(float x, float y, float z){ glVertex3f(x,y,z); }
 
 } // end namespace draw
