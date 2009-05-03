@@ -98,7 +98,7 @@ void lineStipple(char factor, short pattern);		///< Specify line stipple pattern
 void lineWidth(float val);							///< Set width of lines
 void matrixMode(int mode);							///< Set current transform matrix
 void ortho(float l, float r, float b, float t);		///< Set orthographic projection mode
-void pointSize(float val);							///< Set size of points
+void pointSize(float val);							///< Set size of points, f(d) = clamp(size * sqrt(1/(c0 + c1 * d + c2 * d^2)))
 void pointAtten(float c2=0, float c1=0, float c0=1); ///< Set distance attenuation of points
 void pop();											///< Pop current transform matrix stack
 void pop(int matrixMode);							///< Pop a transform matrix stack also setting as current matrix
