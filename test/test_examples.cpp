@@ -52,7 +52,7 @@ int main (int argc, char ** argv){
 	glv::Style::standard().color.set(StyleColor::BlackOnWhite);
 	
 	for(int i=0; i<pages; ++i){
-		top << groups[i].disable(Visible).stretch(1,1);
+		top << groups[i].disable(Visible|HitTest).stretch(1,1);
 	}
 	
 	fg.tension(1.);
