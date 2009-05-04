@@ -61,7 +61,10 @@ void Texture2::allocMem(){
 	mPixels = mBuffer;
 }
 
-Texture2& Texture2::bind(){ glBindTexture(GL_TEXTURE_2D, mID); return *this; }
+void Texture2::begin() const { glBindTexture(GL_TEXTURE_2D, id()); }
+void Texture2::end() const { glBindTexture(GL_TEXTURE_2D, 0); }
+
+Texture2& Texture2::bind(){ begin(); return *this; }
 
 
 Texture2& Texture2::draw(

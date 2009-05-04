@@ -26,15 +26,19 @@ public:
 	virtual ~Texture2();
 
 	GLvoid * buffer() const { return mBuffer; }
+	GLuint  id() const { return mID; }
 	GLsizei width() const { return w; }		///< Get width
 	GLsizei height() const { return h; }	///< Get height
 
-	Texture2& bind();										///< Bind self to current context.
+	void begin() const;										///< Bind self to current context
+	void end() const;										///< Binds default texture
+
+	Texture2& bind();										///< Bind self to current context
 	Texture2& draw(											///< Draw texture to rectangular quad
 		float ql, float qt, float qr, float qb,
 		float tl=0, float tt=1, float tr=1, float tb=0
 	);
-	Texture2& load(GLsizei w, GLsizei h, GLvoid * pixels = 0);	///< Resizes texture on graphics card.
+	Texture2& load(GLsizei w, GLsizei h, GLvoid * pixels = 0);	///< Resizes texture on graphics card
 	Texture2& reload();										///< Reload texture onto GPU
 	Texture2& send();										///< Send pointed to pixels to GPU
 
