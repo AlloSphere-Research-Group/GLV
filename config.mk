@@ -1,17 +1,23 @@
-# Customize to fit your system
+# Uncomment your system
+#LINUX = 1
+MAC = 1
 
-# paths
+# Customize to fit your system
 PREFIX = /usr/local
 CONFPREFIX = ${PREFIX}/etc
 MANPREFIX = ${PREFIX}/share/man
-
-# includes and libs
 LIBS = -L${PREFIX}/lib -L/usr/lib
-
-# Linux/BSD
 CFLAGS = -O3 -I. -I./include -I${PREFIX}/include -I/usr/include
-LDFLAGS = ${LIBS} -lglut
-
+LDFLAGS = ${LIBS}
 AR = ar cr
 CC = g++
 RANLIB = ranlib
+
+# OS dependent section
+ifdef LINUX
+	LDFLAGS += -lglut
+	CFLAGS += -DLINUX
+endif
+ifdef MAC
+	LDFLAGS += -framework GLUT -framework AGL -framework OpenGL
+endif

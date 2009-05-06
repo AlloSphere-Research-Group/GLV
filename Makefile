@@ -1,4 +1,6 @@
 include config.mk
+CFLAGS += -I./include/
+SRCDIR = ./src
 
 SRCDIR = ./src
 
