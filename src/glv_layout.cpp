@@ -140,7 +140,7 @@ Table::Table(const char * a, space_t padX, space_t padY, const Rect& r)
 {	arrangement(a); }
 
 
-void Table::arrangeChildren(){
+void Table::arrange(){
 	View * vp = child;
 	int ind = 0;
 

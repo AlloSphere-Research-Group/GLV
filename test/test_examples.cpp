@@ -61,7 +61,7 @@ int main (int argc, char ** argv){
 			<< new Label("top-left") << new Label("top-center") << new Label("top-right") 
 			<< new Label("center-left") << new Label("center-center") << new Label("center-right")
 			<< new Label("bottom-left") << new Label("bottom-center") << new Label("bottom-right");
-	table.arrangeChildren();
+	table.arrange();
 	//table.enable(DrawBorder);
 
 	groups[0] << bt1.pos(Place::BL).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);

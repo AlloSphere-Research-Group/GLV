@@ -159,7 +159,7 @@ public:
 	
 	/// If there are more children than the arrangement accounts for, then the
 	/// arrangement string will copied the appropriate number of times.
-	void arrangeChildren();
+	void arrange();
 	
 	/// Set table cell arrangement.
 	
@@ -174,8 +174,8 @@ public:
 	/// The string layout characters are: \n
 	/// \verbatim
 	/// .         empty region
-	/// -         span cell to left horizontally (can be used recursively)
-	/// |         span cell above vertically (can be used recursively)
+	/// -         span first leftward neighboring element rightward
+	/// |         span first upward neighboring element downward
 	/// ,         end of row \endverbatim
 	///
 	/// Views added as children will fill in the cells with an alignment 
