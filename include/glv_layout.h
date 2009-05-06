@@ -145,7 +145,7 @@ protected:
 
 
 
-/// Table class for doing complex rectangular layouts.
+/// Table class for doing rectangular layouts.
 class Table : public Group{
 public:
 
