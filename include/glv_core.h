@@ -88,6 +88,7 @@ namespace Event{
 		// core events
 		Quit,		/**< Application quit */
 		ContextChange,	/**< New graphics context */
+		WindowResize,	/**< Sent by window upon resize to attached GLV */ 
 		
 		// view events
 		FocusGained,/**< View got focus */
@@ -411,7 +412,7 @@ public:
 	Keyboard keyboard;	///< Current keyboard state
 
 
-	/// Send this event to everyone in tree
+	/// Send this event to everyone in tree (including self)
 	void broadcastEvent(Event::t e);
 
 	virtual const char * className() const { return "GLV"; }

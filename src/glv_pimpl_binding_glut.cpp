@@ -204,7 +204,7 @@ static void registerCBs(){
 
 
 
-void Window::implCtor(){
+void Window::implCtor(int width, int height){
 
    // if(!WindowImpl::mGLUTInitialized)
 	if(0 == WindowImpl::windows().size())
@@ -215,7 +215,7 @@ void Window::implCtor(){
 		glutInit(&argc,argv);
 		//WindowImpl::mGLUTInitialized = true;
 	}
-    glutInitWindowSize(w, h);
+    glutInitWindowSize(width, height);
     //glutInitWindowPosition (100, 100);
 
     int bits = 

@@ -37,7 +37,11 @@ public:
 	);
 	~Window();
 
+	bool active() const { return mIsActive; }
+	bool fullscreen() const { return mFullscreen; }
+	bool visible() const { return mVisible; }
 	int enabled(int dispMode) const { return mDispMode & dispMode; } ///< Get a display mode status
+
 	void fullscreen(bool on);				///< Set fullscreen
 	void fullscreenToggle();				///< Toggle fullscreen
 	void resize(int w, int h);				///< Resize window
@@ -67,7 +71,7 @@ protected:
 	void onContextChange();
 
 	// These are to be implemented by the specific binding
-	void implCtor();	// this should manually create the mImpl object
+	void implCtor(int width, int height);	// this should manually create the mImpl object
 	void implDtor();	// this should manually delete the mImpl object
 	void implFullscreen();
 	void implHideCursor(bool hide);
@@ -79,6 +83,7 @@ protected:
 	WindowImpl * mImpl;
     // with the auto_ptr for the implementation, disallow assignment and copy
 private:
+	void setDims(int w, int h);
     const Window& operator=(const Window&);
     Window(const Window&);
     friend class WindowImpl;
