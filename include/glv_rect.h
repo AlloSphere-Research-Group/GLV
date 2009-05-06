@@ -107,6 +107,11 @@ public:
 	virtual void onResize(T dx, T dy){}
 	
 	void print(FILE * fp=stdout);	///< write about TRect to a file
+	
+private:
+	void onResizeProxy(T dx, T dy){	// calls onResize if at least 1 dimension has changed
+		if(dx!=T(0) || dy!=T(0)) onResize(dx,dy);
+	}
 };
 
 
@@ -134,10 +139,9 @@ TEM void TRect<T>::copyUnder(const TRect<T> & r, T by){
 TEM inline void TRect<T>::extent(T v){ extent(v, v); }
 
 TEM inline void TRect<T>::extent(T wi, T he){
-	T dx = wi - w;
-	T dy = he - h;
-	w = wi; h = he;
-	onResize(dx, dy);
+	T dx=wi-w, dy=he-h;
+	w=wi; h=he;
+	onResizeProxy(dx, dy);
 }
 
 TEM inline void TRect<T>::fitSquare(T v){ w > h ? extent(v, v * h/w) : extent(v * w/h, v); }
@@ -157,8 +161,8 @@ TEM inline void TRect<T>::posRelTo(const TRect<T>& r, float rxf, float ryf, floa
 }
 
 TEM inline void TRect<T>::posUnder(const TRect<T> & r, T by){ pos(r.l, r.bottom() + by); }
-TEM inline void TRect<T>::resizeLeftTo(T v){ T dl = l-v; w += dl; l = v; onResize(dl, 0); }
-TEM inline void TRect<T>::resizeTopTo(T v){	T dt = t-v; h += dt; t = v; onResize(0, dt); }
+TEM inline void TRect<T>::resizeLeftTo(T v){ T dl = l-v; w += dl; l = v; onResizeProxy(dl, 0); }
+TEM inline void TRect<T>::resizeTopTo(T v){	T dt = t-v; h += dt; t = v; onResizeProxy(0, dt); }
 TEM inline void TRect<T>::resizeRightTo(T v){ width(v - l); }
 TEM inline void TRect<T>::resizeBottomTo(T v){ height(v - t); }
 TEM inline void TRect<T>::resizeEdgesBy(T v){ l -= v; t -= v; extent(w + 2 * v, h + 2 * v); }
