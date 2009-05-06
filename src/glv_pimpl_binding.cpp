@@ -57,7 +57,7 @@ Window::~Window(){
 	implDtor();
 }
 
-void Window::setDims(int width, int height){
+void Window::setDims(unsigned width, unsigned height){
 	if(w!=width || h!=height){
 		w=width; h=height;
 		if(glv){

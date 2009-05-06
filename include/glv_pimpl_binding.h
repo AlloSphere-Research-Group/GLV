@@ -83,7 +83,7 @@ protected:
 	WindowImpl * mImpl;
     // with the auto_ptr for the implementation, disallow assignment and copy
 private:
-	void setDims(int w, int h);
+	void setDims(unsigned w, unsigned h);
     const Window& operator=(const Window&);
     Window(const Window&);
     friend class WindowImpl;
