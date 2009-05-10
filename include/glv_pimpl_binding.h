@@ -21,6 +21,7 @@ enum{
 	DepthBuf	= 1<<4,		/**< Use depth buffer */
 	StencilBuf	= 1<<5,		/**< Use stencil buffer */
 	Stereo		= 1<<6,		/**< Do left-right stereo buffering */
+	Multisample = 1<<7,		/**< Multisampling support */
 	DefaultBuf	= DoubleBuf|AlphaBuf|DepthBuf /**< Default display mode */
 };
 
@@ -83,7 +84,7 @@ protected:
 	WindowImpl * mImpl;
     // with the auto_ptr for the implementation, disallow assignment and copy
 private:
-	void setDims(unsigned w, unsigned h);
+	void setDims(int w, int h);
     const Window& operator=(const Window&);
     Window(const Window&);
     friend class WindowImpl;

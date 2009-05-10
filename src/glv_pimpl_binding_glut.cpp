@@ -219,15 +219,16 @@ void Window::implCtor(int width, int height){
     //glutInitWindowPosition (100, 100);
 
     int bits = 
-        (enabled(SingleBuf ) ? GLUT_SINGLE :0) |
-        (enabled(DoubleBuf ) ? GLUT_DOUBLE :0) |
-        (enabled(AccumBuf  ) ? GLUT_ACCUM  :0) |
-        (enabled(AlphaBuf  ) ? GLUT_ALPHA  :0) |
-        (enabled(DepthBuf  ) ? GLUT_DEPTH  :0) |
-        (enabled(StencilBuf) ? GLUT_STENCIL:0) |
-        (enabled(Stereo    ) ? GLUT_STEREO :0);
+        (enabled(SingleBuf )	? GLUT_SINGLE		:0) |
+        (enabled(DoubleBuf )	? GLUT_DOUBLE		:0) |
+        (enabled(AccumBuf  )	? GLUT_ACCUM		:0) |
+        (enabled(AlphaBuf  )	? GLUT_ALPHA		:0) |
+        (enabled(DepthBuf  )	? GLUT_DEPTH		:0) |
+        (enabled(StencilBuf)	? GLUT_STENCIL		:0) |
+        (enabled(Stereo    )	? GLUT_STEREO		:0) |
+		(enabled(Multisample)	? GLUT_MULTISAMPLE	:0);
 
-    glutInitDisplayMode(GLUT_RGBA | bits);
+	glutInitDisplayMode(GLUT_RGBA | bits);
     int window_id = glutCreateWindow(mTitle);
 		
     glutIgnoreKeyRepeat(1);
