@@ -40,6 +40,7 @@ public:
 
 	bool active() const { return mIsActive; }
 	bool fullscreen() const { return mFullscreen; }
+	bool hideCursor() const { return mHideCursor; }
 	bool visible() const { return mVisible; }
 	int enabled(int dispMode) const { return mDispMode & dispMode; } ///< Get a display mode status
 
@@ -47,7 +48,7 @@ public:
 	void fullscreenToggle();				///< Toggle fullscreen
 	void resize(int w, int h);				///< Resize window
 	void show(bool v);						///< Show/hide window
-	void hideCursor(bool hide=true);		///< Show/hide cursor
+	void hideCursor(bool hide);				///< Show/hide cursor
 
 	void setGLV(GLV& g);					///< Set top GLV View
 
