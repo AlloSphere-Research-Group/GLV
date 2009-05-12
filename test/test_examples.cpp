@@ -42,7 +42,7 @@ void drawCB(View * v){
 }
 
 
-int main (int argc, char ** argv){
+int main(int argc, char ** argv){
 	
 	GLV top(drawCB);
 	Window win(600, 400, "GLV Examples", &top);

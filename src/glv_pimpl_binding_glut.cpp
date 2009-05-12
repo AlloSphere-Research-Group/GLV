@@ -62,8 +62,7 @@ private:
 			glutSetWindow(window_id);
 			impl->draw();
 			glutTimerFunc((unsigned int)(1000.0/WindowImpl::getWindow()->fps()), scheduleDrawStatic, window_id);
-		if(current)
-			glutSetWindow(current);
+			if(current) glutSetWindow(current);
 		}
 	}
 
@@ -220,7 +219,7 @@ void Window::implCtor(int width, int height){
 
 	glutInitDisplayMode(GLUT_RGBA | bits);
     int window_id = glutCreateWindow(mTitle);
-		
+
     glutIgnoreKeyRepeat(1);
 
     //mImpl.reset(new WindowImpl(this, window_id));
