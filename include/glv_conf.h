@@ -37,10 +37,12 @@
 #endif
 
 #if defined(__linux__)
-	
+
 	#define GLV_PLATFORM		"UNIX"
-	
+
+	#include <GL/glew.h>
 	#include <GL/gl.h>
+	#include <GL/glext.h>
 	#include <GL/glu.h>
 	#include <time.h>
 

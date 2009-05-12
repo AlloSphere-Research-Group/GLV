@@ -1,6 +1,6 @@
 # Uncomment your system
-#LINUX = 1
-MAC = 1
+LINUX = 1
+#MAC = 1
 
 # Customize to fit your system
 PREFIX = /usr/local
@@ -15,7 +15,7 @@ RANLIB = ranlib
 
 # OS dependent section
 ifdef LINUX
-	LDFLAGS += -lglut
+	LDFLAGS += -lglut -lGLEW
 	CFLAGS += -DLINUX
 endif
 ifdef MAC

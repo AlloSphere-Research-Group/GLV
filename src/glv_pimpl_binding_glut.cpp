@@ -19,63 +19,53 @@
 namespace glv {
 
 // GLUT window implementation
-class WindowImpl
-{
+class WindowImpl{
 public:
-    WindowImpl(Window *window, int window_id)
-        : mWindow(window)
-        , mGLUTWindowId(window_id)
-        , mGLUTInFullScreen(false)
-    {
+	WindowImpl(Window *window, int window_id)
+	: mWindow(window)
+	, mGLUTWindowId(window_id)
+	, mGLUTInFullScreen(false){
 		windows()[mGLUTWindowId] = this;
-    }
+	}
 	
-    ~WindowImpl()
-    {
+	~WindowImpl(){
 		//printf("~Impl\n");
-        windows().erase(mGLUTWindowId);
-    }
+		windows().erase(mGLUTWindowId);
+	}
 	
 	void draw();	// GLUT draw function
 	
-    void scheduleDraw()
-    {
-        scheduleDrawStatic(mGLUTInFullScreen?mGLUTFullscreenWindowId:mGLUTWindowId);
-    }
+	void scheduleDraw(){
+		scheduleDrawStatic(mGLUTInFullScreen?mGLUTFullscreenWindowId:mGLUTWindowId);
+	}
 	
-    static WindowImpl *getWindowImpl()
-    {
-        return windows()[glutGetWindow()];
-    }
+	static WindowImpl *getWindowImpl(){
+		return windows()[glutGetWindow()];
+	}
 	
-    static WindowImpl *getWindowImpl(int window_id)
-    {
-        return windows()[window_id];
-    }
+	static WindowImpl *getWindowImpl(int window_id){
+		return windows()[window_id];
+	}
 	
-    static Window *getWindow()
-    {
-        return getWindowImpl()->mWindow;
-    }
-	
+	static Window *getWindow(){
+		return getWindowImpl()->mWindow;
+	}
 
 private:
 
 	typedef std::map<int, WindowImpl *> WindowsMap;
 
-    static void scheduleDrawStatic(int window_id)
-    {
-        WindowImpl *impl = WindowImpl::getWindowImpl(window_id);
-        if(impl)
-        {
-            int current = glutGetWindow();
-            glutSetWindow(window_id);
-            impl->draw();
-            glutTimerFunc((unsigned int)(1000.0/WindowImpl::getWindow()->fps()), scheduleDrawStatic, window_id);
-            if(current)
-	            glutSetWindow(current);
-        }
-    }
+	static void scheduleDrawStatic(int window_id){
+		WindowImpl *impl = WindowImpl::getWindowImpl(window_id);
+		if(impl){
+			int current = glutGetWindow();
+			glutSetWindow(window_id);
+			impl->draw();
+			glutTimerFunc((unsigned int)(1000.0/WindowImpl::getWindow()->fps()), scheduleDrawStatic, window_id);
+		if(current)
+			glutSetWindow(current);
+		}
+	}
 
 	// Map of windows constructed on first use to avoid static intialization
 	// order problems.
@@ -84,12 +74,12 @@ private:
 		return *ans;
 	}
 
-    Window *mWindow;
-    int mGLUTWindowId;
-    int mGLUTFullscreenWindowId;
-    bool mGLUTInFullScreen;
+	Window *mWindow;
+	int mGLUTWindowId;
+	int mGLUTFullscreenWindowId;
+	bool mGLUTInFullScreen;
     
-    friend class Window;
+	friend class Window;
 };
 
 
