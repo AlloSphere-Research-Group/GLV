@@ -69,16 +69,17 @@ protected:
 	bool mHideCursor;	//
 	
 	bool shouldDraw();	// if the GLV views should be drawn
-	
-	void onContextChange();
+
+	void onWindowCreate();
+	void onWindowDestroy();
 
 	// These are to be implemented by the specific binding
 	void implCtor(int width, int height);	// this should manually create the mImpl object
-	void implDtor();	// this should manually delete the mImpl object
+	void implDtor();						// this should manually delete the mImpl object
 	void implFullscreen();
 	void implHideCursor(bool hide);
 	void implResize(int width, int height);	// platform specific resize stuff
-	void implShowHide();						// platform specific show/hide stuff
+	void implShowHide();					// platform specific show/hide stuff
     
     // pointer to the binding-specific implementation
 	//std::auto_ptr<WindowImpl> mImpl;

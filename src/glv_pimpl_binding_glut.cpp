@@ -28,9 +28,7 @@ public:
 		windows()[mGLUTWindowId] = this;
 	}
 	
-	~WindowImpl(){
-		windows().erase(mGLUTWindowId);
-	}
+	~WindowImpl(){ windows().erase(mGLUTWindowId); }
 	
 	void draw();	// GLUT draw function
 	
@@ -38,31 +36,45 @@ public:
 		scheduleDrawStatic(mGLUTInFullScreen ? mGLUTFullscreenWindowId : mGLUTWindowId);
 	}
 	
-	// Get the currently selected window
-	static WindowImpl *getWindowImpl(){
-		return getWindowImpl(glutGetWindow());
+	// Returns the implementation of the currently selected window
+	static WindowImpl * getWindowImpl(){ return getWindowImpl(glutGetWindow()); }
+	
+	
+	static WindowImpl * getWindowImpl(int window_id){
+		if(windows().count(window_id) > 0){
+			return windows()[window_id];
+		}
+		return 0;
 	}
 	
-	
-	static WindowImpl *getWindowImpl(int window_id){
-		return windows()[window_id];
+	// Returns the currently selected window or 0 if invalid
+	static Window * getWindow(){
+		WindowImpl * w = getWindowImpl();
+		if(w) return w->mWindow;
+		return 0;
 	}
 	
-	static Window *getWindow(){
-		return getWindowImpl()->mWindow;
+	// Returns the currently selected window's GLV or 0 if invalid
+	static GLV * getGLV(){
+		Window * w = getWindow();
+		if(w) return w->glv;
+		return 0;
 	}
 
 private:
 
 	typedef std::map<int, WindowImpl *> WindowsMap;
 
+	// schedule draws of a specific window
 	static void scheduleDrawStatic(int window_id){
-		WindowImpl *impl = WindowImpl::getWindowImpl(window_id);
+		WindowImpl *impl = getWindowImpl(window_id);
+		
+		// If there is a valid implementation, then schedule draw...
 		if(impl){
 			int current = glutGetWindow();
-			glutSetWindow(window_id);
+			if(window_id != current) glutSetWindow(window_id);
 			impl->draw();
-			glutTimerFunc((unsigned int)(1000.0/WindowImpl::getWindow()->fps()), scheduleDrawStatic, window_id);
+			glutTimerFunc((unsigned int)(1000.0/getWindow()->fps()), scheduleDrawStatic, window_id);
 			if(current) glutSetWindow(current);
 		}
 	}
@@ -101,35 +113,38 @@ static void glutDisplayCB(){
 // this must be called whenever a GLUT input event for a keyboard or mouse
 // callback is generated.
 static void modToGLV(){
-    
-	GLV * glv = WindowImpl::getWindow()->glv;
-	int mod = glutGetModifiers();	
-	glv->keyboard.alt  (mod & GLUT_ACTIVE_ALT);
-	glv->keyboard.ctrl (mod & GLUT_ACTIVE_CTRL);
-	glv->keyboard.shift(mod & GLUT_ACTIVE_SHIFT);
+	GLV * g = WindowImpl::getGLV();
+	if(g){
+		int mod = glutGetModifiers();	
+		g->keyboard.alt  (mod & GLUT_ACTIVE_ALT);
+		g->keyboard.ctrl (mod & GLUT_ACTIVE_CTRL);
+		g->keyboard.shift(mod & GLUT_ACTIVE_SHIFT);
+	}
 }
 
 static void keyToGLV(unsigned int key, bool down, bool special){
 	//printf("GLUT: keyboard event k:%d d:%d s:%d\n", key, down, special);
-	GLV * glv = WindowImpl::getWindow()->glv;
-	if(special){
+	GLV * g = WindowImpl::getGLV();
+	if(g){
+		if(special){
 
-		#define CS(glut, glv) case GLUT_KEY_##glut: key = Key::glv; break;
-		switch(key){
-			CS(LEFT, Left) CS(UP, Up) CS(RIGHT, Right) CS(DOWN, Down)
-			CS(PAGE_UP, PageUp) CS(PAGE_DOWN, PageDown)
-			CS(HOME, Home) CS(END, End) CS(INSERT, Insert)
-		
-			CS(F1, F1) CS(F2, F2) CS(F3, F3) CS(F4, F4)
-			CS(F5, F5) CS(F6, F6) CS(F7, F7) CS(F8, F8)
-			CS(F9, F9) CS(F10, F10)	CS(F11, F11) CS(F12, F12)
+			#define CS(glut, glv) case GLUT_KEY_##glut: key = Key::glv; break;
+			switch(key){
+				CS(LEFT, Left) CS(UP, Up) CS(RIGHT, Right) CS(DOWN, Down)
+				CS(PAGE_UP, PageUp) CS(PAGE_DOWN, PageDown)
+				CS(HOME, Home) CS(END, End) CS(INSERT, Insert)
+			
+				CS(F1, F1) CS(F2, F2) CS(F3, F3) CS(F4, F4)
+				CS(F5, F5) CS(F6, F6) CS(F7, F7) CS(F8, F8)
+				CS(F9, F9) CS(F10, F10)	CS(F11, F11) CS(F12, F12)
+			}
+			#undef CS
 		}
-		#undef CS
+		
+		down ? g->setKeyDown(key) : g->setKeyUp(key);
+		modToGLV();
+		g->propagateEvent();
 	}
-	
-	down ? glv->setKeyDown(key) : glv->setKeyUp(key);
-	modToGLV();
-	glv->propagateEvent();
 }
 
 static void glutKeyboardCB(unsigned char key, int x, int y){ keyToGLV(key, true, false); }
@@ -139,45 +154,49 @@ static void glutSpecialUpCB(int key, int x, int y){ keyToGLV(key, false, true); 
 
 static void glutMouseCB(int btn, int state, int ax, int ay){
 	//printf("GLUT: mouse event x:%d y:%d bt:#%d,%d\n", ax,ay, btn, state==GLUT_DOWN);
-	GLV * glv = WindowImpl::getWindow()->glv;
-	space_t x = (space_t)ax;
-	space_t y = (space_t)ay;
-	space_t relx = x;
-	space_t rely = y;
+	GLV * g = WindowImpl::getGLV();
+	if(g){
+		space_t x = (space_t)ax;
+		space_t y = (space_t)ay;
+		space_t relx = x;
+		space_t rely = y;
 
-	switch(btn){
-		case GLUT_LEFT_BUTTON:		btn = Mouse::Left; break;
-		case GLUT_MIDDLE_BUTTON:	btn = Mouse::Middle; break;
-		case GLUT_RIGHT_BUTTON:		btn = Mouse::Right; break;
-		default:					btn = Mouse::Extra;		// unrecognized button
+		switch(btn){
+			case GLUT_LEFT_BUTTON:		btn = Mouse::Left; break;
+			case GLUT_MIDDLE_BUTTON:	btn = Mouse::Middle; break;
+			case GLUT_RIGHT_BUTTON:		btn = Mouse::Right; break;
+			default:					btn = Mouse::Extra;		// unrecognized button
+		}
+
+		if(GLUT_DOWN == state)		g->setMouseDown(relx, rely, btn, 0);
+		else if(GLUT_UP == state)	g->setMouseUp  (relx, rely, btn, 0);
+
+		g->setMousePos((int)x, (int)y, relx, rely);
+		modToGLV();
+		g->propagateEvent();
 	}
-
-	if(GLUT_DOWN == state)		glv->setMouseDown(relx, rely, btn, 0);
-	else if(GLUT_UP == state)	glv->setMouseUp  (relx, rely, btn, 0);
-
-	glv->setMousePos((int)x, (int)y, relx, rely);
-	modToGLV();
-	glv->propagateEvent();
 }
 
 static void glutMotionCB(int ax, int ay){
 	//printf("GLUT: motion event x:%d y:%d\n", ax, ay);
-
-	GLV * glv = WindowImpl::getWindow()->glv;
-	space_t x = (space_t)ax;
-	space_t y = (space_t)ay;
-	space_t relx = x;
-	space_t rely = y;
-	
-	//glv->setMouseDrag(relx, rely, glv->mouse.button(), 0);
-	glv->setMouseDrag(relx, rely);
-	glv->setMousePos((int)x, (int)y, relx, rely);
-	//modToGLV();	// GLUT complains about calling glutGetModifiers()
-	glv->propagateEvent();
+	GLV * g = WindowImpl::getGLV();
+	if(g){
+		space_t x = (space_t)ax;
+		space_t y = (space_t)ay;
+		space_t relx = x;
+		space_t rely = y;
+		
+		//glv->setMouseDrag(relx, rely, glv->mouse.button(), 0);
+		g->setMouseDrag(relx, rely);
+		g->setMousePos((int)x, (int)y, relx, rely);
+		//modToGLV();	// GLUT complains about calling glutGetModifiers()
+		g->propagateEvent();
+	}
 }
 
 static void glutReshapeCB(int w, int h){
-	WindowImpl::getWindow()->resize(w, h);
+	Window * win = WindowImpl::getWindow();
+	if(win) win->resize(w, h);
 }
 
 static void registerCBs(){
@@ -239,6 +258,7 @@ void Window::implFullscreen(){
 // glutFullScreen() just maximizes the window.  We want use game mode to get rid
 // of the OS toolbars.
 
+	// Go into fullscreen
 	if(mFullscreen){
 
 //		"width=1024 height=768 bpp=24 hertz=60"
@@ -291,7 +311,6 @@ void Window::implFullscreen(){
 		
 		mIsActive = false;
 		mImpl->mGLUTFullscreenWindowId = glutEnterGameMode();
-		//WindowImpl::windows()[mImpl->mGLUTFullscreenWindowId]=mImpl.get();
 		WindowImpl::windows()[mImpl->mGLUTFullscreenWindowId] = mImpl;
 		mImpl->mGLUTInFullScreen = true;
 		registerCBs();
@@ -300,6 +319,8 @@ void Window::implFullscreen(){
 		
 		hideCursor(mHideCursor);
 	}
+	
+	// Exit fullscreen
 	else{
 		mIsActive = false;
 		WindowImpl::windows().erase(mImpl->mGLUTFullscreenWindowId);

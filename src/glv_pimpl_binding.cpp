@@ -54,6 +54,7 @@ Window::~Window(){
 		}
 	}
 	
+	onWindowDestroy();
 	implDtor();
 }
 
@@ -70,7 +71,7 @@ void Window::setDims(int width, int height){
 void Window::setGLV(GLV& g){ 
 	glv = &g;
 	g.extent(w, h);
-	onContextChange();
+	onWindowCreate();
 	if(active()) g.broadcastEvent(Event::WindowResize);
 }
 
@@ -78,18 +79,17 @@ void Window::fullscreen(bool on){
 	if(on && !mFullscreen){			// go into fullscreen
 		wwin = w, hwin = h;		// store current window dimensions
 		mFullscreen = true;
+		onWindowDestroy();
 		implFullscreen();
-		onContextChange();
+		onWindowCreate();
 	}
 	else if(!on && mFullscreen){	// exit fullscreen
-		//resize(wwin, hwin);
-//		w = wwin; h = hwin;
-//		if(glv) glv->extent(w, h);
 		setDims(wwin, hwin);
 		
 		mFullscreen = false;
+		onWindowDestroy();
 		implFullscreen();
-		onContextChange();
+		onWindowCreate();
 	}
 }
 
@@ -100,23 +100,21 @@ void Window::hideCursor(bool hide){
 	implHideCursor(hide);
 }
 
-void Window::onContextChange(){
+
+void Window::onWindowCreate(){
 	if(active()){
 		GLV_PLATFORM_INIT_CONTEXT
-		if(glv) glv->broadcastEvent(Event::ContextChange);
+		if(glv) glv->broadcastEvent(Event::WindowCreate);
 	}
+}
+
+void Window::onWindowDestroy(){
+	if(glv) glv->broadcastEvent(Event::WindowDestroy);
 }
 
 void Window::resize(int width, int height){
 	implResize(width, height);
 	setDims(width, height);
-//	if(w!=width || h!=height){
-//		w = width; h = height;
-//		if(glv){
-//			glv->extent(w, h);
-//			glv->broadcastEvent(Event::WindowResize);
-//		}
-//	}
 }
 
 bool Window::shouldDraw(){ return glv && active() && visible(); }

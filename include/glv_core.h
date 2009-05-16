@@ -87,8 +87,9 @@ namespace Event{
 		
 		// core events
 		Quit,		/**< Application quit */
-		ContextChange,	/**< New graphics context */
-		WindowResize,	/**< Sent by window upon resize to attached GLV */ 
+		WindowCreate,	/**< Sent by window upon creation to its attached GLV */ 
+		WindowDestroy,	/**< Sent by window upon destruction to its attached GLV */ 
+		WindowResize,	/**< Sent by window upon resize to its attached GLV */
 		
 		// view events
 		FocusGained,/**< View got focus */
