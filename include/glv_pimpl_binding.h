@@ -34,7 +34,7 @@ public:
 	/// Constructor
 	Window(
 		unsigned int width=800, unsigned int height=600, 
-		char * title="GLV Window", GLV * glv=0, double framerate=40.0, int mode=DefaultBuf
+		const char * title="GLV Window", GLV * glv=0, double framerate=40.0, int mode=DefaultBuf
 	);
 	~Window();
 
@@ -60,7 +60,7 @@ public:
 	
 protected:	
 	double mFPS;
-	char * mTitle;
+	const char * mTitle;
 	unsigned int w, h, wwin, hwin;
 	int mDispMode;		// display mode bit field
 	bool mFullscreen;
@@ -85,7 +85,7 @@ protected:
 	WindowImpl * mImpl;
     // with the auto_ptr for the implementation, disallow assignment and copy
 private:
-	void setDims(unsigned w, unsigned h);
+	void setDims(int w, int h);
     const Window& operator=(const Window&);
     Window(const Window&);
     friend class WindowImpl;

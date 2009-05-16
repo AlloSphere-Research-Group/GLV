@@ -31,7 +31,7 @@ std::vector<Window *>& Application::windows(){
 
 
 
-Window::Window(unsigned int width, unsigned int height, char * title, GLV * glv_, double framerate, int mode)
+Window::Window(unsigned int width, unsigned int height, const char * title, GLV * glv_, double framerate, int mode)
 :	glv(0), mFPS(framerate),
 	mTitle(title), w(0), h(0),
 	mDispMode(mode),
@@ -57,7 +57,7 @@ Window::~Window(){
 	implDtor();
 }
 
-void Window::setDims(unsigned width, unsigned height){
+void Window::setDims(int width, int height){
 	if(w!=width || h!=height){
 		w=width; h=height;
 		if(glv){

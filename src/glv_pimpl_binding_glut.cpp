@@ -29,19 +29,20 @@ public:
 	}
 	
 	~WindowImpl(){
-		//printf("~Impl\n");
 		windows().erase(mGLUTWindowId);
 	}
 	
 	void draw();	// GLUT draw function
 	
 	void scheduleDraw(){
-		scheduleDrawStatic(mGLUTInFullScreen?mGLUTFullscreenWindowId:mGLUTWindowId);
+		scheduleDrawStatic(mGLUTInFullScreen ? mGLUTFullscreenWindowId : mGLUTWindowId);
 	}
 	
+	// Get the currently selected window
 	static WindowImpl *getWindowImpl(){
-		return windows()[glutGetWindow()];
+		return getWindowImpl(glutGetWindow());
 	}
+	
 	
 	static WindowImpl *getWindowImpl(int window_id){
 		return windows()[window_id];
