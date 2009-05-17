@@ -3,17 +3,17 @@ GLV - GUI Building Toolkit
 Build Instructions
 ------------------
 
-First of all, edit the config.mk files in ./ and ./test for the appropriate
+First of all, edit the file Makefile.config in ./ for the appropriate
 operating system. By default, everything is configured for Linux.
 If you are building under Linux, you need to have development versions of
 OpenGL, GLU, and GLUT installed.
 
-Then, in a terminal type:
+To build the main library, run:
 
 	make
 
-to build the main library or
+Or, to build the library and test applications, run:
 
 	make all
 
-to build the library and test applications.
+

@@ -1,4 +1,4 @@
-include ../config.mk
+include ../Makefile.config
 CFLAGS += -I../include/ -DGLV_BINDING_H=\"glv_pimpl_binding.h\"
 LDFLAGS += ../libglv.a
 
