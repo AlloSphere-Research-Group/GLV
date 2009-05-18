@@ -333,10 +333,10 @@ void View::printDescendents() const{
 	//	if back at top, stop
 	while(v){
 		for(int i=0; i<level; ++i) printf("|\t");
-		printf("%s %x\n", v->className(), v);
+		printf("%s %x\n", v->className(), (unsigned int)v);
 		
 		if(v->child){			// down stage
-			level++;
+			++level;
 			v = v->child;
 		}
 		else if(v->sibling){	// across stage
@@ -344,7 +344,7 @@ void View::printDescendents() const{
 		}
 		else{					// up and over stage
 			while(v->parent){
-				level--;
+				--level;
 				v = v->parent;
 				if(v==this) return;
 				else if(v->sibling){ v = v->sibling; break; }

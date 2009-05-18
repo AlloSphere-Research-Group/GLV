@@ -46,8 +46,13 @@
 	#include <GL/glu.h>
 	#include <time.h>
 
-	#define GLV_PLATFORM_INIT_CONTEXT
-
+	#define GLV_PLATFORM_INIT_CONTEXT\
+		{	GLenum err = glewInit();\
+			if (GLEW_OK != err){\
+  				/* Problem: glewInit failed, something is seriously wrong. */\
+  				fprintf(stderr, "GLEW Init Error: %s\n", glewGetErrorString(err));\
+			}\
+		}
 #endif
 
 #ifdef WIN32
