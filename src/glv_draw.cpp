@@ -29,7 +29,7 @@ static Glyph glyphs[94] = {
 	{Glyph::Once | Glyph::Dot1 | 2, {3,4,4}, {7,0,5}},		// !
 	{Glyph::Once | 4, {3,3,5,5}, {0,3,0,3}},				// "
 	{Glyph::Once | 8, {1,7,1,7,3,3,5,5}, {3,3,5,5,1,7,1,7}},// #
-	{0},	// $
+	{0},/* composite of S and | */							// $
 	{Glyph::Once | Glyph::Dot2 | 2, {1,6,7,1}, {0,7,0,8}},	// %
 	{7, {7,3,4,5,1,4,7}, {8,1,0,1,6,8,5}},					// &
 	{Glyph::Once | 2, {5,3}, {0,3}},						// '
@@ -117,13 +117,16 @@ static Glyph glyphs[94] = {
 	{Glyph::Once | 4, {1,4,6,3}, {2.5,8,2.5,11}},			// y
 	{4, {1,6,1,6.5}, {3,3,8,8}},							// z
 	{7, {5,3,3,1,3,3,5}, {0,0,3,4,5,8,8}},					// {
-	{Glyph::Once | 2, {4,4}, {0,8.5}},						// |
+	{Glyph::Once | 2, {4,4}, {-1,9}},						// |
 	{7, {3,5,5,7,5,5,3}, {0,0,3,4,5,8,8}},					// }
 	{4, {1,3,5,7}, {2,0,2,0}}								// ~
 };
 
 
 bool character(int c, float dx, float dy){
+
+	// composite character
+	if(c == '$'){ character('S',dx,dy); return character('|',dx,dy); }
 
 	if(isgraph(c)){	// is graphical character?
 		c -= 33;
