@@ -5,7 +5,7 @@
 
 using namespace glv;
 
-const int pages = 10;
+const int pages = 11;
 Buttons tabs(Rect(110, pages*20), 1, pages, true, true);
 Group groups[pages];
 
@@ -29,6 +29,11 @@ Table table(	". v - -,"
 				"> p ^ q,"
 				"| < x >,"
 				"| b v d", 12, 6, Rect(0));
+
+const int plotSize=64;
+FunctionPlot	plotXY(Rect(150), plotSize, Color(0,0,1)),
+				plotX(Rect(150,60), plotSize, Color(1,0,0)),
+				plotY(Rect(60,150), plotSize, Color(0,1,0));
 
 
 void drawCB(View * v){
@@ -63,6 +68,18 @@ int main(int argc, char ** argv){
 			<< new Label("bottom-left") << new Label("bottom-center") << new Label("bottom-right");
 	table.arrange();
 	//table.enable(DrawBorder);
+	
+	const float ffreq = 2*M_PI/(plotSize-1);
+	plotXY.stroke(2);
+	for(int i=0; i<plotSize; ++i){
+		float phs = i*ffreq;
+		float sigX = (cos(phs) + 0.5*cos(2*phs))*0.6;
+		float sigY = (sin(phs) + 0.5*sin(2*phs))*0.6;
+		plotXY.bufferX()[i] = sigX;
+		plotXY.bufferY()[i] = sigY;
+		plotX.bufferY()[i] = sigX;
+		plotY.bufferX()[i] = sigY;
+	}
 
 	groups[0] << bt1.pos(Place::BL).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);
 	groups[0] << bt2.pos(Place::BR, -4,0).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);
@@ -82,17 +99,22 @@ int main(int argc, char ** argv){
 	groups[8] << sliders1.pos(Place::BR).anchor(Place::CC); 
 	groups[8] << sliders2.pos(Place::BL, 4,0).anchor(Place::CC);
 	groups[9] << table.pos(Place::BC).anchor(Place::CC);
+	groups[10]<< plotXY.pos(Place::BL).anchor(Place::CC);
+	groups[10]<< plotX.pos(Place::TL, 0,4).anchor(Place::CC);
+	groups[10]<< plotY.pos(Place::BR,-4,0).anchor(Place::CC);
 
-	tabs << (new Label("Button"		  ))->anchor(0.5, 1./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("Buttons"	  ))->anchor(0.5, 3./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("FunctionGraph"))->anchor(0.5, 5./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("Label"	      ))->anchor(0.5, 7./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("NumberDialer" ))->anchor(0.5, 9./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("Slider"		  ))->anchor(0.5,11./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("Slider2D"	  ))->anchor(0.5,13./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("SliderGrid"	  ))->anchor(0.5,15./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("Sliders"	  ))->anchor(0.5,17./(tabs.size()*2)).pos(Place::CC);
-	tabs << (new Label("Table"        ))->anchor(0.5,19./(tabs.size()*2)).pos(Place::CC);
+	float y = 1./(tabs.size()*2), dy=2*y;
+	tabs << (new Label("Button"		  ))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("Buttons"	  ))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("FunctionGraph"))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("Label"	      ))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("NumberDialer" ))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("Slider"		  ))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("Slider2D"	  ))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("SliderGrid"	  ))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("Sliders"	  ))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("Table"        ))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("FunctionPlot" ))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	top << tabs;
 	
 	tabs(Event::MouseDrag, Behavior::mouseResize);

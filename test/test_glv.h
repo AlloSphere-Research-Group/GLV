@@ -1,6 +1,7 @@
 #ifndef INC_TEST_GLV_H
 #define INC_TEST_GLV_H
 
+#include <math.h>
 #include "glv.h"
 #include "glv_pimpl_binding.h"
 

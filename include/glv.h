@@ -28,6 +28,7 @@
 
 // widgets:
 #include "glv_buttons.h"
+#include "glv_plots.h"
 #include "glv_sliders.h"
 #include "glv_textview.h"
 
