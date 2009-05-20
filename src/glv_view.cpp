@@ -333,7 +333,7 @@ void View::printDescendents() const{
 	//	if back at top, stop
 	while(v){
 		for(int i=0; i<level; ++i) printf("|\t");
-		printf("%s %x\n", v->className(), (unsigned int)v);
+		printf("%s %p\n", v->className(), v);
 		
 		if(v->child){			// down stage
 			++level;
