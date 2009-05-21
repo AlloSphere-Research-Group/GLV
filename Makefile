@@ -2,8 +2,6 @@ include ./Makefile.config
 CFLAGS += -I./include/
 SRCDIR = ./src
 
-SRCDIR = ./src
-
 SRC = \
 	${SRCDIR}/glv_pimpl_binding.cpp \
 	${SRCDIR}/glv_pimpl_binding_glut.cpp \
@@ -38,7 +36,6 @@ test: libglv.a
 clean:
 	@rm -f ${OBJ} libglv.a
 	@cd test && make clean
-#	cd tests && make clean
 
 current:
 	libglv.a
