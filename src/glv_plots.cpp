@@ -64,14 +64,14 @@ void FunctionPlot::onDraw(){
 				for(int i=0; i<size(); ++i) vertex(mBufX[i]*mulX+addX, mBufY[i]*mulY+addY);
 			}
 			
-			else if(mBufY && !mBufX){	// x-plot
+			else if(mBufY && !mBufX){	// y-plot
 				double dx = w/(size()-1), x=0;
 				for(int i=0; i<size(); ++i){
 					vertex(x, mBufY[i]*mulY+addY); x+=dx;
 				}
 			}
 			
-			else if(mBufX && !mBufY){	// y-plot
+			else if(mBufX && !mBufY){	// x-plot
 				double dy = h/(size()-1), y=0;
 				for(int i=0; i<size(); ++i){
 					vertex(mBufX[i]*mulX+addX, y); y+=dy;
