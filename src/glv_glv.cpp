@@ -182,8 +182,8 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 }
 
 std::vector<GLV *>& GLV::instances(){
-	static std::vector<GLV *> sInstances;
-	return sInstances;
+	static std::vector<GLV *> * sInstances = new std::vector<GLV *>;
+	return *sInstances;
 }
 
 void GLV::preamble(unsigned int w, unsigned int h){
