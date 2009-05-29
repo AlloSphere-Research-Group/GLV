@@ -12,6 +12,13 @@ GLV::GLV(drawCallback cb, space_t width, space_t height)
 	cloneStyle();
 }
 
+GLV::~GLV(){ //printf("~GLV\n");
+	for(unsigned i=0; i<instances().size(); ++i){
+		if(instances()[i] == this){
+			instances().erase(instances().begin() + i);
+		}
+	}
+}
 
 
 void GLV::broadcastEvent(Event::t e){ 
@@ -174,6 +181,11 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 	pop2D();
 }
 
+std::vector<GLV *>& GLV::instances(){
+	static std::vector<GLV *> sInstances;
+	return sInstances;
+}
+
 void GLV::preamble(unsigned int w, unsigned int h){
 	using namespace draw;
 	glDrawBuffer(GL_BACK);
@@ -264,6 +276,13 @@ void GLV::setMouseUp(space_t& x, space_t& y, int button, int clicks){
 void GLV::setMouseWheel(int wheelDelta){
 	eventType(Event::MouseWheel);
 	mouse.bufferPos(mouse.mW[0] + (space_t)wheelDelta, mouse.mW);
+}
+
+bool GLV::valid(const GLV * g){
+	for(unsigned i=0; i<instances().size(); ++i){
+		if(instances()[i] == g) return true;
+	}
+	return false;
 }
 
 

@@ -58,7 +58,7 @@ Window::~Window(){
 	implDtor();
 }
 
-void Window::setDims(int width, int height){
+void Window::setDims(unsigned int width, unsigned int height){
 	if(w!=width || h!=height){
 		w=width; h=height;
 		if(glv){
@@ -109,10 +109,15 @@ void Window::onWindowCreate(){
 }
 
 void Window::onWindowDestroy(){
+	// This checks to make sure our pointed to GLV hasn't been deleted.
+	// Sometimes when the program exits, the GLV gets deleted before the Window 
+	// leaving a pointer to invalid memory.
+	if(!GLV::valid(glv)) return;
+
 	if(glv) glv->broadcastEvent(Event::WindowDestroy);
 }
 
-void Window::resize(int width, int height){
+void Window::resize(unsigned int width, unsigned int height){
 	implResize(width, height);
 	setDims(width, height);
 }

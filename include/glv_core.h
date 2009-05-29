@@ -409,6 +409,8 @@ public:
 	/// @param[in] height	Initial height
 	GLV(drawCallback cb = 0, space_t width = 800, space_t height = 600);
 
+	virtual ~GLV();
+
 	Mouse mouse;		///< Current mouse state
 	Keyboard keyboard;	///< Current keyboard state
 
@@ -461,6 +463,9 @@ public:
 
 	View * focusedView(){ return mFocusedView; }
 
+	/// Returns true if there is a valid GLV instance at this address
+	static bool valid(const GLV * g);
+
 protected:
 	View * mFocusedView;	// current focused widget
 	Event::t mEventType;	// current event type
@@ -469,6 +474,10 @@ protected:
 	bool doEventCallbacks(View& target, glv::Event::t e);
 	
 	void doFocusCallback(bool get); // Call get or lose focus callback of focused view
+	
+	// Keep track of all instances to avoid deletion order problems on program exit.
+	// This is necessary for Window since it has a pointer to a GLV.
+	static std::vector<GLV *>& instances();
 };
 
 

@@ -46,7 +46,7 @@ public:
 
 	void fullscreen(bool on);				///< Set fullscreen
 	void fullscreenToggle();				///< Toggle fullscreen
-	void resize(int w, int h);				///< Resize window
+	void resize(unsigned int w, unsigned int h); ///< Resize window
 	void show(bool v);						///< Show/hide window
 	void hideCursor(bool hide);				///< Show/hide cursor
 
@@ -74,11 +74,11 @@ protected:
 	void onWindowDestroy();
 
 	// These are to be implemented by the specific binding
-	void implCtor(int width, int height);	// this should manually create the mImpl object
+	void implCtor(unsigned int w, unsigned int h);	// this should manually create the mImpl object
 	void implDtor();						// this should manually delete the mImpl object
 	void implFullscreen();
 	void implHideCursor(bool hide);
-	void implResize(int width, int height);	// platform specific resize stuff
+	void implResize(unsigned int w, unsigned int h);	// platform specific resize stuff
 	void implShowHide();					// platform specific show/hide stuff
     
     // pointer to the binding-specific implementation
@@ -86,7 +86,7 @@ protected:
 	WindowImpl * mImpl;
     // with the auto_ptr for the implementation, disallow assignment and copy
 private:
-	void setDims(int w, int h);
+	void setDims(unsigned int w, unsigned int h);
     const Window& operator=(const Window&);
     Window(const Window&);
     friend class WindowImpl;

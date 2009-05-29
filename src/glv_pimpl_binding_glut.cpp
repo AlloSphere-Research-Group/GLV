@@ -213,7 +213,7 @@ static void registerCBs(){
 
 
 
-void Window::implCtor(int width, int height){
+void Window::implCtor(unsigned int width, unsigned int height){
 
    // if(!WindowImpl::mGLUTInitialized)
 	if(0 == WindowImpl::windows().size())
@@ -334,8 +334,8 @@ void Window::implHideCursor(bool v){
 	glutSetCursor(v ? GLUT_CURSOR_NONE : GLUT_CURSOR_INHERIT);
 }
 
-void Window::implResize(int width, int height){
-	glutReshapeWindow(width, height);
+void Window::implResize(unsigned int width, unsigned int height){
+	glutReshapeWindow(int(width), int(height));
 }
 
 void Window::implShowHide(){ }
