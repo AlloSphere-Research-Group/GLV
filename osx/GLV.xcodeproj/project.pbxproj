@@ -197,8 +197,6 @@
 		7E55D4730CCE7E1000196525 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657E5D30B7AC4D5005858EE /* OpenGL.framework */; };
 		7E55D4740CCE7E1000196525 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657EA1B0B7B1995005858EE /* AGL.framework */; };
 		7E55D4C40CCE80FC00196525 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E55D4C30CCE80FC00196525 /* GLUT.framework */; };
-		7EE965A80C064D3F0010FEFA /* glv_binding_carbon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7EE965A60C064D3F0010FEFA /* glv_binding_carbon.cpp */; };
-		B917A7610BA2434200E819AF /* glv_abstract_binding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7530BA2434200E819AF /* glv_abstract_binding.cpp */; };
 		B917A7620BA2434200E819AF /* glv_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7540BA2434200E819AF /* glv_color.cpp */; };
 		B917A7630BA2434200E819AF /* glv_glv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7550BA2434200E819AF /* glv_glv.cpp */; };
 		B917A7640BA2434200E819AF /* glv_inputdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7560BA2434200E819AF /* glv_inputdevice.cpp */; };
@@ -325,19 +323,10 @@
 		7E4DABDE0DAAEFC7009D2272 /* glv_texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_texture.cpp; sourceTree = "<group>"; };
 		7E55D1DE0CCE5A4400196525 /* glv_draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_draw.h; sourceTree = "<group>"; };
 		7E55D4780CCE7E1000196525 /* TestWidgets_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestWidgets_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7E55D4980CCE7F2B00196525 /* glv_binding_glut.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glv_binding_glut.h; path = ../include/glv_binding_glut.h; sourceTree = SOURCE_ROOT; };
-		7E55D49B0CCE7F3900196525 /* glv_binding_glut.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glv_binding_glut.cpp; path = ../src/glv_binding_glut.cpp; sourceTree = SOURCE_ROOT; };
 		7E55D4C30CCE80FC00196525 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
 		7E8BD4EB0D81ECA800D3B32C /* GLV_APPL-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "GLV_APPL-Info.plist"; sourceTree = "<group>"; };
 		7E8BD4EC0D81ECA800D3B32C /* GLV_FMWK-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "GLV_FMWK-Info.plist"; sourceTree = "<group>"; };
-		7EE965A50C064D370010FEFA /* glv_binding_carbon.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glv_binding_carbon.h; path = ../include/glv_binding_carbon.h; sourceTree = SOURCE_ROOT; };
-		7EE965A60C064D3F0010FEFA /* glv_binding_carbon.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glv_binding_carbon.cpp; path = ../src/glv_binding_carbon.cpp; sourceTree = SOURCE_ROOT; };
-		7EE965BF0C067A310010FEFA /* glv_binding_fltk.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glv_binding_fltk.h; path = ../include/glv_binding_fltk.h; sourceTree = SOURCE_ROOT; };
-		7EE965C00C067A3B0010FEFA /* glv_binding_fltk.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glv_binding_fltk.cpp; path = ../src/glv_binding_fltk.cpp; sourceTree = SOURCE_ROOT; };
-		7EE966000C067F330010FEFA /* libfltk_gl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_gl.a; path = /usr/local/lib/libfltk_gl.a; sourceTree = "<absolute>"; };
-		7EE966010C067F330010FEFA /* libfltk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk.a; path = /usr/local/lib/libfltk.a; sourceTree = "<absolute>"; };
 		B917A7410BA2432E00E819AF /* todo */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = todo; path = ../doc/todo; sourceTree = SOURCE_ROOT; };
-		B917A7530BA2434200E819AF /* glv_abstract_binding.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glv_abstract_binding.cpp; path = ../src/glv_abstract_binding.cpp; sourceTree = "<group>"; };
 		B917A7540BA2434200E819AF /* glv_color.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = glv_color.cpp; sourceTree = "<group>"; };
 		B917A7550BA2434200E819AF /* glv_glv.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = glv_glv.cpp; sourceTree = "<group>"; };
 		B917A7560BA2434200E819AF /* glv_inputdevice.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = glv_inputdevice.cpp; sourceTree = "<group>"; };
@@ -345,7 +334,6 @@
 		B917A75A0BA2434200E819AF /* glv_view.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = glv_view.cpp; sourceTree = "<group>"; };
 		B917ACF50BA336AA00E819AF /* libglv.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libglv.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9183C950B9E36B100D8DA81 /* glv.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = glv.h; sourceTree = "<group>"; };
-		B9183C960B9E36B100D8DA81 /* glv_abstract_binding.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glv_abstract_binding.h; path = ../include/glv_abstract_binding.h; sourceTree = "<group>"; };
 		B9183C970B9E36B100D8DA81 /* glv_color.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = glv_color.h; sourceTree = "<group>"; };
 		B9183C980B9E36B100D8DA81 /* glv_core.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = glv_core.h; sourceTree = "<group>"; };
 		B9183C9A0B9E36B100D8DA81 /* glv_observer_pattern.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = glv_observer_pattern.h; sourceTree = "<group>"; };
@@ -553,33 +541,15 @@
 				B9AC43160B957162002C087C /* CoreServices.framework */,
 				7E55D4C30CCE80FC00196525 /* GLUT.framework */,
 				3657E5D30B7AC4D5005858EE /* OpenGL.framework */,
-				7EE966000C067F330010FEFA /* libfltk_gl.a */,
-				7EE966010C067F330010FEFA /* libfltk.a */,
 				B9AC43110B957162002C087C /* libstdc++.a */,
 			);
 			name = "Libraries & Frameworks";
-			sourceTree = "<group>";
-		};
-		7E0A11480E479D4A00E2E2ED /* old */ = {
-			isa = PBXGroup;
-			children = (
-				B9183C960B9E36B100D8DA81 /* glv_abstract_binding.h */,
-				B917A7530BA2434200E819AF /* glv_abstract_binding.cpp */,
-				7EE965A50C064D370010FEFA /* glv_binding_carbon.h */,
-				7EE965A60C064D3F0010FEFA /* glv_binding_carbon.cpp */,
-				7EE965BF0C067A310010FEFA /* glv_binding_fltk.h */,
-				7EE965C00C067A3B0010FEFA /* glv_binding_fltk.cpp */,
-				7E55D4980CCE7F2B00196525 /* glv_binding_glut.h */,
-				7E55D49B0CCE7F3900196525 /* glv_binding_glut.cpp */,
-			);
-			name = old;
 			sourceTree = "<group>";
 		};
 		7EE965A00C064D1D0010FEFA /* binding */ = {
 			isa = PBXGroup;
 			children = (
 				08F72F080E465E8F001A58ED /* glv_pimpl_binding_glut.cpp */,
-				7E0A11480E479D4A00E2E2ED /* old */,
 			);
 			name = binding;
 			sourceTree = "<group>";
@@ -1177,14 +1147,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B917A7610BA2434200E819AF /* glv_abstract_binding.cpp in Sources */,
 				B917A7620BA2434200E819AF /* glv_color.cpp in Sources */,
 				B917A7630BA2434200E819AF /* glv_glv.cpp in Sources */,
 				B917A7640BA2434200E819AF /* glv_inputdevice.cpp in Sources */,
 				B917A7660BA2434200E819AF /* glv_sliders.cpp in Sources */,
 				B917A7680BA2434200E819AF /* glv_view.cpp in Sources */,
 				B917ACF60BA336E400E819AF /* test_glv.cpp in Sources */,
-				7EE965A80C064D3F0010FEFA /* glv_binding_carbon.cpp in Sources */,
 				160969C30D8DDE98003B36BD /* glv_core.cpp in Sources */,
 				16D5E7660D91F43B001153DA /* glv_layout.cpp in Sources */,
 				7E40B0080D92EB3A00219F2C /* glv_textview.cpp in Sources */,
