@@ -1,7 +1,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-#include "glv_pimpl_binding.h"
+#include "glv_binding.h"
 #include "glv_core.h"
 
 #if defined (__APPLE__) || defined (OSX)

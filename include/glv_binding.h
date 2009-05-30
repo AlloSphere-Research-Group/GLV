@@ -1,5 +1,5 @@
-#ifndef INC_GLV_PIMPL_BINDING_H
-#define INC_GLV_PIMPL_BINDING_H
+#ifndef INC_GLV_BINDING_H
+#define INC_GLV_BINDING_H
 
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */

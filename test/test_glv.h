@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include "glv.h"
-#include "glv_pimpl_binding.h"
+#include "glv_binding.h"
 
 namespace glv{
 

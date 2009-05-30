@@ -8,31 +8,21 @@
 #define	GLV_MAX_MOUSE_BUTTONS 8
 
 
-// Macros for binding GLV to a specific platform's windowing system.
-// Type "#include GLV_BINDING_H" in the source files that need it.
-#ifndef GLV_BINDING_H
-    #define GLV_BINDING_H "glv_pimpl_binding.h"
-#endif
-
-
 // OpenGL platform-dependent includes
 #if defined (__APPLE__) || defined (OSX)
 	
 	#define GLV_PLATFORM		"OSX"
 
-	//#include <Carbon/Carbon.h>
-	//#include <AGL/agl.h>
-	//#include <AGL/aglRenderers.h>
 	#include <OpenGL/OpenGL.h>
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
 	#include <OpenGL/glu.h>
 
 	#define GLV_PLATFORM_INIT_CONTEXT\
-		/* prevents tearing */\
-		GLint MacHackVBL = 1;\
-		CGLContextObj ctx = CGLGetCurrentContext();\
-		CGLSetParameter(ctx,  kCGLCPSwapInterval, &MacHackVBL);
+		{	/* prevents tearing */\
+			GLint MacHackVBL = 1;\
+			CGLContextObj ctx = CGLGetCurrentContext();\
+			CGLSetParameter(ctx,  kCGLCPSwapInterval, &MacHackVBL); }
 
 #endif
 

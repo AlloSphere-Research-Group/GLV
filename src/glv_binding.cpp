@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include "glv_core.h"
-#include "glv_pimpl_binding.h"
+#include "glv_binding.h"
 
 namespace glv{
 

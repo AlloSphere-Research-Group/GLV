@@ -1,9 +1,8 @@
 include ../Makefile.config
-CFLAGS += -I../include/ -DGLV_BINDING_H=\"glv_pimpl_binding.h\"
+CFLAGS += -I../include/
 LDFLAGS += ../libglv.a
 
-SRC = \
-	test_examples.cpp \
+SRC =	test_examples.cpp \
 	test_glv.cpp \
 	test_icon.cpp \
 	test_multi_window.cpp \
@@ -11,13 +10,13 @@ SRC = \
 	test_widgets.cpp \
 	test_window.cpp
 
-TARGETS = ${SRC:.cpp=}
+TARGETS = $(SRC:.cpp=)
 
-all: ${TARGETS}
+all: $(TARGETS)
 
 %: %.cpp ../libglv.a
 	@echo CC $<
-	@${CC} ${CFLAGS} -o $@ $< ${LDFLAGS}
+	@$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 clean:
-	@rm -f *.o ${TARGETS}
+	@rm -f *.o $(TARGETS)

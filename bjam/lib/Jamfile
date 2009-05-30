@@ -38,9 +38,9 @@ project glv/lib
 SOURCES =  glv_buttons glv_color glv_core glv_draw glv_glv
     glv_inputdevice glv_layout glv_sliders glv_textview glv_view ;
 
-lib lib_glv : glv_abstract_binding.cpp $(SOURCES).cpp glv_binding_glut.cpp
+lib lib_glv : $(SOURCES).cpp
     ;
     
-lib lib_glv_pimpl : glv_pimpl_binding.cpp $(SOURCES).cpp glv_pimpl_binding_glut.cpp
+lib lib_glv_glut : $(SOURCES).cpp glv_binding.cpp glv_binding_glut.cpp
     ;
 
