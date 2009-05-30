@@ -4,7 +4,6 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-//#include <memory>
 #include <vector>
 
 namespace glv{
@@ -31,42 +30,63 @@ enum{
 class Window{
 public:
 
+	struct Dimensions{ unsigned l,t,w,h; };
+
 	/// Constructor
 	Window(
-		unsigned int width=800, unsigned int height=600, 
-		const char * title="GLV Window", GLV * glv=0, double framerate=40.0, int mode=DefaultBuf
+		unsigned width=800, unsigned height=600, 
+		const char * title="GLV Window", GLV * glv=0,
+		double framerate=40.0, int mode=DefaultBuf
 	);
+
 	~Window();
 
-	bool active() const { return mIsActive; }
-	bool fullscreen() const { return mFullscreen; }
-	bool hideCursor() const { return mHideCursor; }
-	bool visible() const { return mVisible; }
+	bool active() const { return mIsActive; }			///< Returns window active
+	unsigned bottom() const { Dimensions d=dimensions(); return d.t+d.h; }	///< Returns bottom edge position
+	Dimensions dimensions() const;						///< Get dimensions of window
 	int enabled(int dispMode) const { return mDispMode & dispMode; } ///< Get a display mode status
+	double fps() const { return mFPS; }					///< Returns requested frames/sec
+	bool fullScreen() const { return mFullScreen; }		///< Returns full screen enabled
+	bool gameMode() const { return mGameMode; }			///< Returns game mode enabled
+	const GLV * glv() const { return mGLV; }			///< Get pointer to top-level GLV view
+	unsigned height() const { return dimensions().h; }	///< Get window height
+	bool hideCursor() const { return mHideCursor; }		///< Returns hide cursor enabled
+	unsigned left() const { return dimensions().l; }	///< Returns left position
+	bool visible() const { return mVisible; }			///< Returns visible enabled
+	unsigned right() const { Dimensions d=dimensions(); return d.l+d.w; }	///< Returns right edge position
+	unsigned top() const { return dimensions().t; }	///< Returns left position
+	unsigned width() const { return dimensions().w; }	///< Get window width
 
-	void fullscreen(bool on);				///< Set fullscreen
-	void fullscreenToggle();				///< Toggle fullscreen
-	void resize(unsigned int w, unsigned int h); ///< Resize window
-	void show(bool v);						///< Show/hide window
-	void hideCursor(bool hide);				///< Show/hide cursor
-
-	void setGLV(GLV& g);					///< Set top GLV View
-
-	double fps(){ return mFPS; }			///< Get requested framerate
-	unsigned int height(){ return h; }		///< Get height
-	unsigned int width(){ return w; }		///< Get width
-
-	GLV * glv;
+	void dimensions(const Dimensions& d);				///< Set dimensions of window
+	void fullScreen(bool on);							///< Set fullscreen mode
+	void fullScreenToggle();							///< Toggle fullscreen
+	void gameMode(bool on);								///< Set game mode
+	void gameModeToggle();								///< Toggle game mode
+	void hide();										///< Hide window
+	void hideCursor(bool hide);							///< Show/hide cursor
+	void iconify();										///< Iconify window
+	void maximize(bool on);								///< Maximize window on screen
+	void position(unsigned left, unsigned top);			///< Set position from left-top corner of screen
+	void resize(unsigned w, unsigned h);				///< Resize window
+	void setGLV(GLV& g);								///< Set top GLV View
+	void show();										///< Show window
 	
-protected:	
+protected:
+	friend class Application;
+
+	GLV * mGLV;
+	Dimensions mWinDims;	// backup for when going fullscreen
 	double mFPS;
 	const char * mTitle;
-	unsigned int w, h, wwin, hwin;
 	int mDispMode;		// display mode bit field
-	bool mFullscreen;
-	bool mVisible;		// window visible?
+	bool mFullScreen;
+	bool mGameMode;
+	bool mHideCursor;	// hide cursor?
 	bool mIsActive;		// window context ready?
-	bool mHideCursor;	//
+	bool mVisible;		// window visible? 
+						// LJP: maybe not a good idea to manage this ourselves
+						// since events from OS window manager can also change
+						// window state.
 	
 	bool shouldDraw();	// if the GLV views should be drawn
 
@@ -74,19 +94,26 @@ protected:
 	void onWindowDestroy();
 
 	// These are to be implemented by the specific binding
-	void implCtor(unsigned int w, unsigned int h);	// this should manually create the mImpl object
-	void implDtor();						// this should manually delete the mImpl object
-	void implFullscreen();
+	void implCtor(unsigned w, unsigned h);		// this should manually create the mImpl object
+	void implDtor();							// this should manually delete the mImpl object
+	void implFinalize();						// call any cleanup/termination functions in windowing impl
+	void implFullScreen();
+	void implGameMode();
 	void implHideCursor(bool hide);
-	void implResize(unsigned int w, unsigned int h);	// platform specific resize stuff
-	void implShowHide();					// platform specific show/hide stuff
-    
+	void implInitialize();						// initialize windowing impl
+	void implPosition(unsigned l, unsigned t);
+	void implResize(unsigned w, unsigned h);
+	void implHide();
+	void implShow();
+	void implIconify();
+	Dimensions implWinDims() const;				// get current position (left,top) and size of window from impl
+	
     // pointer to the binding-specific implementation
 	//std::auto_ptr<WindowImpl> mImpl;
 	WindowImpl * mImpl;
     // with the auto_ptr for the implementation, disallow assignment and copy
 private:
-	void setDims(unsigned int w, unsigned int h);
+	void setGLVDims(unsigned w, unsigned h);
     const Window& operator=(const Window&);
     Window(const Window&);
     friend class WindowImpl;

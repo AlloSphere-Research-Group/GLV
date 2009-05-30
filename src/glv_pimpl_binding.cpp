@@ -17,94 +17,117 @@ void Application::quit(){
 	// Send out Quit event to all GLV views
 	for(unsigned i=0; i<windows().size(); ++i){
 		Window& w = *windows()[i];
-		if(w.glv) w.glv->broadcastEvent(Event::Quit);
+		if(w.glv()) w.mGLV->broadcastEvent(Event::Quit);
 	}
 	
 	implQuit();
 }
 
 std::vector<Window *>& Application::windows(){
-	static std::vector<Window *> * ans = new std::vector<Window *>;
-	return *ans;
+	static std::vector<Window *> * v = new std::vector<Window *>;
+	return *v;
 }
 
 
 
 
-Window::Window(unsigned int width, unsigned int height, const char * title, GLV * glv_, double framerate, int mode)
-:	glv(0), mFPS(framerate),
-	mTitle(title), w(0), h(0),
+Window::Window(unsigned w, unsigned h, const char * title, GLV * glv_, double framerate, int mode)
+:	mGLV(0), mFPS(framerate),
+	mTitle(title),
 	mDispMode(mode),
-	mFullscreen(false), mVisible(true), mIsActive(false), mHideCursor(false)
+	mFullScreen(false), mGameMode(false), mHideCursor(false), mIsActive(false), mVisible(true)
 {
+
+	// Initialize windowing impl when going from 0 to 1 windows
+	if(0 == Application::windows().size()){ implInitialize(); }
+
 	Application::windows().push_back(this);
-	implCtor(width, height);
+
+	implCtor(w, h);
 
 	mIsActive = true;	// assume that window has been successfully created
 	if(glv_) setGLV(*glv_);
-	setDims(width, height);
+	setGLVDims(w, h);
 }
 
 Window::~Window(){
+	
+	std::vector<Window *>& wins = Application::windows();
+	
 	// remove self from application's list
-	for(unsigned i=0; i<Application::windows().size(); ++i){
-		if(Application::windows()[i] == this){
-			Application::windows().erase(Application::windows().begin() + i);
+	for(unsigned i=0; i<wins.size(); ++i){
+		if(wins[i] == this){
+			wins.erase(wins.begin() + i);
 			break;
 		}
 	}
+	
+	if(0 == wins.size()) implFinalize();
 	
 	onWindowDestroy();
 	implDtor();
 }
 
-void Window::setDims(unsigned int width, unsigned int height){
-	if(w!=width || h!=height){
-		w=width; h=height;
-		if(glv){
-			glv->extent(w, h);
-			if(active()) glv->broadcastEvent(Event::WindowResize);
-		}
-	}
+Window::Dimensions Window::dimensions() const{
+	return implWinDims();
 }
 
-void Window::setGLV(GLV& g){ 
-	glv = &g;
-	g.extent(w, h);
-	onWindowCreate();
-	if(active()) g.broadcastEvent(Event::WindowResize);
+void Window::dimensions(const Dimensions& d){
+	resize(d.w, d.h);
+	position(d.l, d.t);
 }
 
-void Window::fullscreen(bool on){
-	if(on && !mFullscreen){			// go into fullscreen
-		wwin = w, hwin = h;		// store current window dimensions
-		mFullscreen = true;
+void Window::gameModeToggle(){ gameMode(!gameMode()); }
+
+void Window::gameMode(bool on){
+	if(on && !gameMode()){		// go fullscreen	
+		mWinDims = dimensions();		// store current window dimensions
+		mGameMode = true;
 		onWindowDestroy();
-		implFullscreen();
+		mIsActive = false;
+		implGameMode();
+		mIsActive = true;
+		hideCursor(mHideCursor);	// set windowed cursor visibility
 		onWindowCreate();
 	}
-	else if(!on && mFullscreen){	// exit fullscreen
-		setDims(wwin, hwin);
-		
-		mFullscreen = false;
+	else if(!on && gameMode()){	// exit fullscreen
+		mGameMode = false;
 		onWindowDestroy();
-		implFullscreen();
+		mIsActive = false;
+		implGameMode();
+		mIsActive = true;
+		dimensions(mWinDims);
 		onWindowCreate();
 	}
 }
 
-void Window::fullscreenToggle(){ fullscreen(!mFullscreen); }
+void Window::hide(){ implHide(); }
 
 void Window::hideCursor(bool hide){
 	mHideCursor = hide;
 	implHideCursor(hide);
 }
 
+void Window::iconify(){ implIconify(); }
+
+void Window::fullScreen(bool on){
+	if(on && !fullScreen()){
+		mFullScreen = true;
+		mWinDims = dimensions();		// store current window dimensions
+		implFullScreen();
+	}
+	else if(!on && fullScreen()){
+		mFullScreen = false;
+		dimensions(mWinDims);
+	}
+}
+
+void Window::fullScreenToggle(){ fullScreen(!fullScreen()); }
 
 void Window::onWindowCreate(){
 	if(active()){
 		GLV_PLATFORM_INIT_CONTEXT
-		if(glv) glv->broadcastEvent(Event::WindowCreate);
+		if(glv()) mGLV->broadcastEvent(Event::WindowCreate);
 	}
 }
 
@@ -112,21 +135,38 @@ void Window::onWindowDestroy(){
 	// This checks to make sure our pointed to GLV hasn't been deleted.
 	// Sometimes when the program exits, the GLV gets deleted before the Window 
 	// leaving a pointer to invalid memory.
-	if(!GLV::valid(glv)) return;
+	if(!GLV::valid(glv())) return;
 
-	if(glv) glv->broadcastEvent(Event::WindowDestroy);
+	if(glv()) mGLV->broadcastEvent(Event::WindowDestroy);
 }
 
-void Window::resize(unsigned int width, unsigned int height){
-	implResize(width, height);
-	setDims(width, height);
+void Window::position(unsigned l, unsigned t){
+	implPosition(l,t);
 }
 
-bool Window::shouldDraw(){ return glv && active() && visible(); }
-
-void Window::show(bool v){
-	mVisible = v;
-	implShowHide();
+void Window::resize(unsigned w, unsigned h){
+	if(width()!=w || height()!=h){
+		implResize(w, h);
+		setGLVDims(w, h);
+	}
 }
+
+void Window::setGLVDims(unsigned w, unsigned h){
+	if(glv()){
+		mGLV->extent(w, h);
+		if(active()) mGLV->broadcastEvent(Event::WindowResize);
+	}
+}
+
+void Window::setGLV(GLV& g){ 
+	mGLV = &g;
+	g.extent(width(), height());
+	onWindowCreate();
+	if(active()) g.broadcastEvent(Event::WindowResize);
+}
+
+bool Window::shouldDraw(){ return glv() && active() /*&& visible()*/; }
+
+void Window::show(){ implShow(); }
 
 } // glv::

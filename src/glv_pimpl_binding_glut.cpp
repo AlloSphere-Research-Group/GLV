@@ -57,7 +57,7 @@ public:
 	// Returns the currently selected window's GLV or 0 if invalid
 	static GLV * getGLV(){
 		Window * w = getWindow();
-		if(w) return w->glv;
+		if(w) return w->mGLV;
 		return 0;
 	}
 
@@ -213,19 +213,12 @@ static void registerCBs(){
 
 
 
-void Window::implCtor(unsigned int width, unsigned int height){
+void Window::implCtor(unsigned w, unsigned h){
 
    // if(!WindowImpl::mGLUTInitialized)
-	if(0 == WindowImpl::windows().size())
-	{
-		int argc = 0;
-		char * argv[] = {0};
 
-		glutInit(&argc,argv);
-		//WindowImpl::mGLUTInitialized = true;
-	}
-    glutInitWindowSize(width, height);
-    //glutInitWindowPosition (100, 100);
+    glutInitWindowSize(w, h);
+    //glutInitWindowPosition(0, 0);
 
     int bits = 
         (enabled(SingleBuf )	? GLUT_SINGLE		:0) |
@@ -244,8 +237,8 @@ void Window::implCtor(unsigned int width, unsigned int height){
 
     //mImpl.reset(new WindowImpl(this, window_id));
 	mImpl = new WindowImpl(this, window_id);
-	
-	registerCBs();
+
+	registerCBs();	// this is entirely static, OK calling multiple times
     mImpl->scheduleDraw();
 }
 
@@ -253,13 +246,19 @@ void Window::implDtor(){
 	if(mImpl){ delete mImpl; mImpl=0; }
 }
 
-void Window::implFullscreen(){
+void Window::implFinalize(){}	// no cleanup with GLUT
+
+void Window::implFullScreen(){
+	if(fullScreen()) glutFullScreen();
+}
+
+void Window::implGameMode(){
 
 // glutFullScreen() just maximizes the window.  We want use game mode to get rid
 // of the OS toolbars.
 
 	// Go into fullscreen
-	if(mFullscreen){
+	if(gameMode()){
 
 //		"width=1024 height=768 bpp=24 hertz=60"
 
@@ -308,41 +307,58 @@ void Window::implFullscreen(){
 		else{
 			glutGameModeString("1024x768:24");
 		}
-		
-		mIsActive = false;
+
 		mImpl->mGLUTFullscreenWindowId = glutEnterGameMode();
 		WindowImpl::windows()[mImpl->mGLUTFullscreenWindowId] = mImpl;
 		mImpl->mGLUTInFullScreen = true;
 		registerCBs();
 		mImpl->scheduleDraw();
-		mIsActive = true;
-		
-		hideCursor(mHideCursor);
 	}
 	
 	// Exit fullscreen
 	else{
-		mIsActive = false;
 		WindowImpl::windows().erase(mImpl->mGLUTFullscreenWindowId);
 		mImpl->mGLUTInFullScreen = false;
 		glutLeaveGameMode();
-		mIsActive = true;
 	}
 }
+
+void Window::implHide(){ glutHideWindow(); }
 
 void Window::implHideCursor(bool v){
 	glutSetCursor(v ? GLUT_CURSOR_NONE : GLUT_CURSOR_INHERIT);
 }
 
-void Window::implResize(unsigned int width, unsigned int height){
-	glutReshapeWindow(int(width), int(height));
+void Window::implIconify(){ glutIconifyWindow(); }
+
+void Window::implInitialize(){
+	int argc = 0;
+	char * argv[] = {0};
+	glutInit(&argc,argv);
 }
 
-void Window::implShowHide(){ }
+void Window::implPosition(unsigned l, unsigned t){
+	glutPositionWindow((int)l, (int)t);
+}
+
+void Window::implResize(unsigned w, unsigned h){
+	glutReshapeWindow((int)w, (int)h);
+}
+
+void Window::implShow(){ glutShowWindow(); }
+
+Window::Dimensions Window::implWinDims() const{
+	Dimensions d;
+	d.l = glutGet(GLUT_WINDOW_X);
+	d.t = glutGet(GLUT_WINDOW_Y);
+	d.w = glutGet(GLUT_WINDOW_WIDTH);
+	d.h = glutGet(GLUT_WINDOW_HEIGHT);
+	return d;
+}
 
 void WindowImpl::draw(){
 	if(mWindow->shouldDraw()){
-		mWindow->glv->drawGLV(mWindow->w, mWindow->h);
+		mWindow->mGLV->drawGLV(mWindow->width(), mWindow->height());
 		glutSwapBuffers();
 	}
 }

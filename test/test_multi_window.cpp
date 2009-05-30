@@ -4,54 +4,58 @@
 #include "test_glv.h"
 #include <iostream>
 
-class TestWindow : public glv::View
-{
+using namespace glv;
+
+class TestWindow : public Group {
 public:
     TestWindow()
-        : glv::View(::glv::Rect(640, 640))
+        : Group(Rect(640, 640))
         , other(NULL)
     {
 		stretch(1,1);
-        glv::LayoutGrid layout(*this, 2, 2, 10);
-        layout << *new glv::CharView;
-        slider = new glv::Slider(glv::Rect(300,300));
-        *slider << new glv::Label("This one causes change in other window");
+        LayoutGrid layout(*this, 2, 2, 10);
+        layout << *new CharView;
+        slider = new Slider(Rect(300,300));
+        *slider << new Label("This one causes change in other window");
         layout << *slider;
-        passive_slider = new glv::Slider(glv::Rect(300,300));
+        passive_slider = new Slider(Rect(300,300));
         layout << *passive_slider;
-        *passive_slider << new glv::Label("This one is manipulated by other window");
-        slider->attach(onNotify, glv::Update::Value, this);
+        *passive_slider << new Label("This one is manipulated by other window");
+        slider->attach(onNotify, Update::Value, this);
     }
-    static void onNotify(const glv::Notification& n)
-    {
+	
+    static void onNotify(const glv::Notification& n){
         TestWindow *this_ = static_cast<TestWindow *>(n.receiver());
         std::cout << this_->slider->value() << std::endl;
         if(this_->other)
             this_->other->passive_slider->value(this_->slider->value());
     }
-    glv::Slider *slider;
-    glv::Slider *passive_slider;
+
+    Slider *slider;
+    Slider *passive_slider;
     TestWindow *other;
 };
+
 
 int main(int argc, char ** argv){
 
     using namespace glv;
     
-	GLV one;
-  	one.colors().back.set(0);
-	Window win_one(640, 640, "Window One", &one);
-    TestWindow *test_one = new TestWindow;
-    one << test_one;
+	GLV glv1;
+  	glv1.colors().back.set(0);
+	Window win1(640, 640, "Window One", &glv1);
+    TestWindow test1;
+    glv1 << test1;
     
-	GLV two;
-  	two.colors().back.set(0);
-	Window win_two(640, 640, "Window Two", &two);
-    TestWindow *test_two = new TestWindow;
-    two << test_two;
+	GLV glv2;
+	glv2.colors().back.set(0);
+	Window win2(640, 640, "Window Two", &glv2);
+	win2.position(win1.right(), 0);
+    TestWindow test2;
+    glv2 << test2;
     
-    test_one->other = test_two;
-    test_two->other = test_one;
+    test1.other = &test2;
+    test2.other = &test1;
     
 	Application::run();
 	return 0;
