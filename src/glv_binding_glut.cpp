@@ -195,8 +195,12 @@ static void glutMotionCB(int ax, int ay){
 }
 
 static void glutReshapeCB(int w, int h){
+	//printf("glutReshapeCB(%d, %d)\n", w, h);
+
+	// This callback should only set the GLV's dimensions.
 	Window * win = WindowImpl::getWindow();
-	if(win) win->resize(w, h);
+	//if(win) win->resize(w, h);
+	if(win) win->setGLVDims(w, h);
 }
 
 static void registerCBs(){
@@ -213,12 +217,12 @@ static void registerCBs(){
 
 
 
-void Window::implCtor(unsigned w, unsigned h){
+void Window::implCtor(unsigned l, unsigned t, unsigned w, unsigned h){
 
    // if(!WindowImpl::mGLUTInitialized)
 
     glutInitWindowSize(w, h);
-    //glutInitWindowPosition(0, 0);
+    glutInitWindowPosition(0, 0);
 
     int bits = 
         (enabled(SingleBuf )	? GLUT_SINGLE		:0) |
@@ -249,15 +253,12 @@ void Window::implDtor(){
 void Window::implFinalize(){}	// no cleanup with GLUT
 
 void Window::implFullScreen(){
-	if(fullScreen()) glutFullScreen();
+	if(fullScreen()){ glutFullScreen();}
 }
 
 void Window::implGameMode(){
 
-// glutFullScreen() just maximizes the window.  We want use game mode to get rid
-// of the OS toolbars.
-
-	// Go into fullscreen
+	// Go into game mode
 	if(gameMode()){
 
 //		"width=1024 height=768 bpp=24 hertz=60"
@@ -315,10 +316,11 @@ void Window::implGameMode(){
 		mImpl->scheduleDraw();
 	}
 	
-	// Exit fullscreen
+	// Exit game mode
 	else{
 		WindowImpl::windows().erase(mImpl->mGLUTFullscreenWindowId);
 		mImpl->mGLUTInFullScreen = false;
+		glutSetWindow(mImpl->mGLUTWindowId); // freeglut requires this before leaving game mode
 		glutLeaveGameMode();
 	}
 }
@@ -342,7 +344,8 @@ void Window::implPosition(unsigned l, unsigned t){
 }
 
 void Window::implResize(unsigned w, unsigned h){
-	glutReshapeWindow((int)w, (int)h);
+	//printf("implResize call glutReshapeWindow\n");
+	glutReshapeWindow((int)w, (int)h); // this will call the reshape callback
 }
 
 void Window::implShow(){ glutShowWindow(); }

@@ -69,6 +69,7 @@ public:
 	void position(unsigned left, unsigned top);			///< Set position from left-top corner of screen
 	void resize(unsigned w, unsigned h);				///< Resize window
 	void setGLV(GLV& g);								///< Set top GLV View
+	void setGLVDims(unsigned w, unsigned h);
 	void show();										///< Show window
 	
 protected:
@@ -94,7 +95,7 @@ protected:
 	void onWindowDestroy();
 
 	// These are to be implemented by the specific binding
-	void implCtor(unsigned w, unsigned h);		// this should manually create the mImpl object
+	void implCtor(unsigned l, unsigned t, unsigned w, unsigned h);		// this should manually create the mImpl object
 	void implDtor();							// this should manually delete the mImpl object
 	void implFinalize();						// call any cleanup/termination functions in windowing impl
 	void implFullScreen();
@@ -113,7 +114,6 @@ protected:
 	WindowImpl * mImpl;
     // with the auto_ptr for the implementation, disallow assignment and copy
 private:
-	void setGLVDims(unsigned w, unsigned h);
     const Window& operator=(const Window&);
     Window(const Window&);
     friend class WindowImpl;

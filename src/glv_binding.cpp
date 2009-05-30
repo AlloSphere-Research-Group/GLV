@@ -18,6 +18,7 @@ void Application::quit(){
 	for(unsigned i=0; i<windows().size(); ++i){
 		Window& w = *windows()[i];
 		if(w.glv()) w.mGLV->broadcastEvent(Event::Quit);
+		//w.onWindowDestroy(); // this also gets called by ~Window
 	}
 	
 	implQuit();
@@ -42,7 +43,7 @@ Window::Window(unsigned w, unsigned h, const char * title, GLV * glv_, double fr
 
 	Application::windows().push_back(this);
 
-	implCtor(w, h);
+	implCtor(0,0, w,h);
 
 	mIsActive = true;	// assume that window has been successfully created
 	if(glv_) setGLV(*glv_);
@@ -117,6 +118,7 @@ void Window::fullScreen(bool on){
 	}
 	else if(!on && fullScreen()){
 		mFullScreen = false;
+
 		dimensions(mWinDims);
 	}
 }
@@ -135,7 +137,6 @@ void Window::onWindowDestroy(){
 	// Sometimes when the program exits, the GLV gets deleted before the Window 
 	// leaving a pointer to invalid memory.
 	if(!GLV::valid(glv())) return;
-
 	if(glv()) mGLV->broadcastEvent(Event::WindowDestroy);
 }
 
@@ -145,15 +146,20 @@ void Window::position(unsigned l, unsigned t){
 
 void Window::resize(unsigned w, unsigned h){
 
-	setGLVDims(w, h);
+	//setGLVDims(w, h);
+//
+	//Dimensions d = dimensions();
+	//printf("GLUT: %d %d %d %d\n", d.l, d.t, d.w, d.h);
+	//printf("Wind: %d %d %d %d\n", mWinDims.l, mWinDims.t, mWinDims.w, mWinDims.h);
 
 	if(width()!=w || height()!=h){
+		//printf("resize(%d, %d) call implResize()\n",w,h);
 		implResize(w, h);
 	}
 }
 
-void Window::setGLVDims(unsigned w, unsigned h){
-	if(glv() && (glv()->w != w || glv()->h != h)){
+void Window::setGLVDims(unsigned w, unsigned h){//printf("setGLVDims\n");
+	if(glv() && (glv()->w != w || glv()->h != h)){//printf("did it\n");
 		mGLV->extent(w, h);
 		if(active()) mGLV->broadcastEvent(Event::WindowResize);
 	}
@@ -161,9 +167,8 @@ void Window::setGLVDims(unsigned w, unsigned h){
 
 void Window::setGLV(GLV& g){ 
 	mGLV = &g;
-	g.extent(width(), height());
 	onWindowCreate();
-	if(active()) g.broadcastEvent(Event::WindowResize);
+	setGLVDims(width(), height());
 }
 
 bool Window::shouldDraw(){ return glv() && active() /*&& visible()*/; }

@@ -30,13 +30,14 @@ void drawCB(View * v){
 		"  g  toggle game mode\n"
 		"  h  hide\n"
 		"  i  iconify\n"
-		"  c  show/hide cursor",
+		"  c  show/hide cursor\n"
+		"  q  quit",
 		8.5, 8.5
 	);
 }
 
 
-bool keydown(View * v, GLV& g){
+bool evKeyDown(View * v, GLV& g){
 	switch(g.keyboard.key()){
 		case Key::Escape: win.fullScreenToggle(); break;
 		case 'c': win.hideCursor(!win.hideCursor()); break;
@@ -44,15 +45,22 @@ bool keydown(View * v, GLV& g){
 		case 'h': win.hide(); count=0; break;
 		case 'i': win.iconify(); count=0; break;
 		case 's': win.show(); break;
+		case 'q': Application::quit(); break;
 		default:;
 	}
 	return false;
 }
 
+bool evWinResize(View * v, GLV& g){ printf("Event::WindowResize\n"); }
+bool evWinCreate(View * v, GLV& g){ printf("Event::WindowCreate\n"); }
+bool evWinDestroy(View * v, GLV& g){ printf("Event::WindowDestroy\n"); }
 
 int main(){
 	GLV glv(drawCB);
-	glv(Event::KeyDown, keydown);
+	glv(Event::KeyDown, evKeyDown);
+	glv(Event::WindowResize, evWinResize);
+	glv(Event::WindowCreate, evWinCreate);
+	glv(Event::WindowDestroy, evWinDestroy);
 	win.setGLV(glv);
 	Application::run();
 }

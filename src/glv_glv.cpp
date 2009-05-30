@@ -10,6 +10,7 @@ GLV::GLV(drawCallback cb, space_t width, space_t height)
 {
 	disable(DrawBorder | FocusHighlight);
 	cloneStyle();
+	instances().push_back(this);
 }
 
 GLV::~GLV(){ //printf("~GLV\n");
