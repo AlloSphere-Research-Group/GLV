@@ -30,7 +30,6 @@ std::vector<Window *>& Application::windows(){
 
 
 
-
 Window::Window(unsigned w, unsigned h, const char * title, GLV * glv_, double framerate, int mode)
 :	mGLV(0), mFPS(framerate),
 	mTitle(title),
@@ -145,14 +144,16 @@ void Window::position(unsigned l, unsigned t){
 }
 
 void Window::resize(unsigned w, unsigned h){
+
+	setGLVDims(w, h);
+
 	if(width()!=w || height()!=h){
 		implResize(w, h);
-		setGLVDims(w, h);
 	}
 }
 
 void Window::setGLVDims(unsigned w, unsigned h){
-	if(glv()){
+	if(glv() && (glv()->w != w || glv()->h != h)){
 		mGLV->extent(w, h);
 		if(active()) mGLV->broadcastEvent(Event::WindowResize);
 	}
