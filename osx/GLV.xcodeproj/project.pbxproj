@@ -16,7 +16,6 @@
 				366442D20BDD736A00ACBACF /* PBXTargetDependency */,
 				3690AB790BB202600042D232 /* PBXTargetDependency */,
 				3690AB7D0BB202640042D232 /* PBXTargetDependency */,
-				3690AB7F0BB202670042D232 /* PBXTargetDependency */,
 			);
 			name = ALL;
 			productName = ALL;
@@ -32,27 +31,6 @@
 		08873FC60E4672C600E4D193 /* glv_binding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F070E465E8F001A58ED /* glv_binding.cpp */; };
 		08873FC70E4672CC00E4D193 /* glv_binding_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F080E465E8F001A58ED /* glv_binding_glut.cpp */; };
 		08873FCB0E46730500E4D193 /* glv_binding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F070E465E8F001A58ED /* glv_binding.cpp */; };
-		0887400F0E46758D00E4D193 /* glv_draw.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E55D1DE0CCE5A4400196525 /* glv_draw.h */; };
-		088740100E46758D00E4D193 /* glv_textview.h in Headers */ = {isa = PBXBuildFile; fileRef = 16096BF00D8E1FFB003B36BD /* glv_textview.h */; };
-		088740110E46758D00E4D193 /* glv_texture.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E4DABD90DAAEF44009D2272 /* glv_texture.h */; };
-		088740120E46758D00E4D193 /* glv_buttons.h in Headers */ = {isa = PBXBuildFile; fileRef = DFE898080DD4EE1B00D266E2 /* glv_buttons.h */; };
-		088740140E46758D00E4D193 /* glv_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7540BA2434200E819AF /* glv_color.cpp */; };
-		088740150E46758D00E4D193 /* glv_glv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7550BA2434200E819AF /* glv_glv.cpp */; };
-		088740160E46758D00E4D193 /* glv_inputdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7560BA2434200E819AF /* glv_inputdevice.cpp */; };
-		088740170E46758D00E4D193 /* glv_sliders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7580BA2434200E819AF /* glv_sliders.cpp */; };
-		088740180E46758D00E4D193 /* glv_view.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A75A0BA2434200E819AF /* glv_view.cpp */; };
-		088740190E46758D00E4D193 /* glv_core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 160969BC0D8DDE98003B36BD /* glv_core.cpp */; };
-		0887401A0E46758D00E4D193 /* glv_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5E7610D91F43B001153DA /* glv_layout.cpp */; };
-		0887401B0E46758D00E4D193 /* glv_textview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7E40B0030D92EB3A00219F2C /* glv_textview.cpp */; };
-		0887401C0E46758D00E4D193 /* glv_texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7E4DABDE0DAAEFC7009D2272 /* glv_texture.cpp */; };
-		0887401D0E46758D00E4D193 /* glv_buttons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE897FD0DD4EE1000D266E2 /* glv_buttons.cpp */; };
-		0887401E0E46758D00E4D193 /* glv_binding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F070E465E8F001A58ED /* glv_binding.cpp */; };
-		088740210E46758D00E4D193 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E55D4C30CCE80FC00196525 /* GLUT.framework */; };
-		088740220E46758D00E4D193 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657E5D20B7AC4D5005858EE /* Carbon.framework */; };
-		088740230E46758D00E4D193 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657E5D30B7AC4D5005858EE /* OpenGL.framework */; };
-		088740240E46758D00E4D193 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657EA1B0B7B1995005858EE /* AGL.framework */; };
-		088740310E46766100E4D193 /* glv_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */; };
-		088740700E46789A00E4D193 /* libglv_noFontGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 088740280E46758D00E4D193 /* libglv_noFontGL.a */; };
 		088740710E46789F00E4D193 /* glv_binding_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F080E465E8F001A58ED /* glv_binding_glut.cpp */; };
 		088740720E4678A300E4D193 /* test_multi_window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0887402D0E4675FD00E4D193 /* test_multi_window.cpp */; };
 		088740760E4678F600E4D193 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E55D4C30CCE80FC00196525 /* GLUT.framework */; };
@@ -61,7 +39,6 @@
 		08E3AAF30E474B65004E1822 /* test_window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D3761B0E46418A00BCCD39 /* test_window.cpp */; };
 		08E3AB000E474BD8004E1822 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657E5D30B7AC4D5005858EE /* OpenGL.framework */; };
 		08E3AB010E474BDA004E1822 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E55D4C30CCE80FC00196525 /* GLUT.framework */; };
-		08E3AB050E474BF6004E1822 /* libglv_noFontGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 088740280E46758D00E4D193 /* libglv_noFontGL.a */; };
 		08F72F090E465E8F001A58ED /* glv_binding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F070E465E8F001A58ED /* glv_binding.cpp */; };
 		08F72F130E465ED7001A58ED /* glv_binding_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F080E465E8F001A58ED /* glv_binding_glut.cpp */; };
 		08F72F830E46652B001A58ED /* glv_binding_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F080E465E8F001A58ED /* glv_binding_glut.cpp */; };
@@ -77,6 +54,27 @@
 		16096BF10D8E1FFB003B36BD /* glv_textview.h in Headers */ = {isa = PBXBuildFile; fileRef = 16096BF00D8E1FFB003B36BD /* glv_textview.h */; };
 		16096BF20D8E1FFB003B36BD /* glv_textview.h in Headers */ = {isa = PBXBuildFile; fileRef = 16096BF00D8E1FFB003B36BD /* glv_textview.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		161DF8EB0D1CF6650096EFF9 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E55D4C30CCE80FC00196525 /* GLUT.framework */; };
+		162CD4AB0FF4AC8600A58570 /* glv_plots.h in Headers */ = {isa = PBXBuildFile; fileRef = 16DEEE260FC28359006B373C /* glv_plots.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		162CD4AC0FF4ACA000A58570 /* glv.h in Headers */ = {isa = PBXBuildFile; fileRef = B9183C950B9E36B100D8DA81 /* glv.h */; };
+		162CD4AD0FF4ACA000A58570 /* glv_behavior.h in Headers */ = {isa = PBXBuildFile; fileRef = 16E051290D7E990F00C521D0 /* glv_behavior.h */; };
+		162CD4AE0FF4ACA000A58570 /* glv_binding.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E0A10ED0E47935300E2E2ED /* glv_binding.h */; };
+		162CD4AF0FF4ACA000A58570 /* glv_color.h in Headers */ = {isa = PBXBuildFile; fileRef = B9183C970B9E36B100D8DA81 /* glv_color.h */; };
+		162CD4B00FF4ACA000A58570 /* glv_conf.h in Headers */ = {isa = PBXBuildFile; fileRef = 16D5B30D0D95925C005092B6 /* glv_conf.h */; };
+		162CD4B10FF4ACA000A58570 /* glv_core.h in Headers */ = {isa = PBXBuildFile; fileRef = B9183C980B9E36B100D8DA81 /* glv_core.h */; };
+		162CD4B20FF4ACA000A58570 /* glv_layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 16D5E75C0D91F3B8001153DA /* glv_layout.h */; };
+		162CD4B30FF4ACA000A58570 /* glv_observer_pattern.h in Headers */ = {isa = PBXBuildFile; fileRef = B9183C9A0B9E36B100D8DA81 /* glv_observer_pattern.h */; };
+		162CD4B40FF4ACA000A58570 /* glv_plots.h in Headers */ = {isa = PBXBuildFile; fileRef = 16DEEE260FC28359006B373C /* glv_plots.h */; };
+		162CD4B50FF4ACA000A58570 /* glv_rect.h in Headers */ = {isa = PBXBuildFile; fileRef = B91841270BA125D600D8DA81 /* glv_rect.h */; };
+		162CD4B60FF4ACA000A58570 /* glv_sliders.h in Headers */ = {isa = PBXBuildFile; fileRef = B9183C9C0B9E36B100D8DA81 /* glv_sliders.h */; };
+		162CD4B70FF4ACA000A58570 /* glv_util.h in Headers */ = {isa = PBXBuildFile; fileRef = B91841290BA125EA00D8DA81 /* glv_util.h */; };
+		162CD4B80FF4ACA000A58570 /* glv_widget.h in Headers */ = {isa = PBXBuildFile; fileRef = 161B38830DE359DD00936BA0 /* glv_widget.h */; };
+		162CD4B90FF4ACC500A58570 /* glv_plots.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16DEEE3B0FC28A0C006B373C /* glv_plots.cpp */; };
+		162CD4BA0FF4ACCE00A58570 /* glv_binding_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F080E465E8F001A58ED /* glv_binding_glut.cpp */; };
+		162CD4BB0FF4ACCE00A58570 /* glv_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */; };
+		162CD4BC0FF4ACCE00A58570 /* glv_plots.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16DEEE3B0FC28A0C006B373C /* glv_plots.cpp */; };
+		16C4E91F0FD203A7003A13C2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657E5D30B7AC4D5005858EE /* OpenGL.framework */; };
+		16C4E9200FD203A7003A13C2 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E55D4C30CCE80FC00196525 /* GLUT.framework */; };
+		16C4E92D0FD203DD003A13C2 /* test_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C4E9110FD20394003A13C2 /* test_util.cpp */; };
 		16D11B110D7F1B3D00433B04 /* glv_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */; };
 		16D360720D9B2927003E59D0 /* glv_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7540BA2434200E819AF /* glv_color.cpp */; };
 		16D360730D9B2927003E59D0 /* glv_glv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7550BA2434200E819AF /* glv_glv.cpp */; };
@@ -223,20 +221,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0887406E0E46789200E4D193 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 360718720B7ABDBB00D732E8 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0887400D0E46758D00E4D193;
-			remoteInfo = glv_noFontGL;
-		};
-		08E3AAF00E474B56004E1822 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 360718720B7ABDBB00D732E8 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0887400D0E46758D00E4D193;
-			remoteInfo = glv_noFontGL;
-		};
 		36320B210DB3D8760085BE86 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 360718720B7ABDBB00D732E8 /* Project object */;
@@ -272,17 +256,9 @@
 			remoteGlobalIDString = 3690AA1F0BB2006C0042D232;
 			remoteInfo = TestCarbonWithLib;
 		};
-		3690AB7E0BB202670042D232 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 360718720B7ABDBB00D732E8 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3657E4C30B7AC005005858EE;
-			remoteInfo = TestCarbon;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		088740280E46758D00E4D193 /* libglv_noFontGL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libglv_noFontGL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0887402D0E4675FD00E4D193 /* test_multi_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_multi_window.cpp; sourceTree = "<group>"; };
 		088740660E46787E00E4D193 /* TestMultiWindowGLUT */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestMultiWindowGLUT; sourceTree = BUILT_PRODUCTS_DIR; };
 		08E3AAEB0E474B3B004E1822 /* TestWindowGLUT */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestWindowGLUT; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -291,6 +267,8 @@
 		160969BC0D8DDE98003B36BD /* glv_core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_core.cpp; sourceTree = "<group>"; };
 		16096BF00D8E1FFB003B36BD /* glv_textview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_textview.h; sourceTree = "<group>"; };
 		161B38830DE359DD00936BA0 /* glv_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_widget.h; sourceTree = "<group>"; };
+		16C4E9110FD20394003A13C2 /* test_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_util.cpp; sourceTree = "<group>"; };
+		16C4E9250FD203A7003A13C2 /* TestWindowGLUT */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestWindowGLUT; sourceTree = BUILT_PRODUCTS_DIR; };
 		16D360670D9B2915003E59D0 /* test_examples.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_examples.cpp; sourceTree = "<group>"; };
 		16D360840D9B2927003E59D0 /* TestExamples_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestExamples_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16D3761B0E46418A00BCCD39 /* test_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_window.cpp; sourceTree = "<group>"; };
@@ -349,22 +327,10 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		088740200E46758D00E4D193 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				088740210E46758D00E4D193 /* GLUT.framework in Frameworks */,
-				088740220E46758D00E4D193 /* Carbon.framework in Frameworks */,
-				088740230E46758D00E4D193 /* OpenGL.framework in Frameworks */,
-				088740240E46758D00E4D193 /* AGL.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		088740640E46787E00E4D193 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				088740700E46789A00E4D193 /* libglv_noFontGL.a in Frameworks */,
 				088740760E4678F600E4D193 /* GLUT.framework in Frameworks */,
 				088740780E46790000E4D193 /* OpenGL.framework in Frameworks */,
 			);
@@ -376,7 +342,15 @@
 			files = (
 				08E3AB000E474BD8004E1822 /* OpenGL.framework in Frameworks */,
 				08E3AB010E474BDA004E1822 /* GLUT.framework in Frameworks */,
-				08E3AB050E474BF6004E1822 /* libglv_noFontGL.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		16C4E91E0FD203A7003A13C2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16C4E91F0FD203A7003A13C2 /* OpenGL.framework in Frameworks */,
+				16C4E9200FD203A7003A13C2 /* GLUT.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,9 +499,9 @@
 				16DF865A0D8F2B5600BDFDCD /* TestNotifications_GLUT.app */,
 				16D360840D9B2927003E59D0 /* TestExamples_GLUT.app */,
 				36320ADF0DB3D8500085BE86 /* TestCarbonWithFramework.app */,
-				088740280E46758D00E4D193 /* libglv_noFontGL.a */,
 				088740660E46787E00E4D193 /* TestMultiWindowGLUT */,
 				08E3AAEB0E474B3B004E1822 /* TestWindowGLUT */,
+				16C4E9250FD203A7003A13C2 /* TestWindowGLUT */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -601,6 +575,7 @@
 				16D629DF0BB635700073BA8A /* test_icon.cpp */,
 				0887402D0E4675FD00E4D193 /* test_multi_window.cpp */,
 				16ED62570E5791F6006231EC /* test_notifications.cpp */,
+				16C4E9110FD20394003A13C2 /* test_util.cpp */,
 				16D62A8C0BB63D650073BA8A /* test_widgets.cpp */,
 				16D3761B0E46418A00BCCD39 /* test_window.cpp */,
 			);
@@ -611,36 +586,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		0887400E0E46758D00E4D193 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0887400F0E46758D00E4D193 /* glv_draw.h in Headers */,
-				088740100E46758D00E4D193 /* glv_textview.h in Headers */,
-				088740110E46758D00E4D193 /* glv_texture.h in Headers */,
-				088740120E46758D00E4D193 /* glv_buttons.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3618F3CE0BDD717900A0E692 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				366442C70BDD734A00ACBACF /* glv.h in Headers */,
 				363FE84B0DA94DC1007C4567 /* glv_behavior.h in Headers */,
+				7E4B54EB0EA13E7A00701931 /* glv_binding.h in Headers */,
+				DFE898090DD4EE1B00D266E2 /* glv_buttons.h in Headers */,
 				366442C90BDD734A00ACBACF /* glv_color.h in Headers */,
 				363FE84C0DA94DC1007C4567 /* glv_conf.h in Headers */,
 				366442CA0BDD734A00ACBACF /* glv_core.h in Headers */,
 				7E55D1DF0CCE5A4400196525 /* glv_draw.h in Headers */,
 				363FE84D0DA94DC1007C4567 /* glv_layout.h in Headers */,
 				366442CC0BDD734A00ACBACF /* glv_observer_pattern.h in Headers */,
-				7E4B54EB0EA13E7A00701931 /* glv_binding.h in Headers */,
+				162CD4AB0FF4AC8600A58570 /* glv_plots.h in Headers */,
 				366442CE0BDD734A00ACBACF /* glv_rect.h in Headers */,
 				366442CF0BDD734A00ACBACF /* glv_sliders.h in Headers */,
 				16096BF20D8E1FFB003B36BD /* glv_textview.h in Headers */,
-				366442D00BDD734A00ACBACF /* glv_util.h in Headers */,
-				DFE898090DD4EE1B00D266E2 /* glv_buttons.h in Headers */,
 				7E4B54EC0EA13E9800701931 /* glv_texture.h in Headers */,
+				366442D00BDD734A00ACBACF /* glv_util.h in Headers */,
 				7E4B54ED0EA13E9A00701931 /* glv_widget.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -649,33 +614,29 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				162CD4AC0FF4ACA000A58570 /* glv.h in Headers */,
+				162CD4AD0FF4ACA000A58570 /* glv_behavior.h in Headers */,
+				162CD4AE0FF4ACA000A58570 /* glv_binding.h in Headers */,
+				DFE8980A0DD4EE1B00D266E2 /* glv_buttons.h in Headers */,
+				162CD4AF0FF4ACA000A58570 /* glv_color.h in Headers */,
+				162CD4B00FF4ACA000A58570 /* glv_conf.h in Headers */,
+				162CD4B10FF4ACA000A58570 /* glv_core.h in Headers */,
 				7E55D1E00CCE5A4400196525 /* glv_draw.h in Headers */,
+				162CD4B20FF4ACA000A58570 /* glv_layout.h in Headers */,
+				162CD4B30FF4ACA000A58570 /* glv_observer_pattern.h in Headers */,
+				162CD4B40FF4ACA000A58570 /* glv_plots.h in Headers */,
+				162CD4B50FF4ACA000A58570 /* glv_rect.h in Headers */,
+				162CD4B60FF4ACA000A58570 /* glv_sliders.h in Headers */,
 				16096BF10D8E1FFB003B36BD /* glv_textview.h in Headers */,
 				7E4DABDA0DAAEF44009D2272 /* glv_texture.h in Headers */,
-				DFE8980A0DD4EE1B00D266E2 /* glv_buttons.h in Headers */,
+				162CD4B70FF4ACA000A58570 /* glv_util.h in Headers */,
+				162CD4B80FF4ACA000A58570 /* glv_widget.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		0887400D0E46758D00E4D193 /* glv_noFontGL */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 088740250E46758D00E4D193 /* Build configuration list for PBXNativeTarget "glv_noFontGL" */;
-			buildPhases = (
-				0887400E0E46758D00E4D193 /* Headers */,
-				088740130E46758D00E4D193 /* Sources */,
-				088740200E46758D00E4D193 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = glv_noFontGL;
-			productName = glv;
-			productReference = 088740280E46758D00E4D193 /* libglv_noFontGL.a */;
-			productType = "com.apple.product-type.library.static";
-		};
 		088740650E46787E00E4D193 /* TestMultiWindowGLUT */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 088740740E4678C100E4D193 /* Build configuration list for PBXNativeTarget "TestMultiWindowGLUT" */;
@@ -686,7 +647,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				0887406F0E46789200E4D193 /* PBXTargetDependency */,
 			);
 			name = TestMultiWindowGLUT;
 			productName = TestMultiWindowGLUT;
@@ -703,11 +663,26 @@
 			buildRules = (
 			);
 			dependencies = (
-				08E3AAF10E474B56004E1822 /* PBXTargetDependency */,
 			);
 			name = TestWindowGLUT;
 			productName = TestWindowGLUT;
 			productReference = 08E3AAEB0E474B3B004E1822 /* TestWindowGLUT */;
+			productType = "com.apple.product-type.tool";
+		};
+		16C4E9170FD203A7003A13C2 /* TestUtil */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 16C4E9220FD203A7003A13C2 /* Build configuration list for PBXNativeTarget "TestUtil" */;
+			buildPhases = (
+				16C4E91A0FD203A7003A13C2 /* Sources */,
+				16C4E91E0FD203A7003A13C2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TestUtil;
+			productName = TestWindowGLUT;
+			productReference = 16C4E9250FD203A7003A13C2 /* TestWindowGLUT */;
 			productType = "com.apple.product-type.tool";
 		};
 		16D3606E0D9B2927003E59D0 /* TestExamples_GLUT */ = {
@@ -902,13 +877,13 @@
 				7E55D4610CCE7E1000196525 /* TestWidgets_GLUT */,
 				16DF86450D8F2B5600BDFDCD /* TestNotifications_GLUT */,
 				088740650E46787E00E4D193 /* TestMultiWindowGLUT */,
+				16C4E9170FD203A7003A13C2 /* TestUtil */,
 				08E3AAEA0E474B3B004E1822 /* TestWindowGLUT */,
 				3690AA1F0BB2006C0042D232 /* TestGLUTWithFramework */,
 				3657E4C30B7AC005005858EE /* TestCarbon */,
 				36320AC70DB3D8500085BE86 /* TestCarbonWithFramework */,
 				3618F3D20BDD717900A0E692 /* GLV */,
 				B917ACF40BA336AA00E819AF /* glv */,
-				0887400D0E46758D00E4D193 /* glv_noFontGL */,
 				3690AB750BB202590042D232 /* ALL */,
 			);
 		};
@@ -988,25 +963,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		088740130E46758D00E4D193 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				088740140E46758D00E4D193 /* glv_color.cpp in Sources */,
-				088740150E46758D00E4D193 /* glv_glv.cpp in Sources */,
-				088740160E46758D00E4D193 /* glv_inputdevice.cpp in Sources */,
-				088740170E46758D00E4D193 /* glv_sliders.cpp in Sources */,
-				088740180E46758D00E4D193 /* glv_view.cpp in Sources */,
-				088740190E46758D00E4D193 /* glv_core.cpp in Sources */,
-				0887401A0E46758D00E4D193 /* glv_layout.cpp in Sources */,
-				0887401B0E46758D00E4D193 /* glv_textview.cpp in Sources */,
-				0887401C0E46758D00E4D193 /* glv_texture.cpp in Sources */,
-				0887401D0E46758D00E4D193 /* glv_buttons.cpp in Sources */,
-				0887401E0E46758D00E4D193 /* glv_binding.cpp in Sources */,
-				088740310E46766100E4D193 /* glv_draw.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		088740630E46787E00E4D193 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1023,6 +979,14 @@
 				08E3AAF20E474B5F004E1822 /* glv_binding_glut.cpp in Sources */,
 				08E3AAF30E474B65004E1822 /* test_window.cpp in Sources */,
 				7E0A11310E479A4400E2E2ED /* glv_binding.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		16C4E91A0FD203A7003A13C2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16C4E92D0FD203DD003A13C2 /* test_util.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1110,18 +1074,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				363FE8400DA94DA1007C4567 /* glv_color.cpp in Sources */,
-				363FE8410DA94DA1007C4567 /* glv_glv.cpp in Sources */,
-				363FE8420DA94DA1007C4567 /* glv_inputdevice.cpp in Sources */,
-				363FE8430DA94DA1007C4567 /* glv_sliders.cpp in Sources */,
-				363FE8440DA94DA1007C4567 /* glv_view.cpp in Sources */,
-				363FE8470DA94DA1007C4567 /* glv_draw.cpp in Sources */,
-				363FE8480DA94DA1007C4567 /* glv_core.cpp in Sources */,
-				363FE8490DA94DA1007C4567 /* glv_layout.cpp in Sources */,
-				363FE84A0DA94DA1007C4567 /* glv_textview.cpp in Sources */,
-				DFE897FF0DD4EE1100D266E2 /* glv_buttons.cpp in Sources */,
 				08873FCB0E46730500E4D193 /* glv_binding.cpp in Sources */,
 				7E4B54DA0EA13DB900701931 /* glv_binding_glut.cpp in Sources */,
+				DFE897FF0DD4EE1100D266E2 /* glv_buttons.cpp in Sources */,
+				363FE8400DA94DA1007C4567 /* glv_color.cpp in Sources */,
+				363FE8480DA94DA1007C4567 /* glv_core.cpp in Sources */,
+				363FE8470DA94DA1007C4567 /* glv_draw.cpp in Sources */,
+				363FE8410DA94DA1007C4567 /* glv_glv.cpp in Sources */,
+				363FE8420DA94DA1007C4567 /* glv_inputdevice.cpp in Sources */,
+				363FE8490DA94DA1007C4567 /* glv_layout.cpp in Sources */,
+				162CD4B90FF4ACC500A58570 /* glv_plots.cpp in Sources */,
+				363FE8430DA94DA1007C4567 /* glv_sliders.cpp in Sources */,
+				363FE84A0DA94DA1007C4567 /* glv_textview.cpp in Sources */,
+				363FE8440DA94DA1007C4567 /* glv_view.cpp in Sources */,
 				7E4B54EE0EA13EBE00701931 /* glv_texture.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1186,33 +1151,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08873F4B0E466FDA00E4D193 /* glv_binding.cpp in Sources */,
+				162CD4BA0FF4ACCE00A58570 /* glv_binding_glut.cpp in Sources */,
+				DFE898000DD4EE1100D266E2 /* glv_buttons.cpp in Sources */,
 				B917ACFA0BA336EC00E819AF /* glv_color.cpp in Sources */,
+				160969C50D8DDE98003B36BD /* glv_core.cpp in Sources */,
+				162CD4BB0FF4ACCE00A58570 /* glv_draw.cpp in Sources */,
 				B917ACFB0BA336EC00E819AF /* glv_glv.cpp in Sources */,
 				B917ACFC0BA336ED00E819AF /* glv_inputdevice.cpp in Sources */,
-				B917ACFE0BA336EE00E819AF /* glv_sliders.cpp in Sources */,
-				B917AD000BA336EE00E819AF /* glv_view.cpp in Sources */,
-				160969C50D8DDE98003B36BD /* glv_core.cpp in Sources */,
 				16D5E7680D91F43B001153DA /* glv_layout.cpp in Sources */,
+				162CD4BC0FF4ACCE00A58570 /* glv_plots.cpp in Sources */,
+				B917ACFE0BA336EE00E819AF /* glv_sliders.cpp in Sources */,
 				7E40B00A0D92EB3A00219F2C /* glv_textview.cpp in Sources */,
+				B917AD000BA336EE00E819AF /* glv_view.cpp in Sources */,
 				7E4DABDF0DAAEFC7009D2272 /* glv_texture.cpp in Sources */,
-				DFE898000DD4EE1100D266E2 /* glv_buttons.cpp in Sources */,
-				08873F4B0E466FDA00E4D193 /* glv_binding.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0887406F0E46789200E4D193 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0887400D0E46758D00E4D193 /* glv_noFontGL */;
-			targetProxy = 0887406E0E46789200E4D193 /* PBXContainerItemProxy */;
-		};
-		08E3AAF10E474B56004E1822 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0887400D0E46758D00E4D193 /* glv_noFontGL */;
-			targetProxy = 08E3AAF00E474B56004E1822 /* PBXContainerItemProxy */;
-		};
 		36320B220DB3D8760085BE86 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3618F3D20BDD717900A0E692 /* GLV */;
@@ -1238,48 +1196,9 @@
 			target = 3690AA1F0BB2006C0042D232 /* TestGLUTWithFramework */;
 			targetProxy = 3690AB7C0BB202640042D232 /* PBXContainerItemProxy */;
 		};
-		3690AB7F0BB202670042D232 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3657E4C30B7AC005005858EE /* TestCarbon */;
-			targetProxy = 3690AB7E0BB202670042D232 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		088740260E46758D00E4D193 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
-				PRODUCT_NAME = glv_noFontGL;
-				ZERO_LINK = YES;
-			};
-			name = Debug;
-		};
-		088740270E46758D00E4D193 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
-				PRODUCT_NAME = glv_noFontGL;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		0887406A0E46787E00E4D193 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1328,6 +1247,36 @@
 			name = Debug;
 		};
 		08E3AAEE0E474B3B004E1822 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = TestWindowGLUT;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		16C4E9230FD203A7003A13C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = TestWindowGLUT;
+			};
+			name = Debug;
+		};
+		16C4E9240FD203A7003A13C2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1864,15 +1813,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		088740250E46758D00E4D193 /* Build configuration list for PBXNativeTarget "glv_noFontGL" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				088740260E46758D00E4D193 /* Debug */,
-				088740270E46758D00E4D193 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		088740740E4678C100E4D193 /* Build configuration list for PBXNativeTarget "TestMultiWindowGLUT" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1887,6 +1827,15 @@
 			buildConfigurations = (
 				08E3AAED0E474B3B004E1822 /* Debug */,
 				08E3AAEE0E474B3B004E1822 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		16C4E9220FD203A7003A13C2 /* Build configuration list for PBXNativeTarget "TestUtil" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				16C4E9230FD203A7003A13C2 /* Debug */,
+				16C4E9240FD203A7003A13C2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
