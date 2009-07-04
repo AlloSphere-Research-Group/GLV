@@ -231,37 +231,20 @@ void GLV::setMouseDown(space_t& x, space_t& y, int button, int clicks){
 	mouse.updateButton(button, true, clicks);
 }
 
-void GLV::setMouseMove(space_t& x, space_t& y){
-	eventType(Event::MouseMove);
+void GLV::setMouseMotion(space_t& x, space_t& y, Event::t e){
+	eventType(e);
 	if(absToRel(mFocusedView, x, y)){
 		x -= mFocusedView->l;
 		y -= mFocusedView->t;
 	}
+}
+
+void GLV::setMouseMove(space_t& x, space_t& y){
+	setMouseMotion(x,y,Event::MouseMove);
 }
 
 void GLV::setMouseDrag(space_t& x, space_t& y){
-	eventType(Event::MouseDrag);
-	if(absToRel(mFocusedView, x, y)){
-		x -= mFocusedView->l;
-		y -= mFocusedView->t;
-	}
-}
-
-// MouseDrag doesn't call setFocus because that messes up the dragging of a view.
-// x, y coords are passed in as absolute (i.e. relative to top GLV View)
-void GLV::setMouseDrag(space_t& x, space_t& y, int button, int clicks){
-	eventType(Event::MouseDrag);
-	
-	// LJP: This operates on all children, rather than just the focused View.
-	//findTarget(x, y);			//for setting relative coordinates
-	
-	if(absToRel(mFocusedView, x, y)){
-		x -= mFocusedView->l;
-		y -= mFocusedView->t;
-	}
-	
-	// LJP: Why update button state during a drag event?
-	mouse.updateButton(button, true, clicks);
+	setMouseMotion(x,y,Event::MouseDrag);
 }
 
 void GLV::setMousePos(int x, int y, space_t relx, space_t rely){

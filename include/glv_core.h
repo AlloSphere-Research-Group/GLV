@@ -448,14 +448,13 @@ public:
 
 	/// this function will modify the input coordinates to be relative to the target view's origin
 	void setMouseDrag(space_t& x, space_t& y);
-	
-	// LJP: Deprecated. This doesn't work right when multiple buttons are held down.
-	void setMouseDrag(space_t& x, space_t& y, int button, int clicks);
 
 	void setMousePos(int x, int y, space_t relx, space_t rely);
 
 	/// this function will modify the input coordinates to be relative to the target view's origin
 	void setMouseUp(space_t& x, space_t& y, int button, int clicks);
+
+	void setMouseMotion(space_t& x, space_t& y, Event::t e); // pass in MouseDrag or MouseMove event
 	
 	void setMouseMove(space_t& x, space_t& y);
 
@@ -471,10 +470,12 @@ protected:
 	Event::t mEventType;	// current event type
 	
 	// Returns whether the event should be bubbled to parent
-	bool doEventCallbacks(View& target, glv::Event::t e);
+	bool doEventCallbacks(View& target, Event::t e);
 	
 	void doFocusCallback(bool get); // Call get or lose focus callback of focused view
+
 	
+
 	// Keep track of all instances to avoid deletion order problems on program exit.
 	// This is necessary for Window since it has a pointer to a GLV.
 	static std::vector<GLV *>& instances();

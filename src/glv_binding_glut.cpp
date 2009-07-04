@@ -147,6 +147,8 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 	}
 }
 
+
+
 static void glutKeyboardCB(unsigned char key, int x, int y){ keyToGLV(key, true, false); }
 static void glutKeyboardUpCB(unsigned char key, int x, int y){ keyToGLV(key, false, false); }
 static void glutSpecialCB(int key, int x, int y){ keyToGLV(key, true, true); }
@@ -177,21 +179,28 @@ static void glutMouseCB(int btn, int state, int ax, int ay){
 	}
 }
 
-static void glutMotionCB(int ax, int ay){
-	//printf("GLUT: motion event x:%d y:%d\n", ax, ay);
+static void motionToGLV(int ax, int ay, glv::Event::t e){
 	GLV * g = WindowImpl::getGLV();
 	if(g){
 		space_t x = (space_t)ax;
 		space_t y = (space_t)ay;
 		space_t relx = x;
 		space_t rely = y;
-		
-		//glv->setMouseDrag(relx, rely, glv->mouse.button(), 0);
-		g->setMouseDrag(relx, rely);
+
+		g->setMouseMotion(relx, rely, e);
 		g->setMousePos((int)x, (int)y, relx, rely);
 		//modToGLV();	// GLUT complains about calling glutGetModifiers()
 		g->propagateEvent();
 	}
+}
+
+static void glutMotionCB(int ax, int ay){
+	//printf("GLUT: motion event x:%d y:%d\n", ax, ay);
+	motionToGLV(ax, ay, Event::MouseDrag);
+}
+
+static void glutPassiveMotionCB(int ax, int ay){
+	motionToGLV(ax, ay, Event::MouseMove);
 }
 
 static void glutReshapeCB(int w, int h){

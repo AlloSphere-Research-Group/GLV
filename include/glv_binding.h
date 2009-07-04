@@ -98,8 +98,8 @@ protected:
 	void implCtor(unsigned l, unsigned t, unsigned w, unsigned h);		// this should manually create the mImpl object
 	void implDtor();							// this should manually delete the mImpl object
 	void implFinalize();						// call any cleanup/termination functions in windowing impl
-	void implFullScreen();
-	void implGameMode();
+	void implFullScreen();						// go fullscreen without changing video resolution or refresh rate
+	void implGameMode();						// go fullscreen possibly changing video resolution or refresh rate
 	void implHideCursor(bool hide);
 	void implInitialize();						// initialize windowing impl
 	void implPosition(unsigned l, unsigned t);
