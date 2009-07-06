@@ -32,64 +32,86 @@ View::~View(){
 	mStyle->smartDelete();
 	
 	// remove myself from the view hierarchy
-	if(parent) remove();
+	remove();
 	
-	// TODO: make sure this isn't causing a space leak
+	// delete children
 	if(child){
-		// delete children
-		while(child->sibling) {
+	
+		// remove all child's siblings first
+		while(child->sibling){
 			// note that delete View also calls remove() automatically
-			delete child->sibling;
+			//delete child->sibling;
+			if(!child->sibling->smartDelete()){
+				child->sibling->remove();
+			}
 		}
 		
-		delete child;
+		// then remove the child
+		//delete child;
+		if(!child->smartDelete()){
+			child->remove();
+		}
 	}
 }
 
-// Add a child view to myself
-void View::add(View& newchild)
-{
 
-	View * op = newchild.parent;
-	
-	// This is problematic when the child does not have a parent
-	newchild.reanchor(op ? w-op->w : w, op ? h-op->h : h);
-	//if(op) newchild.reanchor(w - op->w, h - op->h);
+void View::add(View& newChild){
+	add(&newChild);
+	newChild.deletable(false); // static object, so don't delete!
+}
 
-	newchild.parent = this;
-	newchild.sibling = 0;
-	
-	//newchild.constrainWithinParent();	// keep within the bounds of the parent's rect
-	
-	if (child == 0) // I didn't have any children until now
-	{
-		child = &newchild;
-	} else {
-		// I have children already... so go to the end and add there
-		// default behaviour is to add at the end of the list, to be drawn last
-		View * lastChild = child;
-		while (lastChild->sibling != 0) lastChild = lastChild->sibling;
-		lastChild->sibling = &newchild;
+
+void View::add(View * newChild){
+
+	if(newChild){	// valid address?
+
+		View * op = newChild->parent; // old parent
+		
+		// TODO: This is problematic when the child does not already have a parent
+		newChild->reanchor(op ? w-op->w : w, op ? h-op->h : h);
+		//if(op) newchild.reanchor(w - op->w, h - op->h);
+
+		// remove from previous network
+		newChild->remove();
+		
+		// add to new network
+		newChild->parent = this;
+		
+		//newChild->constrainWithinParent();	// keep within the bounds of the parent's rect
+		
+		if(!child){ // I didn't have any children until now
+			child = newChild;
+		}
+		else{
+			// I have children already... so go to the end and add there
+			// default behaviour is to add at the end of the list, to be drawn last
+			View * lastChild = child;
+			while(lastChild->sibling) lastChild = lastChild->sibling;
+			lastChild->sibling = newChild;
+		}
 	}
 }
 
-void View::remove()
-{
+
+void View::remove(){
+	// TODO: what to do if a node has a sibling, but no parent?
+
 	// note that this doesn't delete the view, it just removes it from the hierarchy
-	if (parent && parent->child)	// sanity check: don't try to remove a window or an unattached view
-	{
-		if (parent->child == this)
-		{
+	if(parent && parent->child){	// sanity check: don't try to remove a window or an unattached view
+
+		// re-patch parent's child?
+		if(parent->child == this){
 			// I'm my parent's first child 
 			// - remove my reference, but keep the sibling list healthy
 			parent->child = sibling;
-			
-		} else {
+		}
+		
+		// re-patch the sibling chain?
+		else{
 			// I must be one of parent->child's siblings
 			View * temp = parent->child;
-			while (temp->sibling)
-			{
-				if (temp->sibling == this) {
+			while(temp->sibling){
+				if(temp->sibling == this) {
 					// I'm temp's sibling
 					// - remove my reference, keep the sibling list healthy
 					temp->sibling = this->sibling; 
@@ -98,8 +120,10 @@ void View::remove()
 				temp = temp->sibling;
 			}
 		}
+		
+		parent=0; sibling=0; // no more parent or sibling, but child is still valid
 	}
-	
+
 	// keep a reference to this 'lost' view in the removedViews list
 //	View::removedViews.push_back(this);
 }
@@ -107,9 +131,10 @@ void View::remove()
 
 void View::makeLastSibling(){
 	if(parent && sibling){
-		View * p = parent;
-		remove();
-		p->add(*this);
+//		View * p = parent;
+//		remove();
+//		p->add(this);
+		parent->add(this);
 	}
 }
 

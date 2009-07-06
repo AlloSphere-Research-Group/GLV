@@ -8,6 +8,7 @@
 #include "glv_observer_pattern.h"
 #include "glv_color.h"
 #include "glv_draw.h"
+#include "glv_util.h"
 
 #include <map>
 #include <string>
@@ -299,7 +300,7 @@ public:
 
 
 /// The base class of all GUI elements.
-class View : public Rect, public Notifier {
+class View : public Rect, public Notifier, public SmartPointer {
 
 friend class GLV;
 
@@ -324,14 +325,15 @@ public:
 	// TODO: move this stuff to a Node sub-class
 	View * parent;				///< My parent view
 	View * child;				///< My first child (next to be drawn)
-	View * sibling;				///< My next sibling view (drawn after all my children)	
+	View * sibling;				///< My next sibling view (drawn after all my children)
 	void add(View & child);		///< Add a child view to myself, and update linked lists
+	void add(View * child);		///< Add a child view to myself, and update linked lists
 	void makeLastSibling();
 	void remove();				///< Remove myself from the parent view, and update linked lists
 
 	/// Add a child view to myself
-	View& operator << (View& child){ add( child); return *this; }
-	View& operator << (View* child){ add(*child); return *this; }
+	View& operator << (View& newChild){ add(newChild); return *this; }
+	View& operator << (View* newChild){ add(newChild); return *this; }
 
 	
 	/// Map of event callback sequences.

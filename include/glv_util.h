@@ -22,10 +22,16 @@ public:
 	/// @param[in] del	whether the object is deleted with smartDelete()
 	SmartPointer(bool del=true): mDeletable(del){}
 
+	virtual ~SmartPointer(){}
+
 	/// Deletes object only if it is deletable, i.e. not a reference.
-	void smartDelete(){
+	
+	/// Returns true if the object destructor was called, false otherwise.
+	///
+	bool smartDelete(){
 		//printf("%p %c\n", this, mDeletable ? 'y' : 'n');
-		if(true == mDeletable) delete this;
+		if(deletable()){ delete this; return true; }
+		return false;
 	}
 	
 	/// Set whether the object can be deleted.
@@ -48,6 +54,24 @@ private:
 	bool mDeletable;
 };
 
+
+
+// Triply-linked node
+template <class T>
+class Node3{
+public:
+
+
+
+	T * parent() const { return mParent; }
+	T * child() const { return mChild; }
+	T * sibling() const { return mSibling; }
+
+private:
+	T * mParent;			// My parent view
+	T * mChild;				// My first child (next to be drawn)
+	T * mSibling;			// My next sibling view (drawn after all my children)
+};
 
 
 
