@@ -7,6 +7,7 @@ SRC =	test_examples.cpp \
 	test_icon.cpp \
 	test_multi_window.cpp \
 	test_notifications.cpp \
+	test_units.cpp \
 	test_widgets.cpp \
 	test_window.cpp
 

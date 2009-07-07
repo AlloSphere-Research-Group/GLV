@@ -57,21 +57,199 @@ private:
 
 
 // Triply-linked node
+
+// Getters must return pointers since it is possible that some linked nodes
+// are zero, i.e. nonexistant.
 template <class T>
 class Node3{
 public:
 
+	Node3(): mParent(0), mChild(0), mSibling(0){}
 
+	virtual ~Node3(){ remove(); }
 
-	T * parent() const { return mParent; }
-	T * child() const { return mChild; }
-	T * sibling() const { return mSibling; }
+	void makeLastSibling();
+
+	void pushBack(Node3 * node);		///< Add node to back of my children
+	void pushBack(Node3 & node);		///< Add node to back of my children
+	
+	/// Remove myself from parent. Does not delete instance.
+	
+	/// This method should always be called from the instance's destructor.
+	///
+	void remove();
+
+	void child(Node3 * o){ mChild=o; }
+	void parent(Node3 * o){ mParent=o; }
+	void sibling(Node3 * o){ mSibling=o; }
+	void child(Node3& o){ mChild=&o; }
+	void parent(Node3& o){ mParent=&o; }
+	void sibling(Node3& o){ mSibling=&o; }
+
+	Node3 * child() const { return mChild; }
+	Node3 * parent() const { return mParent; }
+	Node3 * sibling() const { return mSibling; }
+
+	Node3 * lastSibling();
+	
+	bool firstChild() const { return parent() && (parent()->child() == this); }
 
 private:
-	T * mParent;			// My parent view
-	T * mChild;				// My first child (next to be drawn)
-	T * mSibling;			// My next sibling view (drawn after all my children)
+	Node3 * mParent;			// My parent view
+	Node3 * mChild;				// My first child (next to be drawn)
+	Node3 * mSibling;			// My next sibling view (drawn after all my children)
 };
+
+
+
+template <class T>
+void Node3<T>::pushBack(Node3 * node){
+	if(node) pushBack(*node);
+}
+
+template <class T>
+void Node3<T>::pushBack(Node3 & node){
+	node.remove();
+	node.parent(this);
+	
+	// I didn't have any children until now
+	if(!child())	child(node);
+	else			child()->lastSibling()->sibling(node);
+}
+
+template <class T>
+Node3<T> * Node3<T>::lastSibling(){
+	Node3 * t = this;
+	while(t->sibling()) t = t->sibling();
+	return t;
+}
+
+template <class T>
+void Node3<T>::makeLastSibling(){
+	if(parent() && sibling()){
+		parent()->pushBack(this); // this automatically removes node
+	}
+}
+
+template <class T>
+void Node3<T>::remove(){
+
+	if(parent() && parent()->child()){
+
+		// re-patch parent's child?
+		if(firstChild()){
+			// remove my reference, but keep the sibling list healthy
+			parent()->child(sibling());
+		}
+		
+		// re-patch the sibling chain?
+		else{
+			// I must be one of parent->child's siblings
+			Node3 * temp = parent()->child();
+			while(temp->sibling()){
+				if(temp->sibling() == this) {
+					// I'm temp's sibling
+					// - remove my reference, keep the sibling list healthy
+					temp->sibling(this->sibling()); 
+					break; 
+				}
+				temp = temp->sibling();
+			}
+		}
+		
+		parent(0); sibling(0); // no more parent or sibling, but child is still valid
+	}
+}
+
+
+//template <class T>
+//class Node3{
+//public:
+//
+//	Node3(): mParent(0), mChild(0), mSibling(0){}
+//
+//	virtual ~Node3(){ remove(); }
+//
+//	void add(T * node);		///< Add node to my children
+//	void add(T & node);		///< Add node to my children
+//	
+//	/// Remove myself from parent. Does not delete instance.
+//	
+//	/// This method should always be called from the instance's destructor.
+//	///
+//	void remove();
+//
+//	void setAsFirstChild();			///< Make myself the first child
+//	void setAsLastChild();			///< Make myself the last child
+//
+//	void child(T * o){ mChild=o; }
+//	void parent(T * o){ mParent=o; }
+//	void sibling(T * o){ mSibling=o; }
+//
+//	T * child() const { return mChild; }
+//	T * parent() const { return mParent; }
+//	T * sibling() const { return mSibling; }
+//
+//private:
+//	T * mParent;			// My parent view
+//	T * mChild;				// My first child (next to be drawn)
+//	T * mSibling;			// My next sibling view (drawn after all my children)
+//};
+//
+//
+//
+//template <class T>
+//void Node3<T>::add(T * node){
+//	if(node) add(*node);
+//}
+//
+//template <class T>
+//void Node3<T>::add(T & node){
+//	node.remove();
+//	node.parent(this);
+//	
+//	if(!child()){ // I didn't have any children until now
+//		child(&node);
+//	}
+//	else{
+//		// I have children already... so go to the end and add there
+//		// default behaviour is to add at the end of the list, to be drawn last
+//		T * lastChild = child();
+//		while(lastChild->sibling()) lastChild = lastChild->sibling();
+//		lastChild->sibling(&node);
+//	}
+//}
+//
+//template <class T>
+//void Node3<T>::remove(){
+//
+//	if(parent() && parent()->child()){
+//
+//		// re-patch parent's child?
+//		if(parent()->child() == this){
+//			// I'm my parent's first child 
+//			// - remove my reference, but keep the sibling list healthy
+//			parent()->child(sibling());
+//		}
+//		
+//		// re-patch the sibling chain?
+//		else{
+//			// I must be one of parent->child's siblings
+//			T * temp = parent()->child();
+//			while(temp->sibling()){
+//				if(temp->sibling() == this) {
+//					// I'm temp's sibling
+//					// - remove my reference, keep the sibling list healthy
+//					temp->sibling(this->sibling()); 
+//					break; 
+//				}
+//				temp = temp->sibling();
+//			}
+//		}
+//		
+//		parent(0); sibling(0); // no more parent or sibling, but child is still valid
+//	}
+//}
 
 
 

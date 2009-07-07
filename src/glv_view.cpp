@@ -41,16 +41,12 @@ View::~View(){
 		while(child->sibling){
 			// note that delete View also calls remove() automatically
 			//delete child->sibling;
-			if(!child->sibling->smartDelete()){
-				child->sibling->remove();
-			}
+			if(!child->sibling->smartDelete()) child->sibling->remove();
 		}
 		
 		// then remove the child
 		//delete child;
-		if(!child->smartDelete()){
-			child->remove();
-		}
+		if(!child->smartDelete()) child->remove();
 	}
 }
 
