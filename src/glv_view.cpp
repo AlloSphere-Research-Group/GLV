@@ -57,38 +57,37 @@ View::~View(){
 
 
 void View::add(View& newChild){
-	add(&newChild);
+
+	View * op = newChild.parent; // old parent
+	
+	// TODO: This is problematic when the child does not already have a parent
+	newChild.reanchor(op ? w-op->w : w, op ? h-op->h : h);
+	//if(op) newchild.reanchor(w - op->w, h - op->h);
+
+	// remove from previous network
+	newChild.remove();
+	
+	// add to new network
+	newChild.parent = this;
+	
+	//newChild->constrainWithinParent();	// keep within the bounds of the parent's rect
+	
+	if(!child){ // I didn't have any children until now
+		child = &newChild;
+	}
+	else{
+		// I have children already... so go to the end and add there
+		// default behaviour is to add at the end of the list, to be drawn last
+		View * lastChild = child;
+		while(lastChild->sibling) lastChild = lastChild->sibling;
+		lastChild->sibling = &newChild;
+	}
 }
 
 
 void View::add(View * newChild){
-
 	if(newChild){	// valid address?
-
-		View * op = newChild->parent; // old parent
-		
-		// TODO: This is problematic when the child does not already have a parent
-		newChild->reanchor(op ? w-op->w : w, op ? h-op->h : h);
-		//if(op) newchild.reanchor(w - op->w, h - op->h);
-
-		// remove from previous network
-		newChild->remove();
-		
-		// add to new network
-		newChild->parent = this;
-		
-		//newChild->constrainWithinParent();	// keep within the bounds of the parent's rect
-		
-		if(!child){ // I didn't have any children until now
-			child = newChild;
-		}
-		else{
-			// I have children already... so go to the end and add there
-			// default behaviour is to add at the end of the list, to be drawn last
-			View * lastChild = child;
-			while(lastChild->sibling) lastChild = lastChild->sibling;
-			lastChild->sibling = newChild;
-		}
+		add(*newChild);
 	}
 }
 
