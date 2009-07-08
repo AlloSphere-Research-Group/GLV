@@ -53,18 +53,12 @@ int main(int argc, char ** argv){
 		View v1s;
 		View * v1d = new View;
 		
-		(*v0d) << v1d << v1s;
-		
-		assert(!v1s.deletable());
-		assert(v1d->deletable());
+		assert(v0d->dynamicAlloc());
+		assert(!v1s.dynamicAlloc());
+
+		*v0d << v1s << v1d;
 		
 		delete v0d;
-		
-		// how to check if memory is valid???
-		//assert(0 == v1d);
-		assert(&v1s);
-		assert(!v1s.parent);
-		assert(!v1s.sibling);
 	}
 	
 	return 0;

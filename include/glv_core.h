@@ -300,7 +300,7 @@ public:
 
 
 /// The base class of all GUI elements.
-class View : public Rect, public Notifier, public SmartPointer {
+class View : public Rect, public Notifier, public SmartObject<View> {
 
 friend class GLV;
 
@@ -334,7 +334,6 @@ public:
 	/// Add a child view to myself
 	View& operator << (View& newChild){ add(newChild); return *this; }
 	View& operator << (View* newChild){ add(newChild); return *this; }
-
 	
 	/// Map of event callback sequences.
 	std::map<Event::t, eventCallbackList> callbackLists;
@@ -396,6 +395,10 @@ protected:
 	void drawBack() const;			// Draw the back rect
 	void drawBorder() const;		// Draw the border
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
+	
+	//View& operator*(){ return *this; }
+	//const View& operator*() const { return *this; }
+	//View* operator&(){ return this; }
 };
 
 

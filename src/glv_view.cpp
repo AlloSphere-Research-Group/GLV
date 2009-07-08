@@ -41,19 +41,23 @@ View::~View(){
 		while(child->sibling){
 			// note that delete View also calls remove() automatically
 			//delete child->sibling;
-			if(!child->sibling->smartDelete()) child->sibling->remove();
+
+			// If View was dynamically allocated with 'new', then delete
+			if(child->sibling->dynamicAlloc()) delete child->sibling;
+			// Otherwise, just remove from hierarchy. Compiler frees memory...
+			else child->sibling->remove();
 		}
 		
 		// then remove the child
 		//delete child;
-		if(!child->smartDelete()) child->remove();
+		if(child->dynamicAlloc()) delete child;
+		else child->remove();
 	}
 }
 
 
 void View::add(View& newChild){
 	add(&newChild);
-	newChild.deletable(false); // static object, so don't delete!
 }
 
 
