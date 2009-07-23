@@ -38,6 +38,8 @@ public:
 	FunctionPlot& stroke(float width);				///< Set stroke width of pen
 	FunctionPlot& plotColor(const Color& c);		///< Set plotting color
 	
+	void zero();									///< Zeroes all buffer elements
+	
 	float * bufferX();								///< Returns internal x value buffer
 	float * bufferY();								///< Returns internal y value buffer
 	Color * bufferColor();							///< Returns internal color (z) buffer

@@ -81,4 +81,9 @@ void FunctionPlot::onDraw(){
 	}
 }
 
+void FunctionPlot::zero(){
+	if(mBufX) for(int i=0; i<size(); ++i) mBufX[i]=0.f;
+	if(mBufY) for(int i=0; i<size(); ++i) mBufY[i]=0.f;
+}
+
 } // glv::
