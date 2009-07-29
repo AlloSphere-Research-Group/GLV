@@ -45,8 +45,8 @@ public:
 	float * bufferY();								///< Returns internal y value buffer
 	Color * bufferColor();							///< Returns internal color (z) buffer
 
+	virtual const char * className() const { return "FunctionPlot"; }
 	virtual void onDraw();
-	
 	//virtual bool onEvent(Event::t e, GLV& glv);
 
 protected:
