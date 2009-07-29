@@ -185,7 +185,7 @@ public:
 	void arrangement(const char * v);
 
 	/// Get arrangement string
-	const char * arrangement() const { return mAlign; }
+	const std::string& arrangement() const { return mAlign; }
 
 	virtual const char * className() const { return "Table"; }
 
@@ -200,7 +200,7 @@ protected:
 
 	int mSize1, mSize2;
 	std::vector<Cell> mCells;
-	const char * mAlign;
+	std::string mAlign;
 	space_t mPad1, mPad2;
 	
 	bool isAlignCode(char c){

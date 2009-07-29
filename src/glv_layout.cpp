@@ -136,7 +136,7 @@ Rect& LayoutGrid::operator()(){
 
 
 Table::Table(const char * a, space_t padX, space_t padY, const Rect& r)
-:	Group(r), mSize1(0), mSize2(0), mAlign(0), mPad1(padX), mPad2(padY)
+:	Group(r), mSize1(0), mSize2(0), mPad1(padX), mPad2(padY)
 {	arrangement(a); }
 
 
@@ -151,6 +151,7 @@ void Table::arrange(){
 	
 	if(numChildren > (int)mCells.size()){
 		std::string a = mAlign;
+		int sizeCells = mCells.size();
 		int numCopies = (numChildren-1)/mCells.size();
 		for(int i=0; i<numCopies; ++i){ a+=","; a+=mAlign; }
 		arrangement(a.c_str());
@@ -277,6 +278,8 @@ void Table::arrangement(const char * va){
 			count1=false;
 		}
 	}
+	
+	//printf("%d %d\n", mSize1, mSize2);
 
 	// compute and store geometry of table cells
 	v = va;
