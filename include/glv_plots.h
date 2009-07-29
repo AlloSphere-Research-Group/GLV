@@ -35,6 +35,7 @@ public:
 	FunctionPlot& rangeY(float ext);				///< Set range of y axis to [-ext,ext]
 	FunctionPlot& rangeX(float min, float max);		///< Set range of x axis to [min,max]
 	FunctionPlot& rangeY(float min, float max);		///< Set range of y axis to [min,max]
+	FunctionPlot& showAxes(bool v);					///< Set whether to show axes
 	FunctionPlot& stroke(float width);				///< Set stroke width of pen
 	FunctionPlot& plotColor(const Color& c);		///< Set plotting color
 	
@@ -56,6 +57,7 @@ protected:
 	float mMinX, mMaxX, mMinY, mMaxY;
 	int mDrawPrim;
 	float mStroke;
+	bool mShowAxes;
 	void freeX(){ if(mBufX) delete[] mBufX; mBufX=0; }
 	void freeY(){ if(mBufY) delete[] mBufY; mBufY=0; }
 	void freeCol(){ if(mBufCol) delete[] mBufCol; mBufCol=0; }

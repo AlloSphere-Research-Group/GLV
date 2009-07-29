@@ -8,7 +8,8 @@ namespace glv{
 #define CTOR_INIT_LIST \
 	View(r), mSize(size), mBufX(0), mBufY(0), mBufCol(0), mPlotColor(0),\
 	mMinX(-1), mMaxX(1), mMinY(-1), mMaxY(1), \
-	mDrawPrim(draw::LineStrip), mStroke(1)
+	mDrawPrim(draw::LineStrip), mStroke(1), \
+	mShowAxes(true)
 
 FunctionPlot::FunctionPlot(const Rect& r, int size)
 :	CTOR_INIT_LIST
@@ -32,6 +33,7 @@ FunctionPlot& FunctionPlot::rangeX(float ext){ return rangeX(-ext, ext); }
 FunctionPlot& FunctionPlot::rangeY(float ext){ return rangeY(-ext, ext); }
 FunctionPlot& FunctionPlot::rangeX(float min, float max){ mMaxX=max; mMinX=min; return *this; }
 FunctionPlot& FunctionPlot::rangeY(float min, float max){ mMaxY=max; mMinY=min; return *this; }
+FunctionPlot& FunctionPlot::showAxes(bool v){ mShowAxes=v; return *this; }	
 FunctionPlot& FunctionPlot::stroke(float width){ mStroke=width; return *this; }
 
 float * FunctionPlot::bufferX(){ if(0 == mBufX) allocX(); return mBufX; }
@@ -48,7 +50,6 @@ void FunctionPlot::onDraw(){
 	using namespace glv::draw;
 
 	enable(PointSmooth);
-	draw::stroke(mStroke);
 
 	float mulX = w / (mMaxX - mMinX);
 	float addX = -mulX*mMinX;
@@ -56,8 +57,21 @@ void FunctionPlot::onDraw(){
 	float addY = mulY*mMinY;
 
 	if(0 == mBufCol){
-		color(mPlotColor ? *mPlotColor : colors().fore);
+		
 
+		// draw axes
+		if(mShowAxes){
+			color(colors().text);
+			lineWidth(1);
+			begin(Lines);
+				if(mBufY) vertex(0,addY); vertex(w,addY);
+				if(mBufX) vertex(addX,0); vertex(addX,h);
+			end();
+		}
+
+		// draw curve
+		color(mPlotColor ? *mPlotColor : colors().fore);
+		draw::stroke(mStroke);
 		begin(mDrawPrim);
 		
 			if(mBufX && mBufY){			// xy-plot
