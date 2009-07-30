@@ -96,10 +96,11 @@ public:
 	TRect<T> extent() const;
 	
 	/// Calculates the intersection of the two Rects.
-	void intersection(const TRect<T> & check, TRect<T> & intersection) const;
+	void intersection(const TRect<T>& check, TRect<T>& intersection) const;
 	
-	bool intersects(const TRect<T> & rect) const;///< Returns whether the two Rects intersect.
+	bool intersects(const TRect<T>& rect) const;///< Returns whether the two Rects intersect.
 	bool isVertical() const;					///< Returns true if h > w, false otherwise.
+	void unionOf(const TRect<T>& check, TRect<T>& result) const;
 	bool withinXBounds(T xmin, T xmax) const;	///< Returns whether the TRect is within the x range.
 	bool withinYBounds(T ymin, T ymax) const;	///< Returns whether the TRect is within the y range.
 
@@ -199,6 +200,18 @@ TEM inline bool TRect<T>::isVertical() const { return h > w; }
 
 TEM inline bool	TRect<T>::withinXBounds(T xmin, T xmax) const {
 	return (l < xmax) && (right() > xmin);
+}
+
+TEM void TRect<T>::unionOf(const TRect<T>& c, TRect<T>& r) const {
+	T tl = l;
+	T tt = t;
+	T tb = bottom();
+	T tr = right();
+
+	r.l = c.l < tl ? c.l : tl;
+	r.t = c.t < tt ? c.t : tt;
+	r.right(c.right() > tr ? c.right() : tr);
+	r.bottom(c.bottom() > tb ? c.bottom() : tb);
 }
 
 TEM inline bool	TRect<T>::withinYBounds(T ymin, T ymax) const {

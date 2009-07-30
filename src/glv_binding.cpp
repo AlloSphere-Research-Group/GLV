@@ -77,6 +77,13 @@ void Window::dimensions(const Dimensions& d){
 	position(d.l, d.t);
 }
 
+void Window::fit(){
+	if(glv()){
+		mGLV->fit();
+		resize(mGLV->w, mGLV->h);
+	}
+}
+
 void Window::gameModeToggle(){ gameMode(!gameMode()); }
 
 void Window::gameMode(bool on){

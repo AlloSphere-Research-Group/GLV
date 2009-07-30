@@ -334,6 +334,7 @@ public:
 	/// Add a child view to myself
 	View& operator << (View& newChild){ add(newChild); return *this; }
 	View& operator << (View* newChild){ add(newChild); return *this; }
+
 	
 	/// Map of event callback sequences.
 	std::map<Event::t, eventCallbackList> callbackLists;
@@ -369,6 +370,7 @@ public:
 	///
 	View * findTarget(space_t& x, space_t& y);
 
+	void fit();									///< Fit geometry so all children are visible
 	void focused(bool b);						///< Set whether I'm focused
 	void move(space_t x, space_t y);			///< Translate constraining within parent.
 	void on(Event::t e, eventCallback cb=0);	///< Set first callback for a specific event type.
@@ -395,10 +397,6 @@ protected:
 	void drawBack() const;			// Draw the back rect
 	void drawBorder() const;		// Draw the border
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
-	
-	//View& operator*(){ return *this; }
-	//const View& operator*() const { return *this; }
-	//View* operator&(){ return this; }
 };
 
 

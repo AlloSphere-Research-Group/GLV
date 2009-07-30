@@ -40,7 +40,7 @@ public:
 	);
 
 	~Window();
-
+	
 	bool active() const { return mIsActive; }			///< Returns window active
 	unsigned bottom() const { Dimensions d=dimensions(); return d.t+d.h; }	///< Returns bottom edge position
 	Dimensions dimensions() const;						///< Get dimensions of window
@@ -58,6 +58,7 @@ public:
 	unsigned width() const { return dimensions().w; }	///< Get window width
 
 	void dimensions(const Dimensions& d);				///< Set dimensions of window
+	void fit();
 	void fullScreen(bool on);							///< Set fullscreen mode
 	void fullScreenToggle();							///< Toggle fullscreen
 	void gameMode(bool on);								///< Set game mode

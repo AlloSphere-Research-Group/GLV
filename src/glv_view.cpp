@@ -41,11 +41,11 @@ View::~View(){
 		while(child->sibling){
 			// note that delete View also calls remove() automatically
 			//delete child->sibling;
-
-			// If View was dynamically allocated with 'new', then delete
+			// If View was allocated with 'new', then delete...
 			if(child->sibling->dynamicAlloc()) delete child->sibling;
-			// Otherwise, just remove from hierarchy. Compiler frees memory...
+			// ... otherwise just remove from hierarchy. Compiler frees memory...
 			else child->sibling->remove();
+			
 		}
 		
 		// then remove the child
@@ -277,6 +277,21 @@ View * View::findTarget(space_t &x, space_t &y){
 	}
 
 	return target;
+}
+
+
+void View::fit(){
+	View * c = child;
+	if(c){			
+		Rect r(*c);
+		
+		while(c->sibling){
+			c = c->sibling;
+			r.unionOf(*c, r);
+		}
+
+		extent(r.w, r.h);
+	}
 }
 
 
