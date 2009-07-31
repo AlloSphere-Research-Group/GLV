@@ -30,6 +30,8 @@ public:
 	int size() const { return mSize; }				///< Get size of internal data buffer(s)
 	
 	FunctionPlot& drawType(int primitive);			///< Set drawing primitive type
+	FunctionPlot& center();							///< Center axes
+	FunctionPlot& plotColor(const Color& c);		///< Set plotting color
 	FunctionPlot& range(float ext);					///< Set range of x & y axes to [-ext,ext]
 	FunctionPlot& rangeX(float ext);				///< Set range of x axis to [-ext,ext]
 	FunctionPlot& rangeY(float ext);				///< Set range of y axis to [-ext,ext]
@@ -37,7 +39,7 @@ public:
 	FunctionPlot& rangeY(float min, float max);		///< Set range of y axis to [min,max]
 	FunctionPlot& showAxes(bool v);					///< Set whether to show axes
 	FunctionPlot& stroke(float width);				///< Set stroke width of pen
-	FunctionPlot& plotColor(const Color& c);		///< Set plotting color
+	FunctionPlot& tickMajor(float d);				///< Set major tick distance (<= 0 turns off)
 	
 	void zero();									///< Zeroes all buffer elements
 	
@@ -47,7 +49,7 @@ public:
 
 	virtual const char * className() const { return "FunctionPlot"; }
 	virtual void onDraw();
-	//virtual bool onEvent(Event::t e, GLV& glv);
+	virtual bool onEvent(Event::t e, GLV& glv);
 
 protected:
 	int mSize;
@@ -57,6 +59,7 @@ protected:
 	float mMinX, mMaxX, mMinY, mMaxY;
 	int mDrawPrim;
 	float mStroke;
+	float mTickMajor;
 	bool mShowAxes;
 	void freeX(){ if(mBufX) delete[] mBufX; mBufX=0; }
 	void freeY(){ if(mBufY) delete[] mBufY; mBufY=0; }
@@ -64,6 +67,7 @@ protected:
 	void allocX(){ freeX(); mBufX = new float[size()]; }
 	void allocY(){ freeY(); mBufY = new float[size()]; }
 	void allocCol(){ freeCol(); mBufCol = new Color[size()]; }
+	void sort(float& a, float& b){ if(a>b){ float t=a; a=b; b=t; }  }
 };
 
 
