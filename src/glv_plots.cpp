@@ -196,6 +196,7 @@ bool FunctionPlot::onEvent(Event::t e, GLV& g){
 
 FunctionPlot& FunctionPlot::resize(int n){
 	if(n != size()){
+		mSize = n;
 		if(mBufX) allocX();
 		if(mBufY) allocY();
 		if(mBufCol) allocCol();
