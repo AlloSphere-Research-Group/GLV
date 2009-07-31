@@ -252,7 +252,7 @@
 		16A93E5F1002BA4400F5404E /* TestWindowGLUT */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestWindowGLUT; sourceTree = BUILT_PRODUCTS_DIR; };
 		16A93E6C1002BAB600F5404E /* test_units.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_units.cpp; sourceTree = "<group>"; };
 		16D360670D9B2915003E59D0 /* test_examples.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_examples.cpp; sourceTree = "<group>"; };
-		16D360840D9B2927003E59D0 /* TestExamples_GLUT.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TestExamples_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		16D360840D9B2927003E59D0 /* TestExamples_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestExamples_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16D3761B0E46418A00BCCD39 /* test_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_window.cpp; sourceTree = "<group>"; };
 		16D5B30D0D95925C005092B6 /* glv_conf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_conf.h; sourceTree = "<group>"; };
 		16D5E71F0D91BD2D001153DA /* design.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = design.txt; path = ../doc/design.txt; sourceTree = SOURCE_ROOT; };
@@ -282,8 +282,8 @@
 		7E55D1DE0CCE5A4400196525 /* glv_draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_draw.h; sourceTree = "<group>"; };
 		7E55D4780CCE7E1000196525 /* TestWidgets_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestWidgets_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E55D4C30CCE80FC00196525 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
-		7E8BD4EB0D81ECA800D3B32C /* GLV_APPL-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "GLV_APPL-Info.plist"; sourceTree = "<group>"; };
-		7E8BD4EC0D81ECA800D3B32C /* GLV_FMWK-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "GLV_FMWK-Info.plist"; sourceTree = "<group>"; };
+		7E8BD4EB0D81ECA800D3B32C /* GLV_APPL-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "GLV_APPL-Info.plist"; sourceTree = "<group>"; };
+		7E8BD4EC0D81ECA800D3B32C /* GLV_FMWK-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "GLV_FMWK-Info.plist"; sourceTree = "<group>"; };
 		B917A7410BA2432E00E819AF /* todo */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = todo; path = ../doc/todo; sourceTree = SOURCE_ROOT; };
 		B917A7540BA2434200E819AF /* glv_color.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = glv_color.cpp; sourceTree = "<group>"; };
 		B917A7550BA2434200E819AF /* glv_glv.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = glv_glv.cpp; sourceTree = "<group>"; };

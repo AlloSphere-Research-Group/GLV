@@ -228,6 +228,7 @@ void GLV::setMouseDown(space_t& x, space_t& y, int button, int clicks){
 	eventType(Event::MouseDown);	
 	//if(button == Mouse::Left)
 		setFocus(findTarget(x, y));
+	mouse.posRel(x,y);
 	mouse.updateButton(button, true, clicks);
 }
 

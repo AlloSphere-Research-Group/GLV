@@ -209,8 +209,8 @@ public:
 	// Accessors
 	space_t x() const;				///< Current x position.
 	space_t y() const;				///< Current y position.
-	space_t x(int button) const;	///< Get button's last down x position.
-	space_t y(int button) const;	///< Get button's last down y position.
+	space_t x(int button) const;	///< Get button's last down absolute x position.
+	space_t y(int button) const;	///< Get button's last down absolute y position.
 	space_t w() const;				///< Current wheel position.
 	
 	space_t dx() const;				///< Current x velocity.
@@ -222,6 +222,8 @@ public:
 
 	space_t xRel() const;			///< Current x position relative to current listener.
 	space_t yRel() const;			///< Current y position relative to current listener.
+	space_t xRel(int button) const;	///< Get button's last down relative x position.
+	space_t yRel(int button) const;	///< Get button's last down relative y position.
 	
 	int button() const;				///< Last event button number.
 	int clicks() const;				///< Number of sequential clicks of buttons.
@@ -248,7 +250,9 @@ protected:
 	bool b[GLV_MAX_MOUSE_BUTTONS];		// button-down states
 	space_t bx[GLV_MAX_MOUSE_BUTTONS];	// button-down absolute coordinates
 	space_t by[GLV_MAX_MOUSE_BUTTONS];	
-	
+	space_t bxRel[GLV_MAX_MOUSE_BUTTONS];	// button-down relative coordinates
+	space_t byRel[GLV_MAX_MOUSE_BUTTONS];	
+
 	int	mButton;
 	int mClicks;
 	bool mIsDown;
@@ -530,6 +534,8 @@ inline space_t Mouse::ddy() const { return mY[0] - 2 * mY[1] + mY[2];; }
 inline space_t Mouse::ddw() const { return mW[0] - 2 * mW[1] + mW[2];; }
 inline space_t Mouse::xRel() const { return mXRel; }
 inline space_t Mouse::yRel() const { return mYRel; }
+inline space_t Mouse::xRel(int button) const { return bxRel[button]; }
+inline space_t Mouse::yRel(int button) const { return byRel[button]; }
 inline int Mouse::button() const { return mButton; }
 inline int Mouse::clicks() const { return mClicks; }
 inline bool Mouse::isDown() const { return mIsDown; }

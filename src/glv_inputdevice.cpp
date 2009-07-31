@@ -25,7 +25,7 @@ Mouse::Mouse()
 	
 	for (int i=0; i<GLV_MAX_MOUSE_BUTTONS; i++){
 		b[i] = false;
-		bx[i] = by[i] = 0;
+		bx[i] = by[i] = bxRel[i] = byRel[i] = 0;
 	}
 }
 
@@ -49,8 +49,10 @@ void Mouse::updateButton(int btn, bool pressed, int clicks){
 		mButton = btn;
 		mClicks = clicks;
 		mIsDown = b[mButton] = pressed;
-		bx[mButton] = mX[0];
-		by[mButton] = mY[0];
+		bx[mButton] = x();
+		by[mButton] = y();
+		bxRel[mButton] = xRel();
+		byRel[mButton] = yRel();
 	}
 }
 
