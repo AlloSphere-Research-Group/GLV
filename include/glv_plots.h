@@ -38,6 +38,7 @@ public:
 	FunctionPlot& rangeY(float ext);				///< Set range of y axis to [-ext,ext]
 	FunctionPlot& rangeX(float min, float max);		///< Set range of x axis to [min,max]
 	FunctionPlot& rangeY(float min, float max);		///< Set range of y axis to [min,max]
+	FunctionPlot& resize(int n);					///< Change size of internal buffers
 	FunctionPlot& showAxes(bool v);					///< Set whether to show axes
 	FunctionPlot& stroke(float width);				///< Set stroke width of pen
 	FunctionPlot& tickMajor(float d);				///< Set major tick distance (<= 0 turns off)
