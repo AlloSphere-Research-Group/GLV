@@ -31,6 +31,7 @@ public:
 	
 	FunctionPlot& drawType(int primitive);			///< Set drawing primitive type
 	FunctionPlot& center();							///< Center axes
+	FunctionPlot& dotEnds(bool v);					///< Set whether to draw dots at end points of 2-D plot
 	FunctionPlot& plotColor(const Color& c);		///< Set plotting color
 	FunctionPlot& range(float ext);					///< Set range of x & y axes to [-ext,ext]
 	FunctionPlot& rangeX(float ext);				///< Set range of x axis to [-ext,ext]
@@ -60,7 +61,7 @@ protected:
 	int mDrawPrim;
 	float mStroke;
 	float mTickMajor;
-	bool mShowAxes;
+	bool mShowAxes, mDotEnds;
 	void freeX(){ if(mBufX) delete[] mBufX; mBufX=0; }
 	void freeY(){ if(mBufY) delete[] mBufY; mBufY=0; }
 	void freeCol(){ if(mBufCol) delete[] mBufCol; mBufCol=0; }

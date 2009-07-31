@@ -9,7 +9,7 @@ namespace glv{
 	View(r), mSize(size), mBufX(0), mBufY(0), mBufCol(0), mPlotColor(0),\
 	mMinX(-1), mMaxX(1), mMinY(-1), mMaxY(1), \
 	mDrawPrim(draw::LineStrip), mStroke(1), mTickMajor(1), \
-	mShowAxes(true)
+	mShowAxes(true), mDotEnds(false)
 
 FunctionPlot::FunctionPlot(const Rect& r, int size)
 :	CTOR_INIT_LIST
@@ -34,6 +34,7 @@ FunctionPlot& FunctionPlot::center(){
 	rangeY((mMaxY-mMinY)*0.5);
 }
 
+FunctionPlot& FunctionPlot::dotEnds(bool v){ mDotEnds=v; return *this; }
 FunctionPlot& FunctionPlot::range(float v){ rangeX(v); return rangeY(v); }
 FunctionPlot& FunctionPlot::rangeX(float v){ return rangeX(-v, v); }
 FunctionPlot& FunctionPlot::rangeY(float v){ return rangeY(-v, v); }
@@ -100,20 +101,38 @@ void FunctionPlot::onDraw(){
 		}
 	}
 
-	if(0 == mBufCol){
+	//if(0 == mBufCol){
 
 		// draw curve
 		color(mPlotColor ? *mPlotColor : colors().fore);
+		
+		if(mBufX && mBufY && mDotEnds){
+			
+			pointSize(mStroke*4);
+			draw::enable(PointSmooth);
+			begin(Points);
+				if(mBufCol) color(mBufCol[0]);
+				vertex(mBufX[0]*mulX+addX, mBufY[0]*mulY+addY);
+				int e = size()-1;
+				if(mBufCol) color(mBufCol[e]);
+				vertex(mBufX[e]*mulX+addX, mBufY[e]*mulY+addY);
+			end();
+		}
+		
 		draw::stroke(mStroke);
 		begin(mDrawPrim);
 		
 			if(mBufX && mBufY){			// xy-plot
-				for(int i=0; i<size(); ++i) vertex(mBufX[i]*mulX+addX, mBufY[i]*mulY+addY);
+				for(int i=0; i<size(); ++i){
+					if(mBufCol) color(mBufCol[i]);
+					vertex(mBufX[i]*mulX+addX, mBufY[i]*mulY+addY);
+				}
 			}
 			
 			else if(mBufY && !mBufX){	// y-plot
 				double dx = w/(size()-1), x=0;
 				for(int i=0; i<size(); ++i){
+					if(mBufCol) color(mBufCol[i]);
 					vertex(x, mBufY[i]*mulY+addY); x+=dx;
 				}
 			}
@@ -121,11 +140,12 @@ void FunctionPlot::onDraw(){
 			else if(mBufX && !mBufY){	// x-plot
 				double dy = h/(size()-1), y=0;
 				for(int i=0; i<size(); ++i){
+					if(mBufCol) color(mBufCol[i]);
 					vertex(mBufX[i]*mulX+addX, y); y+=dy;
 				}
 			}
 		end();
-	}
+	//}
 }
 
 
