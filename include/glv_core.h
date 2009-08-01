@@ -52,6 +52,7 @@ enum{
 	FocusToTop		=1<< 7, /**< Whether to bring to top when focused */
 	HitTest			=1<< 8,	/**< Whether View can be clicked */
 	Controllable	=1<< 9,	/**< Whether View can be controlled through events */
+	AlwaysBubble	=1<<10, /**< Whether to bubble all events to parent */
 	
 	DrawGrid		=1<<28,	/**< Whether to draw grid lines between widget elements */
 	MutualExc		=1<<29,	/**< Whether only one element of a widget can be non-zero */

@@ -63,7 +63,7 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 		if(*it) bubble |= (*it)(&v, *this);
 	}
 	
-	return bubble;
+	return bubble | v.enabled(AlwaysBubble);
 }
 
 void GLV::doFocusCallback(bool get){
