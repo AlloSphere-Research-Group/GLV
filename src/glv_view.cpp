@@ -9,7 +9,7 @@ namespace glv{
 	Notifier(),\
 	parent(0), child(0), sibling(0), \
 	draw(cb),\
-	mFlags(Visible | DrawBack | DrawBorder | CropSelf | FocusHighlight | HitTest | Controllable), \
+	mFlags(Visible | DrawBack | DrawBorder | CropSelf | FocusHighlight | FocusToTop | HitTest | Controllable), \
 	mStyle(&(Style::standard())), mAnchorX(0), mAnchorY(0), mStretchX(0), mStretchY(0)
 
 View::View(space_t left, space_t top, space_t width, space_t height, drawCallback cb)
@@ -297,7 +297,7 @@ void View::fit(){
 
 void View::focused(bool b){
 	property(Focused, b);
-	if(b) makeLastSibling(); // move to end of chain, so drawn last
+	if(b && enabled(FocusToTop)) makeLastSibling(); // move to end of chain, so drawn last
 	notify(Update::Focus);
 }
 

@@ -49,8 +49,9 @@ enum{
 	CropSelf		=1<< 4,	/**< Whether to crop own drawing routine(s) */
 	Focused			=1<< 5,	/**< Whether View is focused */
 	FocusHighlight	=1<< 6,	/**< Whether to highlight border when focused */
-	HitTest			=1<< 7,	/**< Whether View can be clicked */
-	Controllable	=1<< 8,	/**< Whether View can be controlled through events */
+	FocusToTop		=1<< 7, /**< Whether to bring to top when focused */
+	HitTest			=1<< 8,	/**< Whether View can be clicked */
+	Controllable	=1<< 9,	/**< Whether View can be controlled through events */
 	
 	DrawGrid		=1<<28,	/**< Whether to draw grid lines between widget elements */
 	MutualExc		=1<<29,	/**< Whether only one element of a widget can be non-zero */
