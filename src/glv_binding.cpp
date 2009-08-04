@@ -104,6 +104,7 @@ void Window::gameMode(bool on){
 		implGameMode();
 		mIsActive = true;
 		dimensions(mWinDims);
+		setGLVDims(mWinDims.w, mWinDims.h); // ensure GLV gets previous window dimensions
 		onWindowCreate();
 	}
 }
@@ -153,8 +154,6 @@ void Window::position(unsigned l, unsigned t){
 
 void Window::resize(unsigned w, unsigned h){
 
-	//setGLVDims(w, h);
-//
 	//Dimensions d = dimensions();
 	//printf("GLUT: %d %d %d %d\n", d.l, d.t, d.w, d.h);
 	//printf("Wind: %d %d %d %d\n", mWinDims.l, mWinDims.t, mWinDims.w, mWinDims.h);
