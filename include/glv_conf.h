@@ -29,6 +29,7 @@
 #if defined(__linux__)
 
 	#define GLV_PLATFORM		"UNIX"
+	#define GLV_PLATFORM_UNIX	1
 
 	#include <GL/glew.h>
 	#include <GL/gl.h>

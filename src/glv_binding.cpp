@@ -119,6 +119,11 @@ void Window::hideCursor(bool hide){
 void Window::iconify(){ implIconify(); }
 
 void Window::fullScreen(bool on){
+#ifdef GLV_PLATFORM_UNIX
+	mFullScreen=on;
+	gameMode(on); // fullscreen leaves borders, so use game mode...
+#else
+	printf("hi\n");
 	if(on && !fullScreen()){
 		mFullScreen = true;
 		mWinDims = dimensions();		// store current window dimensions
@@ -129,6 +134,7 @@ void Window::fullScreen(bool on){
 
 		dimensions(mWinDims);
 	}
+#endif
 }
 
 void Window::fullScreenToggle(){ fullScreen(!fullScreen()); }
