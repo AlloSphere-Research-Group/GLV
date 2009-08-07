@@ -123,7 +123,6 @@ void Window::fullScreen(bool on){
 	mFullScreen=on;
 	gameMode(on); // fullscreen leaves borders, so use game mode...
 #else
-	printf("hi\n");
 	if(on && !fullScreen()){
 		mFullScreen = true;
 		mWinDims = dimensions();		// store current window dimensions
