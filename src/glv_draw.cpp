@@ -88,7 +88,7 @@ static Glyph glyphs[94] = {
 	{Glyph::Once | 2, {2,6}, {0,8.5}},						/* \ */
 	{4, {3,5,5,3}, {0,0,8,8}},								// ]
 	{3, {1,4,7}, {4,0,4}},									// ^
-	{Glyph::Once | 2, {1,7}, {8,8}},						// _
+	{Glyph::Once | 2, {1,7}, {9,9}},						// _
 	{Glyph::Once | 2, {3,5}, {0,3}},						// `
 	{6, {2,6,6,1,1,6}, {3,3,8,8,5,4}},						// a
 	{5, {1,1,6,6,1}, {-0.5,8,8,4,3}},						// b
@@ -286,14 +286,16 @@ void spokes(float l, float t, float w, float h, int n, float a){
 
 
 void text(const char * s, float l, float t, float lineSpacing, unsigned int tabSpaces){
-	float x=l, y=t, tabUnits = tabSpaces * Glyph::baseline();
+	float dx = Glyph::baseline();
+	float x=l, y=t, tabUnits = tabSpaces * dx;
 	//x = (int)x + 0.5; y = (int)y + 0.5;
 	begin(Lines);
 	while(*s){
 		switch(*s){
 			case '\t':	x = ((int)(x/tabUnits) + 1) * tabUnits; break;
-			case '\n':	x = l; y += Glyph::baseline() * 2.f * lineSpacing; break;
-			default:	if(character(*s, x, y)) x += Glyph::baseline();
+			case '\n':	x = l; y += dx * 2.f * lineSpacing; break;
+			case '\b':	x -= dx; break;
+			default:	if(character(*s, x, y)) x += dx;
 		}
 		s++;
 	}

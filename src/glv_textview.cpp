@@ -70,14 +70,16 @@ void Label::onDraw(){
 
 
 void Label::fitExtent(){
+	space_t dx = 8;
 	space_t tw = 0, th = 8, mw = 0;
 	const char * c = mLabel.c_str();
-	
+
 	while(*c){
 		switch(*c++){
-		case '\n': th += 16; tw = 0; break;
+		case '\n': th += dx*2; tw = 0; break;
 		case '\t': tw = ((int)(tw/32) + 1) * 32; if(tw > mw) mw=tw; break;
-		default: tw += 8; if(tw > mw) mw=tw;
+		case '\b': tw -= dx; break;
+		default: tw += dx; if(tw > mw) mw=tw;
 		}
 	}
 	
@@ -92,7 +94,7 @@ void Label::fitExtent(){
 void Label::rotateRect(){ t += w - h; transpose(); }
 
 
-#define CTOR_LIST mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0)
+#define CTOR_LIST mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0), mShowSign(true)
 #define CTOR_BODY\
 	resize(numInt, numFrac);\
 	dig(mNI);
@@ -142,12 +144,18 @@ NumberDialer& NumberDialer::range(double max, double min){
 	return *this;
 }
 
+NumberDialer& NumberDialer::showSign(bool v){
+	mShowSign=v;
+	setWidth();
+	return *this;
+}
+
 double NumberDialer::value() const{ return mVal * mValMul; }
 NumberDialer& NumberDialer::value(double v){ valSet(convert(v)); return *this; }
 
 void NumberDialer::onDraw(){ //printf("% g\n", value());
 	using namespace glv::draw;
-	float dx = w/size();
+	float dx = w/size(); // # pixels per cell
 	lineWidth(1);
 	
 	// draw box at position (only if focused)
@@ -158,11 +166,12 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 	
 	// draw number
 	int absVal = mVal < 0 ? -mVal : mVal;
-	int msd = mNF;	// most significant digit
+	int msd = mNF;	// position from right of most significant digit
 	
 	if(absVal > 0){
 		msd = (int)log10(absVal);
-		msd = msd < mNF ? mNF : msd > size()-2 ? size()-2 : msd;
+		int p = size() - (mShowSign ? 2:1);
+		msd = msd < mNF ? mNF : (msd > p ? p : msd);
 	}
 	
 	if(mNI == 0) msd-=1;
@@ -184,7 +193,7 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 
 		begin(Lines);
 			if(mNF  > 0) character('.', dx*(mNI+1) - tdx, y);
-			if(mVal < 0) character('-', dx*0.5 - tdx, y);
+			if(mShowSign && mVal < 0) character('-', dx*0.5 - tdx, y);
 			
 			for(int i=0; i<=msd; ++i){
 				char c = '0' + (absVal % (power*10))/power;
@@ -208,7 +217,7 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 		mAcc = 0;
 		int oldDig = dig();
 		dig((int)(m.xRel()/w * size()));
-		if(dig() == 0 && oldDig == 0) flipSign();
+		if(dig() == 0 && oldDig == 0 && mShowSign) flipSign();
 		return false;
 	}
 	

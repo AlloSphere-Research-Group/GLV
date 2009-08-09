@@ -120,6 +120,9 @@ public:
 	
 	/// Set max and min output range. Values larger than displayable range will be clipped.
 	NumberDialer& range(double max, double min=0);
+	
+	/// Set whether to show sign
+	NumberDialer& showSign(bool v);
 
 	/// Set value
 	NumberDialer& value(double v);
@@ -129,19 +132,22 @@ public:
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
-	int mNI, mNF, mPos;
-	int mVal, mMin, mMax;
+	int mNI, mNF, mPos;		// # digits in integer, # digits in fraction, selected digit position
+	int mVal, mMin, mMax;	// current value, min value, max value
 	space_t mPad;
 	float mAcc;
 	double mValMul;
+	bool mShowSign;
 
+	int setWidth(){ w = (h-2)*size(); }
 	int convert(double v) const { return v / mValMul + (v>0. ? 0.5:-0.5); }
 	int mag() const { return pow(10, size()-1-dig()); }
-	bool onNumber() const { return mPos != 0; }
+	bool onNumber() const { return mPos != signPos(); }
 	int dig() const { return mPos; }
 	void dig(int v){ mPos = v < 0 ? 0 : v >= size() ? size()-1 : v; }
 	int maxVal() const { return pow(10, mNI+mNF)-1; }
-	int size() const { return mNI + mNF + 1; }
+	int signPos() const { return mShowSign ? 0 : -1; }
+	int size() const { return mNI + mNF + (mShowSign ? 1:0); }
 	void valAdd(int v){	valSet(v + mVal); }
 	void valSet(int v){
 		int prev = mVal;
@@ -152,10 +158,10 @@ protected:
 		if((mVal>0 && -mVal>=mMin) || (mVal<0 && -mVal<=mMax))
 			valSet(-mVal);
 	}
-	
 	void resize(int numInt, int numFrac){
 		mNI = numInt; mNF = numFrac;
 		mValMul = 1. / pow(10., mNF);
+		setWidth();
 	}
 };
 
