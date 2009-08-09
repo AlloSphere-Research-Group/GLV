@@ -10,6 +10,9 @@
 namespace glv{
 
 
+class Placer;
+
+
 /// View used for forming a group of child Views.
 
 /// By default, a Group will not be drawn to screen nor interact with any 
@@ -21,6 +24,8 @@ struct Group : public View{
 	
 	virtual const char * className() const { return "Group"; }
 };
+
+
 
 
 
@@ -38,6 +43,7 @@ public:
 
 	/// Set a view's position
 	Placer& operator<< (View& v);
+	Placer& operator<< (View* v);
 
 	/// Set the absolute increment amounts
 	Placer& abs(space_t vx, space_t vy);
@@ -79,6 +85,25 @@ protected:
 };
 
 
+
+/// A Group that automatically fits itself to child Views
+struct Box : public Group{
+	Box(Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4)
+	:	p(*this, dir, align, 0,0, pad){}
+
+	Box(View& v1, View& v2, Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4)
+	:	p(*this, dir, align, 0,0, pad){
+		p << v1 << v2;
+		fit();
+	}
+	
+	Box& operator<< (View* v){ p<<v; fit(); return *this; }
+	Box& operator<< (View& v){ p<<v; fit(); return *this; }
+
+	virtual const char * className() const { return "Box"; }
+private:
+	Placer p;
+};
 
 
 // Base interface class for View auto-layout functors

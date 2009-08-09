@@ -28,6 +28,10 @@ Placer& Placer::operator<< (View& v){
 	return *this;
 }
 
+Placer& Placer::operator<< (View* v){
+	return v ? (*this)<<*v : *this;
+}
+
 Placer& Placer::abs(space_t vx, space_t vy){ ax=vx; ay=vy; return *this; }
 
 Placer& Placer::align(space_t vx, space_t vy){ fw=vx; fh=vy; return *this; }
