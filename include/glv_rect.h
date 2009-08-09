@@ -210,8 +210,10 @@ TEM void TRect<T>::unionOf(const TRect<T>& c, TRect<T>& r) const {
 
 	r.l = c.l < tl ? c.l : tl;
 	r.t = c.t < tt ? c.t : tt;
-	r.right(c.right() > tr ? c.right() : tr);
-	r.bottom(c.bottom() > tb ? c.bottom() : tb);
+	r.extent(
+		(c.right() > tr ? c.right() : tr) - r.l,
+		(c.bottom() > tb ? c.bottom() : tb) - r.t
+	);
 }
 
 TEM inline bool	TRect<T>::withinYBounds(T ymin, T ymax) const {
