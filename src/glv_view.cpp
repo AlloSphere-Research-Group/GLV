@@ -290,7 +290,7 @@ void View::fit(){
 			r.unionOf(*c, r);
 		}
 
-		extent(r.w, r.h);
+		extent(r.right(), r.bottom());
 	}
 }
 
