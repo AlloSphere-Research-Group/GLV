@@ -137,6 +137,10 @@ public:
 	
 protected:
 	friend class Window;
+	
+	Application(){}
+	~Application(){ quit(); }
+	
 	static Window *focusedWindow;
 
 	// Returns a vector of all created windows

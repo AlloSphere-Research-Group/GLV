@@ -51,9 +51,10 @@ bool evKeyDown(View * v, GLV& g){
 	return false;
 }
 
-bool evWinResize(View * v, GLV& g){ printf("Event::WindowResize\n"); }
-bool evWinCreate(View * v, GLV& g){ printf("Event::WindowCreate\n"); }
-bool evWinDestroy(View * v, GLV& g){ printf("Event::WindowDestroy\n"); }
+bool evWinResize(View * v, GLV& g){ printf("Event::WindowResize\n"); return false; }
+bool evWinCreate(View * v, GLV& g){ printf("Event::WindowCreate\n"); return false; }
+bool evWinDestroy(View * v, GLV& g){ printf("Event::WindowDestroy\n"); return false; }
+bool evQuit(View * v, GLV& g){ printf("Event::Quit\n"); return false; }
 
 int main(){
 	GLV glv(drawCB);
@@ -61,6 +62,7 @@ int main(){
 	glv(Event::WindowResize, evWinResize);
 	glv(Event::WindowCreate, evWinCreate);
 	glv(Event::WindowDestroy, evWinDestroy);
+	glv(Event::Quit, evQuit);
 	win.setGLV(glv);
 	Application::run();
 }

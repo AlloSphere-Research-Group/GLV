@@ -7,21 +7,33 @@
 
 namespace glv{
 
-
 void Application::run(){
+	// This dummy is necessary to detect when the application is closed by an
+	// event that is not caught by the windowing implementation such as clicking
+	// the close button on the window frame or pressing ctrl- or cmd-q.
+	// The dummy's destructor will be called before the program exits and will
+	// automatically call Application::quit().
+	static Application dummy;	
+
 	implRun();
 }
 
 void Application::quit(){
 	
-	// Send out Quit event to all GLV views
-	for(unsigned i=0; i<windows().size(); ++i){
-		Window& w = *windows()[i];
-		if(w.glv()) w.mGLV->broadcastEvent(Event::Quit);
-		//w.onWindowDestroy(); // this also gets called by ~Window
-	}
+	static bool doActions = true;	// ensure that these actions are only done once
+
+	if(doActions){
+		doActions = false;
 	
-	implQuit();
+		// Send out Quit event to all GLV views
+		for(unsigned i=0; i<windows().size(); ++i){
+			Window& w = *windows()[i];
+			if(w.glv()) w.mGLV->broadcastEvent(Event::Quit);
+			//w.onWindowDestroy(); // this also gets called by ~Window
+		}
+		
+		implQuit();
+	}
 }
 
 std::vector<Window *>& Application::windows(){

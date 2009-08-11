@@ -139,7 +139,7 @@ protected:
 	double mValMul;
 	bool mShowSign;
 
-	int setWidth(){ w = (h-2)*size(); }
+	void setWidth(){ w = (h-2)*size(); }
 	int convert(double v) const { return v / mValMul + (v>0. ? 0.5:-0.5); }
 	int mag() const { return pow(10, size()-1-dig()); }
 	bool onNumber() const { return mPos != signPos(); }
