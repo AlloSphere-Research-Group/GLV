@@ -66,10 +66,11 @@ protected:
 	void freeX(){ if(mBufX) delete[] mBufX; mBufX=0; }
 	void freeY(){ if(mBufY) delete[] mBufY; mBufY=0; }
 	void freeCol(){ if(mBufCol) delete[] mBufCol; mBufCol=0; }
-	void allocX(){ freeX(); mBufX = new float[size()]; }
-	void allocY(){ freeY(); mBufY = new float[size()]; }
+	void allocX(){ freeX(); mBufX = new float[size()]; zero(mBufX); }
+	void allocY(){ freeY(); mBufY = new float[size()]; zero(mBufY); }
 	void allocCol(){ freeCol(); mBufCol = new Color[size()]; }
 	void sort(float& a, float& b){ if(a>b){ float t=a; a=b; b=t; }  }
+	void zero(float * b){ for(int i=0; i<size(); ++i) b[i]=0.f; }
 };
 
 
