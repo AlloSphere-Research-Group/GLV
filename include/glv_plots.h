@@ -43,7 +43,7 @@ public:
 	FunctionPlot& stroke(float width);				///< Set stroke width of pen
 	FunctionPlot& tickMajor(float d);				///< Set major tick distance (<= 0 turns off)
 	
-	void zero();									///< Zeroes all buffer elements
+	FunctionPlot& zero();							///< Zeroes all buffer elements
 	
 	float * bufferX();								///< Returns internal x value buffer
 	float * bufferY();								///< Returns internal y value buffer
