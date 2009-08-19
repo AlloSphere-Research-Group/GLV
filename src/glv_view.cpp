@@ -178,6 +178,7 @@ void View::appendCallback(Event::t e, eventCallback cb){
 	callbackLists[e].push_back(cb);
 }
 
+View& View::bringToFront(){ makeLastSibling(); return *this; }
 
 void View::cloneStyle(){
 	if(mStyle){		
