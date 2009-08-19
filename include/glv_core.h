@@ -353,9 +353,10 @@ public:
 	int enabled(int prop) const;				///< Returns whether a property is set
 	int numEventCallbacks(Event::t e) const;	///< Returns number of registered callbacks
 	void printDescendents() const;				///< Print tree of descendent Views to stdout
-	void printFlags() const;					
+	void printFlags() const;
+	bool showing() const;						///< Returns whether View is being shown
 	Style& style() const { return *mStyle; }	///< Get style object
-	int visible() const;						///< Returns whether View is visible
+	int visible() const;						///< Returns whether View visibility flag is set
 
 		
 	View& anchor(space_t mx, space_t my);		///< Set anchor translation factors	

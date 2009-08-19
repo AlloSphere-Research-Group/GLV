@@ -184,7 +184,7 @@ public:
 	
 	/// If there are more children than the arrangement accounts for, then the
 	/// arrangement string will copied the appropriate number of times.
-	void arrange();
+	Table& arrange();
 	
 	/// Set table cell arrangement.
 	
@@ -207,7 +207,7 @@ public:
 	/// specification starting at the top-left cell and then proceeding 
 	/// column-by-column, row-by-row.
 	///
-	void arrangement(const char * v);
+	Table& arrangement(const char * v);
 
 	/// Get arrangement string
 	const std::string& arrangement() const { return mAlign; }

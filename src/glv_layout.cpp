@@ -144,7 +144,7 @@ Table::Table(const char * a, space_t padX, space_t padY, const Rect& r)
 {	arrangement(a); }
 
 
-void Table::arrange(){
+Table& Table::arrange(){
 	View * vp = child;
 	int ind = 0;
 
@@ -256,10 +256,12 @@ void Table::arrange(){
 
 	delete[] colWs;
 	delete[] rowHs;
+	
+	return *this;
 }
 
 
-void Table::arrangement(const char * va){
+Table& Table::arrangement(const char * va){
 	
 	mAlign = va;
 	mCells.clear();
@@ -318,6 +320,8 @@ void Table::arrangement(const char * va){
 		
 		++v;
 	}
+	
+	return *this;
 }
 
 

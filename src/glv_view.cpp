@@ -407,6 +407,16 @@ void View::reanchor(space_t dx, space_t dy){
 	extent(w + dx * mStretchX, h + dy * mStretchY);
 }
 
+bool View::showing() const {
+	const View * v = this;
+	do{
+		if(!v->visible()) return false;
+		v = v->parent;
+	} while(v);
+	
+	return true;
+}
+
 
 View& View::stretch(space_t mx, space_t my){ mStretchX=mx; mStretchY=my; return *this; }
 
