@@ -32,6 +32,7 @@ FunctionPlot& FunctionPlot::drawType(int primitive){ mDrawPrim=primitive; return
 FunctionPlot& FunctionPlot::center(){
 	rangeX((mMaxX-mMinX)*0.5);
 	rangeY((mMaxY-mMinY)*0.5);
+	return *this;
 }
 
 FunctionPlot& FunctionPlot::dotEnds(bool v){ mDotEnds=v; return *this; }
@@ -62,22 +63,23 @@ void FunctionPlot::onDraw(){
 	float mulX = w / (mMaxX - mMinX);
 	float addX =-mulX*mMinX;
 	float mulY =-h / (mMaxY - mMinY);
-	float addY = mulY*mMinY;
+//	float addY = mulY*mMinY;
+	float addY = mulY*-mMaxY;	// min and max must be flipped around zero
 
 	// draw axes
 	if(mShowAxes){
 		color(colors().text);
 		lineWidth(1);
 		begin(Lines);
-			if(mBufY) vertex(0,addY); vertex(w,addY);
-			if(mBufX) vertex(addX,0); vertex(addX,h);
+			if(mBufX){ vertex(0,addY); vertex(w,addY); }
+			if(mBufY){ vertex(addX,0); vertex(addX,h); }
 		end();
 		
 		if(mTickMajor > 0){
 		
-			struct F{
-				F(float tick, float min, float max, float mul1, float add1, float add2, bool isX){
-					int n = (max - min)/tick + 1;
+			struct DrawTicks{
+				DrawTicks(float tick, float min, float max, float mul1, float add1, float add2, bool isX){
+					int n = (max - min)/tick + 2;
 
 					if(n < 128){
 						// find closest multiple of mTickMajor to mMinX
@@ -94,8 +96,9 @@ void FunctionPlot::onDraw(){
 			};
 			
 			if(mBufY && mBufX){
-				F(mTickMajor, mMinX, mMaxX, mulX, addX, addY, true);
-				F(mTickMajor, mMinY, mMaxY,-mulY, addY, addX, false);
+				DrawTicks(mTickMajor, mMinX, mMaxX, mulX, addX, addY, true);
+				//DrawTicks(mTickMajor, mMinY, mMaxY,-mulY, addY, addX, false);
+				DrawTicks(mTickMajor, -mMaxY, -mMinY,-mulY, addY, addX, false);
 			}
 
 		}
@@ -129,19 +132,19 @@ void FunctionPlot::onDraw(){
 				}
 			}
 			
-			else if(mBufY && !mBufX){	// y-plot
+			else if(mBufX && !mBufY){	// x-plot
 				double dx = w/(size()-1), x=0;
 				for(int i=0; i<size(); ++i){
 					if(mBufCol) color(mBufCol[i]);
-					vertex(x, mBufY[i]*mulY+addY); x+=dx;
+					vertex(x, (mBufX[i]*mulY+addY)); x+=dx;
 				}
 			}
 			
-			else if(mBufX && !mBufY){	// x-plot
+			else if(mBufY && !mBufX){	// x-plot
 				double dy = h/(size()-1), y=0;
 				for(int i=0; i<size(); ++i){
 					if(mBufCol) color(mBufCol[i]);
-					vertex(mBufX[i]*mulX+addX, y); y+=dy;
+					vertex(mBufY[i]*mulX+addX, y); y+=dy;
 				}
 			}
 		end();
@@ -164,14 +167,14 @@ bool FunctionPlot::onEvent(Event::t e, GLV& g){
 		
 		if(m.left()){
 			float ax = ((mMaxX - mMinX)/w) * dx;
-			float ay = ((mMaxY - mMinY)/h) * dy;
-			if(mBufX) rangeX(mMinX - ax, mMaxX - ax);
-			if(mBufY) rangeY(mMinY - ay, mMaxY - ay);
+			float ay =-((mMaxY - mMinY)/h) * dy;
+			if(mBufY) rangeX(mMinX - ax, mMaxX - ax);
+			if(mBufX) rangeY(mMinY - ay, mMaxY - ay);
 		}
 		
 		if(m.right()){
 			float px = m.xRel(Mouse::Right);
-			float py = m.yRel(Mouse::Right);
+			float py = h-m.yRel(Mouse::Right);
 			float mul = pow(2, dy*0.1);
 			float cx = mMinX + (px/w)*(mMaxX-mMinX);
 			float cy = mMinY + (py/h)*(mMaxY-mMinY);
@@ -187,9 +190,10 @@ bool FunctionPlot::onEvent(Event::t e, GLV& g){
 		switch(k.key()){
 			case 'c': center(); return false;
 		}
-		
+
+	default:;
 	}
-	
+
 	return true;
 }
 

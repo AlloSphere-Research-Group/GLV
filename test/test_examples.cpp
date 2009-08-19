@@ -77,8 +77,8 @@ int main(int argc, char ** argv){
 		float sigY = (sin(phs) + 0.5*sin(2*phs))*0.6;
 		plotXY.bufferX()[i] = sigX;
 		plotXY.bufferY()[i] = sigY;
-		plotX.bufferY()[i] = sigX;
-		plotY.bufferX()[i] = sigY;
+		plotX.bufferX()[i] = sigX;
+		plotY.bufferY()[i] = sigY;
 	}
 
 	groups[0] << bt1.pos(Place::BL).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);
