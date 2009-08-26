@@ -65,6 +65,7 @@ public:
 	Label& align(float vx, float vy);		///< Set alignment factors for label area
 	Label& label(const std::string& s);		///< Set label string
 	Label& size(float pixels);				///< Set label size
+	Label& value(const std::string& s);		///< Set label string
 	Label& vertical(bool v);				///< Set whether label is displayed vertically
 
 	const char * value() const { return mLabel.c_str(); }

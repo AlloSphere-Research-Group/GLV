@@ -51,6 +51,8 @@ Label& Label::label(const std::string& s){
 
 Label& Label::size(float pixels){ mSize = pixels/8.; fitExtent(); return *this; }
 
+Label& Label::value(const std::string& s){ return label(s); }
+
 Label& Label::vertical(bool v){
 	if(v != mVertical){
 		rotateRect();
