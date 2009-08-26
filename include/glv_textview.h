@@ -67,6 +67,8 @@ public:
 	Label& size(float pixels);				///< Set label size
 	Label& vertical(bool v);				///< Set whether label is displayed vertically
 
+	const char * value() const { return mLabel.c_str(); }
+
 	virtual const char * className() const { return "Label"; }
 	virtual void onDraw();
 
