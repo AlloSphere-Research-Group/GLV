@@ -131,14 +131,14 @@ void FunctionPlot::onDraw(){
 			if(mBufX && mBufY){			// xy-plot
 			
 				const float h1=-0.0625, h2=0.5625;
-				int im1=size()-1, ip1=1, ip2=2;
+				int im1=0, ip1=1, ip2=2;
 			
 				for(int i=0; i<size(); ++i){
 					if(mBufCol) color(mBufCol[i]);
 					vertex(mBufX[i]*mulX+addX, mBufY[i]*mulY+addY);
 					
 					if(mInterpolate){
-						ip2 = i+2; if(ip2>=size()) ip2 -= size();
+						ip2 = i+2; if(ip2>=size()) ip2 = size()-1;
 						vertex(
 							(mBufX[im1]*h1 + mBufX[i]*h2 + mBufX[ip1]*h2 + mBufX[ip2]*h1)*mulX+addX,
 							(mBufY[im1]*h1 + mBufY[i]*h2 + mBufY[ip1]*h2 + mBufY[ip2]*h1)*mulY+addY
