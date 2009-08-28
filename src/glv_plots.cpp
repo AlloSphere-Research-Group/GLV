@@ -9,7 +9,7 @@ namespace glv{
 	View(r), mSize(size), mBufX(0), mBufY(0), mBufCol(0), mPlotColor(0),\
 	mMinX(-1), mMaxX(1), mMinY(-1), mMaxY(1), \
 	mDrawPrim(draw::LineStrip), mStroke(1), mTickMajor(1), \
-	mShowAxes(true), mDotEnds(false)
+	mShowAxes(true), mDotEnds(false), mInterpolate(false)
 
 FunctionPlot::FunctionPlot(const Rect& r, int size)
 :	CTOR_INIT_LIST
@@ -36,6 +36,7 @@ FunctionPlot& FunctionPlot::center(){
 }
 
 FunctionPlot& FunctionPlot::dotEnds(bool v){ mDotEnds=v; return *this; }
+FunctionPlot& FunctionPlot::interpolate(bool v){ mInterpolate=v; return *this; }
 FunctionPlot& FunctionPlot::range(float v){ rangeX(v); return rangeY(v); }
 FunctionPlot& FunctionPlot::rangeX(float v){ return rangeX(-v, v); }
 FunctionPlot& FunctionPlot::rangeY(float v){ return rangeY(-v, v); }
@@ -125,10 +126,25 @@ void FunctionPlot::onDraw(){
 		draw::stroke(mStroke);
 		begin(mDrawPrim);
 		
+			
+		
 			if(mBufX && mBufY){			// xy-plot
+			
+				const float h1=-0.0625, h2=0.5625;
+				int im1=size()-1, ip1=1, ip2=2;
+			
 				for(int i=0; i<size(); ++i){
 					if(mBufCol) color(mBufCol[i]);
 					vertex(mBufX[i]*mulX+addX, mBufY[i]*mulY+addY);
+					
+					if(mInterpolate){
+						ip2 = i+2; if(ip2>=size()) ip2 -= size();
+						vertex(
+							(mBufX[im1]*h1 + mBufX[i]*h2 + mBufX[ip1]*h2 + mBufX[ip2]*h1)*mulX+addX,
+							(mBufY[im1]*h1 + mBufY[i]*h2 + mBufY[ip1]*h2 + mBufY[ip2]*h1)*mulY+addY
+						);
+						im1=i; ip1=ip2;
+					}
 				}
 			}
 			
