@@ -334,6 +334,7 @@ public:
 	View * sibling;				///< My next sibling view (drawn after all my children)
 	void add(View & child);		///< Add a child view to myself, and update linked lists
 	void add(View * child);		///< Add a child view to myself, and update linked lists
+	void makeLastSibling();
 	void remove();				///< Remove myself from the parent view, and update linked lists
 
 	/// Add a child view to myself
@@ -365,7 +366,7 @@ public:
 	void appendCallback(Event::t type, eventCallback cb);
 	View& operator()(Event::t e, eventCallback cb){ appendCallback(e, cb); return *this; }
 	
-	View& bringToFront();					///< Brings to front of parent View
+	View& bringToFront();						///< Brings to front of parent View
 	void cloneStyle();							///< Creates own copy of current style
 	void constrainWithinParent();				///< Force to remain in parent	
 	View& disable(int prop);					///< Disable property flag(s)
@@ -403,7 +404,6 @@ protected:
 
 	void drawBack() const;			// Draw the back rect
 	void drawBorder() const;		// Draw the border
-	void makeLastSibling();
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
 };
 

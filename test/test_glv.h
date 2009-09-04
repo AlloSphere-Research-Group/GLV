@@ -120,6 +120,7 @@ protected:
 	void setDim(space_t  sw, space_t  sh){ source().w = sw; source().h = sh; }
 };
 
+
 } // glv::
 
 #endif

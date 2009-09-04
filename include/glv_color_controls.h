@@ -102,8 +102,9 @@ public:
 	
 	bool isHSV() const { return mIsHSV; }
 	const Color& value() const { return mColor; }
-	ColorSliders& value(const Color& c){ setColor(c); return *this; }
-	
+	ColorSliders& value(const Color& v){ setColor(v); return *this; }
+	ColorSliders& value(const HSV& v){ setColor(v); return *this; }
+
 	virtual const char * className() const { return "ColorSliders"; }
 	
 protected:
@@ -112,13 +113,23 @@ protected:
 	Slider mComp1, mComp2, mComp3, mCompA;
 	bool mIsHSV, mControlsAlpha;
 
-	void setColor(const Color& c){
+	void setColor(const Color& v){
 		float c1,c2,c3;
-		if(isHSV()){ HSV h=c; c1=h.h; c2=h.s; c3=h.v; }
-		else{ c1=c.r; c2=c.g; c3=c.b; }
+		if(isHSV()){ HSV h=v; c1=h.h; c2=h.s; c3=h.v; }
+		else{ c1=v.r; c2=v.g; c3=v.b; }
 		// assuming value() does not send notification...
 		mComp1.value(c1); mComp2.value(c2); mComp3.value(c3);
-		mCompA.value(c.a);
+		mCompA.value(v.a);
+		setColor();
+	}
+
+	void setColor(const HSV& v){
+		float c1,c2,c3;
+		if(isHSV()){ c1=v.h; c2=v.s; c3=v.v; }
+		else{ Color c=v; c1=c.r; c2=c.g; c3=c.b; }
+		// assuming value() does not send notification...
+		mComp1.value(c1); mComp2.value(c2); mComp3.value(c3);
+		//mCompA.value(v.a);
 		setColor();
 	}
 
