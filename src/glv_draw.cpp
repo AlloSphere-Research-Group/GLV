@@ -293,6 +293,7 @@ void text(const char * s, float l, float t, float lineSpacing, unsigned int tabS
 	while(*s){
 		switch(*s){
 			case '\t':	x = ((int)(x/tabUnits) + 1) * tabUnits; break;
+			case '\r':
 			case '\n':	x = l; y += dx * 2.f * lineSpacing; break;
 			case '\b':	x -= dx; break;
 			default:	if(character(*s, x, y)) x += dx;
