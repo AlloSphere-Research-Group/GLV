@@ -96,6 +96,12 @@ struct Box : public Group{
 		p << v1 << v2;
 		fit();
 	}
+
+	Box(View& v1, View& v2, View& v3, Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4)
+	:	p(*this, dir, align, 0,0, pad){
+		p << v1 << v2 << v3;
+		fit();
+	}
 	
 	Box& operator<< (View* v){ p<<v; fit(); return *this; }
 	Box& operator<< (View& v){ p<<v; fit(); return *this; }
