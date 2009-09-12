@@ -150,7 +150,8 @@ protected:
 	void dig(int v){ mPos = v < 0 ? 0 : v >= size() ? size()-1 : v; }
 	int maxVal() const { return pow(10, mNI+mNF)-1; }
 	int signPos() const { return mShowSign ? 0 : -1; }
-	int size() const { return mNI + mNF + (mShowSign ? 1:0); }
+	int size() const { return mNI + mNF + sizeSign(); }
+	int sizeSign() const { return mShowSign ? 1:0; }
 	void valAdd(int v){	valSet(v + mVal); }
 	void valSet(int v){
 		int prev = mVal;

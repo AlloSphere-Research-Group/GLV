@@ -194,7 +194,7 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 		bool drawChar = false; // don't draw until non-zero or past decimal point
 
 		begin(Lines);
-			if(mNF  > 0) character('.', dx*(mNI+1) - tdx, y);
+			if(mNF  > 0) character('.', dx*(mNI+sizeSign()) - tdx, y);
 			if(mShowSign && mVal < 0) character('-', dx*0.5 - tdx, y);
 			
 			for(int i=0; i<=msd; ++i){

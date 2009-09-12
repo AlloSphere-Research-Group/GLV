@@ -38,7 +38,7 @@ FunctionPlot	plotXY(Rect(150), plotSize, Color(0,0,1)),
 
 void drawCB(View * v){
 	using namespace glv::draw;
-
+printf("%f\n", nd2.value());
 	for(int i=0; i<tabs.size(); ++i) groups[i].property(Visible, tabs.value()[i]);
 
 	push3D(v->w, v->h);		// push into 3-D mode passing in width and height of view
@@ -90,7 +90,7 @@ int main(int argc, char ** argv){
 	groups[3] << (new Label("Horizontal"))->pos(Place::BL).anchor(Place::CC);
 	groups[3] << (new Label("Vertical", true))->pos(Place::BR,-16,0).anchor(Place::CC);
 	groups[4] << nd1.pos(Place::BL).anchor(Place::CC);
-	groups[4] << nd2.pos(Place::TL, 0, 4).anchor(Place::CC);
+	groups[4] << nd2.showSign(false).pos(Place::TL, 0, 4).anchor(Place::CC);
 	groups[5] << sl1H.pos(Place::BL).anchor(Place::CC);
 	groups[5] << sl1V.pos(Place::BR, -4,0).anchor(Place::CC);
 	groups[6] << sl2.pos(Place::BL).anchor(Place::CC);
