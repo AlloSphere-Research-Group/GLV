@@ -22,7 +22,7 @@ int main(int argc, char ** argv){
 
 	//---- Hierarchy View
 	View hierView; layout << hierView;
-	hierView	(Event::MouseDrag, Behavior::mouseMove)
+	hierView	.enable(CropChildren)(Event::MouseDrag, Behavior::mouseMove)
 				<< new Label("Hierarchy", 0, -10);
 
 	LayoutGrid lg0(hierView, 2, 2, 14);

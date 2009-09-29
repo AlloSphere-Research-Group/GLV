@@ -133,12 +133,14 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 		// go to child node if exists and I'm drawable
 		if(cv->child && cv->visible()){
 			drawContext(cv->child->l, cv->child->t, cv->child, cx, cy, cv);
+			cropRects[lvl+1].set(cropRects[lvl]);
 			computeCrop(cropRects, ++lvl, cx, cy, cv);
 		}
 		
 		// go to sibling node if exists
 		else if(cv->sibling){
 			drawContext(cv->sibling->l - cv->l, cv->sibling->t - cv->t, cv->sibling, cx, cy, cv);
+			cropRects[lvl].set(cropRects[lvl-1]);
 			computeCrop(cropRects, lvl, cx, cy, cv);
 		}
 		
@@ -151,6 +153,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 			
 			if(cv->sibling){
 				drawContext(cv->sibling->l - cv->l, cv->sibling->t - cv->t, cv->sibling, cx, cy, cv);
+				cropRects[lvl].set(cropRects[lvl-1]);
 				computeCrop(cropRects, lvl, cx, cy, cv);
 			}
 			else break; // break the loop when the traversal returns to the root
