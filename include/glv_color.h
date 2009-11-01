@@ -39,6 +39,7 @@ struct Color{
 	Color  operator+ (const Color& c) const;		///< Adds argument RGBA components
 	Color  operator- (const Color& c) const;		///< Subtracts argument RGBA components
 	Color inverse() const;							///< Returns inverted color
+	Color blackAndWhite() const;					///< Returns nearest black or white color
 
 	void clamp();									///< Clamp RGB components into [0,1]
 	void invert();									///< Invert colors
@@ -105,6 +106,8 @@ inline Color Color::operator- (const Color& c) const { return Color(r-c.r, g-c.g
 inline Color& Color::operator*=(float v){ set(r*v, g*v, b*v, a*v); return *this; }
 
 inline Color Color::inverse() const { return Color(1.f-r, 1.f-g, 1.f-b, a); }
+
+inline Color Color::blackAndWhite() const { return Color((r>0.5||g>0.5||b>0.5)?1:0); }
 
 inline void	Color::clamp(){
 	r<0.f ? r=0.f : (r>1.f ? r=1.f : 0);
