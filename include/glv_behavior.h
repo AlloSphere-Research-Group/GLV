@@ -11,10 +11,31 @@ namespace glv{
 namespace Behavior{
 
 	static bool mouseMove(View * v, GLV & glv){
-		if(glv.mouse.right()){
+		if(glv.mouse.left()){
 			v->move(glv.mouse.dx(), glv.mouse.dy());
 		}
 		return false;
+	}
+	
+	static bool mouseResizeCorner(View * v, GLV & glv){
+		if(glv.mouse.left()){
+
+			float mx = glv.mouse.xRel();
+			float my = glv.mouse.yRel();
+
+			if(mx > (v->w-16) && my > (v->h-16)){
+
+				float dx = glv.mouse.dx();
+				float dy = glv.mouse.dy();
+
+				v->resizeRightTo(v->right() + dx);
+				v->resizeBottomTo(v->bottom() + dy);
+				v->fixNegativeExtent();		
+				
+				return false;
+			}			
+		}
+		return true;
 	}
 
 	static bool mouseResize(View * v, GLV & glv){
@@ -34,8 +55,9 @@ namespace Behavior{
 				my < 0.5 ? v->resizeTopTo(v->t + dy) : v->resizeBottomTo(v->bottom() + dy);					
 			}
 			v->fixNegativeExtent();
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 } // Behavior::
