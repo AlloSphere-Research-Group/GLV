@@ -334,7 +334,6 @@ public:
 	View * sibling;				///< My next sibling view (drawn after all my children)
 	void add(View & child);		///< Add a child view to myself, and update linked lists
 	void add(View * child);		///< Add a child view to myself, and update linked lists
-	void makeLastSibling();
 	void remove();				///< Remove myself from the parent view, and update linked lists
 
 	/// Add a child view to myself
@@ -351,7 +350,9 @@ public:
 	bool absToRel(View * target, space_t& x, space_t& y) const;
 	StyleColor& colors() const;					///< Returns my style colors
 	int enabled(int prop) const;				///< Returns whether a property is set
-	int numEventCallbacks(Event::t e) const;	///< Returns number of registered callbacks
+	bool hasCallback(Event::t e, eventCallback cb) const; ///< Returns whether a particular callback has been registered
+	bool hasCallbacks(Event::t e) const;		///< Returns whether there are callback(s) registered for a particular event
+	int numCallbacks(Event::t e) const;			///< Returns number of registered callbacks
 	void printDescendents() const;				///< Print tree of descendent Views to stdout
 	void printFlags() const;
 	bool showing() const;						///< Returns whether View is being shown
@@ -362,9 +363,17 @@ public:
 	View& anchor(space_t mx, space_t my);		///< Set anchor translation factors	
 	View& anchor(Place::t parentPlace);			///< Set anchor place on parent
 
-	/// Append callback to a specific event type callback sequence.
-	void appendCallback(Event::t type, eventCallback cb);
-	View& operator()(Event::t e, eventCallback cb){ appendCallback(e, cb); return *this; }
+	/// Push an event callback onto the back of the event callbacks list.
+
+	/// If the event callback already exists in the list, then it will be not be
+	/// added.
+	/// If multiple callbacks are registered for the same event type, then two
+	/// types of prioritization take place. First, callbacks on the front of the
+	/// list get called first. Second, if a callback returns false (for 
+	/// bubbling), then it cancels execution of any subsequent callbacks in the
+	/// list.
+	void addCallback(Event::t type, eventCallback cb);
+	View& operator()(Event::t e, eventCallback cb){ addCallback(e, cb); return *this; }
 	
 	View& bringToFront();						///< Brings to front of parent View
 	void cloneStyle();							///< Creates own copy of current style
@@ -381,7 +390,10 @@ public:
 	void fit();									///< Fit geometry so all children are visible
 	void focused(bool b);						///< Set whether I'm focused
 	void move(space_t x, space_t y);			///< Translate constraining within parent.
+	
 	void on(Event::t e, eventCallback cb=0);	///< Set first callback for a specific event type.
+	void removeCallback(Event::t e, eventCallback cb);	///< Remove a callback for a given event (if found)
+	void removeAllCallbacks(Event::t e);			///< Detach all callbacks for a given event	
 
 	virtual const char * className() const { return "View"; }
 	virtual void onDraw();						///< Main drawing callback
@@ -404,6 +416,7 @@ protected:
 
 	void drawBack() const;			// Draw the back rect
 	void drawBorder() const;		// Draw the border
+	void makeLastSibling();
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
 };
 

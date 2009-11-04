@@ -50,17 +50,27 @@ void GLV::broadcastEvent(Event::t e){
 
 // Since we possibly have multiple event callbacks, we will bubble the event if any
 // one of them has bubbling set to true.
+
+// The bubbling return values from the virtual and function pointer callbacks
+// are ANDed together.
 bool GLV::doEventCallbacks(View& v, Event::t e){
 
 	if(!v.enabled(Controllable)) return false;
 
 	bool bubble = v.onEvent(e, *this);					// Execute virtual callback
 
-	const eventCallbackList& cbl = v.callbackLists[e];
-	
-	// Execute callbacks in list
-	for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
-		if(*it) bubble |= (*it)(&v, *this);
+	if(0 != v.callbackLists.count(e)){
+		const eventCallbackList& cbl = v.callbackLists[e];
+		
+		// Execute callbacks in list
+		for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
+			//if(*it) bubble |= (*it)(&v, *this);
+			if(*it){
+				bool r = (*it)(&v, *this);
+				bubble &= r;
+				if(!r) break;
+			}
+		}
 	}
 	
 	return bubble | v.enabled(AlwaysBubble);
@@ -73,7 +83,7 @@ void GLV::doFocusCallback(bool get){
 	if(mFocusedView){
 		mFocusedView->focused(get);
 		
-		if(mFocusedView->numEventCallbacks(e) ){
+		if(mFocusedView->numCallbacks(e) ){
 			eventType(e);
 			doEventCallbacks(*mFocusedView, e);
 		}
@@ -133,14 +143,12 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 		// go to child node if exists and I'm drawable
 		if(cv->child && cv->visible()){
 			drawContext(cv->child->l, cv->child->t, cv->child, cx, cy, cv);
-			cropRects[lvl+1].set(cropRects[lvl]);
 			computeCrop(cropRects, ++lvl, cx, cy, cv);
 		}
 		
 		// go to sibling node if exists
 		else if(cv->sibling){
 			drawContext(cv->sibling->l - cv->l, cv->sibling->t - cv->t, cv->sibling, cx, cy, cv);
-			cropRects[lvl].set(cropRects[lvl-1]);
 			computeCrop(cropRects, lvl, cx, cy, cv);
 		}
 		
@@ -153,7 +161,6 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 			
 			if(cv->sibling){
 				drawContext(cv->sibling->l - cv->l, cv->sibling->t - cv->t, cv->sibling, cx, cy, cv);
-				cropRects[lvl].set(cropRects[lvl-1]);
 				computeCrop(cropRects, lvl, cx, cy, cv);
 			}
 			else break; // break the loop when the traversal returns to the root

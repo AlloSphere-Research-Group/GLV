@@ -174,11 +174,14 @@ View& View::anchor(Place::t p){
 }
 
 
-void View::appendCallback(Event::t e, eventCallback cb){
-	callbackLists[e].push_back(cb);
+void View::addCallback(Event::t e, eventCallback cb){
+	if(!hasCallback(e, cb)){
+		callbackLists[e].push_back(cb);
+	}
 }
 
 View& View::bringToFront(){ makeLastSibling(); return *this; }
+
 
 void View::cloneStyle(){
 	if(mStyle){		
@@ -303,24 +306,39 @@ void View::focused(bool b){
 }
 
 
+bool View::hasCallback(Event::t e, eventCallback cb) const {
+	if(hasCallbacks(e)){
+		const eventCallbackList& l = callbackLists.find(e)->second; //[e];
+		if(find(l.begin(), l.end(), cb) != l.end()) return true;
+	}
+	return false;
+}
+
+bool View::hasCallbacks(Event::t e) const {
+	return 0!=callbackLists.count(e);
+}
+
+
 void View::move(space_t x, space_t y){
 	posAdd(x, y);
 	constrainWithinParent();
 }
 
 
-int View::numEventCallbacks(Event::t e) const{	
+int View::numCallbacks(Event::t e) const{	
 	const std::map<Event::t, eventCallbackList>::const_iterator it = callbackLists.find(e);
 	return it != callbackLists.end() ? it->second.size() : 0;
 }
 
 
-void View::on(Event::t e, eventCallback cb){	
-	if(!callbackLists[e].empty())
+void View::on(Event::t e, eventCallback cb){
+	if(hasCallbacks(e) && !callbackLists[e].empty())
 		callbackLists[e].pop_front();
 	
 	callbackLists[e].push_front(cb);
 }
+
+
 
 
 void View::onDraw(){ if(draw) draw(this); }
@@ -407,6 +425,26 @@ void View::reanchor(space_t dx, space_t dy){
 	posAdd(dx * mAnchorX, dy * mAnchorY);
 	extent(w + dx * mStretchX, h + dy * mStretchY);
 }
+
+
+void View::removeCallback(Event::t e, eventCallback cb){
+	if(hasCallbacks(e)){
+		std::list<eventCallback>::iterator it;
+		for(it = callbackLists[e].begin(); it != callbackLists[e].end(); ){
+			if(*it == cb)	it = callbackLists[e].erase(it);
+			else			it++;
+		}
+	}
+}
+
+
+void View::removeAllCallbacks(Event::t e){
+	if(hasCallbacks(e)){
+		while(!callbackLists[e].empty())
+			callbackLists[e].pop_front();
+	}
+}
+
 
 bool View::showing() const {
 	const View * v = this;
