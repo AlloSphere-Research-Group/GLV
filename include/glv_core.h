@@ -334,6 +334,7 @@ public:
 	View * sibling;				///< My next sibling view (drawn after all my children)
 	void add(View & child);		///< Add a child view to myself, and update linked lists
 	void add(View * child);		///< Add a child view to myself, and update linked lists
+	void makeLastSibling();		///< Put self at end of sibling chain
 	void remove();				///< Remove myself from the parent view, and update linked lists
 
 	/// Add a child view to myself
@@ -416,7 +417,6 @@ protected:
 
 	void drawBack() const;			// Draw the back rect
 	void drawBorder() const;		// Draw the border
-	void makeLastSibling();
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
 };
 
