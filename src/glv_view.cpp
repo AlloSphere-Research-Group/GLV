@@ -157,6 +157,13 @@ bool View::absToRel(View * v, space_t & x, space_t & y) const{
 }
 
 
+void View::addCallback(Event::t e, eventCallback cb){
+	if(!hasCallback(e, cb)){
+		callbackLists[e].push_back(cb);
+	}
+}
+
+
 View& View::anchor(space_t mx, space_t my){
 	mAnchorX = mx; mAnchorY = my; return *this;
 }
@@ -173,12 +180,6 @@ View& View::anchor(Place::t p){
 	return *this;
 }
 
-
-void View::addCallback(Event::t e, eventCallback cb){
-	if(!hasCallback(e, cb)){
-		callbackLists[e].push_back(cb);
-	}
-}
 
 View& View::bringToFront(){ makeLastSibling(); return *this; }
 
@@ -308,8 +309,8 @@ void View::focused(bool b){
 
 bool View::hasCallback(Event::t e, eventCallback cb) const {
 	if(hasCallbacks(e)){
-		const eventCallbackList& l = callbackLists.find(e)->second; //[e];
-		if(find(l.begin(), l.end(), cb) != l.end()) return true;
+		const eventCallbackList& l = callbackLists.find(e)->second;
+		return find(l.begin(), l.end(), cb) != l.end();
 	}
 	return false;
 }
@@ -343,7 +344,7 @@ void View::on(Event::t e, eventCallback cb){
 
 void View::onDraw(){ if(draw) draw(this); }
 
-bool View::onEvent(Event::t e, GLV& glv){ return false; }
+bool View::onEvent(Event::t e, GLV& glv){ return true; }
 
 
 void View::onResize(space_t dx, space_t dy){

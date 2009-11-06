@@ -48,8 +48,6 @@ void GLV::broadcastEvent(Event::t e){
 }
 
 
-// Since we possibly have multiple event callbacks, we will bubble the event if any
-// one of them has bubbling set to true.
 
 // The bubbling return values from the virtual and function pointer callbacks
 // are ANDed together.
@@ -58,17 +56,19 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 	if(!v.enabled(Controllable)) return false;
 
 	bool bubble = v.onEvent(e, *this);					// Execute virtual callback
-
-	if(0 != v.callbackLists.count(e)){
-		const eventCallbackList& cbl = v.callbackLists[e];
-		
-		// Execute callbacks in list
-		for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
-			//if(*it) bubble |= (*it)(&v, *this);
-			if(*it){
-				bool r = (*it)(&v, *this);
-				bubble &= r;
-				if(!r) break;
+	
+	if(bubble){
+		if(v.hasCallbacks(e)){
+			const eventCallbackList& cbl = v.callbackLists[e];
+			
+			// Execute callbacks in list
+			for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
+				//if(*it) bubble |= (*it)(&v, *this);
+				if(*it){
+					bool r = (*it)(&v, *this);
+					bubble &= r;
+					if(!r) break;
+				}
 			}
 		}
 	}
@@ -114,8 +114,13 @@ static void drawContext(float tx, float ty, View * v, float& cx, float& cy, View
 static void computeCrop(std::vector<Rect>& cr, int lvl, space_t ax, space_t ay, View * v){
 	if(v->enabled(CropChildren)){
 		cr[lvl].set(ax, ay, v->w, v->h);	// set absolute rect
-		cr[lvl].intersection(cr[lvl-1], cr[lvl]);
+		
+		// get intersection with myself and previous level
+		if(lvl>0) cr[lvl].intersection(cr[lvl-1], cr[lvl]);
 	}
+	
+	// if no child cropping, then inherit previous level's crop rect
+	else{ cr[lvl] = cr[lvl-1]; }
 }
 
 // Views are drawn depth-first from leftmost to rightmost sibling

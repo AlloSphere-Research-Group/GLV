@@ -81,8 +81,9 @@ struct ColorView : public View{
 		if(parent && glv.mouse.left()){
 			float sat = glv.mouse.yRel()/h;
 			parent->colors().back.setHSV(glv.mouse.xRel()/w, 1, sat*sat);
+			return false;
 		}
-		return false;
+		return true;
 	}
 };
 

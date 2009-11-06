@@ -13,8 +13,9 @@ namespace Behavior{
 	static bool mouseMove(View * v, GLV & glv){
 		if(glv.mouse.left()){
 			v->move(glv.mouse.dx(), glv.mouse.dy());
+			return false;
 		}
-		return false;
+		return true;
 	}
 	
 	static bool mouseResizeCorner(View * v, GLV & glv){

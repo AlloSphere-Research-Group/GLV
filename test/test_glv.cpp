@@ -13,7 +13,7 @@ int main(int argc, char ** argv){
 
 	Window win(640, 640, "GLV Test", &top);
 
-	top << new Label("Right-drag moves views.\nMiddle-drag resizes views.", 10, 10);
+	//top << new Label("Right-drag moves views.\nMiddle-drag resizes views.", 10, 10);
 
 
 	// Top view layout (2x2 grid)
@@ -22,7 +22,8 @@ int main(int argc, char ** argv){
 
 	//---- Hierarchy View
 	View hierView; layout << hierView;
-	hierView	.enable(CropChildren)(Event::MouseDrag, Behavior::mouseMove)
+	hierView	//.enable(CropChildren)
+				(Event::MouseDrag, Behavior::mouseMove)
 				<< new Label("Hierarchy", 0, -10);
 
 	LayoutGrid lg0(hierView, 2, 2, 14);
@@ -38,8 +39,8 @@ int main(int argc, char ** argv){
 	//---- Anchored children view
 	View anchorView; layout << anchorView;
 	anchorView	.disable(DrawBack)
+				(Event::MouseDrag, Behavior::mouseResizeCorner)
 				(Event::MouseDrag, Behavior::mouseMove)
-				(Event::MouseDrag, Behavior::mouseResize)
 				<< new Label("Anchored Children", 0, -10);
 
 	LayoutGrid lg(anchorView, 3, 3, 14);
@@ -56,9 +57,7 @@ int main(int argc, char ** argv){
 	
 	//---- Color view
 	ColorView colorView; layout << colorView;
-	colorView	(Event::MouseDrag, Behavior::mouseMove)
-				(Event::MouseDrag, Behavior::mouseResize)
-				<< new Label("Colorful View", 0, -10)
+	colorView	<< new Label("Colorful View", 0, -10)
 				<< (new Label("Hue"))->size(6).anchor(Place::BC).pos(Place::TC,0,4)
 				<< (new Label("Value", true))->size(6).anchor(Place::CL).pos(Place::CR,-4,0);
 	
