@@ -1,6 +1,6 @@
 include ../Makefile.config
 CFLAGS += -I../include/
-LDFLAGS += ../libglv.a
+LFLAGS += ../libglv.a
 
 SRC =	test_examples.cpp \
 	test_glv.cpp \
@@ -17,7 +17,7 @@ all: $(TARGETS)
 
 %: %.cpp ../libglv.a
 	@echo CC $<
-	@$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	@$(CC) $(CFLAGS) -o $@ $< $(LFLAGS)
 
 clean:
 	@rm -f *.o $(TARGETS)
