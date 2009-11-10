@@ -1,6 +1,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include <algorithm>
 #include "glv_core.h"
 
 namespace glv{
