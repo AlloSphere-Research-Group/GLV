@@ -214,8 +214,21 @@ Table& Table::arrange(){
 		}
 	}
 
+
+	// We need to compute the actual number of rows in the table here, because
+	// mSize2 may actually be larger...
+	// search for first non-zero row height from back
+	int ny=mSize2-1;
+	for(; ny>=0; --ny){
+		if(rowHs[ny] != 0) break;
+	}
+	++ny;
+	//printf("%d %d\n", ny+1, mSize2);
+	//mSize2 = ny+1;	// this causes a crash next time arrange is called???
+
 	space_t accW = sumSpan(colWs, mSize1) + mPad1*(mSize1+1);
-	space_t accH = sumSpan(rowHs, mSize2) + mPad2*(mSize2+1);
+	//space_t accH = sumSpan(rowHs, mSize2) + mPad2*(mSize2+1);
+	space_t accH = sumSpan(rowHs, ny) + mPad2*(ny+1);
 	extent(accW, accH);
 
 
