@@ -71,7 +71,7 @@ void FunctionPlot::onDraw(){
 
 	enable(PointSmooth);
 
-	int B=mIMin, E=mIMax-1;	// begin/end plotting indices
+	int B=mIMin, E=mIMax;	// begin/end plotting indices
 	float mulX = w / (mMaxX - mMinX);
 	float addX =-mulX*mMinX;
 	float mulY =-h / (mMaxY - mMinY);
@@ -119,9 +119,10 @@ void FunctionPlot::onDraw(){
 
 	//if(0 == mBufCol){
 
-		// draw curve
+		
 		color(mPlotColor ? *mPlotColor : colors().fore);
 		
+		// draw end points
 		if(mBufX && mBufY && mDotEnds){
 			
 			pointSize(mStroke*4);
@@ -129,11 +130,13 @@ void FunctionPlot::onDraw(){
 			begin(Points);
 				if(mBufCol) color(mBufCol[B]);
 				vertex(mBufX[B]*mulX+addX, mBufY[B]*mulY+addY);
-				if(mBufCol) color(mBufCol[E]);
-				vertex(mBufX[E]*mulX+addX, mBufY[E]*mulY+addY);
+				if(mBufCol) color(mBufCol[E-1]);
+				vertex(mBufX[E-1]*mulX+addX, mBufY[E-1]*mulY+addY);
 			end();
 		}
 		
+		
+		// draw points
 		draw::stroke(mStroke);
 		begin(mDrawPrim);
 		
@@ -157,7 +160,7 @@ void FunctionPlot::onDraw(){
 				}
 			}
 			
-			else if(mBufX && !mBufY){	// x-plot
+			else if(mBufX && !mBufY){	// x-axis plot
 				double dx = w/(E-B-1), x=0;
 				for(int i=B; i<E; ++i){
 					if(mBufCol) color(mBufCol[i]);
@@ -165,7 +168,7 @@ void FunctionPlot::onDraw(){
 				}
 			}
 			
-			else if(mBufY && !mBufX){	// x-plot
+			else if(mBufY && !mBufX){	// y-axis plot
 				double dy = h/(E-B-1), y=0;
 				for(int i=B; i<E; ++i){
 					if(mBufCol) color(mBufCol[i]);
