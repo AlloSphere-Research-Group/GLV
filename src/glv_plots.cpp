@@ -197,7 +197,7 @@ bool FunctionPlot::onEvent(Event::t e, GLV& g){
 
 		float dx = m.dx();
 		float dy = m.dy();
-		
+
 		if(m.left()){
 			float ax = ((mMaxX - mMinX)/w) * dx;
 			float ay =-((mMaxY - mMinY)/h) * dy;
@@ -208,11 +208,6 @@ bool FunctionPlot::onEvent(Event::t e, GLV& g){
 		if(m.right()){
 			float px = m.xRel(Mouse::Right);
 			float py = h-m.yRel(Mouse::Right);
-//			float mul = pow(2, dy*0.1);
-//			float cx = mMinX + (px/w)*(mMaxX-mMinX);
-//			float cy = mMinY + (py/h)*(mMaxY-mMinY);
-//			rangeX((mMinX-cx)*mul+cx, (mMaxX-cx)*mul+cx);
-//			rangeY((mMinY-cy)*mul+cy, (mMaxY-cy)*mul+cy);
 			zoom(px, py, dy*0.1);
 		}
 		
