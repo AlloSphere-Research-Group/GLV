@@ -74,6 +74,7 @@ protected:
 	void allocCol(){ freeCol(); mBufCol = new Color[size()]; }
 	template<class T> void sort(T& a, T& b){ if(a>b){ T t=a; a=b; b=t; }  }
 	void zero(float * b){ for(int i=0; i<size(); ++i) b[i]=0.f; }
+	void zoom(float px, float py, float zm);
 };
 
 

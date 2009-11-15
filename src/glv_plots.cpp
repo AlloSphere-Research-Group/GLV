@@ -176,6 +176,14 @@ void FunctionPlot::onDraw(){
 	//}
 }
 
+void FunctionPlot::zoom(float px, float py, float zm){
+	float mul = pow(2, zm*0.1);
+	float cx = mMinX + (px/w)*(mMaxX-mMinX);
+	float cy = mMinY + (py/h)*(mMaxY-mMinY);
+	rangeX((mMinX-cx)*mul+cx, (mMaxX-cx)*mul+cx);
+	rangeY((mMinY-cy)*mul+cy, (mMaxY-cy)*mul+cy);
+}
+
 
 bool FunctionPlot::onEvent(Event::t e, GLV& g){
 	Keyboard& k = g.keyboard;
@@ -200,11 +208,12 @@ bool FunctionPlot::onEvent(Event::t e, GLV& g){
 		if(m.right()){
 			float px = m.xRel(Mouse::Right);
 			float py = h-m.yRel(Mouse::Right);
-			float mul = pow(2, dy*0.1);
-			float cx = mMinX + (px/w)*(mMaxX-mMinX);
-			float cy = mMinY + (py/h)*(mMaxY-mMinY);
-			rangeX((mMinX-cx)*mul+cx, (mMaxX-cx)*mul+cx);
-			rangeY((mMinY-cy)*mul+cy, (mMaxY-cy)*mul+cy);
+//			float mul = pow(2, dy*0.1);
+//			float cx = mMinX + (px/w)*(mMaxX-mMinX);
+//			float cy = mMinY + (py/h)*(mMaxY-mMinY);
+//			rangeX((mMinX-cx)*mul+cx, (mMaxX-cx)*mul+cx);
+//			rangeY((mMinY-cy)*mul+cy, (mMaxY-cy)*mul+cy);
+			zoom(px, py, dy*0.1);
 		}
 		
 		return false;
@@ -214,6 +223,8 @@ bool FunctionPlot::onEvent(Event::t e, GLV& g){
 	case Event::KeyDown:
 		switch(k.key()){
 			case 'c': center(); return false;
+			case Key::Up: zoom(m.xRel(Mouse::Left), h-m.yRel(Mouse::Left), -1); return false;
+			case Key::Down: zoom(m.xRel(Mouse::Left), h-m.yRel(Mouse::Left),1); return false;
 		}
 
 	default:;
