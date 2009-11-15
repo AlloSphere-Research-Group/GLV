@@ -6,7 +6,8 @@
 namespace glv{
 
 #define CTOR_INIT_LIST \
-	View(r), mSize(size), mBufX(0), mBufY(0), mBufCol(0), mPlotColor(0),\
+	View(r), mSize(size), mIMin(0), mIMax(size),\
+	mBufX(0), mBufY(0), mBufCol(0), mPlotColor(0),\
 	mMinX(-1), mMaxX(1), mMinY(-1), mMaxY(1), \
 	mDrawPrim(draw::LineStrip), mStroke(1), mTickMajor(1), \
 	mShowAxes(true), mDotEnds(false), mInterpolate(false)
@@ -38,10 +39,19 @@ FunctionPlot& FunctionPlot::center(){
 FunctionPlot& FunctionPlot::dotEnds(bool v){ mDotEnds=v; return *this; }
 FunctionPlot& FunctionPlot::interpolate(bool v){ mInterpolate=v; return *this; }
 FunctionPlot& FunctionPlot::range(float v){ rangeX(v); return rangeY(v); }
+
+FunctionPlot& FunctionPlot::rangeIndex(int mn, int mx){
+	sort(mn,mx);
+	if(mn<0) mn=0;
+	if(mx>size()) mx=size();
+	mIMin=mn; mIMax=mx;
+	return *this;
+}
+
 FunctionPlot& FunctionPlot::rangeX(float v){ return rangeX(-v, v); }
 FunctionPlot& FunctionPlot::rangeY(float v){ return rangeY(-v, v); }
-FunctionPlot& FunctionPlot::rangeX(float min, float max){ sort(min, max); mMaxX=max; mMinX=min; return *this; }
-FunctionPlot& FunctionPlot::rangeY(float min, float max){ sort(min, max); mMaxY=max; mMinY=min; return *this; }
+FunctionPlot& FunctionPlot::rangeX(float mn, float mx){ sort(mn, mx); mMaxX=mx; mMinX=mn; return *this; }
+FunctionPlot& FunctionPlot::rangeY(float mn, float mx){ sort(mn, mx); mMaxY=mx; mMinY=mn; return *this; }
 FunctionPlot& FunctionPlot::showAxes(bool v){ mShowAxes=v; return *this; }	
 FunctionPlot& FunctionPlot::stroke(float v){ mStroke=v; return *this; }
 FunctionPlot& FunctionPlot::tickMajor(float v){ mTickMajor=v; return *this; }
@@ -61,11 +71,13 @@ void FunctionPlot::onDraw(){
 
 	enable(PointSmooth);
 
+	int B=mIMin, E=mIMax-1;	// begin/end plotting indices
 	float mulX = w / (mMaxX - mMinX);
 	float addX =-mulX*mMinX;
 	float mulY =-h / (mMaxY - mMinY);
 //	float addY = mulY*mMinY;
 	float addY = mulY*-mMaxY;	// min and max must be flipped around zero
+
 
 	// draw axes
 	if(mShowAxes){
@@ -115,30 +127,27 @@ void FunctionPlot::onDraw(){
 			pointSize(mStroke*4);
 			draw::enable(PointSmooth);
 			begin(Points);
-				if(mBufCol) color(mBufCol[0]);
-				vertex(mBufX[0]*mulX+addX, mBufY[0]*mulY+addY);
-				int e = size()-1;
-				if(mBufCol) color(mBufCol[e]);
-				vertex(mBufX[e]*mulX+addX, mBufY[e]*mulY+addY);
+				if(mBufCol) color(mBufCol[B]);
+				vertex(mBufX[B]*mulX+addX, mBufY[B]*mulY+addY);
+				if(mBufCol) color(mBufCol[E]);
+				vertex(mBufX[E]*mulX+addX, mBufY[E]*mulY+addY);
 			end();
 		}
 		
 		draw::stroke(mStroke);
 		begin(mDrawPrim);
 		
-			
-		
 			if(mBufX && mBufY){			// xy-plot
 			
 				const float h1=-0.0625, h2=0.5625;
 				int im1=0, ip1=1, ip2=2;
 			
-				for(int i=0; i<size(); ++i){
+				for(int i=B; i<E; ++i){
 					if(mBufCol) color(mBufCol[i]);
 					vertex(mBufX[i]*mulX+addX, mBufY[i]*mulY+addY);
 					
 					if(mInterpolate){
-						ip2 = i+2; if(ip2>=size()) ip2 = size()-1;
+						ip2 = i+2; if(ip2>=E) ip2 = E-B-1;
 						vertex(
 							(mBufX[im1]*h1 + mBufX[i]*h2 + mBufX[ip1]*h2 + mBufX[ip2]*h1)*mulX+addX,
 							(mBufY[im1]*h1 + mBufY[i]*h2 + mBufY[ip1]*h2 + mBufY[ip2]*h1)*mulY+addY
@@ -149,16 +158,16 @@ void FunctionPlot::onDraw(){
 			}
 			
 			else if(mBufX && !mBufY){	// x-plot
-				double dx = w/(size()-1), x=0;
-				for(int i=0; i<size(); ++i){
+				double dx = w/(E-B-1), x=0;
+				for(int i=B; i<E; ++i){
 					if(mBufCol) color(mBufCol[i]);
 					vertex(x, (mBufX[i]*mulY+addY)); x+=dx;
 				}
 			}
 			
 			else if(mBufY && !mBufX){	// x-plot
-				double dy = h/(size()-1), y=0;
-				for(int i=0; i<size(); ++i){
+				double dy = h/(E-B-1), y=0;
+				for(int i=B; i<E; ++i){
 					if(mBufCol) color(mBufCol[i]);
 					vertex(mBufY[i]*mulX+addX, y); y+=dy;
 				}
@@ -220,6 +229,7 @@ FunctionPlot& FunctionPlot::resize(int n){
 		if(mBufX) allocX();
 		if(mBufY) allocY();
 		if(mBufCol) allocCol();
+		rangeIndex(mIMin, mIMax);
 	}
 	return *this;
 }

@@ -35,6 +35,7 @@ public:
 	FunctionPlot& interpolate(bool v);				///< Set whether to apply cubic interpolation to 2-D plot
 	FunctionPlot& plotColor(const Color& c);		///< Set plotting color
 	FunctionPlot& range(float ext);					///< Set range of x & y axes to [-ext,ext]
+	FunctionPlot& rangeIndex(int min, int max);		///< Set range of buffer indices to plot to [min, max)
 	FunctionPlot& rangeX(float ext);				///< Set range of x axis to [-ext,ext]
 	FunctionPlot& rangeY(float ext);				///< Set range of y axis to [-ext,ext]
 	FunctionPlot& rangeX(float min, float max);		///< Set range of x axis to [min,max]
@@ -56,6 +57,7 @@ public:
 
 protected:
 	int mSize;
+	int mIMin, mIMax;
 	float * mBufX, * mBufY;
 	Color * mBufCol;
 	Color * mPlotColor;
@@ -70,7 +72,7 @@ protected:
 	void allocX(){ freeX(); mBufX = new float[size()]; zero(mBufX); }
 	void allocY(){ freeY(); mBufY = new float[size()]; zero(mBufY); }
 	void allocCol(){ freeCol(); mBufCol = new Color[size()]; }
-	void sort(float& a, float& b){ if(a>b){ float t=a; a=b; b=t; }  }
+	template<class T> void sort(T& a, T& b){ if(a>b){ T t=a; a=b; b=t; }  }
 	void zero(float * b){ for(int i=0; i<size(); ++i) b[i]=0.f; }
 };
 
