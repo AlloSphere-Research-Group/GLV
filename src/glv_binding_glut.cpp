@@ -200,6 +200,7 @@ static void glutMotionCB(int ax, int ay){
 }
 
 static void glutPassiveMotionCB(int ax, int ay){
+	//printf("GLUT: passive motion event x:%d y:%d\n", ax, ay);
 	motionToGLV(ax, ay, Event::MouseMove);
 }
 
@@ -218,6 +219,7 @@ static void registerCBs(){
 	glutKeyboardUpFunc(glutKeyboardUpCB);
 	glutMouseFunc(glutMouseCB);
 	glutMotionFunc(glutMotionCB);
+	glutPassiveMotionFunc(glutPassiveMotionCB);
 	glutReshapeFunc(glutReshapeCB);
 	glutSpecialFunc(glutSpecialCB); 
 	glutSpecialUpFunc(glutSpecialUpCB);

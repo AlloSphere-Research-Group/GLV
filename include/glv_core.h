@@ -86,35 +86,35 @@ namespace Event{
 
 	/// Event type enum
 	enum t{
-		Null = 0,	/**< No event */
+		Null = 0,		/**< No event */
 		
 		// core events
-		Quit,		/**< Application quit */
+		Quit,			/**< Application quit */
 		WindowCreate,	/**< Sent by window upon creation to its attached GLV */ 
 		WindowDestroy,	/**< Sent by window upon destruction to its attached GLV */ 
 		WindowResize,	/**< Sent by window upon resize to its attached GLV */
 		
 		// view events
-		FocusGained,/**< View got focus */
-		FocusLost,	/**< View lost focus */
+		FocusGained,	/**< View got focus */
+		FocusLost,		/**< View lost focus */
 		
 		// mouse events
-		MouseDown,	/**< Mouse button pressed */
-		MouseUp,	/**< Mouse button released */
-		MouseMove,	/**< Mouse has moved */
-		MouseDrag,	/**< Mouse has moved with a button pressed */
-		MouseWheel,	/**< Mouse wheel moved */
+		MouseDown,		/**< Mouse button pressed */
+		MouseUp,		/**< Mouse button released */
+		MouseMove,		/**< Mouse has moved */
+		MouseDrag,		/**< Mouse has moved with a button pressed */
+		MouseWheel,		/**< Mouse wheel moved */
 		
 		// keyboard events
-		KeyDown,	/**< Keyboard key pressed*/
-		KeyUp,		/**< Keyboard key released */
-		KeyRepeat,	/**< Keyboard key auto-repeated */
+		KeyDown,		/**< Keyboard key pressed*/
+		KeyUp,			/**< Keyboard key released */
+		KeyRepeat,		/**< Keyboard key auto-repeated */
 		
 		// window events
 	//	WindowActivated,	
 	//	WindowDeactivated,
-		Unused,		/**< Add to this for runtime event types */
-		NumTypes	/**< Number of event types */
+		Unused,			/**< Add to this for runtime event types */
+		NumTypes		/**< Number of event types */
 	};
 
 	/// Returns a string of event type.
