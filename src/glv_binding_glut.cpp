@@ -21,28 +21,32 @@ namespace glv {
 // GLUT window implementation
 class WindowImpl{
 public:
-	WindowImpl(Window *window, int window_id)
+	WindowImpl(Window *window, int winID)
 	: mWindow(window)
-	, mGLUTWindowId(window_id)
-	, mGLUTInFullScreen(false){
-		windows()[mGLUTWindowId] = this;
+	, mID(winID)
+	, mInGameMode(false){
+		windows()[mID] = this;
 	}
 	
-	~WindowImpl(){ windows().erase(mGLUTWindowId); }
+	~WindowImpl(){
+		windows().erase(mID);
+		if(mInGameMode) windows().erase(mIDGameMode);
+		glutDestroyWindow(mID);
+	}
 	
 	void draw();	// GLUT draw function
 	
 	void scheduleDraw(){
-		scheduleDrawStatic(mGLUTInFullScreen ? mGLUTFullscreenWindowId : mGLUTWindowId);
+		scheduleDrawStatic(mInGameMode ? mIDGameMode : mID);
 	}
 	
 	// Returns the implementation of the currently selected window
 	static WindowImpl * getWindowImpl(){ return getWindowImpl(glutGetWindow()); }
 	
 	
-	static WindowImpl * getWindowImpl(int window_id){
-		if(windows().count(window_id) > 0){
-			return windows()[window_id];
+	static WindowImpl * getWindowImpl(int id){
+		if(windows().count(id) > 0){
+			return windows()[id];
 		}
 		return 0;
 	}
@@ -66,15 +70,15 @@ private:
 	typedef std::map<int, WindowImpl *> WindowsMap;
 
 	// schedule draws of a specific window
-	static void scheduleDrawStatic(int window_id){
-		WindowImpl *impl = getWindowImpl(window_id);
+	static void scheduleDrawStatic(int winID){
+		WindowImpl *impl = getWindowImpl(winID);
 		
-		// If there is a valid implementation, then schedule draw...
+		// If there is a valid implementation, then draw and schedule next draw...
 		if(impl){
 			int current = glutGetWindow();
-			if(window_id != current) glutSetWindow(window_id);
+			if(winID != current) glutSetWindow(winID);
 			impl->draw();
-			glutTimerFunc((unsigned int)(1000.0/getWindow()->fps()), scheduleDrawStatic, window_id);
+			glutTimerFunc((unsigned int)(1000.0/getWindow()->fps()), scheduleDrawStatic, winID);
 			if(current) glutSetWindow(current);
 		}
 	}
@@ -87,9 +91,9 @@ private:
 	}
 
 	Window *mWindow;
-	int mGLUTWindowId;
-	int mGLUTFullscreenWindowId;
-	bool mGLUTInFullScreen;
+	int mID;
+	int mIDGameMode;
+	bool mInGameMode;
     
 	friend class Window;
 };
@@ -246,12 +250,16 @@ void Window::implCtor(unsigned l, unsigned t, unsigned w, unsigned h){
 		(enabled(Multisample)	? GLUT_MULTISAMPLE	:0);
 
 	glutInitDisplayMode(GLUT_RGBA | bits);
-    int window_id = glutCreateWindow(mTitle);
+
+//	int stat = glutGet(GLUT_DISPLAY_MODE_POSSIBLE);
+//	printf("%d\n", stat);
+
+    int winID = glutCreateWindow(mTitle);
 
     glutIgnoreKeyRepeat(1);
 
-    //mImpl.reset(new WindowImpl(this, window_id));
-	mImpl = new WindowImpl(this, window_id);
+    //mImpl.reset(new WindowImpl(this, winID));
+	mImpl = new WindowImpl(this, winID);
 
 	registerCBs();	// this is entirely static, OK calling multiple times
     mImpl->scheduleDraw();
@@ -320,18 +328,18 @@ void Window::implGameMode(){
 			glutGameModeString("1024x768:24");
 		}
 
-		mImpl->mGLUTFullscreenWindowId = glutEnterGameMode();
-		WindowImpl::windows()[mImpl->mGLUTFullscreenWindowId] = mImpl;
-		mImpl->mGLUTInFullScreen = true;
+		mImpl->mIDGameMode = glutEnterGameMode();
+		WindowImpl::windows()[mImpl->mIDGameMode] = mImpl;
+		mImpl->mInGameMode = true;
 		registerCBs();
 		mImpl->scheduleDraw();
 	}
 	
 	// Exit game mode
 	else{
-		WindowImpl::windows().erase(mImpl->mGLUTFullscreenWindowId);
-		mImpl->mGLUTInFullScreen = false;
-		glutSetWindow(mImpl->mGLUTWindowId); // freeglut requires this before leaving game mode
+		WindowImpl::windows().erase(mImpl->mIDGameMode);
+		mImpl->mInGameMode = false;
+		glutSetWindow(mImpl->mID); // freeglut requires this before leaving game mode
 		glutLeaveGameMode();
 	}
 }
