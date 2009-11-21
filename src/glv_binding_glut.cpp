@@ -249,7 +249,8 @@ void Window::implCtor(unsigned l, unsigned t, unsigned w, unsigned h){
         (enabled(Stereo    )	? GLUT_STEREO		:0) |
 		(enabled(Multisample)	? GLUT_MULTISAMPLE	:0);
 
-	glutInitDisplayMode(GLUT_RGBA | bits);
+	bits |= GLUT_RGBA;
+	glutInitDisplayMode(bits);
 
 //	int stat = glutGet(GLUT_DISPLAY_MODE_POSSIBLE);
 //	printf("%d\n", stat);
