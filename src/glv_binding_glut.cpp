@@ -249,8 +249,7 @@ void Window::implCtor(unsigned l, unsigned t, unsigned w, unsigned h){
         (enabled(Stereo    )	? GLUT_STEREO		:0) |
 		(enabled(Multisample)	? GLUT_MULTISAMPLE	:0);
 
-	bits |= GLUT_RGBA;
-	glutInitDisplayMode(bits);
+	glutInitDisplayMode(GLUT_RGBA | bits);
 
 //	int stat = glutGet(GLUT_DISPLAY_MODE_POSSIBLE);
 //	printf("%d\n", stat);
@@ -369,6 +368,11 @@ void Window::implResize(unsigned w, unsigned h){
 }
 
 void Window::implShow(){ glutShowWindow(); }
+
+void Window::implTitle(){
+	glutSetWindow(mImpl->mID);
+	glutSetWindowTitle(title());
+}
 
 Window::Dimensions Window::implWinDims() const{
 	Dimensions d;

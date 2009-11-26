@@ -54,7 +54,8 @@ public:
 	unsigned left() const { return dimensions().l; }	///< Returns left position
 	bool visible() const { return mVisible; }			///< Returns visible enabled
 	unsigned right() const { Dimensions d=dimensions(); return d.l+d.w; }	///< Returns right edge position
-	unsigned top() const { return dimensions().t; }	///< Returns left position
+	const char * title()const { return mTitle; }		///< Returns window title
+	unsigned top() const { return dimensions().t; }		///< Returns left position
 	unsigned width() const { return dimensions().w; }	///< Get window width
 
 	void dimensions(const Dimensions& d);				///< Set dimensions of window
@@ -73,6 +74,7 @@ public:
 	void setGLV(GLV& g);								///< Set top GLV View
 	void setGLVDims(unsigned w, unsigned h);
 	void show();										///< Show window
+	void title(const char * v);							///< Set title
 	
 protected:
 	friend class Application;
@@ -108,6 +110,7 @@ protected:
 	void implResize(unsigned w, unsigned h);
 	void implHide();
 	void implShow();
+	void implTitle();
 	void implIconify();
 	Dimensions implWinDims() const;				// get current position (left,top) and size of window from impl
 	

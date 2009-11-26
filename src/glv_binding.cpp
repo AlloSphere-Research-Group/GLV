@@ -200,4 +200,6 @@ bool Window::shouldDraw(){ return glv() && active() /*&& visible()*/; }
 
 void Window::show(){ implShow(); }
 
+void Window::title(const char * v){ mTitle=v; implTitle(); }
+
 } // glv::
