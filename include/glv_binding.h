@@ -59,6 +59,7 @@ public:
 
 	void dimensions(const Dimensions& d);				///< Set dimensions of window
 	void fit();
+	void fps(double v);									///< Set frames/second
 	void fullScreen(bool on);							///< Set fullscreen mode
 	void fullScreenToggle();							///< Toggle fullscreen
 	void gameMode(bool on);								///< Set game mode

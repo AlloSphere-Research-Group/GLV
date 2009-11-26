@@ -96,6 +96,8 @@ void Window::fit(){
 	}
 }
 
+void Window::fps(double v){ mFPS=v; }
+
 void Window::gameModeToggle(){ gameMode(!gameMode()); }
 
 void Window::gameMode(bool on){
