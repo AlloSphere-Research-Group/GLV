@@ -122,21 +122,17 @@ void FunctionPlot::onDraw(){
 		
 		color(mPlotColor ? *mPlotColor : colors().fore);
 		
-		// draw end points
-		if(mBufX && mBufY && mDotEnds){
-			
+		// draw first endpoint
+		if(mDotEnds && mBufX && mBufY){
 			pointSize(mStroke*4);
 			draw::enable(PointSmooth);
 			begin(Points);
 				if(mBufCol) color(mBufCol[B]);
 				vertex(mBufX[B]*mulX+addX, mBufY[B]*mulY+addY);
-				if(mBufCol) color(mBufCol[E-1]);
-				vertex(mBufX[E-1]*mulX+addX, mBufY[E-1]*mulY+addY);
 			end();
 		}
 		
-		
-		// draw points
+		// draw buffer
 		draw::stroke(mStroke);
 		begin(mDrawPrim);
 		
@@ -176,6 +172,16 @@ void FunctionPlot::onDraw(){
 				}
 			}
 		end();
+		
+		// draw last endpoint
+		if(mDotEnds && mBufX && mBufY){
+			pointSize(mStroke*4);
+			begin(Points);
+				if(mBufCol) color(mBufCol[E-1]);
+				vertex(mBufX[E-1]*mulX+addX, mBufY[E-1]*mulY+addY);
+			end();
+		}
+		
 	//}
 }
 
