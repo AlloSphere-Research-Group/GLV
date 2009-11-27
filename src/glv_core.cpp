@@ -12,6 +12,7 @@ namespace Event{
 		switch(e){
 			CS(Null)
 			CS(Quit)
+			CS(WindowCreate) CS(WindowDestroy) CS(WindowResize)
 			CS(FocusGained) CS(FocusLost)
 			CS(MouseDown) CS(MouseUp) CS(MouseMove) CS(MouseDrag) CS(MouseWheel)
 			CS(KeyDown) CS(KeyUp) CS(KeyRepeat)
