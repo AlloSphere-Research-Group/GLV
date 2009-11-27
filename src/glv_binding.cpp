@@ -43,7 +43,7 @@ std::vector<Window *>& Application::windows(){
 
 
 
-Window::Window(unsigned w, unsigned h, const char * title, GLV * glv_, double framerate, int mode)
+Window::Window(unsigned w, unsigned h, const std::string& title, GLV * glv_, double framerate, int mode)
 :	mGLV(0), mFPS(framerate),
 	mTitle(title),
 	mDispMode(mode),
@@ -200,6 +200,6 @@ bool Window::shouldDraw(){ return glv() && active() /*&& visible()*/; }
 
 void Window::show(){ implShow(); }
 
-void Window::title(const char * v){ mTitle=v; implTitle(); }
+void Window::title(const std::string& v){ mTitle=v; implTitle(); }
 
 } // glv::

@@ -254,14 +254,14 @@ void Window::implCtor(unsigned l, unsigned t, unsigned w, unsigned h){
 //	int stat = glutGet(GLUT_DISPLAY_MODE_POSSIBLE);
 //	printf("%d\n", stat);
 
-    int winID = glutCreateWindow(mTitle);
-
+	int winID = glutCreateWindow(mTitle.c_str());
+	glutSetWindow(winID);
     glutIgnoreKeyRepeat(1);
 
     //mImpl.reset(new WindowImpl(this, winID));
 	mImpl = new WindowImpl(this, winID);
 
-	registerCBs();	// this is entirely static, OK calling multiple times
+	registerCBs();
     mImpl->scheduleDraw();
 }
 
@@ -371,7 +371,7 @@ void Window::implShow(){ glutShowWindow(); }
 
 void Window::implTitle(){
 	glutSetWindow(mImpl->mID);
-	glutSetWindowTitle(title());
+	glutSetWindowTitle(mTitle.c_str());
 }
 
 Window::Dimensions Window::implWinDims() const{
