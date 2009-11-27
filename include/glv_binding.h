@@ -53,8 +53,8 @@ public:
 	unsigned height() const { return dimensions().h; }	///< Returns window height
 	bool hideCursor() const { return mHideCursor; }		///< Returns hide cursor enabled
 	unsigned left() const { return dimensions().l; }	///< Returns left position
-	bool visible() const { return mVisible; }			///< Returns visible enabled
 	unsigned right() const { Dimensions d=dimensions(); return d.l+d.w; }	///< Returns right edge position
+	bool showing() const { return implShowing(); }		///< Returns whether window is showing
 	std::string title()const { return mTitle; }			///< Returns window title
 	unsigned top() const { return dimensions().t; }		///< Returns top position
 	unsigned width() const { return dimensions().w; }	///< Returns window width
@@ -89,10 +89,6 @@ protected:
 	bool mGameMode;
 	bool mHideCursor;	// hide cursor?
 	bool mIsActive;		// window context ready?
-	bool mVisible;		// window visible? 
-						// LJP: maybe not a good idea to manage this ourselves
-						// since events from OS window manager can also change
-						// window state.
 	
 	bool shouldDraw();	// if the GLV views should be drawn
 
@@ -113,6 +109,8 @@ protected:
 	void implShow();
 	void implTitle();
 	void implIconify();
+	
+	bool implShowing() const;
 	Dimensions implWinDims() const;				// get current position (left,top) and size of window from impl
 	
     // pointer to the binding-specific implementation

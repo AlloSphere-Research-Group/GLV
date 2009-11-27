@@ -47,7 +47,7 @@ Window::Window(unsigned w, unsigned h, const std::string& title, GLV * glv_, dou
 :	mGLV(0), mFPS(framerate),
 	mTitle(title),
 	mDispMode(mode),
-	mFullScreen(false), mGameMode(false), mHideCursor(false), mIsActive(false), mVisible(true)
+	mFullScreen(false), mGameMode(false), mHideCursor(false), mIsActive(false)
 {
 
 	// Initialize windowing impl when going from 0 to 1 windows

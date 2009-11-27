@@ -40,6 +40,8 @@ public:
 		scheduleDrawStatic(mInGameMode ? mIDGameMode : mID);
 	}
 	
+	void showing(bool v){ mShowing=v; }
+	
 	// Returns the implementation of the currently selected window
 	static WindowImpl * getWindowImpl(){ return getWindowImpl(glutGetWindow()); }
 	
@@ -94,6 +96,7 @@ private:
 	int mID;
 	int mIDGameMode;
 	bool mInGameMode;
+	bool mShowing;
     
 	friend class Window;
 };
@@ -157,6 +160,13 @@ static void glutKeyboardCB(unsigned char key, int x, int y){ keyToGLV(key, true,
 static void glutKeyboardUpCB(unsigned char key, int x, int y){ keyToGLV(key, false, false); }
 static void glutSpecialCB(int key, int x, int y){ keyToGLV(key, true, true); }
 static void glutSpecialUpCB(int key, int x, int y){ keyToGLV(key, false, true); }
+
+static void glutVisibilityCB(int v){
+	WindowImpl * w = WindowImpl::getWindowImpl();
+	if(w){
+		w->showing(v == GLUT_VISIBLE);
+	}
+}
 
 static void glutMouseCB(int btn, int state, int ax, int ay){
 	//printf("GLUT: mouse event x:%d y:%d bt:#%d,%d\n", ax,ay, btn, state==GLUT_DOWN);
@@ -227,6 +237,7 @@ static void registerCBs(){
 	glutReshapeFunc(glutReshapeCB);
 	glutSpecialFunc(glutSpecialCB); 
 	glutSpecialUpFunc(glutSpecialUpCB);
+	glutVisibilityFunc(glutVisibilityCB);
 }
 
 
@@ -368,6 +379,10 @@ void Window::implResize(unsigned w, unsigned h){
 }
 
 void Window::implShow(){ glutShowWindow(); }
+
+bool Window::implShowing() const {
+	return mImpl->mShowing;
+}
 
 void Window::implTitle(){
 	glutSetWindow(mImpl->mID);
