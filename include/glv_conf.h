@@ -12,6 +12,7 @@
 #if defined (__APPLE__) || defined (OSX)
 	
 	#define GLV_PLATFORM		"OSX"
+	#define GLV_PLATFORM_OSX
 
 	#include <OpenGL/OpenGL.h>
 	#include <OpenGL/gl.h>
@@ -29,7 +30,7 @@
 #if defined(__linux__)
 
 	#define GLV_PLATFORM		"UNIX"
-	#define GLV_PLATFORM_UNIX	1
+	#define GLV_PLATFORM_UNIX
 
 	#include <GL/glew.h>
 	#include <GL/gl.h>
@@ -49,6 +50,7 @@
 #ifdef WIN32
 	
 	#define GLV_PLATFORM		"WIN32"
+	#define GLV_PLATFORM_WIN
 
 	#include <windows.h>
 
