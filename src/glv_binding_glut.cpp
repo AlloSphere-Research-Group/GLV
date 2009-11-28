@@ -122,15 +122,17 @@ static void glutDisplayCB(){
 static void modToGLV(){
 	GLV * g = WindowImpl::getGLV();
 	if(g){
-		int mod = glutGetModifiers();	
+		int mod = glutGetModifiers();
 		g->keyboard.alt  (mod & GLUT_ACTIVE_ALT);
 		g->keyboard.ctrl (mod & GLUT_ACTIVE_CTRL);
 		g->keyboard.shift(mod & GLUT_ACTIVE_SHIFT);
+		//printf("a:%d c:%d s:%d\n", g->keyboard.alt(), g->keyboard.ctrl(), g->keyboard.shift());
 	}
 }
 
 static void keyToGLV(unsigned int key, bool down, bool special){
 	//printf("GLUT: keyboard event k:%d d:%d s:%d\n", key, down, special);
+
 	GLV * g = WindowImpl::getGLV();
 	if(g){
 		if(special){
@@ -146,6 +148,61 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 				CS(F9, F9) CS(F10, F10)	CS(F11, F11) CS(F12, F12)
 			}
 			#undef CS
+		}
+		else{
+		
+			//printf("GLUT i: %3d %c\n", key, key);
+
+			#define MAP(i,o) case i: key=o; break
+
+//			bool shft = glutGetModifiers() & GLUT_ACTIVE_SHIFT;
+//			if(shft && (key>32 && key<127)){
+//				const char * QWERTYunshifted = 
+//					" 1\'3457\'908=,-./0123456789;;,=./"
+//					"2abcdefghijklmnopqrstuvwxyz[\\]6-"
+//					"`abcdefghijklmnopqrstuvwxyz[\\]`"
+//				;
+//				key = QWERTYunshifted[key-32];
+//			}
+
+			// Reassign keycodes when CTRL is down
+			#ifdef GLV_PLATFORM_OSX
+
+			bool ctrl = glutGetModifiers() & GLUT_ACTIVE_CTRL;
+
+			if(ctrl){
+				// All alphabetical keys get dropped to lower ASCII range.
+				// Some will conflict with standard non-printable characters.
+				// There is no way to detect this, since the control modified
+				// keycode gets sent to the GLUT callback. We will assume that
+				// ctrl-key events are the printable character keys.
+
+				//Enter		=3
+				//BackSpace	=8
+				//Tab		=9
+				//Return	=13
+				//Escape	=27
+				
+				if(key <= 26){ key += 96; }
+				
+				// only some non-alphabetic keys are wrong...
+				else{
+					
+					switch(key){
+						MAP(27, '[');
+						MAP(28, '\\');
+						MAP(29, ']');
+						MAP(31, '-');
+					};
+					
+				}
+			}
+			
+			#endif
+			
+			#undef MAP
+
+			//printf("GLUT o: %3d %c\n", key, key);
 		}
 		
 		down ? g->setKeyDown(key) : g->setKeyUp(key);
@@ -245,8 +302,6 @@ static void registerCBs(){
 
 void Window::implCtor(unsigned l, unsigned t, unsigned w, unsigned h){
 
-   // if(!WindowImpl::mGLUTInitialized)
-
     glutInitWindowSize(w, h);
     glutInitWindowPosition(0, 0);
 
@@ -273,7 +328,7 @@ void Window::implCtor(unsigned l, unsigned t, unsigned w, unsigned h){
 	mImpl = new WindowImpl(this, winID);
 
 	registerCBs();
-    mImpl->scheduleDraw();
+	mImpl->scheduleDraw();
 }
 
 void Window::implDtor(){
