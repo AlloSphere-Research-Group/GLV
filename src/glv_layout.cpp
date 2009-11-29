@@ -155,7 +155,7 @@ Table& Table::arrange(){
 	
 	if(numChildren > (int)mCells.size()){
 		std::string a = mAlign;
-		int sizeCells = mCells.size();
+		//int sizeCells = mCells.size();
 		int numCopies = (numChildren-1)/mCells.size();
 		for(int i=0; i<numCopies; ++i){ a+=","; a+=mAlign; }
 		arrangement(a.c_str());
