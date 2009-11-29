@@ -184,13 +184,20 @@ void text(const char * s, float l=0, float t=0, float lineSpacing=1, unsigned in
 
 
 
-/// Functor for disabling rendering capabilities
+/// Disables rendering capabilities
 struct Disable{
+
+	Disable(){}
+	Disable(int cap){ *this << cap; }
+	Disable(int cap1, int cap2){ *this << cap1 << cap2; }
+
 	/// Disable a capability
-	const Disable& operator() (int cap) const { glDisable(cap); return *this; }
+	const Disable& operator()(int cap) const { return *this << cap; }
+	const Disable& operator()(int cap1, int cap2) const { return *this << cap1<<cap2; }
+	const Disable& operator()(int cap1, int cap2, int cap3) const { return *this << cap1<<cap2<<cap3; }
 	
 	/// Disable a capability
-	const Disable& operator<< (int cap) const { return (*this)(cap); }
+	const Disable& operator<< (int cap) const { glDisable(cap); return *this; }
 };
 
 /// Global Disable functor
@@ -198,17 +205,26 @@ static Disable disable;
 
 
 
-/// Functor for enabling rendering capabilities
+/// Enables rendering capabilities
 struct Enable{
+
+	Enable(){}
+	Enable(int cap){ *this << cap; }
+	Enable(int cap1, int cap2){ *this << cap1 << cap2; }
+
 	/// Enable a capability
-	const Enable& operator() (int cap) const { glEnable(cap); return *this; }
+	const Enable& operator()(int cap) const { return *this << cap; }
+	const Enable& operator()(int cap1, int cap2) const { return *this << cap1<<cap2; }
+	const Enable& operator()(int cap1, int cap2, int cap3) const { return *this << cap1<<cap2<<cap3; }
 	
 	/// Enable a capability
-	const Enable& operator<< (int cap) const { return (*this)(cap); }
+	const Enable& operator<< (int cap) const { glEnable(cap); return *this; }
 };
 
 /// Global Enable functor
 static Enable enable;
+
+
 
 
 
