@@ -248,6 +248,8 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 			case 'a': onNumber() ? valAdd( mag()) : flipSign(); return false;
 			case 'z': onNumber() ? valAdd(-mag()) : flipSign(); return false;
 			case '-': flipSign(); return false;
+			case 'c': value(0); return false;
+			case '.': dig(size()-mNF); return false; // go to first fraction digit (if any)
 			case Key::Right: dig(dig()+1); return false;
 			case Key::Left:  dig(dig()-1); return false;
 			}
