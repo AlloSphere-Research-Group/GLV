@@ -458,8 +458,10 @@ public:
 	void preamble(unsigned int w, unsigned int h);
 
 	/// Update input event state; called by external event handlers.
-	/// be sure to set the eventType first!
-	void propagateEvent();
+
+	/// Be sure to set the eventType first!
+	/// Returns whether the event was consumed.
+	bool propagateEvent();
 
 	/// set current event target:
 	void setFocus(View * v); 

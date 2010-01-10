@@ -209,10 +209,11 @@ void GLV::preamble(unsigned int w, unsigned int h){
 	clear(ColorBufferBit | DepthBufferBit);	// TODO: this needs to be coordinated with the display settings
 }
 
-void GLV::propagateEvent(){ //printf("GLV::propagateEvent(): %s\n", Event::getName(eventtype));
+bool GLV::propagateEvent(){ //printf("GLV::propagateEvent(): %s\n", Event::getName(eventtype));
 	View * v = mFocusedView;
 	Event::t e = eventType();
 	while(v && doEventCallbacks(*v, e)) v = v->parent;
+	return v != 0;
 }
 
 void GLV::setFocus(View * v){
