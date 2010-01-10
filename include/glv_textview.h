@@ -4,7 +4,6 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-#include <ctype.h>
 #include <string>
 #include <string.h>
 #include "glv_core.h"
@@ -116,6 +115,13 @@ public:
 
 	NumberDialer(int numInt, int numFrac, double max, double min);
 
+	NumberDialer(const NumberDialer& v);
+
+	double max() const;
+	double min() const;
+	int sizeFraction() const;
+	int sizeInteger() const;
+
 	/// Get value
 	double value() const;
 	
@@ -124,7 +130,10 @@ public:
 	
 	/// Set max and min output range. Values larger than displayable range will be clipped.
 	NumberDialer& range(double max, double min=0);
-	
+
+	/// Set number of digits in integer and fraction parts
+	NumberDialer& resize(int numInt, int numFrac);
+
 	/// Set whether to show sign
 	NumberDialer& showSign(bool v);
 
@@ -163,44 +172,9 @@ protected:
 		if((mVal>0 && -mVal>=mMin) || (mVal<0 && -mVal<=mMax))
 			valSet(-mVal);
 	}
-	void resize(int numInt, int numFrac){
-		mNI = numInt; mNF = numFrac;
-		mValMul = 1. / pow(10., mNF);
-		setWidth();
-	}
 };
 
 
-
-/// View for editing text
-class TextView : public View{
-public:
-	/// Constructor
-	TextView(const Rect& r);
-
-	/// Set size of font in pixels
-	TextView& size(float pixels);
-	
-	/// Set text string
-	TextView& text(const std::string& v);
-
-	virtual const char * className() const { return "TextView"; }
-
-	virtual void onDraw();	
-	virtual bool onEvent(Event::t e, GLV& g);
-
-protected:
-	std::string mText;		// The text string
-	float mSize;
-	float mSpacing;
-	int mPos;
-	void setPos(int v){
-		if(v<=int(mText.size()) && v>=0){
-			mPos=v;
-		}
-	}
-	bool validPos(){ return mPos<=int(mText.size()) && mPos>0; }
-};
 
 
 

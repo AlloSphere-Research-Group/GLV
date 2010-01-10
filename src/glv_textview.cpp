@@ -131,8 +131,21 @@ NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
 	range(max, min);
 } 
 
+NumberDialer::NumberDialer(const NumberDialer& v)
+:	View(v), CTOR_LIST
+{
+	dig(v.sizeInteger());
+	resize(v.sizeInteger(), v.sizeFraction());
+	range(v.max(), v.min());
+}
+
 #undef CTOR_LIST
 #undef CTOR_BODY
+
+double NumberDialer::max() const { return mMax*mValMul; }
+double NumberDialer::min() const { return mMin*mValMul; }
+int NumberDialer::sizeFraction() const { return mNF; }
+int NumberDialer::sizeInteger() const { return mNI; }
 
 NumberDialer& NumberDialer::padding(space_t v){ mPad=v; return *this; }
 
@@ -143,6 +156,13 @@ NumberDialer& NumberDialer::range(double max, double min){
 	if(mMin<-m) mMin=-m;
 	if(mMax> m) mMax= m;
 	valSet(mVal);
+	return *this;
+}
+
+NumberDialer& NumberDialer::resize(int numInt, int numFrac){
+	mNI = numInt; mNF = numFrac;
+	mValMul = 1. / pow(10., mNF);
+	setWidth();
 	return *this;
 }
 
@@ -262,88 +282,6 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 	return true;
 }
 
-
-
-TextView::TextView(const Rect& r)
-:	View(r), mSpacing(1)
-{
-	setPos(0);
-	size(8);
-}
-
-TextView& TextView::size(float pixels){ mSize = pixels/draw::Glyph::width(); return *this; }
-TextView& TextView::text(const std::string& v){ mText=v; return *this; }
-
-void TextView::onDraw(){
-	using namespace draw;
-	float padX = 4/mSize;
-	float padY = 4/mSize;
-	float addY =-2/mSize;	// subtraction from top since some letters go above cap
-	
-	draw::push();
-	draw::scale(mSize, mSize);
-
-	// draw cursor
-	if(enabled(Focused)){
-	color(colors().fore);
-	begin(LineLoop);
-		float tl = mPos * Glyph::width() + padX;
-		float tr = tl + Glyph::width();
-		float tt = 0 * (mSpacing * Glyph::baseline()) + addY + padY;
-		float tb = tt + Glyph::descent() - addY;
-		vertex(tl, tt); vertex(tl, tb);
-		vertex(tr, tb); vertex(tr, tt);
-	end();
-	}
-	color(colors().text);
-	draw::text(mText.c_str(), padX, padY);
-	draw::pop();
-}
-
-bool TextView::onEvent(Event::t e, GLV& g){
-
-	const Keyboard& k = g.keyboard;
-	int key = k.key();
-
-	switch(e){
-	case Event::KeyDown:
-		if(isprint(key)){
-			mText.insert(mPos, 1, k.key());
-			setPos(mPos+1);
-			return false;
-		}
-		else if(key == Key::Delete){
-			if(validPos()){
-				mText.erase(mPos-1, 1);
-				setPos(mPos-1);
-			}
-			return false;
-		}
-		else if(key == Key::BackSpace){
-			if(mText.size()){
-				mText.erase(mPos, 1);
-				setPos(mPos);
-			}
-			return false;
-		}
-		else if(key == Key::Left){
-			setPos(mPos-1);
-			return false;
-		}
-		else if(key == Key::Right){
-			setPos(mPos+1);
-			return false;
-		}
-		else if(key == Key::Enter || key == Key::Return){
-			return false;
-		}
-
-		break;
-	default:;
-	}
-
-	return true;
-}
 
 
 
