@@ -124,7 +124,7 @@ void FunctionPlot::onDraw(){
 		
 		// draw first endpoint
 		if(mDotEnds && mBufX && mBufY){
-			pointSize(mStroke*4);
+			pointSize(mStroke*2);
 			draw::enable(PointSmooth);
 			begin(Points);
 				if(mBufCol) color(mBufCol[B]);
@@ -175,7 +175,7 @@ void FunctionPlot::onDraw(){
 		
 		// draw last endpoint
 		if(mDotEnds && mBufX && mBufY){
-			pointSize(mStroke*4);
+			pointSize(mStroke*2);
 			begin(Points);
 				if(mBufCol) color(mBufCol[E-1]);
 				vertex(mBufX[E-1]*mulX+addX, mBufY[E-1]*mulY+addY);
