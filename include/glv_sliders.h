@@ -36,6 +36,7 @@ public:
 	
 	SliderBase& value(float val, int dim);		///< Sets a slider value
 	SliderBase& valueAdd(float val, int dim);	///< Add to a slider value
+	SliderBase& valueAdd(float val, int dim, float min, float max);
 	SliderBase& valueMax();						///< Max all slider values
 	SliderBase& valueMid();						///< Center all slider values
 	
@@ -45,14 +46,22 @@ protected:
 	float mAcc[Dim], mVal[Dim];
 	//float mSens;
 	
-	void clip(float & v){ v<0.f ? v=0.f : v>1.f ? v=1.f : 0; }
+	void clip(float& v, float mn=0, float mx=1){ v<mn ? v=mn : v>mx ? v=mx : 0; }
 	void clipAccs(){ for(int i=0; i<Dim; ++i) clip(mAcc[i]); }
+	void clipAccs(float min, float max){ for(int i=0; i<Dim; ++i) clip(mAcc[i], min,max); }
 	bool validDim(int dim) const { return (dim < Dim) && (dim >= 0); }
 	float sens(const GLV& g){ return (g.mouse.left() && g.mouse.right()) ? 0.25 : 1; }
 
 	void updateValue(float v, int i, SliderBase& (SliderBase::* func)(float v, int i)){
 		float prevVal = value(i);
 		(this->*func)(v,i);
+		if(value(i) != prevVal)
+			notify(Update::Value, SliderChange(value(i), i));
+	}
+
+	void updateValue(float v, int i, float a1, float a2, SliderBase& (SliderBase::* func)(float v, int i, float a1, float a2)){
+		float prevVal = value(i);
+		(this->*func)(v,i,a1,a2);
 		if(value(i) != prevVal)
 			notify(Update::Value, SliderChange(value(i), i));
 	}
@@ -76,11 +85,43 @@ public:
 	
 	virtual const char * className() const { return "Slider2D"; }
 	virtual void onDraw();
-	virtual bool onEvent(Event::t e, GLV & glv);
+	virtual bool onEvent(Event::t e, GLV& glv);
 	
 	static void drawKnob(const Slider2D& s);	
 };
 
+
+class SliderRange : public SliderBase<2>{
+public:
+
+	/// @param[in] r			geometry
+	/// @param[in] val1			initial value on left or top
+	/// @param[in] val2			initial value on right or bottom
+	SliderRange(const Rect& r, float val1=0.25, float val2=0.5);
+	
+	SliderRange& center(float v);
+	SliderRange& centerRange(float center, float range);
+	SliderRange& extrema(float min, float max);
+	
+	/// Sets how much the slider should move when an empty region is clicked.
+	
+	/// The slider is constrained not jump past the click point.
+	///
+	SliderRange& jump(float v);
+	SliderRange& range(float v);
+	
+	float center() const;
+	float jump() const;
+	float range() const;
+	
+	virtual const char * className() const { return "SliderRange"; }
+	virtual void onDraw();
+	virtual bool onEvent(Event::t e, GLV& glv);
+	
+private:
+	int mDragMode;	// 0,1,2,3: off, lower, upper, center
+	float mJump;
+};
 
 
 
@@ -285,13 +326,16 @@ TEM inline SliderBase<Dim>& SliderBase<Dim>::value(float value, int dim){
 	if(validDim(dim)) mVal[dim] = mAcc[dim] = value; return *this;
 }
 
-TEM inline SliderBase<Dim>& SliderBase<Dim>::valueAdd(float add, int dim){
+TEM inline SliderBase<Dim>& SliderBase<Dim>::valueAdd(float add, int dim, float min, float max){
 	if(!validDim(dim)) return *this;
 	float acc = mAcc[dim] + add;
 	mAcc[dim] = mVal[dim] = acc;
-	clip(mVal[dim]);	// clip in [0, 1]
-
+	clip(mVal[dim], min,max);
 	return *this;
+}
+
+TEM inline SliderBase<Dim>& SliderBase<Dim>::valueAdd(float add, int dim){
+	return valueAdd(add,dim,0,1);
 }
 
 TEM inline SliderBase<Dim>& SliderBase<Dim>::valueMax(){

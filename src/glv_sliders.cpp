@@ -34,10 +34,10 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 			
 		case Event::KeyDown:
 			switch(g.keyboard.key()){
-				case 'x': updateValue(-1. / w, 0, &Slider2D::valueAdd); break;
-				case 'c': updateValue( 1. / w, 0, &Slider2D::valueAdd); break;
-				case 'a': updateValue( 1. / h, 1, &Slider2D::valueAdd); break;
-				case 'z': updateValue(-1. / h, 1, &Slider2D::valueAdd); break;
+				case 'x': updateValue(-1./w, 0, &Slider2D::valueAdd); break;
+				case 'c': updateValue( 1./w, 0, &Slider2D::valueAdd); break;
+				case 'a': updateValue( 1./h, 1, &Slider2D::valueAdd); break;
+				case 'z': updateValue(-1./h, 1, &Slider2D::valueAdd); break;
 				default: return true;
 			}
 			break;
@@ -135,6 +135,134 @@ void Slider2D::onDraw(){
 //		glVertex2f(d, posY);
 //	glEnd();
 }
+
+
+
+SliderRange::SliderRange(const Rect& r, float val1, float val2)
+:	SliderBase<2>(r), mJump(0.1), mDragMode(0)
+{
+	extrema(val1, val2);
+}
+
+float SliderRange::center() const { return (value(0) + value(1))*0.5; }
+float SliderRange::jump() const { return mJump; }
+float SliderRange::range() const { return value(1)-value(0); }
+
+SliderRange& SliderRange::center(float v){ return centerRange(v, range()); }
+
+SliderRange& SliderRange::centerRange(float c, float r){
+	float mn = c-(r/2.);
+	float mx = mn+r;
+	if(mn<0){ mx -= mn  ; mn=0; }
+	if(mx>1){ mn -= mx-1; mx=1; }
+	return extrema(mn,mx);
+}
+
+SliderRange& SliderRange::extrema(float min, float max){
+	if(min>max){ float t=min; min=max; max=t; }
+	value(min,0);
+	value(max,1);
+	return *this;
+}
+
+SliderRange& SliderRange::jump(float v){ mJump=v; return *this; }
+SliderRange& SliderRange::range(float v){ return centerRange(center(), v); }
+
+void SliderRange::onDraw(){
+	using namespace glv::draw;
+
+	float v1 = value(0);
+	float v2 = value(1);
+	if(v2<v1){ float t=v1; v1=v2; v2=t; }
+	
+	// prevent degenerecy
+	float p1 = 1./((w>h)?w:h); // 1 pixel
+	if(v2-v1 <= p1){ v1-=p1*0.5; v2+=p1*0.5; }
+
+	color(colors().fore);
+	if(w>h){	// horizontal
+		rect(v1*w,0, v2*w,h);
+	}
+	else{
+		rect(0,v1*h, w,v2*h);
+	}
+}
+
+
+bool SliderRange::onEvent(Event::t e, GLV& g){
+
+	float dv = (w>h) ? g.mouse.dx()/w : g.mouse.dy()/h;
+	float mp = (w>h) ? g.mouse.xRel()/w : g.mouse.yRel()/h;
+	float d1 = mp-value(0); if(d1<0) d1=-d1;
+	float d2 = mp-value(1); if(d2<0) d2=-d2;
+	int ind = d1<d2 ? 0:1;
+	float rg = range();
+	float endRegion = 4 / (w>h ? w:h);
+
+	switch(e){
+	case Event::MouseDown:
+		//if(g.mouse.right()) value(pt,ind);
+		
+		// NOTE: There is more than one way we might want to move the slider 
+		// on a click. We can set its center or increment its center in the
+		// direction of the click. Also, we may not want to move the slider
+		// if the click lands within the range...
+		if(g.mouse.left()){
+			float v1 = value(0);
+			float v2 = value(1);
+			if(mp<(v1-endRegion) || mp>(v2+endRegion)){
+				float dc = mp - center();
+				float dcAbs = dc<0 ? -dc : dc;
+				if(jump() > dcAbs){
+					center(mp);
+				}
+				else{
+					center(center() + (dc<0 ? -jump() : jump()));
+				}
+				updateValue(value(0), 0, &SliderRange::value);
+				updateValue(value(1), 1, &SliderRange::value);
+				mDragMode=0;
+			}
+			else if(mp > (v1-endRegion) && mp < (v1+endRegion)){
+				mDragMode=1;
+			}
+			else if(mp > (v2-endRegion) && mp < (v2+endRegion)){
+				mDragMode=2;
+			}
+			else{
+				mDragMode=3;
+			}
+		}
+		
+		return false;
+	
+	case Event::MouseDrag:
+		dv *= sens(g);
+		if(mDragMode == 3){
+			updateValue(dv, 0, 0,  1-rg, &SliderRange::valueAdd);
+			updateValue(dv, 1, rg, 1,    &SliderRange::valueAdd);
+		}
+		else if(mDragMode == 1) updateValue(dv, 0, 0, 1, &SliderRange::valueAdd);
+		else if(mDragMode == 2) updateValue(dv, 1, 0, 1, &SliderRange::valueAdd);
+
+		return false;
+
+	case Event::MouseUp:
+		if(mDragMode == 3){
+			clip(mAcc[0], 0, 1-rg);
+			clip(mAcc[1], rg, 1);
+		}
+		else if(mDragMode == 1) clip(mAcc[0], 0, 1);
+		else if(mDragMode == 2) clip(mAcc[1], 0, 1);
+		return false;
+
+	default:;
+	}
+
+	return true;
+}
+
+
 
 
 
