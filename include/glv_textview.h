@@ -188,6 +188,9 @@ public:
 	/// Set text string
 	TextView& text(const std::string& v);
 
+	void select(int v);
+	void deselect(){ mSel=0; }
+
 	virtual const char * className() const { return "TextView"; }
 
 	virtual void onDraw();	
@@ -197,13 +200,15 @@ protected:
 	std::string mText;		// The text string
 	float mSize;
 	float mSpacing;
+	float mPadX;
 	int mPos;
-	void setPos(int v){
-		if(v<=int(mText.size()) && v>=0){
-			mPos=v;
-		}
-	}
+	int mSel;	// selection range (0==none)
+	int mBlink;
+	void setPos(int v); // set cursor position
 	bool validPos(){ return mPos<=int(mText.size()) && mPos>0; }
+	int xToPos(float x); // convert x pixel position to character position
+	void deleteSelected();
+	bool selected(){ return mSel!=0; }
 };
 
 

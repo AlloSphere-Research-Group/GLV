@@ -290,7 +290,7 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 
 
 TextView::TextView(const Rect& r)
-:	View(r), mSpacing(1)
+:	View(r), mSpacing(1), mPadX(4), mSel(0), mBlink(0)
 {
 	setPos(0);
 	size(8);
@@ -301,25 +301,48 @@ TextView& TextView::text(const std::string& v){ mText=v; return *this; }
 
 void TextView::onDraw(){
 	using namespace draw;
-	float padX = 4/mSize;
+	
+	if(++mBlink==40) mBlink=0; // update blink interval
+	
+	float padX = mPadX/mSize;
 	float padY = 4/mSize;
 	float addY =-2/mSize;	// subtraction from top since some letters go above cap
 	
 	draw::push();
 	draw::scale(mSize, mSize);
 
-	// draw cursor
-	if(enabled(Focused)){
-	color(colors().fore);
-	begin(LineLoop);
-		float tl = mPos * Glyph::width() + padX;
-		float tr = tl + Glyph::width();
-		float tt = 0 * (mSpacing * Glyph::baseline()) + addY + padY;
-		float tb = tt + Glyph::descent() - addY;
-		vertex(tl, tt); vertex(tl, tb);
-		vertex(tr, tb); vertex(tr, tt);
-	end();
+	float tl = mPos * Glyph::width() + padX;
+	float tr = tl + Glyph::width();
+	float tt = 0 * (mSpacing * Glyph::baseline()) + addY + padY;
+	float tb = tt + Glyph::descent() - addY;
+	
+	// draw selection
+	if(selected()){
+		float sl, sr;
+		if(mSel>0){
+			sl = tl;
+			sr = sl + mSel*Glyph::width();
+		}
+		else{
+			sr = tl;
+			sl = sr + mSel*Glyph::width();
+		}
+		color(colors().fore);
+		begin(Quads);
+			vertex(sl, tt); vertex(sl, tb);
+			vertex(sr, tb); vertex(sr, tt);
+		end();		
 	}
+
+	// draw cursor
+	if(mBlink<20 && enabled(Focused)){
+		color(colors().text);
+		begin(Lines);
+			//vertex(tl, tt); vertex(tr, tt);
+			vertex(tl, tt); vertex(tl, tb);
+		end();
+	}
+
 	color(colors().text);
 	draw::text(mText.c_str(), padX, padY);
 	draw::pop();
@@ -329,45 +352,108 @@ bool TextView::onEvent(Event::t e, GLV& g){
 
 	const Keyboard& k = g.keyboard;
 	int key = k.key();
+	float mx = g.mouse.xRel();
 
 	switch(e){
-	case Event::KeyDown:
-		if(isprint(key)){
-			mText.insert(mPos, 1, k.key());
-			setPos(mPos+1);
-			return false;
-		}
-		else if(key == Key::Delete){
-			if(validPos()){
-				mText.erase(mPos-1, 1);
-				setPos(mPos-1);
+		case Event::KeyDown:
+			if(isprint(key)){
+				deleteSelected();
+				mText.insert(mPos, 1, k.key());
+				setPos(mPos+1);
+				return false;
 			}
-			return false;
-		}
-		else if(key == Key::BackSpace){
-			if(mText.size()){
-				mText.erase(mPos, 1);
-				setPos(mPos);
+			else{
+				switch(key){
+				case Key::Delete:
+					if(selected()) deleteSelected();
+					else if(validPos()){
+						mText.erase(mPos-1, 1);
+						setPos(mPos-1);
+					}
+					return false;
+					
+				case Key::BackSpace:
+					if(selected()) deleteSelected();
+					else if(mText.size()){
+						mText.erase(mPos, 1);
+						setPos(mPos);
+					}
+					return false;
+				
+				case Key::Left:
+					if(k.shift()) select(mSel-1);
+					else setPos(mPos-1);
+					return false;
+					
+				case Key::Right:
+					if(k.shift()) select(mSel+1);
+					else setPos(mPos+1);
+					return false;
+					
+				case Key::Down:	setPos(mText.size()); return false;
+				case Key::Up:	setPos(0); return false;
+					
+				case Key::Enter:
+				case Key::Return:
+					return false;
+				}
 			}
-			return false;
-		}
-		else if(key == Key::Left){
-			setPos(mPos-1);
-			return false;
-		}
-		else if(key == Key::Right){
-			setPos(mPos+1);
-			return false;
-		}
-		else if(key == Key::Enter || key == Key::Return){
-			return false;
-		}
+			break;
 
-		break;
-	default:;
+		case Event::MouseDown:
+			setPos(xToPos(mx));
+			break;
+
+		case Event::MouseDrag:
+			{
+				int p = xToPos(mx);
+				if(p >= mPos) select(p-mPos+1);
+				else select(p-mPos);
+				//printf("%d\n", mSel);
+			}
+			break;
+
+		default:;
 	}
 
 	return true;
+}
+
+
+void TextView::deleteSelected(){
+	if(mSel>0){
+		mText.erase(mPos, mSel);
+		setPos(mPos);
+	}
+	else if(mSel<0){
+		mText.erase(mPos+mSel, mPos);
+		setPos(mPos+mSel);
+	}
+}
+
+void TextView::select(int v){
+	int nt = mText.size();
+	int end = mPos + v;
+	if(end<0) end=0;
+	if(end>nt) end = nt;
+	mSel = end-mPos;
+}
+
+void TextView::setPos(int v){
+	if(v<=int(mText.size()) && v>=0){
+		mPos=v;
+	}
+	deselect();
+	mBlink=0;
+}
+
+int TextView::xToPos(float x){
+	float charw = draw::Glyph::width() * mSize;
+	if(x<0) x=0;
+	int p = (x-mPadX*1)/charw;
+	if(p > mText.size()) p = mText.size();
+	if(p<0) p=0;
+	return p;
 }
 
 
