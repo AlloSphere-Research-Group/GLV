@@ -176,6 +176,39 @@ protected:
 
 
 
+/// View for editing text
+class TextView : public View{
+public:
+	/// Constructor
+	TextView(const Rect& r);
+
+	/// Set size of font in pixels
+	TextView& size(float pixels);
+	
+	/// Set text string
+	TextView& text(const std::string& v);
+
+	virtual const char * className() const { return "TextView"; }
+
+	virtual void onDraw();	
+	virtual bool onEvent(Event::t e, GLV& g);
+
+protected:
+	std::string mText;		// The text string
+	float mSize;
+	float mSpacing;
+	int mPos;
+	void setPos(int v){
+		if(v<=int(mText.size()) && v>=0){
+			mPos=v;
+		}
+	}
+	bool validPos(){ return mPos<=int(mText.size()) && mPos>0; }
+};
+
+
+
+
 
 
 // Base class for number displaying/editing box(es)
