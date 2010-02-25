@@ -149,12 +149,16 @@ int NumberDialer::sizeInteger() const { return mNI; }
 
 NumberDialer& NumberDialer::padding(space_t v){ mPad=v; return *this; }
 
+static void sort(double& v1, double& v2){ if(v1>v2){ double t=v1; v1=v2; v2=t; } }
+
 NumberDialer& NumberDialer::range(double max, double min){
+	sort(min,max);
 	mMin = convert(min);
 	mMax = convert(max);
 	int m = maxVal();	// do not allow numbers larger than can be displayed
 	if(mMin<-m) mMin=-m;
 	if(mMax> m) mMax= m;
+	showSign(min < 0);
 	valSet(mVal);
 	return *this;
 }
