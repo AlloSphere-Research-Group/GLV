@@ -26,12 +26,11 @@ public:
 	FunctionPlot(const Rect& r, int size, const Color& plotColor);
 
 	~FunctionPlot();
-
-	int size() const { return mSize; }				///< Get size of internal data buffer(s)
 	
 	FunctionPlot& drawType(int primitive);			///< Set drawing primitive type
 	FunctionPlot& center();							///< Center axes
 	FunctionPlot& dotEnds(bool v);					///< Set whether to draw dots at end points of 2-D plot
+	FunctionPlot& dotPoints(bool v);				///< Set whether to draw dots at points of 2-D plot
 	FunctionPlot& interpolate(bool v);				///< Set whether to apply cubic interpolation to 2-D plot
 	FunctionPlot& plotColor(const Color& c);		///< Set plotting color
 	FunctionPlot& range(float ext);					///< Set range of x & y axes to [-ext,ext]
@@ -51,6 +50,11 @@ public:
 	float * bufferY();								///< Returns internal y value buffer
 	Color * bufferColor();							///< Returns internal color (z) buffer
 
+	bool dotPoints() const { return mDotPoints; }	///< Get whether points are dotted
+	bool dotEnds() const { return mDotEnds; }		///< Get whether endpoints are dotted
+	int size() const { return mSize; }				///< Get size of internal data buffer(s)
+	float stroke() const { return mStroke; }
+
 	virtual const char * className() const { return "FunctionPlot"; }
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& glv);
@@ -65,7 +69,7 @@ protected:
 	int mDrawPrim;
 	float mStroke;
 	float mTickMajor;
-	bool mShowAxes, mDotEnds, mInterpolate;
+	bool mShowAxes, mDotEnds, mDotPoints, mInterpolate;
 	void freeX(){ if(mBufX) delete[] mBufX; mBufX=0; }
 	void freeY(){ if(mBufY) delete[] mBufY; mBufY=0; }
 	void freeCol(){ if(mBufCol) delete[] mBufCol; mBufCol=0; }

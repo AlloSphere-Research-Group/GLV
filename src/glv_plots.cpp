@@ -37,6 +37,7 @@ FunctionPlot& FunctionPlot::center(){
 }
 
 FunctionPlot& FunctionPlot::dotEnds(bool v){ mDotEnds=v; return *this; }
+FunctionPlot& FunctionPlot::dotPoints(bool v){ mDotPoints=v; return *this; }
 FunctionPlot& FunctionPlot::interpolate(bool v){ mInterpolate=v; return *this; }
 FunctionPlot& FunctionPlot::range(float v){ rangeX(v); return rangeY(v); }
 
@@ -123,7 +124,7 @@ void FunctionPlot::onDraw(){
 		color(mPlotColor ? *mPlotColor : colors().fore);
 		
 		// draw first endpoint
-		if(mDotEnds && mBufX && mBufY){
+		if(mDotEnds && !mDotPoints && mBufX && mBufY){
 			pointSize(mStroke*2);
 			draw::enable(PointSmooth);
 			begin(Points);
@@ -132,49 +133,60 @@ void FunctionPlot::onDraw(){
 			end();
 		}
 		
+		struct{
+			void operator()(){
+			
+			}
+		} drawBuffers;
+		
 		// draw buffer
+
+		#define DRAW_BUFFERS\
+			if(mBufX && mBufY){			/* xy-plot */\
+				const float h1=-0.0625, h2=0.5625;\
+				int im1=0, ip1=1, ip2=2;\
+				for(int i=B; i<E; ++i){\
+					if(mBufCol) color(mBufCol[i]);\
+					vertex(mBufX[i]*mulX+addX, mBufY[i]*mulY+addY);\
+					if(mInterpolate){\
+						ip2 = i+2; if(ip2>=E) ip2 = E-B-1;\
+						vertex(\
+							(mBufX[im1]*h1 + mBufX[i]*h2 + mBufX[ip1]*h2 + mBufX[ip2]*h1)*mulX+addX,\
+							(mBufY[im1]*h1 + mBufY[i]*h2 + mBufY[ip1]*h2 + mBufY[ip2]*h1)*mulY+addY\
+						);\
+						im1=i; ip1=ip2;\
+					}\
+				}\
+			}\
+			else if(mBufX && !mBufY){	/* x-axis plot */\
+				double dx = w/(E-B-1), x=0;\
+				for(int i=B; i<E; ++i){\
+					if(mBufCol) color(mBufCol[i]);\
+					vertex(x, (mBufX[i]*mulY+addY)); x+=dx;\
+				}\
+			}\
+			else if(mBufY && !mBufX){	/* y-axis plot*/\
+				double dy = h/(E-B-1), y=0;\
+				for(int i=B; i<E; ++i){\
+					if(mBufCol) color(mBufCol[i]);\
+					vertex(mBufY[i]*mulX+addX, y); y+=dy;\
+				}\
+			}\
+
 		draw::stroke(mStroke);
 		begin(mDrawPrim);
-		
-			if(mBufX && mBufY){			// xy-plot
-			
-				const float h1=-0.0625, h2=0.5625;
-				int im1=0, ip1=1, ip2=2;
-			
-				for(int i=B; i<E; ++i){
-					if(mBufCol) color(mBufCol[i]);
-					vertex(mBufX[i]*mulX+addX, mBufY[i]*mulY+addY);
-					
-					if(mInterpolate){
-						ip2 = i+2; if(ip2>=E) ip2 = E-B-1;
-						vertex(
-							(mBufX[im1]*h1 + mBufX[i]*h2 + mBufX[ip1]*h2 + mBufX[ip2]*h1)*mulX+addX,
-							(mBufY[im1]*h1 + mBufY[i]*h2 + mBufY[ip1]*h2 + mBufY[ip2]*h1)*mulY+addY
-						);
-						im1=i; ip1=ip2;
-					}
-				}
-			}
-			
-			else if(mBufX && !mBufY){	// x-axis plot
-				double dx = w/(E-B-1), x=0;
-				for(int i=B; i<E; ++i){
-					if(mBufCol) color(mBufCol[i]);
-					vertex(x, (mBufX[i]*mulY+addY)); x+=dx;
-				}
-			}
-			
-			else if(mBufY && !mBufX){	// y-axis plot
-				double dy = h/(E-B-1), y=0;
-				for(int i=B; i<E; ++i){
-					if(mBufCol) color(mBufCol[i]);
-					vertex(mBufY[i]*mulX+addX, y); y+=dy;
-				}
-			}
+			DRAW_BUFFERS
 		end();
+
+		if(dotPoints()){
+			draw::stroke(mStroke*2);
+			begin(Points);
+				DRAW_BUFFERS
+			end();
+		}
 		
 		// draw last endpoint
-		if(mDotEnds && mBufX && mBufY){
+		if(mDotEnds && !mDotPoints && mBufX && mBufY){
 			pointSize(mStroke*2);
 			begin(Points);
 				if(mBufCol) color(mBufCol[E-1]);
@@ -227,6 +239,8 @@ bool FunctionPlot::onEvent(Event::t e, GLV& g){
 	case Event::KeyDown:
 		switch(k.key()){
 			case 'c': center(); return false;
+			case 'd': dotPoints(!dotPoints()); return false;
+			case 'e': dotEnds(!dotEnds()); return false;
 			case Key::Up: zoom(m.xRel(Mouse::Left), h-m.yRel(Mouse::Left), -1); return false;
 			case Key::Down: zoom(m.xRel(Mouse::Left), h-m.yRel(Mouse::Left),1); return false;
 		}

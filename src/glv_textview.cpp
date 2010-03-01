@@ -451,7 +451,7 @@ int TextView::xToPos(float x){
 	float charw = draw::Glyph::width() * mSize;
 	if(x<0) x=0;
 	int p = (x-mPadX*1)/charw;
-	if(p > mText.size()) p = mText.size();
+	if(p > (int)mText.size()) p = mText.size();
 	if(p<0) p=0;
 	return p;
 }
