@@ -133,12 +133,6 @@ void FunctionPlot::onDraw(){
 			end();
 		}
 		
-		struct{
-			void operator()(){
-			
-			}
-		} drawBuffers;
-		
 		// draw buffer
 
 		#define DRAW_BUFFERS\
