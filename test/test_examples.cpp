@@ -96,6 +96,9 @@ int main(int argc, char ** argv){
 		plotX.bufferX()[i] = sigX;
 		plotY.bufferY()[i] = sigY;
 	}
+	
+	v3D(Event::MouseDrag, Behavior::mouseMove)
+		(Event::MouseDrag, Behavior::mouseResize);
 
 	int i=-1;
 	groups[++i]<< bt1.pos(Place::BL).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);

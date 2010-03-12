@@ -88,6 +88,7 @@
 		16A93E6A1002BA8300F5404E /* glv_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7540BA2434200E819AF /* glv_color.cpp */; };
 		16A93E6B1002BA8F00F5404E /* glv_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5E7610D91F43B001153DA /* glv_layout.cpp */; };
 		16A93E6D1002BAB600F5404E /* test_units.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16A93E6C1002BAB600F5404E /* test_units.cpp */; };
+		16BC4093114B0678001246DB /* glv_view3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16BC4092114B0678001246DB /* glv_view3D.cpp */; };
 		16D11B110D7F1B3D00433B04 /* glv_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */; };
 		16D360720D9B2927003E59D0 /* glv_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7540BA2434200E819AF /* glv_color.cpp */; };
 		16D360730D9B2927003E59D0 /* glv_glv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7550BA2434200E819AF /* glv_glv.cpp */; };
@@ -252,6 +253,7 @@
 		16A93E5F1002BA4400F5404E /* TestWindowGLUT */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestWindowGLUT; sourceTree = BUILT_PRODUCTS_DIR; };
 		16A93E6C1002BAB600F5404E /* test_units.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_units.cpp; sourceTree = "<group>"; };
 		16BC401D114AFAFD001246DB /* glv_view3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_view3D.h; sourceTree = "<group>"; };
+		16BC4092114B0678001246DB /* glv_view3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_view3D.cpp; sourceTree = "<group>"; };
 		16D360670D9B2915003E59D0 /* test_examples.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_examples.cpp; sourceTree = "<group>"; };
 		16D360840D9B2927003E59D0 /* TestExamples_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestExamples_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16D3761B0E46418A00BCCD39 /* test_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_window.cpp; sourceTree = "<group>"; };
@@ -494,6 +496,7 @@
 				7E40B0030D92EB3A00219F2C /* glv_textview.cpp */,
 				B917A75A0BA2434200E819AF /* glv_view.cpp */,
 				7E4DABDE0DAAEFC7009D2272 /* glv_texture.cpp */,
+				16BC4092114B0678001246DB /* glv_view3D.cpp */,
 			);
 			name = src;
 			path = ../src;
@@ -925,6 +928,7 @@
 				08F72F130E465ED7001A58ED /* glv_binding_glut.cpp in Sources */,
 				16D376A90E46540100BCCD39 /* test_examples.cpp in Sources */,
 				16DEEE3C0FC28A0C006B373C /* glv_plots.cpp in Sources */,
+				16BC4093114B0678001246DB /* glv_view3D.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
