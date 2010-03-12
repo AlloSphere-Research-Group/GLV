@@ -354,6 +354,7 @@ public:
 	bool hasCallback(Event::t e, eventCallback cb) const; ///< Returns whether a particular callback has been registered
 	bool hasCallbacks(Event::t e) const;		///< Returns whether there are callback(s) registered for a particular event
 	int numCallbacks(Event::t e) const;			///< Returns number of registered callbacks
+	const View * posAbs(space_t& al, space_t& at) const;///< Computes absolute left-top position. Returns topmost parent view.
 	void printDescendents() const;				///< Print tree of descendent Views to stdout
 	void printFlags() const;
 	bool showing() const;						///< Returns whether View is being shown

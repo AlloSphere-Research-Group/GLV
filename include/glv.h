@@ -31,6 +31,7 @@
 #include "glv_plots.h"
 #include "glv_sliders.h"
 #include "glv_textview.h"
+#include "glv_view3D.h"
 
 #endif
 

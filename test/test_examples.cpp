@@ -5,7 +5,7 @@
 
 using namespace glv;
 
-const int pages = 13;
+const int pages = 14;
 Buttons tabs(Rect(110, pages*20), 1, pages, true, true);
 Group groups[pages];
 
@@ -35,6 +35,21 @@ Table table(	". v - -,"
 				"| b v d", 12, 6, Rect(0));
 TextView tv1(Rect(200,16));
 
+struct SubView3D : View3D{
+	SubView3D(const Rect& r): View3D(r){}
+	
+	virtual void onDraw3D(){
+		using namespace glv::draw;
+		static double r=0; r+=2;
+		translateZ(-3);
+		rotateY(r);
+		begin(Triangles);
+		color(1,0,0); vertex(-1,-1,0);
+		color(0,1,0); vertex( 1,-1,0);
+		color(0,0,1); vertex( 0, 1,0);
+		end();
+	}
+} v3D(Rect(200));
 
 
 void drawCB(View * v){
@@ -107,6 +122,7 @@ int main(int argc, char ** argv){
 	groups[  i]<< plotX.pos(Place::TL, 0,4).anchor(Place::CC);
 	groups[  i]<< plotY.pos(Place::BR,-4,0).anchor(Place::CC);
 	groups[++i]<< tv1.pos(Place::CC, 0,0).anchor(Place::CC);
+	groups[++i]<< v3D.pos(Place::CC, 0,0).anchor(Place::CC);
 
 	float y = 1./(tabs.size()*2), dy=2*y;
 	tabs << (new Label("Button"			))->anchor(0.5, y).pos(Place::CC); y+=dy;
@@ -122,6 +138,7 @@ int main(int argc, char ** argv){
 	tabs << (new Label("Table"			))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	tabs << (new Label("FunctionPlot"	))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	tabs << (new Label("TextView"		))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("View3D"			))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	top << tabs;
 	
 	tabs(Event::MouseDrag, Behavior::mouseResize);

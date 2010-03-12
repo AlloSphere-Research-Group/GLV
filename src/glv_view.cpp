@@ -380,6 +380,17 @@ View& View::pos(Place::t p, space_t x, space_t y){
 }
 
 
+const View * View::posAbs(space_t& al, space_t& at) const {
+	al=l; at=t;
+	const View * v = this;
+	while(v->parent){
+		v = v->parent;
+		al+=v->l; at+=v->t;
+	}
+	return v;
+}
+
+
 void View::printDescendents() const{
 	//printf("%p\n", this);
 	

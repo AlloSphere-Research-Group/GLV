@@ -87,6 +87,7 @@ void blendTrans();									///< Set blending function to transparent
 void blendAdd();									///< Set blending function to additive
 void clear(int mask);								///< Clear drawing buffers
 void clearColor(float r, float g, float b, float a=1);	///< Set clear color
+void clearColor(const Color& c);					///< Set clear color
 void color(float gray, float a=1);					///< Set current draw color
 void color(float r, float g, float b, float a=1);		///< Set current draw color
 void color(const Color& c);							///< Set current draw color
@@ -291,6 +292,7 @@ inline void x(float l, float t, float r, float b){ shape(Lines, l,t, r,b, l,b, r
 
 
 // core drawing routines
+inline void clearColor(const Color& c){ clearColor(c.r, c.g, c.b, c.a); }
 inline void color(float v, float a){ color(v,v,v,a); }
 inline void color(const Color& c){ color(c.r, c.g, c.b, c.a); }
 inline void color(const Color& c, float a){ color(c.r, c.g, c.b, a); }
