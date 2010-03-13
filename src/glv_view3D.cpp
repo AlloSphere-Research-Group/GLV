@@ -4,6 +4,10 @@
 
 namespace glv{
 
+View3D::View3D(const Rect& r)
+: View(r), mNear(1), mFar(100), mFOVY(45)
+{}
+
 void View3D::onDraw(){
 
 	using namespace glv::draw;
@@ -15,6 +19,9 @@ void View3D::onDraw(){
 
 	// y starts at top in GLV, but at bottom in screen coords, so need to flip
 	ay = top->h - (ay + h);
+	
+	// View is outside window, so just return...
+	if(ax > top->w || ay > top->h) return;
 
 	//create viewport just at widget location
 	glViewport((int)ax, (int)ay, (int)w, (int)h);
@@ -38,7 +45,7 @@ void View3D::onDraw(){
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	gluPerspective(45.0f, (GLfloat)w/(GLfloat)h, 1.0f, 100.0f);
+	gluPerspective(mFOVY, (GLfloat)w/(GLfloat)h, mNear, mFar);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

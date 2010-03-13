@@ -10,14 +10,24 @@ namespace glv {
 
 class View3D : public View {
 public:
-	View3D(const Rect& r=Rect()): View(r){}
+	View3D(const Rect& r=Rect());
 	virtual ~View3D(){}
 	
 	virtual void onDraw3D() = 0;
 
+	void far(double v){ mFar=v; }
+	void near(double v){ mNear=v; }
+	void viewAngle(double v){ mFOVY=v; }
+
+	double far() const { return mFar; }
+	double near() const { return mNear; }
+	double viewAngle() const { return mFOVY; }
+
 protected:
 
 	virtual void onDraw();
+	
+	double mNear, mFar, mFOVY;
 };
 
 

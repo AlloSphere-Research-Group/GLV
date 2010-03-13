@@ -40,7 +40,7 @@ struct SubView3D : View3D{
 	
 	virtual void onDraw3D(){
 		using namespace glv::draw;
-		static double r=0; r+=2;
+		static unsigned r=0; r+=2;
 		translateZ(-3);
 		rotateY(r);
 		begin(Triangles);
