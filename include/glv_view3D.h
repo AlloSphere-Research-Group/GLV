@@ -13,20 +13,19 @@ public:
 	View3D(const Rect& r=Rect());
 	virtual ~View3D(){}
 	
+	/// 3D drawing callback
 	virtual void onDraw3D() = 0;
 
-	void far(double v){ mFar=v; }
-	void near(double v){ mNear=v; }
-	void viewAngle(double v){ mFOVY=v; }
+	void far(double v){ mFar=v; }				///< Set far clip distance
+	void near(double v){ mNear=v; }				///< Set near clip distance
+	void fovy(double v){ mFOVY=v; }				///< Set field of view angle, in degrees, in the y direction
 
-	double far() const { return mFar; }
-	double near() const { return mNear; }
-	double viewAngle() const { return mFOVY; }
+	double far() const { return mFar; }			///< Get far clip distance
+	double near() const { return mNear; }		///< Get near clip distance
+	double fovy() const { return mFOVY; }		///< Get field of view angle, in degrees, in the y direction
 
 protected:
-
 	virtual void onDraw();
-	
 	double mNear, mFar, mFOVY;
 };
 
