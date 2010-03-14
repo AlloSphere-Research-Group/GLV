@@ -28,7 +28,7 @@ Slider2D sl2(Rect(100));
 SliderGrid<3> sg3(Rect(100));
 SliderGrid<4> sg4(Rect(100));
 SliderRange slRH(Rect(100,20)), slRV(Rect(20,100));
-Sliders sliders1(Rect(100), 10, 1, false), sliders2(sliders1, 1, 10, true);
+Sliders sliders1(Rect(100), 10, 1, true), sliders2(sliders1, 1, 10, true);
 Table table(	". v - -,"
 				"> p ^ q,"
 				"| < x >,"
@@ -71,6 +71,8 @@ int main(int argc, char ** argv){
 	Window win(600, 400, "GLV Examples", &top);
 	
 	top.colors().back.set(1);
+//	sliders1.isSigned(true);
+//	sliders2.isSigned(true);
 	
 	glv::Style::standard().color.set(StyleColor::BlackOnWhite);
 	

@@ -369,7 +369,7 @@ TEMV Slider1DBase<V>::Slider1DBase(const Rect& r, int nx, int ny, bool dragSelec
 
 TEMV void Slider1DBase<V>::onDraw(){
 
-	float x=padding()*0.5, y=x, xd=this->dx(), yd=this->dy();
+	float x=padding()*0.5, xd=this->dx(), yd=this->dy();
 	
 	struct{
 		float operator()(float v, float d){
@@ -382,6 +382,8 @@ TEMV void Slider1DBase<V>::onDraw(){
 	if(isVertical()){
 		for(int i=0; i<sizeX(); ++i){
 		
+			float y=padding()*0.5;
+		
 			for(int j=0; j<sizeY(); ++j){
 				int ind = index(i,j);
 				if(isSelected(i,j)) draw::color(colors().fore);
@@ -389,12 +391,16 @@ TEMV void Slider1DBase<V>::onDraw(){
 				
 				if(isSigned()){
 					float v = value()[ind];
-					v = bump(v, 2/yd); // set minimum bar length to 1 pixel
+					//v = bump(v, 2/yd); // set minimum bar length to 1 pixel
 	
 					float d = yd*0.5;
 					// NOTE: this will draw the rect with different winding
 					// depending on the sign.
 					draw::rect(x, y+d, x+xd-padding(),  y+d - v*d);
+					
+					draw::color(colors().border);
+					float linePos = draw::pix(y+d);
+					draw::shape(draw::Lines, x, linePos, x+xd, linePos);
 				}
 				else{
 					draw::rect(x, y+yd-value()[ind]*yd, x+xd-padding(), y+yd);
@@ -407,18 +413,24 @@ TEMV void Slider1DBase<V>::onDraw(){
 	else{
 		for(int i=0; i<sizeX(); ++i){
 		
+			float y=padding()*0.5;
+		
 			for(int j=0; j<sizeY(); ++j){
 				int ind = index(i,j);
 				if(isSelected(i,j)) draw::color(colors().fore);
 				else draw::color(colors().fore, colors().fore.a*0.5);
 				if(isSigned()){
 					float v = value()[ind];
-					v = bump(v, 2/xd); // set minimum bar length to 1 pixel
+					//v = bump(v, 2/xd); // set minimum bar length to 1 pixel
 					
 					float d = xd*0.5;
 					// NOTE: this will draw the rect with different winding
 					// depending on the sign.
 					draw::rect(x+d, y, x+d + v*d, y+yd-padding());
+
+					draw::color(colors().border);
+					float linePos = draw::pix(x+d);
+					draw::shape(draw::Lines, linePos, y, linePos, y+yd);
 				}
 				else{
 					draw::rect(x, y, value()[ind]*xd+x, y+yd-padding());
@@ -480,7 +492,7 @@ TEMV void Slider1DBase<V>::selectSlider(GLV& g, bool click){
 	int oldIdx = selected();
 	ValueWidget<V>::onSelectClick(g);
 	
-	float val = isVertical() ? 1-(m.yRel()*sizeY()/h - selectedY()) : m.xRel()*sizeX()/w - selectedX();
+	float val = isVertical() ? (1-(m.yRel()*sizeY()/h - selectedY())) : (m.xRel()*sizeX()/w - selectedX());
 	if(isSigned()) val = 2.f*val-1.f;
 
 	int idx = selected();
