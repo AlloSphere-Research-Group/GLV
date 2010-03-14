@@ -56,7 +56,7 @@ int main(int argc, char ** argv){
 
 	// Make some widgets
 	Buttons buttons(Rect(64), 4,4);
-	Slider slider(Rect(10, 10, 100, 20));
+	Slider slider(Rect(10, 10, 100, 20), 0, false);
 	Slider2D slider2(Rect(10, 40, 100, 100));
 	SliderGrid<4> sliderGrid(Rect(100));
 	//NumberDialer numberDialer(Rect(12*4, 12), 1,2);

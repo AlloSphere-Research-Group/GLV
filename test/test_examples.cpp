@@ -23,12 +23,12 @@ FunctionPlot	plotXY(Rect(150), plotSize, Color(0,0,1)),
 				plotY(Rect(60,150), plotSize, Color(0,1,0));
 
 NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,3, 8,0);
-Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100));
+Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100)), sl1HS(sl1H,0,true), sl1VS(sl1V,0,true);
 Slider2D sl2(Rect(100));
 SliderGrid<3> sg3(Rect(100));
 SliderGrid<4> sg4(Rect(100));
 SliderRange slRH(Rect(100,20)), slRV(Rect(20,100));
-Sliders sliders1(Rect(100), 10, 1, true), sliders2(sliders1, 1, 10, true);
+Sliders sliders1(Rect(100), 10, 1, false), sliders2(sliders1, 1, 10, true);
 Table table(	". v - -,"
 				"> p ^ q,"
 				"| < x >,"
@@ -56,6 +56,8 @@ void drawCB(View * v){
 	using namespace glv::draw;
 
 	for(int i=0; i<tabs.size(); ++i) groups[i].property(Visible, tabs.value()[i]);
+
+	sliders1.value()[0];
 
 	push3D(v->w, v->h);		// push into 3-D mode passing in width and height of view
 	
@@ -113,6 +115,8 @@ int main(int argc, char ** argv){
 	groups[  i]<< nd2.showSign(false).pos(Place::TL, 0, 4).anchor(Place::CC);
 	groups[++i]<< sl1H.pos(Place::BL).anchor(Place::CC);
 	groups[  i]<< sl1V.pos(Place::BR, -4,0).anchor(Place::CC);
+	groups[  i]<< sl1HS.pos(Place::BL).anchor(Place::CC); sl1HS.top(sl1H.bottom()+4);
+	groups[  i]<< sl1VS.pos(Place::BR, -4,0).anchor(Place::CC); sl1VS.right(sl1V.left()-4);
 	groups[++i]<< sl2.pos(Place::BL).anchor(Place::CC);
 	groups[++i]<< sg3.pos(Place::BL).anchor(Place::CC);
 	groups[  i]<< sg4.pos(Place::TL, 0, 4).anchor(Place::CC);

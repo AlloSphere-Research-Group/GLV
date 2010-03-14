@@ -168,22 +168,29 @@ public:
 	/// @param[in] nx			number along x (ignored by fixed size value types)
 	/// @param[in] ny			number along y (ignored by fixed size value types)
 	/// @param[in] dragSelect	whether new sliders are selected while dragging
-	Slider1DBase(const Rect& r, int nx, int ny, bool dragSelect=false);
+	/// @param[in] isSigned		whether slider values are signed
+	Slider1DBase(const Rect& r, int nx, int ny, bool dragSelect=false, bool isSigned=false);
 
 	virtual ~Slider1DBase(){}
 
+	bool isSigned() const { return mSigned; }
+	Slider1DBase& isSigned(bool v){ mSigned=v; return *this; }
+
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& glv);
+	virtual const char * className() const { return "Slider1DBase"; }
 	
 protected:
+	typedef ValueWidget<V> Base;
 	float mAcc;
+	bool mSigned;
 
 	void selectSlider(GLV& g, bool click);
-	bool isVertical() const { return this->dy() > this->dx(); }
+	bool isVertical() const { return Base::dy() > Base::dx(); }
 	
 	// set currently selected value and send notification
 	void setValueNotify(float v){
-		v = this->clip1(v);
+		v = isSigned() ? Base::clip(v, 1.f, -1.f) : Base::clip(v);
 		if(v == value()[selected()]) return;
 		value()[selected()] = v;
 		notify(Update::Value, SliderChange(v, selected()));
@@ -196,17 +203,20 @@ protected:
 /// Single slider
 class Slider : public Slider1DBase<Values<float> >{
 public:
-	typedef Slider1DBase<Values<float> > super;
+	typedef Slider1DBase<Values<float> > Base;
 
-	/// @param[in] r	geometry
-	/// @param[in] v	initial value between 0 and 1
-	Slider(const Rect& r=Rect(20), float v=0): super(r, 1, 1, false){ value(v); }
+	/// @param[in] r			geometry
+	/// @param[in] v			initial value between 0 and 1
+	/// @param[in] isSigned		whether slider value is signed
+	Slider(const Rect& r=Rect(20), float v=0, bool isSigned=false)
+	:	Base(r, 1, 1, false, isSigned)
+	{	value(v); }
 	
 	/// Get value
-	float value() const { return super::value()[0]; }
+	float value() const { return Base::value()[0]; }
 	
 	/// Set value
-	Slider& value(float v){ super::value()[0] = v; return *this; }
+	Slider& value(float v){ Base::value()[0] = v; return *this; }
 	
 	virtual const char * className() const { return "Slider"; }
 };
@@ -350,27 +360,45 @@ TEM inline SliderBase<Dim>& SliderBase<Dim>::valueMid(){
 
 #define TEMV template <class V>
 
-TEMV Slider1DBase<V>::Slider1DBase(const Rect& r, int nx, int ny, bool dragSelect)
+TEMV Slider1DBase<V>::Slider1DBase(const Rect& r, int nx, int ny, bool dragSelect, bool sgn)
 :	ValueWidget<V>(r, nx, ny, 1, false, false, true),
-	mAcc(0)
+	mAcc(0), mSigned(sgn)
 {
 	property(SelectOnDrag, dragSelect);
 }
 
 TEMV void Slider1DBase<V>::onDraw(){
 
-	float x=padding()*0.5, xd=this->dx(), yd=this->dy();
+	float x=padding()*0.5, y=x, xd=this->dx(), yd=this->dy();
+	
+	struct{
+		float operator()(float v, float d){
+			if(v < d && v >= 0) return d;
+			else if(v >-d && v < 0) return -d;
+			return v;	
+		}
+	} bump;
 
 	if(isVertical()){
 		for(int i=0; i<sizeX(); ++i){
-		
-			float y = padding()*0.5;
 		
 			for(int j=0; j<sizeY(); ++j){
 				int ind = index(i,j);
 				if(isSelected(i,j)) draw::color(colors().fore);
 				else draw::color(colors().fore, colors().fore.a*0.5);
-				draw::rect(x, y+yd-value()[ind]*yd, x+xd-padding(), y+yd);
+				
+				if(isSigned()){
+					float v = value()[ind];
+					v = bump(v, 2/yd); // set minimum bar length to 1 pixel
+	
+					float d = yd*0.5;
+					// NOTE: this will draw the rect with different winding
+					// depending on the sign.
+					draw::rect(x, y+d, x+xd-padding(),  y+d - v*d);
+				}
+				else{
+					draw::rect(x, y+yd-value()[ind]*yd, x+xd-padding(), y+yd);
+				}
 				y += yd;
 			}
 			x += xd;	
@@ -379,13 +407,22 @@ TEMV void Slider1DBase<V>::onDraw(){
 	else{
 		for(int i=0; i<sizeX(); ++i){
 		
-			float y = padding()*0.5;
-		
 			for(int j=0; j<sizeY(); ++j){
 				int ind = index(i,j);
 				if(isSelected(i,j)) draw::color(colors().fore);
 				else draw::color(colors().fore, colors().fore.a*0.5);
-				draw::rect(x, y, value()[ind]*xd+x, y+yd-padding());
+				if(isSigned()){
+					float v = value()[ind];
+					v = bump(v, 2/xd); // set minimum bar length to 1 pixel
+					
+					float d = xd*0.5;
+					// NOTE: this will draw the rect with different winding
+					// depending on the sign.
+					draw::rect(x+d, y, x+d + v*d, y+yd-padding());
+				}
+				else{
+					draw::rect(x, y, value()[ind]*xd+x, y+yd-padding());
+				}
 				y += yd;
 			}
 			x += xd;
@@ -405,7 +442,8 @@ TEMV bool Slider1DBase<V>::onEvent(Event::t e, GLV& g){
 			if(g.mouse.right() || g.mouse.left()) {
 				
 				// accumulate differences
-				mAcc += (isVertical() ? -g.mouse.dy()*sizeY()/h : g.mouse.dx()*sizeX()/w) * this->sens(g.mouse);
+				float ds = isSigned() ? 2.f : 1.f;
+				mAcc += (isVertical() ? -g.mouse.dy()*sizeY()/h : g.mouse.dx()*sizeX()/w) * this->sens(g.mouse)*ds;
 				setValueNotify(mAcc);
 			}
 			
@@ -443,6 +481,8 @@ TEMV void Slider1DBase<V>::selectSlider(GLV& g, bool click){
 	ValueWidget<V>::onSelectClick(g);
 	
 	float val = isVertical() ? 1-(m.yRel()*sizeY()/h - selectedY()) : m.xRel()*sizeX()/w - selectedX();
+	if(isSigned()) val = 2.f*val-1.f;
+
 	int idx = selected();
 	
 	// if left-button, set value

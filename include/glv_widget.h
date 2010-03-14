@@ -84,8 +84,8 @@ protected:
 	space_t mPadding;			// num pixels to inset icon
 	int sx, sy;					// last clicked position
 
-	float dx() const { return w/sizeX(); }
-	float dy() const { return h/sizeY(); }
+	float dx() const { return w/sizeX(); } // width, in pixels, per element
+	float dy() const { return h/sizeY(); } // height, in pixels, per element
 	int index(int x, int y) const { return x + y*value().sizeX(); }
 	float sens(const Mouse& m){ return (m.left() && m.right()) ? 0.25 : 1; }
 
@@ -148,7 +148,8 @@ protected:
 
 	
 	static void clip(int& i, int max){ i<0 ? i=0 : i>=max ? i=max-1 : 0; }
-	static float clip1(float v){ return v < 0. ? 0. : v > 1. ? 1 : v; }
+	//static float clip1(float v){ return v < 0. ? 0. : v > 1. ? 1 : v; }
+	static float clip(float v, float mx=1, float mn=0){ return v < mn ? mn : v > mx ? mx : v; }
 	void clipIndices(){ clip(sx, sizeX()); clip(sy, sizeY()); }
 };
 
