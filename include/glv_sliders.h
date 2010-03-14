@@ -99,20 +99,20 @@ public:
 	/// @param[in] val2			initial value on right or bottom
 	SliderRange(const Rect& r, float val1=0.25, float val2=0.5);
 	
-	SliderRange& center(float v);
-	SliderRange& centerRange(float center, float range);
-	SliderRange& extrema(float min, float max);
+	SliderRange& center(float v);							///< Set center of interval
+	SliderRange& centerRange(float center, float range);	///< Set center and range of interval
+	SliderRange& extrema(float min, float max);				///< Set extrema of interval
 	
 	/// Sets how much the slider should move when an empty region is clicked.
 	
 	/// The slider is constrained not jump past the click point.
 	///
 	SliderRange& jump(float v);
-	SliderRange& range(float v);
+	SliderRange& range(float v);	///< Set range
 	
-	float center() const;
-	float jump() const;
-	float range() const;
+	float center() const;			///< Get center of interval
+	float jump() const;				///< Get click jump amount
+	float range() const;			///< Get distance of interval
 	
 	virtual const char * className() const { return "SliderRange"; }
 	virtual void onDraw();
