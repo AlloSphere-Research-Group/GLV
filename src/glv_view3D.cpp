@@ -29,6 +29,8 @@ void View3D::onDraw(){
 	//save openGL state
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
+	draw::enable(DepthTest);
+	draw::disable(Blend);
 	draw::enable(ScissorTest);
 	{
 		space_t sl=ax, sb=ay, sr=w+sl, st=h+sb;		

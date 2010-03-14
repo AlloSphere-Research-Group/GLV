@@ -40,13 +40,16 @@ struct SubView3D : View3D{
 	
 	virtual void onDraw3D(){
 		using namespace glv::draw;
-		static unsigned r=0; r+=2;
+		static unsigned r=0; r+=1;
 		translateZ(-3);
 		rotateY(r);
 		begin(Triangles);
-		color(1,0,0); vertex(-1,-1,0);
-		color(0,1,0); vertex( 1,-1,0);
-		color(0,0,1); vertex( 0, 1,0);
+		for(float p=0; p<1; p+=1./12){
+			float x = cos(p*6.283)*1.2;
+			float z = sin(p*6.283)*1.2;
+			color(HSV(p,1,1)); vertex(x, -0.7, z);
+			color(0); vertex(x, 0.7, z);
+		}
 		end();
 	}
 } v3D(Rect(200));
