@@ -74,7 +74,7 @@ int main(int argc, char ** argv){
 	Window win(600, 400, "GLV Examples", &top);
 	
 	top.colors().back.set(1);
-//	sliders1.isSigned(true);
+	sliders1.isSigned(true);
 //	sliders2.isSigned(true);
 	
 	glv::Style::standard().color.set(StyleColor::BlackOnWhite);

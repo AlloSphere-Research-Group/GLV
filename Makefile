@@ -2,7 +2,8 @@ include ./Makefile.config
 CFLAGS += -I./include/
 SRCDIR = ./src
 
-SRC = 	$(SRCDIR)/glv_color.cpp \
+SRC = 	$(SRCDIR)/glv_buttons.cpp \
+	$(SRCDIR)/glv_color.cpp \
 	$(SRCDIR)/glv_core.cpp \
 	$(SRCDIR)/glv_draw.cpp \
 	$(SRCDIR)/glv_glv.cpp \
@@ -12,7 +13,8 @@ SRC = 	$(SRCDIR)/glv_color.cpp \
 	$(SRCDIR)/glv_sliders.cpp \
 	$(SRCDIR)/glv_texture.cpp \
 	$(SRCDIR)/glv_textview.cpp \
-	$(SRCDIR)/glv_view.cpp
+	$(SRCDIR)/glv_view.cpp \
+	$(SRCDIR)/glv_view3D.cpp
 
 ifndef BINDING_NONE
 	SRC += $(SRCDIR)/glv_binding.cpp $(SRCDIR)/$(BINDING_SRC)
