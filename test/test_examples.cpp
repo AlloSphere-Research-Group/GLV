@@ -36,13 +36,15 @@ Table table(	". v - -,"
 TextView tv1(Rect(200,16));
 
 struct SubView3D : View3D{
-	SubView3D(const Rect& r): View3D(r){}
+	SubView3D(const Rect& r): View3D(r), angle(0){
+		addCallback(Event::MouseDrag, Behavior::mouseMove);
+		addCallback(Event::MouseDrag, Behavior::mouseResize);
+	}
 	
 	virtual void onDraw3D(){
 		using namespace glv::draw;
-		static unsigned r=0; r+=1;
 		translateZ(-3);
-		rotateY(r);
+		rotateY(angle+=1);
 		begin(Triangles);
 		for(float p=0; p<1; p+=1./12){
 			float x = cos(p*6.283)*1.2;
@@ -52,7 +54,9 @@ struct SubView3D : View3D{
 		}
 		end();
 	}
-} v3D(Rect(200));
+
+	unsigned angle;
+} v3D(Rect(200)), v3D2(Rect(100));
 
 
 void drawCB(View * v){
@@ -103,9 +107,8 @@ int main(int argc, char ** argv){
 		plotX.bufferX()[i] = sigX;
 		plotY.bufferY()[i] = sigY;
 	}
-	
-	v3D(Event::MouseDrag, Behavior::mouseMove)
-		(Event::MouseDrag, Behavior::mouseResize);
+		
+	v3D << v3D2.pos(Place::BR).anchor(Place::BR);
 
 	int i=-1;
 	groups[++i]<< bt1.pos(Place::BL).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);

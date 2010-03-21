@@ -381,6 +381,11 @@ View& View::pos(Place::t p, space_t x, space_t y){
 }
 
 
+const View * View::posAbs(space_t& al, space_t& at) const{
+	al=0; at=0;
+	return toAbs(al, at);
+}
+
 void View::printDescendents() const{
 	//printf("%p\n", this);
 	
@@ -469,5 +474,15 @@ View& View::style(Style * style){
 	return *this;
 }
 
+
+const View * View::toAbs(space_t& x, space_t& y) const {
+	const View * v = this;
+ 	while(v->parent){
+		x += v->l;
+		y += v->t;
+		v = v->parent;
+ 	}
+ 	return v;
+}
 
 } // glv::

@@ -354,11 +354,12 @@ public:
 	bool hasCallback(Event::t e, eventCallback cb) const; ///< Returns whether a particular callback has been registered
 	bool hasCallbacks(Event::t e) const;		///< Returns whether there are callback(s) registered for a particular event
 	int numCallbacks(Event::t e) const;			///< Returns number of registered callbacks
-	const View * posAbs(space_t& al, space_t& at) const;///< Computes absolute left-top position. Returns topmost parent view.
+	const View * posAbs(space_t& al, space_t& at) const; ///< Computes absolute left-top position. Returns topmost parent view.
 	void printDescendents() const;				///< Print tree of descendent Views to stdout
 	void printFlags() const;
 	bool showing() const;						///< Returns whether View is being shown
 	Style& style() const { return *mStyle; }	///< Get style object
+	const View * toAbs(space_t& x, space_t& y) const; ///< Converts relative View x-y coordinates to absolute. Returns topmost parent view.
 	int visible() const;						///< Returns whether View visibility flag is set
 
 		
