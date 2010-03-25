@@ -10,7 +10,7 @@ namespace glv{
 	mBufX(0), mBufY(0), mBufCol(0), mPlotColor(0),\
 	mMinX(-1), mMaxX(1), mMinY(-1), mMaxY(1), \
 	mDrawPrim(draw::LineStrip), mStroke(1), mTickMajor(1), \
-	mShowAxes(true), mDotEnds(false), mInterpolate(false)
+	mShowAxes(true), mDotEnds(false), mDotPoints(false), mInterpolate(false)
 
 FunctionPlot::FunctionPlot(const Rect& r, int size)
 :	CTOR_INIT_LIST
@@ -67,18 +67,33 @@ FunctionPlot& FunctionPlot::plotColor(const Color& c){
 	return *this;
 }
 
+
+void FunctionPlot::plotExtent(float& pw, float& ph){
+	pw=w, ph=h;
+	if(true && mBufX && mBufY){
+		w>h ? pw=h : ph=w;
+	}
+}
+
+
 void FunctionPlot::onDraw(){
 	using namespace glv::draw;
 
 	enable(PointSmooth);
-
-	int B=mIMin, E=mIMax;	// begin/end plotting indices
-	float mulX = w / (mMaxX - mMinX);
-	float addX =-mulX*mMinX;
-	float mulY =-h / (mMaxY - mMinY);
-//	float addY = mulY*mMinY;
-	float addY = mulY*-mMaxY;	// min and max must be flipped around zero
-
+	
+	int B=mIMin, E=mIMax;					// begin/end plotting indices
+	
+	// In XY mode, these variables are used to keep the axes equalized
+	float pw,ph;
+	plotExtent(pw,ph);
+	
+	float xyAddX=(w-pw)/2;
+	float xyAddY=(h-ph)/2;
+	float mulX = pw / (mMaxX - mMinX);		// pixels/distance along x
+	float addX =-mulX*mMinX + xyAddX;		// pixel offset along x
+	float mulY =-ph / (mMaxY - mMinY);		// pixels/distance along y
+	float addY = mulY*-mMaxY + xyAddY;		// pixel offset along y
+											// min and max must be flipped around zero
 
 	// draw axes
 	if(mShowAxes){
@@ -110,9 +125,8 @@ void FunctionPlot::onDraw(){
 			};
 			
 			if(mBufY && mBufX){
-				DrawTicks(mTickMajor, mMinX, mMaxX, mulX, addX, addY, true);
-				//DrawTicks(mTickMajor, mMinY, mMaxY,-mulY, addY, addX, false);
-				DrawTicks(mTickMajor, -mMaxY, -mMinY,-mulY, addY, addX, false);
+				DrawTicks(mTickMajor, mMinX-xyAddX/mulX, mMaxX+xyAddX/mulX, mulX, addX, addY, true);
+				DrawTicks(mTickMajor,-mMaxY+xyAddY/mulY,-mMinY-xyAddY/mulY,-mulY, addY, addX, false);
 			}
 
 		}
@@ -120,7 +134,6 @@ void FunctionPlot::onDraw(){
 
 	//if(0 == mBufCol){
 
-		
 		color(mPlotColor ? *mPlotColor : colors().fore);
 		
 		// draw first endpoint
@@ -192,9 +205,28 @@ void FunctionPlot::onDraw(){
 }
 
 void FunctionPlot::zoom(float px, float py, float zm){
+	float pw,ph; plotExtent(pw,ph);
 	float mul = pow(2, zm*0.1);
-	float cx = mMinX + (px/w)*(mMaxX-mMinX);
-	float cy = mMinY + (py/h)*(mMaxY-mMinY);
+
+	// These complicated linear maps are needed for XY mode when w!=h.
+	// Most of this code was copied from onDraw().
+	// There might be a cleaner way to do this, but for now it works...
+	float xyAddX=((w-pw)/2);
+	float xyAddY=((h-ph)/2);
+	float mulX = pw / (mMaxX - mMinX);		// pixels/distance along x
+	float mulY = ph / (mMaxY - mMinY);		// pixels/distance along y
+
+	// True plotting intervals (could be extended beyond user-specified)
+	float mnx = mMinX-xyAddX/mulX;
+	float mxx = mMaxX+xyAddX/mulX;
+	float mny = mMinY-xyAddY/mulY;
+	float mxy = mMaxY+xyAddY/mulY;
+
+	// Map pixel coords onto plot position
+	float cx = mnx + (px/w)*(mxx-mnx);
+	float cy = mny + (py/h)*(mxy-mny);
+	
+	// Update user-specified plotting intervals
 	rangeX((mMinX-cx)*mul+cx, (mMaxX-cx)*mul+cx);
 	rangeY((mMinY-cy)*mul+cy, (mMaxY-cy)*mul+cy);
 }
@@ -214,8 +246,9 @@ bool FunctionPlot::onEvent(Event::t e, GLV& g){
 		float dy = m.dy();
 
 		if(m.left()){
-			float ax = ((mMaxX - mMinX)/w) * dx;
-			float ay =-((mMaxY - mMinY)/h) * dy;
+			float pw,ph; plotExtent(pw,ph);
+			float ax = ((mMaxX - mMinX)/pw) * dx;
+			float ay =-((mMaxY - mMinY)/ph) * dy;
 			if(mBufY) rangeX(mMinX - ax, mMaxX - ax);
 			if(mBufX) rangeY(mMinY - ay, mMaxY - ay);
 		}

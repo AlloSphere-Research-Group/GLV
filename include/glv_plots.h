@@ -70,12 +70,13 @@ protected:
 	float mStroke;
 	float mTickMajor;
 	bool mShowAxes, mDotEnds, mDotPoints, mInterpolate;
-	void freeX(){ if(mBufX) delete[] mBufX; mBufX=0; }
-	void freeY(){ if(mBufY) delete[] mBufY; mBufY=0; }
-	void freeCol(){ if(mBufCol) delete[] mBufCol; mBufCol=0; }
 	void allocX(){ freeX(); mBufX = new float[size()]; zero(mBufX); }
 	void allocY(){ freeY(); mBufY = new float[size()]; zero(mBufY); }
 	void allocCol(){ freeCol(); mBufCol = new Color[size()]; }
+	void freeX(){ if(mBufX) delete[] mBufX; mBufX=0; }
+	void freeY(){ if(mBufY) delete[] mBufY; mBufY=0; }
+	void freeCol(){ if(mBufCol) delete[] mBufCol; mBufCol=0; }
+	void plotExtent(float& pw, float& ph);
 	template<class T> void sort(T& a, T& b){ if(a>b){ T t=a; a=b; b=t; }  }
 	void zero(float * b){ for(int i=0; i<size(); ++i) b[i]=0.f; }
 	void zoom(float px, float py, float zm);
