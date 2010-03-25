@@ -351,7 +351,8 @@ bool View::onEvent(Event::t e, GLV& glv){ return true; }
 
 void View::onResize(space_t dx, space_t dy){
 
-	// move anchored children
+	// Move/resize anchored children
+	// This will recursively call onResize's through the entire tree
 	View * v = child;	
 	while(v){
 		v->reanchor(dx, dy);
@@ -432,6 +433,7 @@ void View::printFlags() const{
 void View::reanchor(space_t dx, space_t dy){
 	posAdd(dx * mAnchorX, dy * mAnchorY);
 	extent(w + dx * mStretchX, h + dy * mStretchY);
+	//printf("%s (%p): % g % g d(% g, % g) s(% g, % g)\n", className(), this, w,h, dx,dy, mStretchX, mStretchY);
 }
 
 

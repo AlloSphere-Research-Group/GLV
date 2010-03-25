@@ -220,6 +220,7 @@ public:
 	/// specification starting at the top-left cell and then proceeding 
 	/// column-by-column, row-by-row.
 	///
+	/// The alignment code will set the View's anchor factors.
 	Table& arrangement(const char * v);
 
 	/// Get arrangement string
