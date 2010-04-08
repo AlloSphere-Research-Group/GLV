@@ -41,25 +41,32 @@ typedef std::list<eventCallback> eventCallbackList;
 
 
 /// View property flags
-enum{
-	Visible			=1<< 0,	/**< Whether to draw myself */
-	DrawBack		=1<< 1,	/**< Whether to draw back rect */
-	DrawBorder		=1<< 2,	/**< Whether to draw border */
-	CropChildren	=1<< 3,	/**< Whether to crop children when drawing */
-	CropSelf		=1<< 4,	/**< Whether to crop own drawing routine(s) */
-	Focused			=1<< 5,	/**< Whether View is focused */
-	FocusHighlight	=1<< 6,	/**< Whether to highlight border when focused */
-	FocusToTop		=1<< 7, /**< Whether to bring to top when focused */
-	HitTest			=1<< 8,	/**< Whether View can be clicked */
-	Controllable	=1<< 9,	/**< Whether View can be controlled through events */
-	AlwaysBubble	=1<<10, /**< Whether to bubble all events to parent */
-	
-	DrawGrid		=1<<28,	/**< Whether to draw grid lines between widget elements */
-	MutualExc		=1<<29,	/**< Whether only one element of a widget can be non-zero */
-	SelectOnDrag	=1<<30,	/**< Whether a new element of a widget is selected while dragging */
-	Toggleable		=1<<31	/**< Whether widget element toggles when clicked */
+namespace Property{
+	enum t{
+		Visible			=1<< 0,	/**< Whether to draw myself */
+		DrawBack		=1<< 1,	/**< Whether to draw back rect */
+		DrawBorder		=1<< 2,	/**< Whether to draw border */
+		CropChildren	=1<< 3,	/**< Whether to crop children when drawing */
+		CropSelf		=1<< 4,	/**< Whether to crop own drawing routine(s) */
+		Focused			=1<< 5,	/**< Whether View is focused */
+		FocusHighlight	=1<< 6,	/**< Whether to highlight border when focused */
+		FocusToTop		=1<< 7, /**< Whether to bring to top when focused */
+		HitTest			=1<< 8,	/**< Whether View can be clicked */
+		Controllable	=1<< 9,	/**< Whether View can be controlled through events */
+		AlwaysBubble	=1<<10, /**< Whether to bubble all events to parent */
+		Maximized		=1<<11, /**< Whether geometry is matched to parent's */
+		
+		DrawGrid		=1<<28,	/**< Whether to draw grid lines between widget elements */
+		MutualExc		=1<<29,	/**< Whether only one element of a widget can be non-zero */
+		SelectOnDrag	=1<<30,	/**< Whether a new element of a widget is selected while dragging */
+		Toggleable		=1<<31	/**< Whether widget element toggles when clicked */
+	};
+	inline t operator| (const t& a, const t& b){ return t(int(a) | int(b)); }
+	inline t operator& (const t& a, const t& b){ return t(int(a) & int(b)); }
+	inline t operator^ (const t& a, const t& b){ return t(int(a) ^ int(b)); }
 };
 
+using namespace Property;
 
 
 /// Direction types
@@ -350,7 +357,7 @@ public:
 	
 	bool absToRel(View * target, space_t& x, space_t& y) const;
 	StyleColor& colors() const;					///< Returns my style colors
-	int enabled(int prop) const;				///< Returns whether a property is set
+	int enabled(Property::t v) const;			///< Returns whether a property is set
 	bool hasCallback(Event::t e, eventCallback cb) const; ///< Returns whether a particular callback has been registered
 	bool hasCallbacks(Event::t e) const;		///< Returns whether there are callback(s) registered for a particular event
 	int numCallbacks(Event::t e) const;			///< Returns number of registered callbacks
@@ -377,12 +384,17 @@ public:
 	/// list.
 	void addCallback(Event::t type, eventCallback cb);
 	View& operator()(Event::t e, eventCallback cb){ addCallback(e, cb); return *this; }
-	
+
+	View& disable(Property::t p);				///< Disable property flag(s)
+	View& enable(Property::t p);				///< Enable property flag(s)
+	View& property(Property::t p, bool v);		///< Set property flag(s) to a specfic value	
+	View& toggle(Property::t p);				///< Toggle property flag(s)
+
+
 	View& bringToFront();						///< Brings to front of parent View
 	void cloneStyle();							///< Creates own copy of current style
 	void constrainWithinParent();				///< Force to remain in parent	
-	View& disable(int prop);					///< Disable property flag(s)
-	View& enable(int prop);						///< Enable property flag(s)
+
 
 	/// Returns View under these absolute coordinates or 0 if none.
 	
@@ -406,16 +418,18 @@ public:
 	using Rect::pos;							// template "inheritance" fix
 	View& pos(Place::t p, space_t x, space_t y);///< Position a specific place at point (x,y)
 	View& pos(Place::t p);						///< Position a specific place at point (0,0)
-	View& property(int prop, bool v);			///< Set property flag(s) to a specfic value	
 	View& stretch(space_t mx, space_t my);		///< Set parent resize stretch factors
-	View& style(Style * style);					///< Set pointer to style	
-	View& toggle(int prop);						///< Toggle property flag(s)
-	
+	View& style(Style * style);					///< Set pointer to style
+
+	View& maximize();							///< Matches geometry to parent
+	View& restore();							///< Undoes maximization
+
 protected:
-	int mFlags;						// Property flags
+	Property::t mFlags;				// Property flags
 	Style * mStyle;					// Visual appearance
 	space_t mAnchorX, mAnchorY;		// Position anchoring factors when parent is resized
 	space_t mStretchX, mStretchY;	// Stretch factors when parent is resized
+	Rect mRestore;					// Restoration geometry
 
 	void drawBack() const;			// Draw the back rect
 	void drawBorder() const;		// Draw the border
@@ -516,13 +530,13 @@ protected:
 // Implementation ______________________________________________________________
 
 // View
-inline int View::enabled(int prop) const { return mFlags & prop; }
+inline int View::enabled(Property::t v) const { return mFlags & v; }
 inline int View::visible() const { return enabled(Visible); }
 
-inline View& View::disable	(int prop){ mFlags &=~prop; return *this; }
-inline View& View::enable	(int prop){ mFlags |= prop; return *this; }
-inline View& View::property(int prop, bool v){ v ? enable(prop) : disable(prop); return *this; }
-inline View& View::toggle	(int prop){ mFlags ^= prop; return *this; }
+inline View& View::disable	(Property::t p){ mFlags = mFlags & Property::t(~int(p)); return *this; }
+inline View& View::enable	(Property::t p){ mFlags = mFlags | p; return *this; }
+inline View& View::property	(Property::t p, bool v){ v ? enable(p) : disable(p); return *this; }
+inline View& View::toggle	(Property::t p){ mFlags = mFlags ^ p; return *this; }
 
 // Keyboard
 inline int Keyboard::key() const { return mKeycode; }

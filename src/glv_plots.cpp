@@ -79,7 +79,7 @@ void FunctionPlot::plotExtent(float& pw, float& ph){
 void FunctionPlot::onDraw(){
 	using namespace glv::draw;
 
-	enable(PointSmooth);
+	draw::enable(PointSmooth);
 	
 	int B=mIMin, E=mIMax;					// begin/end plotting indices
 	
