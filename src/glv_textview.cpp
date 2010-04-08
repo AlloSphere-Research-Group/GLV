@@ -217,7 +217,7 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 		int power = 1;
 		bool drawChar = false; // don't draw until non-zero or past decimal point
 
-		begin(Lines);
+		//BUFFER: begin(Lines);
 			if(mNF  > 0) character('.', dx*(mNI+sizeSign()) - tdx, y);
 			if(mShowSign && mVal < 0) character('-', dx*0.5 - tdx, y);
 			
@@ -228,7 +228,7 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 				if(drawChar) character(c, x, y);
 				x -= dx;
 			}
-		end();
+		//end();
 	draw::pop();
 }
 
@@ -426,7 +426,7 @@ void TextView::deleteSelected(){
 		setPos(mPos);
 	}
 	else if(mSel<0){
-		mText.erase(mPos+mSel, mPos);
+		mText.erase(mPos+mSel, -mSel);
 		setPos(mPos+mSel);
 	}
 }
