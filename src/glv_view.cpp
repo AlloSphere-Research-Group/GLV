@@ -317,8 +317,19 @@ bool View::hasCallback(Event::t e, eventCallback cb) const {
 	return false;
 }
 
+
 bool View::hasCallbacks(Event::t e) const {
 	return 0!=callbackLists.count(e);
+}
+
+
+View& View::maximize(){
+	if(!enabled(Maximized)){
+		enable(Maximized);
+		mRestore.set(*this);
+		reanchor(0,0);
+	}
+	return *this;
 }
 
 
@@ -340,8 +351,6 @@ void View::on(Event::t e, eventCallback cb){
 	
 	callbackLists[e].push_front(cb);
 }
-
-
 
 
 void View::onDraw(){ if(draw) draw(this); }
@@ -431,9 +440,17 @@ void View::printFlags() const{
 	
 
 void View::reanchor(space_t dx, space_t dy){
-	posAdd(dx * mAnchorX, dy * mAnchorY);
-	extent(w + dx * mStretchX, h + dy * mStretchY);
-	//printf("%s (%p): % g % g d(% g, % g) s(% g, % g)\n", className(), this, w,h, dx,dy, mStretchX, mStretchY);
+	
+	if(!enabled(Maximized)){
+		posAdd(dx * mAnchorX, dy * mAnchorY);
+		extent(w + dx * mStretchX, h + dy * mStretchY);
+//		//printf("%s (%p): % g % g d(% g, % g) s(% g, % g)\n", className(), this, w,h, dx,dy, mStretchX, mStretchY);
+	}
+	else{
+		mRestore.posAdd(dx * mAnchorX, dy * mAnchorY);
+		mRestore.extent(mRestore.w + dx * mStretchX, mRestore.h + dy * mStretchY);
+		if(parent) set(0,0, parent->w, parent->h);
+	}
 }
 
 
@@ -453,6 +470,15 @@ void View::removeAllCallbacks(Event::t e){
 		while(!callbackLists[e].empty())
 			callbackLists[e].pop_front();
 	}
+}
+
+
+View& View::restore(){
+	if(enabled(Maximized)){
+		disable(Maximized);
+		set(mRestore);
+	}
+	return *this;
 }
 
 
