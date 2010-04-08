@@ -40,6 +40,9 @@ public:
 	/// @param[in] height	initial height
 	TRect(T left, T top, T width, T height);
 	
+	/// @param[in]	other	other rectangle to set geometry from
+	TRect(const TRect& other);
+	
 	virtual ~TRect(){}
 
 	const TRect& operator= (const TRect& r);
@@ -126,6 +129,7 @@ TEM TRect<T>::TRect(){ set((T)0, (T)0, (T)40, (T)40); }
 TEM TRect<T>::TRect(T v){ set(0, 0, v, v); }
 TEM TRect<T>::TRect(T iw, T ih){ set(0, 0, iw, ih); }
 TEM TRect<T>::TRect(T il, T it, T iw, T ih){ set(il, it, iw, ih); }
+TEM TRect<T>::TRect(const TRect& v){ *this = v; }
 
 TEM const TRect<T>& TRect<T>::operator= (const TRect<T>& r){
 	set(r.l, r.t, r.w, r.h);
