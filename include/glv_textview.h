@@ -14,7 +14,7 @@ namespace glv{
 
 typedef ChangedValue<std::string> LabelChange;
 typedef ChangedValue<double> NumberDialerChange;
-
+typedef ChangedValue<std::string *> TextViewChange;
 
 /// Basic label widget
 class Label : public View{
@@ -186,13 +186,15 @@ public:
 	TextView& size(float pixels);
 	
 	/// Set text string
-	TextView& text(const std::string& v);
+	TextView& value(const std::string& v);
 
 	void select(int v);
 	void deselect(){ mSel=0; }
+	
+	const std::string& value() const { return mText; }
+	std::string value(){ return mText; }
 
 	virtual const char * className() const { return "TextView"; }
-
 	virtual void onDraw();	
 	virtual bool onEvent(Event::t e, GLV& g);
 
@@ -209,6 +211,8 @@ protected:
 	int xToPos(float x); // convert x pixel position to character position
 	void deleteSelected();
 	bool selected(){ return mSel!=0; }
+	void deleteText(int start, int num);
+	void callNotify();
 };
 
 

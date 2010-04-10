@@ -217,7 +217,7 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 		int power = 1;
 		bool drawChar = false; // don't draw until non-zero or past decimal point
 
-		//BUFFER: begin(Lines);
+		begin(Lines);
 			if(mNF  > 0) character('.', dx*(mNI+sizeSign()) - tdx, y);
 			if(mShowSign && mVal < 0) character('-', dx*0.5 - tdx, y);
 			
@@ -228,7 +228,7 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 				if(drawChar) character(c, x, y);
 				x -= dx;
 			}
-		//end();
+		end();
 	draw::pop();
 }
 
@@ -296,8 +296,17 @@ TextView::TextView(const Rect& r)
 	size(8);
 }
 
+void TextView::callNotify(){ notify(Update::Value, TextViewChange(&mText)); }
+
 TextView& TextView::size(float pixels){ mSize = pixels/draw::Glyph::width(); return *this; }
-TextView& TextView::text(const std::string& v){ mText=v; return *this; }
+
+TextView& TextView::value(const std::string& v){
+	if(v != mText){
+		mText=v;
+		callNotify();
+	}
+	return *this;
+}
 
 void TextView::onDraw(){
 	using namespace draw;
@@ -327,7 +336,7 @@ void TextView::onDraw(){
 			sr = tl;
 			sl = sr + mSel*Glyph::width();
 		}
-		color(colors().fore);
+		color(colors().fore, colors().fore.a*0.4);
 		begin(Quads);
 			vertex(sl, tt); vertex(sl, tb);
 			vertex(sr, tb); vertex(sr, tt);
@@ -358,7 +367,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 		case Event::KeyDown:
 			if(isprint(key)){
 				deleteSelected();
-				mText.insert(mPos, 1, k.key());
+				mText.insert(mPos, 1, k.key()); callNotify();
 				setPos(mPos+1);
 				return false;
 			}
@@ -367,7 +376,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 				case Key::Delete:
 					if(selected()) deleteSelected();
 					else if(validPos()){
-						mText.erase(mPos-1, 1);
+						deleteText(mPos-1, 1);
 						setPos(mPos-1);
 					}
 					return false;
@@ -375,7 +384,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 				case Key::BackSpace:
 					if(selected()) deleteSelected();
 					else if(mText.size()){
-						mText.erase(mPos, 1);
+						deleteText(mPos, 1);
 						setPos(mPos);
 					}
 					return false;
@@ -422,13 +431,19 @@ bool TextView::onEvent(Event::t e, GLV& g){
 
 void TextView::deleteSelected(){
 	if(mSel>0){
-		mText.erase(mPos, mSel);
+		deleteText(mPos, mSel);
 		setPos(mPos);
 	}
 	else if(mSel<0){
-		mText.erase(mPos+mSel, -mSel);
+		deleteText(mPos+mSel, mPos);
 		setPos(mPos+mSel);
 	}
+}
+
+
+void TextView::deleteText(int start, int num){
+	mText.erase(start, num);
+	callNotify();
 }
 
 void TextView::select(int v){
