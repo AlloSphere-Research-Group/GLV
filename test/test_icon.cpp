@@ -27,6 +27,18 @@ void drawCB(View * v){
 	x = 20; y += d + 10;
 	for(int i=3; i<8; ++i){ pgon  (x, y, d, d, i); x += inc; }
 	for(int i=3; i<8; ++i){ spokes(x, y, d, d, i); x += inc; }
+
+	x = 20; y += d + 10;
+	disc<3>(x, y, x+d, y+d); x += inc;
+	disc<4>(x, y, x+d, y+d); x += inc;
+	disc<5>(x, y, x+d, y+d); x += inc;
+	disc<6>(x, y, x+d, y+d); x += inc;
+	disc<7>(x, y, x+d, y+d); x += inc;
+	
+	x = 20; y += d + 10;
+	linesH(x,y,d,d, 5);				x += inc;
+	linePattern(x,y,d,d, 9, "1 1");	x += inc;
+	
 	
 	x = 20; y += d + 10;
 	for(int i=2; i<5; ++i){ for(int j=2; j<5; ++j){ grid(x,y,d,d,i,j); x+=inc; }}
@@ -37,13 +49,12 @@ void drawCB(View * v){
 	
 	x = 20.5; y += d + 10;
 	y = (int)y + 0.5;
-	begin(Lines);
+
 	for(int i=0; i<(127 - '!'); ++i){
 		float dx = (i%16) * 8;
 		float dy = (i/16) * 16;
 		character(i + '!', x + dx, y + dy);
 	}
-	end();
 }
 
 
@@ -51,7 +62,7 @@ int main (int argc, char ** argv){
 	GLV top(drawCB);
 	top.colors().back.set(1);
 	
-	Window win(400, 300, "GLV", &top);
+	Window win(400, 400, "GLV", &top);
 	Application::run();
 }
 

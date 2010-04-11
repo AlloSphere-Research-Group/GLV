@@ -70,13 +70,15 @@ Texture2& Texture2::bind(){ begin(); return *this; }
 Texture2& Texture2::draw(
 	float ql, float qt, float qr, float qb,
 	float tl, float tt, float tr, float tb
-){	
+){
+#ifndef GLV_USE_OPENGL_ES
 	glBegin(GL_QUADS);       
 		glTexCoord2f(tl,tt); glVertex2f(ql,qt);
 		glTexCoord2f(tl,tb); glVertex2f(ql,qb);
 		glTexCoord2f(tr,tb); glVertex2f(qr,qb);
 		glTexCoord2f(tr,tt); glVertex2f(qr,qt);
 	glEnd();
+#endif
 	return *this;
 }
 

@@ -217,18 +217,17 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 		int power = 1;
 		bool drawChar = false; // don't draw until non-zero or past decimal point
 
-		begin(Lines);
-			if(mNF  > 0) character('.', dx*(mNI+sizeSign()) - tdx, y);
-			if(mShowSign && mVal < 0) character('-', dx*0.5 - tdx, y);
-			
-			for(int i=0; i<=msd; ++i){
-				char c = '0' + (absVal % (power*10))/power;
-				power *= 10;
-				if(c!='0' || i>=mNF) drawChar = true;
-				if(drawChar) character(c, x, y);
-				x -= dx;
-			}
-		end();
+		// Draw the digits
+		if(mNF  > 0) character('.', dx*(mNI+sizeSign()) - tdx, y);
+		if(mShowSign && mVal < 0) character('-', dx*0.5 - tdx, y);
+		
+		for(int i=0; i<=msd; ++i){
+			char c = '0' + (absVal % (power*10))/power;
+			power *= 10;
+			if(c!='0' || i>=mNF) drawChar = true;
+			if(drawChar) character(c, x, y);
+			x -= dx;
+		}
 	draw::pop();
 }
 
@@ -337,19 +336,13 @@ void TextView::onDraw(){
 			sl = sr + mSel*Glyph::width();
 		}
 		color(colors().fore, colors().fore.a*0.4);
-		begin(Quads);
-			vertex(sl, tt); vertex(sl, tb);
-			vertex(sr, tb); vertex(sr, tt);
-		end();		
+		rect(sl, tt, sr, tb);
 	}
 
 	// draw cursor
 	if(mBlink<20 && enabled(Focused)){
 		color(colors().text);
-		begin(Lines);
-			//vertex(tl, tt); vertex(tr, tt);
-			vertex(tl, tt); vertex(tl, tb);
-		end();
+		shape(Lines, tl, tt, tl, tb);
 	}
 
 	color(colors().text);

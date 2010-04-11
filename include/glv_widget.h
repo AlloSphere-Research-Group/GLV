@@ -100,10 +100,19 @@ protected:
 			float yd = dy();
 
 			color(colors().border); lineWidth(1);
-			begin(Lines);
-			for(int x=1; x<sizeX(); ++x){ vertex(x*xd, 0); vertex(x*xd, h); }
-			for(int y=1; y<sizeY(); ++y){ vertex(0, y*yd); vertex(w, y*yd); }
-			end();
+
+			Point2 pts[(sizeX()+sizeY()-2)*2];
+			int i=0;
+
+			for(int x=1; x<sizeX(); ++x){
+				pts[i++](x*xd, 0);
+				pts[i++](x*xd, h);
+			}
+			for(int y=1; y<sizeY(); ++y){
+				pts[i++](0, y*yd);
+				pts[i++](w, y*yd);
+			}
+			paint(Lines, pts, GLV_ARRAY_SIZE(pts));
 		}
 	}
 

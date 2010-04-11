@@ -33,9 +33,8 @@ struct CharView : public View{
 		
 		lineWidth(thickness);
 		color(colors().fore);
-		begin(Lines);
-			character(input);
-		end();
+
+		character(input);
 	}
 	
 	virtual bool onEvent(Event::t e, GLV& glv){

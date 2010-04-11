@@ -136,12 +136,16 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 	std::vector<Rect> cropRects(16, Rect(w, h));	// index is hierarchy level
 	int lvl = 0;	// start at root = 0
 	
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_INDEX_ARRAY);
+	//glEnableClientState(GL_COLOR_ARRAY);
+	
 	push2D(w, h);	// initialise the OpenGL renderer for our 2D GUI world
 	onDraw();		// draw myself
 	push();			// push model matrix because of transformations in drawContext()
 	
 	draw::enable(ScissorTest);
-	
+
 	while(true){
 		// find the next view to draw
 		
@@ -188,11 +192,17 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 		}
 	}
 	
+	glDisableClientState(GL_INDEX_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	//glDisableClientState(GL_COLOR_ARRAY);
+	
 	pop();
 	
 	// this weird call is necessary so that raster calls get scissored properly
 	// not entirely sure why this works, but it does.
 	scissor(0,0,(GLint)w,(GLint)h);
+
+	
 
 	pop2D();
 }

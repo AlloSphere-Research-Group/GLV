@@ -3,17 +3,43 @@ GLV - GUI Building Toolkit
 Build Instructions
 ------------------
 
-First of all, edit the file Makefile.config in ./ for the appropriate
-operating system. By default, everything is configured for Linux.
-If you are building under Linux, you need to have development versions of
-OpenGL, GLU, and GLUT installed.
+Mac OSX: Xcode
+---------------
+The Xcode project is located at ./osx/GLV.xcodeproj. There are targets for
+building a static library, a framework, and all of the examples programs in
+./test.
+
+
+Linux and Mac OSX: Make
+-----------------------
+
+The following options must be set correctly before attempting a build. They
+can be passed in as options to make (OPTION=value) or changed directly in
+Makefile.config.
+
+Option		Description			Possible Values
+---------------------------------------------------------------
+PLATFORM	The platform under which	macosx (default), linux
+		GLV is being built.
+
+USE_OPEN_GL_ES	Whether to compile for use	0 (default), 1
+		with the OpenGL ES embedded
+		systems API.
+
+WINDOW_BINDING	Specifies a binding for the	GLUT (default), none
+		OS window and control events.
+
 
 To build the main library, run:
 
-	make
+	./make
 
-Or, to build the library and test applications, run:
+To build the library and test applications, run:
 
-	make all
+	./make all
+
+Note: if you are building under Linux, you need to have development versions of OpenGL, GLU, and GLUT installed.
 
 
+
+		

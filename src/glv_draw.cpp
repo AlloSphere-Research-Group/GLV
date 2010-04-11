@@ -129,6 +129,10 @@ bool character(int c, float dx, float dy){
 	if(c == '$'){ character('S',dx,dy); return character('|',dx,dy); }
 
 	if(isgraph(c)){	// is graphical character?
+	
+		Point2 xy[32];
+		int ind=-1;
+	
 		c -= 33;
 		
 		float * x = glyphs[c].x;
@@ -137,30 +141,53 @@ bool character(int c, float dx, float dy){
 		int dots = glyphs[c].dots();
 
 		if(dots){
+			// 8*2 = 16
 			for(int j=0; j<dots; ++j){
 				float l = x[j] + dx;	float t = y[j] + dy;
 				float r = l + 1;		float b = t + 1;
-				vertex(l, t); vertex(r, t); vertex(r, t); vertex(r, b);
-				vertex(r, b); vertex(l, b);	vertex(l, b); vertex(l, t);
+				
+				xy[++ind](l,t);
+				xy[++ind](r,t); xy[++ind](r,t);
+				xy[++ind](r,b); xy[++ind](r,b);
+				xy[++ind](l,b); xy[++ind](l,b);
+				xy[++ind](l,t);
+				
+//				vertex(l, t); vertex(r, t); vertex(r, t); vertex(r, b);
+//				vertex(r, b); vertex(l, b);	vertex(l, b); vertex(l, t);
 			}
-			if(n == 0) return true;
+			if(n == 0) goto render;
 			x += dots; y += dots;
 		}
 
 		n--;
-		vertex(x[0] + dx, y[0] + dy);
+		// 16 + 1 = 17
+		//vertex(x[0] + dx, y[0] + dy);
+		xy[++ind](x[0] + dx, y[0] + dy);
+		
+		// 17 + 7*2 = 31
 		if(glyphs[c].once() == 0){	// line strip
 			for(int i=1; i<n; ++i){
-				vertex(x[i] + dx, y[i] + dy);
-				vertex(x[i] + dx, y[i] + dy);
+				
+				xy[++ind](x[i] + dx, y[i] + dy);
+				xy[++ind](x[i] + dx, y[i] + dy);
+				
+				//vertex(x[i] + dx, y[i] + dy);
+				//vertex(x[i] + dx, y[i] + dy);
 			}
 		}
 		else{		// normal lines
-			for(int i=1; i<n; ++i) vertex(x[i] + dx, y[i] + dy);
+			for(int i=1; i<n; ++i) xy[++ind](x[i] + dx, y[i] + dy); //vertex(x[i] + dx, y[i] + dy);
 		}
-		vertex(x[n] + dx, y[n] + dy);
+		
+		// 31 + 1 = 32
+		xy[++ind](x[n] + dx, y[n] + dy);
+		//vertex(x[n] + dx, y[n] + dy);
+		
+		render:
+		paint(Lines, xy, ind+1);
 		return true;
 	}
+	
 	return c == ' ';
 }
 
@@ -175,18 +202,30 @@ void fog(float end, float start, const Color& c){
 
 void grid(float l, float t, float w, float h, float divx, float divy, bool incEnds){
 	double inc, r=l+w, b=t+h;
-	begin(Lines);
+
 	if(divy > 0){
 		inc = (double)h/(double)divy;
-		double i = incEnds ? t-0.0001 : t-0.0001+inc, e = incEnds ? b : b-inc;
-		for(; i<e; i+=inc){ vertex(l,i); vertex(r,i); }
+		double i = incEnds ? t-0.0001 : t-0.0001+inc;
+		double e = incEnds ? b : b-inc;
+
+		Point2 xy[2*int((e-i)/inc)];
+		int ind=-1;
+		for(; i<e; i+=inc){ xy[++ind](l,i); xy[++ind](r,i); }
+		
+		paint(Lines, xy, ind+1);
 	}
+
 	if(divx > 0){
 		inc = (double)w/(double)divx;
-		double i = incEnds ? l-0.0001 : l-0.0001+inc, e = incEnds ? r : r-inc; 
-		for(; i<e; i+=inc){ vertex(i,t); vertex(i,b); }
+		double i = incEnds ? l-0.0001 : l-0.0001+inc;
+		double e = incEnds ? r : r-inc;
+
+		Point2 xy[2*int((e-i)/inc)];
+		int ind=-1;
+		for(; i<e; i+=inc){ xy[++ind](i,t); xy[++ind](i,b); }
+		
+		paint(Lines, xy, ind+1);
 	}
-	end();
 }
 
 
@@ -194,13 +233,19 @@ void linesH(float l, float t, float w, float h, int n){
 	double pos = 0;
 	double inc = (double)h/(double)(n-1);
 		
-	push(); translate(l,t);
-	begin(Lines);
-	for(int i=0; i<n; ++i){
-		vertex(0, pos); vertex(w, pos);
+	push();
+	translate(l,t);
+
+	Point2 pts[n*2];
+
+	for(int i=0; i<n*2; i+=2){
+		pts[i+0](0, pos);
+		pts[i+1](w, pos);
 		pos+=inc;
 	}
-	end(); pop();
+
+	paint(Lines, pts, GLV_ARRAY_SIZE(pts));
+	pop();
 }
 
 
@@ -208,27 +253,39 @@ void linePattern(float l, float t, float w, float h, int n, const char * pat){
 	const char * p = pat;
 	double pos = 0;
 	double inc = (double)w/(double)(n-1);
-		
-	push(); translate(l,t);
-	begin(Lines);
+	int nDraw=0;
+	Point2 pts[n*2];
+	
+	push();
+	translate(l,t);
+
 	for(int i=0; i<n; ++i){
 		if(!*p) p = pat;
-		if(*p++ == '/'){ vertex(pos, 0); vertex(pos, h); }
+		if(*p++ != ' '){
+			pts[nDraw+0](pos, 0);
+			pts[nDraw+1](pos, h);
+			nDraw += 2;
+		}
 		pos+=inc;
 	}
-	end(); pop();
+	
+	paint(Lines, pts, nDraw);
+	pop();
 }
 
 
 void pgon(float l, float t, float w, float h, int n, float a){
 	w *= 0.5; h *= 0.5;
 	push(); translate(l + w, t + h); scale(w, h); rotate(0, 0, a * 360);
-	begin(LineLoop);
+
+	Point2 pts[n];
 	for(int i=0; i<n; ++i){
 		float p = (double)i / (double)n * C_2PI;
-		vertex(cos(p), sin(p));
+		pts[i](cos(p), sin(p));
 	}
-	end(); pop();
+	paint(LineLoop, pts, GLV_ARRAY_SIZE(pts));
+
+	pop();
 }
 
 
@@ -275,13 +332,18 @@ void pop3D(){
 
 void spokes(float l, float t, float w, float h, int n, float a){
 	w *= 0.5; h *= 0.5;
-	push(); translate(l + w, t + h); scale(w, h); rotate(0, 0, a * 360);
-	begin(Lines);
+	push();
+	translate(l + w, t + h); scale(w, h); rotate(0, 0, a * 360);
+
+	Point2 pts[2*n];
 	for(int i=0; i<n; ++i){
 		float p = (double)i / (double)n * C_2PI;
-		vertex(0,0); vertex(cos(p), sin(p));
+		pts[2*i+0](0,0);
+		pts[2*i+1](cos(p), sin(p));
 	}
-	end(); pop();
+	
+	paint(Lines, pts, 2*n);
+	pop();
 }
 
 
@@ -289,7 +351,7 @@ void text(const char * s, float l, float t, float lineSpacing, unsigned int tabS
 	float dx = Glyph::baseline();
 	float x=l, y=t, tabUnits = tabSpaces * dx;
 	//x = (int)x + 0.5; y = (int)y + 0.5;
-	begin(Lines);
+	//begin(Lines);
 	while(*s){
 		switch(*s){
 			case '\t':	x = ((int)(x/tabUnits) + 1) * tabUnits; break;
@@ -300,8 +362,9 @@ void text(const char * s, float l, float t, float lineSpacing, unsigned int tabS
 		}
 		s++;
 	}
-	end();
+	//end();
 }
 
 } // draw::
 } // glv::
+

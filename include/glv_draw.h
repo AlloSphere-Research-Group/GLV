@@ -9,13 +9,33 @@
 #include "glv_conf.h"
 #include "glv_color.h"
 
+#define GLV_ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
+
 namespace glv {
+
+
+struct Point2{
+	Point2(){}
+	Point2(float x_, float y_): x(x_), y(y_){}
+	void operator()(float x_, float y_){x=x_; y=y_;}
+	float x,y;
+};
+
+struct Point3{
+	Point3(){}
+	Point3(float x_, float y_, float z_): x(x_), y(y_), z(z_){}
+	void operator()(float x_, float y_, float z_){x=x_; y=y_; z=z_;}
+	float x,y,z;
+};
+
 
 /// Drawing routines.
 namespace draw{
 
 const double C_PI = 4. * atan(1.);
 const double C_2PI = 2. * C_PI;
+
+
 
 #ifdef check
 	#undef check
@@ -99,6 +119,10 @@ void lineStipple(char factor, short pattern);		///< Specify line stipple pattern
 void lineWidth(float val);							///< Set width of lines
 void matrixMode(int mode);							///< Set current transform matrix
 void ortho(float l, float r, float b, float t);		///< Set orthographic projection mode
+void paint(int prim, Point2 * verts, int numVerts);	///< Draw array of 2D vertices
+void paint(int prim, Point2 * verts, int * indices, int numIndices); ///< Draw indexed array of 2D vertices
+void paint(int prim, Point3 * verts, int numVerts);	///< Draw array of 3D vertices
+void paint(int prim, Point3 * verts, int * indices, int numIndices); ///< Draw indexed array of 3D vertices
 void pointSize(float val);							///< Set size of points
 void pointAtten(float c2=0, float c1=0, float c0=1); ///< Set distance attenuation of points. The scaling formula is clamp(size * sqrt(1/(c0 + c1*d + c2*d^2)))
 void pop();											///< Pop current transform matrix stack
@@ -231,6 +255,28 @@ static Enable enable;
 
 // Implementation ______________________________________________________________
 
+inline void paint(int prim, Point2 * verts, int numVerts){
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(2, GL_FLOAT, 0, verts);
+	glDrawArrays(prim, 0, numVerts);
+	//glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+inline void paint(int prim, Point2 * verts, int * indices, int numIndices){
+	glVertexPointer(2, GL_FLOAT, 0, verts);
+	glDrawElements(prim, numIndices, GL_INT, indices);
+}
+
+inline void paint(int prim, Point3 * verts, int numVerts){
+	glVertexPointer(3, GL_FLOAT, 0, verts);
+	glDrawArrays(prim, 0, numVerts);
+}
+
+inline void paint(int prim, Point3 * verts, int * indices, int numIndices){
+	glVertexPointer(3, GL_FLOAT, 0, verts);
+	glDrawElements(prim, numIndices, GL_INT, indices);
+}
+
 inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5*(t+b), l+(r-l)*0.3,b, r,t); }
 
 template <int N>
@@ -239,15 +285,20 @@ void disc(float l, float t, float r, float b){
 	float px=1, py=0, rx=cos(theta), ry=sin(theta);
 	float mx=0.5*(l+r), my=0.5*(t+b), sx=(r-l)*0.5, sy=(b-t)*0.5;
 	
-	begin(TriangleFan);
-	vertex(mx, my);
-	for(int i=0; i<N+1; ++i){	
-		vertex(mx+px*sx, my+py*sy);
+	Point2 pts[N+2];
+	
+	pts[0](mx,my);
+
+	for(int i=1; i<N+1; ++i){
+		pts[i](mx+px*sx, my+py*sy);
 		float tx=px;
 		px = px*rx - py*ry;
 		py = tx*ry + py*rx;
 	}
-	end();
+	
+	pts[N+1] = pts[1];
+	
+	paint(TriangleFan, pts, GLV_ARRAY_SIZE(pts));
 }
 
 inline void frame(float l, float t, float r, float b){ shape(LineLoop, l, t, l, b, r, b, r, t); }
@@ -265,22 +316,19 @@ inline void plus(float l, float t, float r, float b){
 	shape(Lines, mx,t, mx,b, l,my, r,my);
 }
 
-inline void shape(int primitive, float x0, float y0, float x1, float y1){
-	begin(primitive);
-		vertex(x0, y0); vertex(x1, y1);
-	end();
+inline void shape(int prim, float x0, float y0, float x1, float y1){
+	float v[] = {x0,y0,x1,y1};
+	paint(prim, (Point2 *)v, 2);
 }
 
-inline void shape(int primitive, float x0, float y0, float x1, float y1, float x2, float y2){
-	begin(primitive);
-		vertex(x0, y0); vertex(x1, y1); vertex(x2, y2);
-	end();
+inline void shape(int prim, float x0, float y0, float x1, float y1, float x2, float y2){
+	float v[] = {x0,y0,x1,y1,x2,y2};
+	paint(prim, (Point2 *)v, 3);
 }
 
-inline void shape(int primitive, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3){
-	begin(primitive);
-		vertex(x0, y0); vertex(x1, y1); vertex(x2, y2); vertex(x3, y3);
-	end();
+inline void shape(int prim, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3){
+	float v[] = {x0,y0,x1,y1,x2,y2,x3,y3};
+	paint(prim, (Point2 *)v, 4);
 }
 
 inline void stroke(float w){ lineWidth(w); pointSize(w); }
@@ -324,14 +372,24 @@ void vertex(T * xs, T * ys, unsigned long len, int prim){
 
 
 // platform dependent
-inline void begin(int prim){ glBegin(prim); }
+inline void begin(int prim){
+#ifndef GLV_USE_OPENGL_ES
+	glBegin(prim);
+#endif
+}
 inline void blendFunc(int sfactor, int dfactor){ glBlendFunc(sfactor, dfactor); }
 inline void blendAdd(){ glBlendEquation(GL_FUNC_ADD); blendFunc(GL_SRC_COLOR, GL_ONE); }
 inline void blendTrans(){ glBlendEquation(GL_FUNC_ADD); blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
 inline void clear(int mask){ glClear(mask); }
 inline void clearColor(float r, float g, float b, float a){ glClearColor(r,g,b,a); }
 inline void color(float r, float g, float b, float a){ glColor4f(r,g,b,a); }
-inline void end(){ glEnd(); }
+
+inline void end(){
+#ifndef GLV_USE_OPENGL_ES
+	glEnd();
+#endif
+}
+
 inline void identity(){ glLoadIdentity(); }
 inline void lineStipple(char factor, short pattern){ glLineStipple(factor, pattern); }
 inline void lineWidth(float v){ glLineWidth(v); }
@@ -355,12 +413,22 @@ inline void scissor(float x, float y, float w, float h){ glScissor((GLint)x,(GLi
 inline void texCoord(float x, float y){ glTexCoord2f(x,y); }
 inline void translate(float x, float y, float z){ glTranslatef(x,y,z); }
 inline void viewport(float x, float y, float w, float h){ glViewport((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h); }
-inline void vertex(float x, float y){ glVertex2f(x,y); }
-inline void vertex(float x, float y, float z){ glVertex3f(x,y,z); }
 
-} // end namespace draw
+inline void vertex(float x, float y){
+#ifndef GLV_USE_OPENGL_ES
+	glVertex2f(x,y);
+#endif
+}
 
-} // end namespace glv
+inline void vertex(float x, float y, float z){
+#ifndef GLV_USE_OPENGL_ES
+	glVertex3f(x,y,z);
+#endif
+}
+
+} // draw::
+
+} // glv::
 
 #endif
 

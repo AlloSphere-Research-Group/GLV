@@ -383,6 +383,7 @@ void FunctionGraph::onDraw()
 	std::vector<Curve *>::iterator it_e = mCurves.end();
 	
 	color(mStyle->color.fore);
+
 	begin(LineStrip);
 	int i=0;
 	for(; it != it_e; ++it){
@@ -399,6 +400,7 @@ void FunctionGraph::onDraw()
 	end();
 	
 	color(mStyle->color.fore, mStyle->color.fore.a*0.5);
+
 	begin(QuadStrip);
 	i=0;
 	it = mCurves.begin();

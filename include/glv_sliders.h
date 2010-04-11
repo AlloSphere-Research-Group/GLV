@@ -568,17 +568,18 @@ TEM void SliderGrid<Dim>::onDraw(){
 
 	glColor4f(1, 1, 1, 1.);*/
 	pointSize(knobSize);
-	begin(Points);
+
+	Point2 pts[Dim*Dim];
 	for(int i=0; i<Dim; ++i){
 		float f = (i+value(i)) * rDim;
 		float x = f*w;
-		//float y = f*h;
 		
 		for(int j=0; j<Dim; ++j){
-			vertex(x, (1.-(j+value(j)) * rDim) * h);
+			pts[i*Dim+j](x, (1.-(j+value(j)) * rDim) * h);
 		}
 	}
-	end();
+	paint(Points, pts, GLV_ARRAY_SIZE(pts));
+
 }
 
 TEM bool SliderGrid<Dim>::onEvent(Event::t e, GLV& g){

@@ -7,6 +7,8 @@
 #define	GLV_VERSION "0.94"
 #define	GLV_MAX_MOUSE_BUTTONS 8
 
+//#define GLV_USE_OPENGL_ES 1
+
 
 // OpenGL platform-dependent includes
 #if defined (__APPLE__) || defined (OSX)

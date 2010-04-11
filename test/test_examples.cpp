@@ -45,14 +45,26 @@ struct SubView3D : View3D{
 		using namespace glv::draw;
 		translateZ(-3);
 		rotateY(angle+=1);
-		begin(Triangles);
-		for(float p=0; p<1; p+=1./12){
+		const int n=12;
+
+		Point3 pts[n*2];
+
+		color(0.4);
+
+		for(int i=0; i<n; ++i){
+			float p = float(i)/n;
 			float x = cos(p*6.283)*1.2;
 			float z = sin(p*6.283)*1.2;
-			color(HSV(p,1,1)); vertex(x, -0.7, z);
-			color(0); vertex(x, 0.7, z);
+			
+			pts[2*i+0](x, -0.7, z);
+			pts[2*i+1](x, +0.7, z);
+			
+			
+//			color(HSV(p,1,1));
+//			color(0);
 		}
-		end();
+
+		paint(Triangles, pts, n*2);	
 	}
 
 	unsigned angle;

@@ -49,13 +49,6 @@ public:
 		float dy = h/sizeY();
 
 		// draw the grid lines
-//		if(drawGrid()){
-//			color(colors().border); lineWidth(1);
-//			begin(Lines);
-//			for(int x=1; x<sizeX(); ++x){ vertex(x*dx,0); vertex(x*dx,h); }
-//			for(int y=1; y<sizeY(); ++y){ vertex(0,y*dy); vertex(w,y*dy); }
-//			end();
-//		}
 		ValueWidget<V>::drawGrid();
 
 		float p1  = padding();
