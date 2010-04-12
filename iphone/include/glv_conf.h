@@ -7,25 +7,24 @@
 #define	GLV_VERSION "0.94"
 #define	GLV_MAX_MOUSE_BUTTONS 8
 
-//#define GLV_USE_OPENGL_ES 1
-
-
 // OpenGL platform-dependent includes
 #if defined(__IPHONE_3_0)
 
 	#define GLV_PLATFORM		"IPHONE"
 	#define GLV_PLATFORM_IPHONE
-	#define GLV_OPENGLES
-
+	#define GLV_USE_OPENGL_ES
+	
 	#import <OpenGLES/ES2/gl.h>
 	#import <OpenGLES/ES2/glext.h>
 
-	
+	//#import <OpenGLES/ES1/gl.h>
+	//#import <OpenGLES/ES1/glext.h>
+
 #elif defined (__APPLE__) || defined (OSX)
 	
 	#define GLV_PLATFORM		"OSX"
 	#define GLV_PLATFORM_OSX
-	#define GLV_OPENGL
+	#define GLV_USE_OPENGL
 
 	#include <OpenGL/OpenGL.h>
 	#include <OpenGL/gl.h>
@@ -42,7 +41,7 @@
 
 	#define GLV_PLATFORM		"UNIX"
 	#define GLV_PLATFORM_UNIX
-	#define GLV_OPENGL
+	#define GLV_USE_OPENGL
 
 	#include <GL/glew.h>
 	#include <GL/gl.h>
@@ -63,7 +62,7 @@
 	
 	#define GLV_PLATFORM		"WIN32"
 	#define GLV_PLATFORM_WIN
-	#define GLV_OPENGL
+	#define GLV_USE_OPENGL
 
 	#include <windows.h>
 
