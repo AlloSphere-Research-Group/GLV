@@ -21,6 +21,8 @@ void ntFocus(const Notification& n){
 	b = true;
 }
 
+
+
 int main(int argc, char ** argv){
 
 	// test View linked list implementation
@@ -130,6 +132,46 @@ int main(int argc, char ** argv){
 		assert(b);
 		assert(w.value(0) == true);
 	}
+	
+//	{
+//		bool b=false;
+//		Slider w;
+//		w.attach(ntValue1, Update::Value, &b);
+//		w.value(0.99);
+//		assert(b);
+//	}
+
+	{
+		bool b=false;
+		Slider2D w;
+		w.attach(ntValue1, Update::Value, &b);
+		w.value(0.01f, 0);
+		assert(b);
+		assert(w.value(0) == 0.01f);
+		
+		b=false;
+		w.value(0.01f, 0);
+		assert(!b);
+		
+		b=false;
+		w.value(0.00f, 0);
+		w.value(0.01f, 1);
+		assert(b);
+		assert(w.value(1) == 0.01f);
+		
+		b=false;
+		w.valueAdd(0.01f, 0);
+		w.valueAdd(0.01f, 1);
+		assert(b);
+		assert(w.value(0) == 0.01f);
+		assert(w.value(1) == 0.02f);
+		
+		b=false;
+		w.valueMax();
+		assert(b);
+		assert(w.value(0) == 1.f);
+		assert(w.value(1) == 1.f);
+	}
 
 	{
 		bool b=false;
@@ -148,21 +190,18 @@ int main(int argc, char ** argv){
 		assert(b);
 		assert(w.value() == 0.99);
 	}
-	
-	printf("%d\n", sizeof(glv::Notifier));
-	printf("%d\n", sizeof(glv::Rect));
-	printf("%d\n", sizeof(glv::View));
-	printf("%d\n", sizeof(std::string));
-	printf("%d\n", sizeof(const char *));
-	printf("%d\n", sizeof(std::list<char>));
 
-//	{
-//		bool b=false;
-//		Slider w;
-//		w.attach(ntUpdate, Update::Value, &b);
-//		w.value(0.99);
-//		assert(b);
-//	}
+	{
+		bool b=false;
+		TextView w;
+		w.attach(ntValue1, Update::Value, &b);
+		w.value("hello");
+		assert(b);
+		assert(w.value() == "hello");
+	}
 	
+//	printf("%d\n", sizeof(glv::Notifier));
+//	printf("%d\n", sizeof(glv::View));
+
 	return 0;
 }

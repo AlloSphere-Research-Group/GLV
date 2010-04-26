@@ -10,12 +10,6 @@
 
 namespace glv {
 
-
-// LJP: The constructor for widgets takes a Rect as an argument rather than
-// individual l,t,w,h components since it's more flexible for layout and 
-// only requires writing one constructor.
-
-
 /// Type for slider value changes
 typedef ChangedValue<float> SliderChange;
 
@@ -79,7 +73,7 @@ public:
 	/// @param[in] valX			initial value along x
 	/// @param[in] valY			initial value along y
 	/// @param[in] knobSize		size of slider knob in pixels
-	Slider2D(const Rect& r, float valX=0, float valY=0, space_t knobSize=12);
+	Slider2D(const Rect& r=glv::Rect(100), float valX=0, float valY=0, space_t knobSize=12);
 
 	space_t knobSize;	///< Size of slider knob
 	
@@ -332,15 +326,48 @@ TEM inline float SliderBase<Dim>::value(int dim) const{
 	return validDim(dim) ? mVal[dim] : 0;
 }
 
-TEM inline SliderBase<Dim>& SliderBase<Dim>::value(float value, int dim){
-	if(validDim(dim)) mVal[dim] = mAcc[dim] = value; return *this;
+
+//	void updateValue(float v, int i, SliderBase& (SliderBase::* func)(float v, int i)){
+//		float prevVal = value(i);
+//		(this->*func)(v,i);
+//		if(value(i) != prevVal)
+//			notify(Update::Value, SliderChange(value(i), i));
+//	}
+//
+//	void updateValue(float v, int i, float a1, float a2, SliderBase& (SliderBase::* func)(float v, int i, float a1, float a2)){
+//		float prevVal = value(i);
+//		(this->*func)(v,i,a1,a2);
+//		if(value(i) != prevVal)
+//			notify(Update::Value, SliderChange(value(i), i));
+//	}
+
+TEM inline SliderBase<Dim>& SliderBase<Dim>::value(float v, int dim){
+	//if(validDim(dim)) mVal[dim] = mAcc[dim] = value;
+	
+	if(validDim(dim)){
+		//clip(v, min,max);
+		clip(v, 0,1);
+		if(mVal[dim] != v){
+			mAcc[dim] = mVal[dim] = v;
+			notify(Update::Value, SliderChange(mVal[dim], dim));
+		}
+	}
+	return *this;
 }
 
 TEM inline SliderBase<Dim>& SliderBase<Dim>::valueAdd(float add, int dim, float min, float max){
-	if(!validDim(dim)) return *this;
-	float acc = mAcc[dim] + add;
-	mAcc[dim] = mVal[dim] = acc;
-	clip(mVal[dim], min,max);
+	if(validDim(dim)){
+		float valPrev = mVal[dim];
+
+		float acc = mAcc[dim] + add;
+		mAcc[dim] = mVal[dim] = acc;		
+		
+		clip(mVal[dim], min,max);
+		
+		if(valPrev != mVal[dim]){
+			notify(Update::Value, SliderChange(mVal[dim], dim));
+		}
+	}
 	return *this;
 }
 
@@ -349,11 +376,11 @@ TEM inline SliderBase<Dim>& SliderBase<Dim>::valueAdd(float add, int dim){
 }
 
 TEM inline SliderBase<Dim>& SliderBase<Dim>::valueMax(){
-	for(int i=0; i<Dim; ++i) mVal[i] = mAcc[i] = 1; return *this;
+	for(int i=0; i<Dim; ++i){ value(1.0f, i); } return *this;
 }
 
 TEM inline SliderBase<Dim>& SliderBase<Dim>::valueMid(){
-	for(int i=0; i<Dim; ++i) mVal[i] = mAcc[i] = 0.5; return *this;
+	for(int i=0; i<Dim; ++i){ value(0.5f, i); } return *this;
 }
 
 
