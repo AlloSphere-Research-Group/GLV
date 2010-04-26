@@ -79,7 +79,10 @@ private:
 public:
 	
 	Notifier(): mHandlers(0){}
-	virtual ~Notifier(){ delete[] mHandlers; }
+
+	// Non-virtual unless someone will delete a derived-class object via
+	// a Notifier pointer...
+	~Notifier(){ delete[] mHandlers; }
 
 	/// Attach a new notification callback, type, and receiver
 	void attach(callback cb, Update::t n, void * rcvr=0){
