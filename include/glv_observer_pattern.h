@@ -77,32 +77,40 @@ private:
 	typedef void (* callback)(const Notification& n);
 
 public:
+	
+	Notifier(): mHandlers(0){}
+	virtual ~Notifier(){ delete[] mHandlers; }
 
 	/// Attach a new notification callback, type, and receiver
 	void attach(callback cb, Update::t n, void * rcvr=0){
-		mHandlers[n].push_back(Handler(cb, rcvr));
+		handlers()[n].push_back(Handler(cb, rcvr));
 	}
 
 	
 	/// Detach an existing notification callback, type, and receiver
 	void detach(callback cb, Update::t n, void * rcvr=0){
-		for(unsigned int i=0; i<mHandlers[n].size(); i++){
-			Handler& h = mHandlers[n][i];
-			if(h.handler == cb && h.receiver == rcvr) mHandlers[n].erase(mHandlers[n].begin() + i);
+	
+		if(hasHandlers()){
+			for(unsigned int i=0; i<handlers()[n].size(); i++){
+				Handler& h = handlers()[n][i];
+				if(h.handler == cb && h.receiver == rcvr)
+					handlers()[n].erase(handlers()[n].begin() + i);
+			}		
 		}
 	}
 
 
 	/// Notify observers of a specific update type
 	void notify(Update::t n, void * data=0){
-		if(mHandlers[n].empty()) return;
-		
+	
+		if(!hasHandlers() || handlers()[n].empty()) return;
+
 		// call handlers in FIFO order
-		int i=mHandlers[n].size();
-		while (i--){
-			Handler& h = mHandlers[n][i];
+		int i=handlers()[n].size();
+		while(i--){
+			Handler& h = handlers()[n][i];
 			if(h.handler) h.handler(Notification(this, h.receiver, data));
-		}		
+		}
 	}
 	
 	/// Notify observers of a specific update type
@@ -113,7 +121,8 @@ public:
 
 	/// Returns number of observers for this update type
 	int numObservers(Update::t n) const {
-		return mHandlers[n].size();
+		if(hasHandlers()) return handlers()[n].size();
+		return 0;
 	}
 
 protected:
@@ -124,7 +133,23 @@ protected:
 		void * receiver;
 	};
 
-	std::vector<Handler> mHandlers[Update::NumTypes];
+	// Array of vectors for each notification type
+	std::vector<Handler> * mHandlers;
+	
+	// Setter dynamically allocates new memory
+	std::vector<Handler> * handlers(){
+		if(0 == mHandlers){
+			mHandlers = new std::vector<Handler>[Update::NumTypes];
+		}
+		return mHandlers;
+	}
+
+	// Getter just returns pointer (even if 0)
+	const std::vector<Handler> * handlers() const {
+		return mHandlers;
+	}
+	
+	bool hasHandlers() const { return handlers() != 0;  }
 };
 
 } // glv::

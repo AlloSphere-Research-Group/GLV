@@ -68,7 +68,8 @@ public:
 	Label& value(const std::string& s);		///< Set label string
 	Label& vertical(bool v);				///< Set whether label is displayed vertically
 
-	const char * value() const { return mLabel.c_str(); }
+	/// Get value
+	const std::string& value() const { return mLabel; }
 
 	virtual const char * className() const { return "Label"; }
 	virtual void onDraw();

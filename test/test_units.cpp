@@ -6,6 +6,21 @@
 
 using namespace glv;
 
+void ntValue1(const Notification& n){
+	bool& b = *(bool *)n.receiver();
+	b = true;
+}
+
+void ntValue2(const Notification& n){
+	bool& b = *(bool *)n.receiver();
+	b = true;
+}
+
+void ntFocus(const Notification& n){
+	bool& b = *(bool *)n.receiver();
+	b = true;
+}
+
 int main(int argc, char ** argv){
 
 	// test View linked list implementation
@@ -60,6 +75,94 @@ int main(int argc, char ** argv){
 		
 		delete v0d;
 	}
+	
+
+
+	// Notifications	
+	{
+		bool bv1=false, bv2=false, bf=false;
+		Notifier n;
+		
+		assert(n.numObservers(Update::Value) == 0);
+		
+		n.attach(ntValue1, Update::Value, &bv1);
+		n.attach(ntValue2, Update::Value, &bv2);
+		n.attach(ntFocus, Update::Focus, &bf);
+
+		assert(n.numObservers(Update::Value) == 2);
+		assert(n.numObservers(Update::Focus) == 1);
+
+		n.notify(Update::Value);
+		assert(bv1);
+		assert(bv2);
+		assert(!bf);
+
+		n.notify(Update::Focus);
+		assert(bf);
+		
+		bv1=bv2=false;
+		n.detach(ntValue1, Update::Value, &bv1);
+		n.notify(Update::Value);
+		assert(!bv1);
+		assert(bv2);
+
+		bv1=bv2=false;
+		n.detach(ntValue2, Update::Value, &bv2);
+		n.notify(Update::Value);
+		assert(!bv1);
+		assert(!bv2);
+	}
+	
+	{
+		bool b=false;
+		Button w;
+		w.attach(ntValue1, Update::Value, &b);
+		w.value(true);
+		assert(b);
+		assert(w.value() == true);
+	}
+
+	{
+		bool b=false;
+		Buttons w;
+		w.attach(ntValue1, Update::Value, &b);
+		w.value(true, 0);
+		assert(b);
+		assert(w.value(0) == true);
+	}
+
+	{
+		bool b=false;
+		Label w;
+		w.attach(ntValue1, Update::Value, &b);
+		w.value("hello");
+		assert(b);
+		assert(w.value() == "hello");
+	}
+
+	{
+		bool b=false;
+		NumberDialer w(1,2,1,0);
+		w.attach(ntValue1, Update::Value, &b);
+		w.value(0.99);
+		assert(b);
+		assert(w.value() == 0.99);
+	}
+	
+	printf("%d\n", sizeof(glv::Notifier));
+	printf("%d\n", sizeof(glv::Rect));
+	printf("%d\n", sizeof(glv::View));
+	printf("%d\n", sizeof(std::string));
+	printf("%d\n", sizeof(const char *));
+	printf("%d\n", sizeof(std::list<char>));
+
+//	{
+//		bool b=false;
+//		Slider w;
+//		w.attach(ntUpdate, Update::Value, &b);
+//		w.value(0.99);
+//		assert(b);
+//	}
 	
 	return 0;
 }

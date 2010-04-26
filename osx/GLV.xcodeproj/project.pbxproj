@@ -137,6 +137,10 @@
 		16E050810D7E943000C521D0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E55D4C30CCE80FC00196525 /* GLUT.framework */; };
 		16E050CB0D7E95C300C521D0 /* test_glv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9183CAA0B9E36B100D8DA81 /* test_glv.cpp */; };
 		16ED62580E5791F6006231EC /* test_notifications.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16ED62570E5791F6006231EC /* test_notifications.cpp */; };
+		16F0FE861186152600612ABB /* glv_buttons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE897FD0DD4EE1000D266E2 /* glv_buttons.cpp */; };
+		16F0FE871186152D00612ABB /* glv_plots.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16DEEE3B0FC28A0C006B373C /* glv_plots.cpp */; };
+		16F0FE881186152E00612ABB /* glv_sliders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7580BA2434200E819AF /* glv_sliders.cpp */; };
+		16F0FE891186153000612ABB /* glv_textview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7E40B0030D92EB3A00219F2C /* glv_textview.cpp */; };
 		3618F49D0BDD71C700A0E692 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657E5D20B7AC4D5005858EE /* Carbon.framework */; };
 		3618F49E0BDD71C700A0E692 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657E5D30B7AC4D5005858EE /* OpenGL.framework */; };
 		3618F49F0BDD71C700A0E692 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657EA1B0B7B1995005858EE /* AGL.framework */; };
@@ -907,6 +911,10 @@
 				16A93E6B1002BA8F00F5404E /* glv_layout.cpp in Sources */,
 				16A93E671002BA7500F5404E /* glv_view.cpp in Sources */,
 				16A93E6D1002BAB600F5404E /* test_units.cpp in Sources */,
+				16F0FE861186152600612ABB /* glv_buttons.cpp in Sources */,
+				16F0FE871186152D00612ABB /* glv_plots.cpp in Sources */,
+				16F0FE881186152E00612ABB /* glv_sliders.cpp in Sources */,
+				16F0FE891186153000612ABB /* glv_textview.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
