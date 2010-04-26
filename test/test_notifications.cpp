@@ -55,6 +55,7 @@ int main(int argc, char ** argv){
 	win.setGLV(glv);
 
 	// Make some widgets
+	Button button(Rect(32));
 	Buttons buttons(Rect(64), 4,4);
 	Slider slider(Rect(10, 10, 100, 20), 0, false);
 	Slider2D slider2(Rect(10, 40, 100, 100));
@@ -65,11 +66,12 @@ int main(int argc, char ** argv){
 
 	// Create labels for update notifications
 	Label::Spec spec(Place::CR, 10, 0);
-	Label lbButtons("", spec), lbSlider("", spec), 
+	Label lbButton("", spec), lbButtons("", spec), lbSlider("", spec), 
 		lbSlider2("", spec), lbSliderGrid("", spec),
 		lbNumberDialer("", spec);
 
 	// Attach some notifications
+	button.attach(buttonsUpdateLabel, Update::Value, &lbButton);
 	buttons.attach(buttonsUpdateLabel, Update::Value, &lbButtons);
 	slider.attach(sliderUpdateLabel, Update::Value, &lbSlider);
 	slider2.attach(sliderUpdateLabel, Update::Value, &lbSlider2);
@@ -82,12 +84,13 @@ int main(int argc, char ** argv){
 
 	Placer placer(glv, Direction::S, Place::TL, 10, 10);
 
-	placer	<< (buttons << lbButtons)
+	placer	<< (button << lbButton)
+			<< (buttons << lbButtons)
 			<< (slider << lbSlider)
 			<< (slider2 << lbSlider2)
 			<< (sliderGrid << lbSliderGrid)
 			<< (numberDialer << lbNumberDialer);
-	
+
 	Application::run();
 }
 

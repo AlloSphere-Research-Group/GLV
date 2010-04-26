@@ -66,18 +66,25 @@ public:
 	int sizeX() const { return value().sizeX(); }	///< Get number of elements along x
 	int sizeY() const { return value().sizeY(); }	///< Get number of elements along y
 	
-	V& value(){ return mVal; }						///< Set value object
+	V& value(){ return mVal; }						///< Set value object without notifying observers
 	const V& value() const { return mVal; }			///< Get value object
 
 	/// Returns whether this element coordinate is selected
 	bool isSelected(int x, int y) const { return x == selectedX() && y == selectedY(); }
 	
 	space_t padding() const { return mPadding; }	///< Get element padding amount
-	ValueWidget& padding(space_t v){ mPadding=v; return *this; } ///< Set element padding amount
-
 	int selected() const { return index(sx, sy); }	///< Get selected element index
 	int selectedX() const { return sx; }			///< Get selected element x coordinate
 	int selectedY() const { return sy; }			///< Get selected element y coordinate
+
+	/// Select element at 1D index
+	ValueWidget& select(int i){ return select(i%sizeX(), i/sizeX()); }
+
+	/// Select element at 2D index
+	ValueWidget& select(int ix, int iy){ sx=ix; sy=iy; return *this; }
+
+	/// Set element padding amount
+	ValueWidget& padding(space_t v){ mPadding=v; return *this; }
 
 protected:
 	V mVal;

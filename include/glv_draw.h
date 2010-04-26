@@ -43,15 +43,20 @@ const double C_2PI = 2. * C_PI;
 
 // primitives
 enum{
+#ifndef GLV_USE_OPENGL_ES
+	QuadStrip     = GL_TRIANGLE_STRIP,
+	Quads         = GL_POINTS,
+#else
+	QuadStrip     = GL_QUAD_STRIP,
+	Quads         = GL_QUADS,
+#endif
 	LineLoop      = GL_LINE_LOOP,
 	LineStrip     = GL_LINE_STRIP,
 	Lines         = GL_LINES,
 	Points        = GL_POINTS,
 	TriangleFan   = GL_TRIANGLE_FAN,
 	TriangleStrip = GL_TRIANGLE_STRIP,
-	Triangles     = GL_TRIANGLES,
-	QuadStrip     = GL_QUAD_STRIP,
-	Quads         = GL_QUADS
+	Triangles     = GL_TRIANGLES
 };
 
 // capabilities (for disable() and enable())
@@ -80,6 +85,8 @@ enum{
 	Projection		= GL_PROJECTION,
 	Texture			= GL_TEXTURE
 };
+
+
 
 struct Glyph{
 	enum{ Once=(1<<7), Dot1=(1<<5), Dot2=(2<<5), MaskDots=96, MaskSize=31 };

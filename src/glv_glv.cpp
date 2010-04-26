@@ -139,6 +139,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_INDEX_ARRAY);
 	//glEnableClientState(GL_COLOR_ARRAY);
+	//glColorPointer(4, GL_FLOAT, 0, 0);
 	
 	push2D(w, h);	// initialise the OpenGL renderer for our 2D GUI world
 	onDraw();		// draw myself

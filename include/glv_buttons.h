@@ -9,11 +9,6 @@
 
 namespace glv {
 
-
-// LJP: The constructor for widgets takes a Rect as an argument rather than
-// individual l,t,w,h components since it's more flexible for layout and 
-// only requires writing one constructor.
-
 /// Icon function type
 typedef void (* iconFunc)(float l, float t, float r, float b);
 
@@ -34,7 +29,11 @@ public:
 	/// @param[in] mutExc	whether multiple buttons can be on
 	/// @param[in] on		the on state icon
 	/// @param[in] off		the off state icon
-	ButtonBase(const Rect& r, int nx=1, int ny=1, bool toggles=true, bool mutExc=false, iconFunc on=draw::rect, iconFunc off=0)
+	ButtonBase(
+		const Rect& r, int nx=1, int ny=1,
+		bool toggles=true, bool mutExc=false,
+		iconFunc on=draw::rect, iconFunc off=0
+	)
 	:	ValueWidget<V>(r, nx, ny, 3, toggles, mutExc, true),
 		mIconOff(off), mIconOn(on)
 	{
@@ -76,7 +75,7 @@ public:
 				
 				ValueWidget<V>::onSelectClick(g);
 				
-				if(enabled(MutualExc))	value().zero();
+				//if(enabled(MutualExc))	value().zero();
 				if(enabled(Toggleable))	setValueNotify(!value()[selected()]);
 				else					setValueNotify(true);
 				return false;
@@ -113,6 +112,7 @@ protected:
 
 	void setValueNotify(bool v){
 		if(v == value()[selected()]) return;
+		if(enabled(MutualExc)) value().zero();
 		value()[selected()] = v;
 		notify(Update::Value, ButtonChange(v, selected()));
 	}
@@ -123,30 +123,68 @@ protected:
 /// Single button
 struct Button : public ButtonBase<Values<bool> >{
 
-	typedef ButtonBase<Values<bool> > super;
+	typedef ButtonBase<Values<bool> > Base;
 
 	/// @param[in] r		geometry
 	/// @param[in] toggles	whether the button toggles
 	/// @param[in] on		the on state icon
 	/// @param[in] off		the off state icon
 	Button(const Rect& r=Rect(20), bool toggles=true, iconFunc on=draw::rect, iconFunc off=0)
-	:	super(r, 1, 1, toggles, false, on, off)
+	:	Base(r, 1, 1, toggles, false, on, off)
 	{}
 	
 	/// Get value
-	bool value() const { return super::value()[0]; }
+	bool value() const { return Base::value()[0]; }
 	
-	/// Set value
-	Button& value(bool v){ super::value()[0] = v; return *this; }
+	/// Set value and notify any observers
+	Button& value(bool v){ select(0); setValueNotify(v); return *this; }
 	
 	virtual const char * className() const { return "Button"; }
 };
 
 
 
-/// Multiple buttons
-typedef ButtonBase<Array<bool> >  Buttons;
 
+/// Multiple buttons
+struct Buttons : public ButtonBase<Array<bool> >{
+
+	typedef ButtonBase<Array<bool> > Base;
+
+	/// @param[in] r		geometry
+	/// @param[in] nx		number along x (ignored by fixed size value types)
+	/// @param[in] ny		number along y (ignored by fixed size value types)
+	/// @param[in] toggles	whether the button toggles
+	/// @param[in] mutExc	whether multiple buttons can be on
+	/// @param[in] on		the on state icon
+	/// @param[in] off		the off state icon
+	Buttons(
+		const Rect& r=Rect(20), int nx=1, int ny=1,
+		bool toggles=true, bool mutExc=false,
+		iconFunc on=draw::rect, iconFunc off=0
+	)
+	:	Base(r, nx, ny, toggles, false, on, off)
+	{}
+	
+	/// Get value array
+	const Array<bool>& value() const { return Base::value(); }
+	
+	/// Get value at 1D index
+	bool value(int i) const { return Base::value()[i]; }
+	
+	/// Set value at 1D index and notify any observers
+	Buttons& value(bool v, int i){
+		select(i); setValueNotify(v);
+		return *this;
+	}
+
+	/// Set value at 2D index and notify any observers
+	Buttons& value(bool v, int ix, int iy){
+		select(ix, iy); setValueNotify(v);
+		return *this;
+	}
+	
+	virtual const char * className() const { return "Buttons"; }
+};
 
 
 } // glv::
