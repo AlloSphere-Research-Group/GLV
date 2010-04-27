@@ -36,86 +36,22 @@ public:
 	)
 	:	ValueWidget<V>(r, nx, ny, 3, toggles, mutExc, true),
 		mIconOff(off), mIconOn(on)
-	{
-	}
-	
+	{}
+
+	const iconFunc& iconOff() const { return mIconOff; }
+	const iconFunc& iconOn () const { return mIconOn; }
+
+	ButtonBase& iconOff(const iconFunc& f){ mIconOff=f; return *this; }
+	ButtonBase& iconOn (const iconFunc& f){ mIconOn =f; return *this; }
+
 	virtual const char * className() const { return "ButtonBase"; }
-	
-	virtual void onDraw(){
-		using namespace glv::draw;
-
-		float dx = w/sizeX();
-		float dy = h/sizeY();
-
-		// draw the grid lines
-		ValueWidget<V>::drawGrid();
-
-		float p1  = padding();
-		float p_2 = padding()*0.5;
-		color(colors().fore);
+	virtual void onDraw();
+	virtual bool onEvent(Event::t e, GLV& g);
 		
-		for(int i=0; i<sizeX(); ++i){
-			
-			float x = dx*i + p_2;
-		
-			for(int j=0; j<sizeY(); ++j){
-				int ind = index(i,j);
-				float y = dy*j + p_2;
-				if(value()[ind]){	if(mIconOn ) mIconOn (x, y, x+dx-p1, y+dy-p1); }
-				else{				if(mIconOff) mIconOff(x, y, x+dx-p1, y+dy-p1); }
-			}		
-		}
-		
-	}
-	
-	virtual bool onEvent(Event::t e, GLV& g){
-		switch(e){		
-		case Event::MouseDown:
-			if(g.mouse.left()){
-				
-				ValueWidget<V>::onSelectClick(g);
-				
-				//if(enabled(MutualExc))	value().zero();
-				if(enabled(Toggleable))	setValueNotify(!value()[selected()]);
-				else					setValueNotify(true);
-				return false;
-			}
-			break;
-
-//		case Event::MouseDrag:
-//			if(g.mouse.left()){
-//				
-//				ValueWidget<V>::onSelectClick(g);
-//				
-//				if(enabled(MutualExc))		value().zero();
-//				//if(!enabled(Toggleable))
-//					value()[selected()]  = true;
-//				return false;
-//			}
-//			break;
-			
-		case Event::MouseUp:
-			if(g.mouse.button() == Mouse::Left){
-				if(!enabled(Toggleable)){
-					setValueNotify(false);
-				}
-			}
-			break;
-			
-		default: break;
-		}
-		return true;
-	}
-	
 protected:
 	iconFunc mIconOff, mIconOn;	// state icons
 
-	void setValueNotify(bool v){
-		if(v == value()[selected()]) return;
-		if(enabled(MutualExc)) value().zero();
-		value()[selected()] = v;
-		notify(Update::Value, ButtonChange(v, selected()));
-	}
+	void setValueNotify(bool v);
 };
 
 
@@ -132,11 +68,11 @@ struct Button : public ButtonBase<Values<bool> >{
 	Button(const Rect& r=Rect(20), bool toggles=true, iconFunc on=draw::rect, iconFunc off=0)
 	:	Base(r, 1, 1, toggles, false, on, off)
 	{}
-	
+
 	/// Get value
 	bool value() const { return Base::value()[0]; }
-	
-	/// Set value and notify any observers
+
+	/// Set value and notify observers
 	Button& value(bool v){ select(0); setValueNotify(v); return *this; }
 	
 	virtual const char * className() const { return "Button"; }
@@ -171,13 +107,13 @@ struct Buttons : public ButtonBase<Array<bool> >{
 	/// Get value at 1D index
 	bool value(int i) const { return Base::value()[i]; }
 	
-	/// Set value at 1D index and notify any observers
+	/// Set value at 1D index and notify observers
 	Buttons& value(bool v, int i){
 		select(i); setValueNotify(v);
 		return *this;
 	}
 
-	/// Set value at 2D index and notify any observers
+	/// Set value at 2D index and notify observers
 	Buttons& value(bool v, int ix, int iy){
 		select(ix, iy); setValueNotify(v);
 		return *this;
@@ -185,6 +121,87 @@ struct Buttons : public ButtonBase<Array<bool> >{
 	
 	virtual const char * className() const { return "Buttons"; }
 };
+
+
+
+
+// Implementation ______________________________________________________________
+
+template <class V>
+void ButtonBase<V>::onDraw(){
+	using namespace glv::draw;
+
+	float dx = w/sizeX();
+	float dy = h/sizeY();
+
+	// draw the grid lines
+	ValueWidget<V>::drawGrid();
+
+	float p1  = padding();
+	float p_2 = padding()*0.5;
+	color(colors().fore);
+	
+	for(int i=0; i<sizeX(); ++i){
+		
+		float x = dx*i + p_2;
+	
+		for(int j=0; j<sizeY(); ++j){
+			int ind = index(i,j);
+			float y = dy*j + p_2;
+			if(value()[ind]){	if(mIconOn ) mIconOn (x, y, x+dx-p1, y+dy-p1); }
+			else{				if(mIconOff) mIconOff(x, y, x+dx-p1, y+dy-p1); }
+		}		
+	}
+	
+}
+
+template <class V>
+bool ButtonBase<V>::onEvent(Event::t e, GLV& g){
+	switch(e){		
+	case Event::MouseDown:
+		if(g.mouse.left()){
+			
+			ValueWidget<V>::onSelectClick(g);
+			
+			//if(enabled(MutualExc))	value().zero();
+			if(enabled(Toggleable))	setValueNotify(!value()[selected()]);
+			else					setValueNotify(true);
+			return false;
+		}
+		break;
+
+//	case Event::MouseDrag:
+//		if(g.mouse.left()){
+//			
+//			ValueWidget<V>::onSelectClick(g);
+//			
+//			if(enabled(MutualExc))		value().zero();
+//			//if(!enabled(Toggleable))
+//				value()[selected()]  = true;
+//			return false;
+//		}
+//		break;
+		
+	case Event::MouseUp:
+		if(g.mouse.button() == Mouse::Left){
+			if(!enabled(Toggleable)){
+				setValueNotify(false);
+			}
+		}
+		break;
+		
+	default: break;
+	}
+	return true;
+}
+
+template <class V>
+inline void ButtonBase<V>::setValueNotify(bool v){
+	if(v == value()[selected()]) return;
+	if(enabled(MutualExc)) value().zero();
+	value()[selected()] = v;
+	notify(Update::Value, ButtonChange(v, selected()));
+}
 
 
 } // glv::
