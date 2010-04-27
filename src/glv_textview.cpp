@@ -428,7 +428,7 @@ void TextView::deleteSelected(){
 		setPos(mPos);
 	}
 	else if(mSel<0){
-		deleteText(mPos+mSel, mPos);
+		deleteText(mPos+mSel, -mSel);
 		setPos(mPos+mSel);
 	}
 }
