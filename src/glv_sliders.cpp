@@ -19,14 +19,14 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 		case Event::MouseDrag:
-			updateValue( g.mouse.dx()/w * sens(g), 0, &Slider2D::valueAdd);
-			updateValue(-g.mouse.dy()/h * sens(g), 1, &Slider2D::valueAdd);
+			valueAdd( g.mouse.dx()/w * sens(g), 0);
+			valueAdd(-g.mouse.dy()/h * sens(g), 1);
 			break;
 			
 		case Event::MouseDown:
 			if(g.mouse.left() && !g.mouse.right()){
-				updateValue(      g.mouse.xRel() / w, 0, &Slider2D::value);
-				updateValue(1.f - g.mouse.yRel() / h, 1, &Slider2D::value);
+				value(      g.mouse.xRel() / w, 0);
+				value(1.f - g.mouse.yRel() / h, 1);
 			}
 			break;
 			
@@ -34,10 +34,10 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 			
 		case Event::KeyDown:
 			switch(g.keyboard.key()){
-				case 'x': updateValue(-1./w, 0, &Slider2D::valueAdd); break;
-				case 'c': updateValue( 1./w, 0, &Slider2D::valueAdd); break;
-				case 'a': updateValue( 1./h, 1, &Slider2D::valueAdd); break;
-				case 'z': updateValue(-1./h, 1, &Slider2D::valueAdd); break;
+				case 'x': valueAdd(-1./w, 0); break;
+				case 'c': valueAdd( 1./w, 0); break;
+				case 'a': valueAdd( 1./h, 1); break;
+				case 'z': valueAdd(-1./h, 1); break;
 				default: return true;
 			}
 			break;
@@ -188,7 +188,6 @@ void SliderRange::onDraw(){
 	}
 }
 
-
 bool SliderRange::onEvent(Event::t e, GLV& g){
 
 	float dv = (w>h) ? g.mouse.dx()/w : g.mouse.dy()/h;
@@ -219,8 +218,6 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 				else{
 					center(center() + (dc<0 ? -jump() : jump()));
 				}
-				updateValue(value(0), 0, &SliderRange::value);
-				updateValue(value(1), 1, &SliderRange::value);
 				mDragMode=0;
 			}
 			else if(mp > (v1-endRegion) && mp < (v1+endRegion)){
@@ -239,11 +236,11 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 	case Event::MouseDrag:
 		dv *= sens(g);
 		if(mDragMode == 3){
-			updateValue(dv, 0, 0,  1-rg, &SliderRange::valueAdd);
-			updateValue(dv, 1, rg, 1,    &SliderRange::valueAdd);
+			valueAdd(dv, 0, 0,  1-rg);
+			valueAdd(dv, 1, rg, 1   );
 		}
-		else if(mDragMode == 1) updateValue(dv, 0, 0, 1, &SliderRange::valueAdd);
-		else if(mDragMode == 2) updateValue(dv, 1, 0, 1, &SliderRange::valueAdd);
+		else if(mDragMode == 1) valueAdd(dv, 0, 0, 1);
+		else if(mDragMode == 2) valueAdd(dv, 1, 0, 1);
 
 		return false;
 
@@ -401,7 +398,7 @@ void FunctionGraph::onDraw()
 	
 	color(mStyle->color.fore, mStyle->color.fore.a*0.5);
 
-	begin(QuadStrip);
+	begin(TriangleStrip);
 	i=0;
 	it = mCurves.begin();
 	for(; it != it_e; ++it){

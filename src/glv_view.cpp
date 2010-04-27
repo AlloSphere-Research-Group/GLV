@@ -513,4 +513,8 @@ const View * View::toAbs(space_t& x, space_t& y) const {
  	return v;
 }
 
+void View::valueToString(std::string& v){ v=""; }
+
+bool View::valueFromString(const std::string& v){ return false; }
+
 } // glv::

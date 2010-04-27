@@ -60,6 +60,7 @@ int main(int argc, char ** argv){
 	Slider slider(Rect(10, 10, 100, 20), 0, false);
 	Slider2D slider2(Rect(10, 40, 100, 100));
 	SliderGrid<4> sliderGrid(Rect(100));
+	SliderRange sliderRange(Rect(100,20));
 	//NumberDialer numberDialer(Rect(12*4, 12), 1,2);
 	NumberDialer numberDialer(12,0,0, 1,2, 10,-10);
 	numberDialer.padding(2);
@@ -67,7 +68,7 @@ int main(int argc, char ** argv){
 	// Create labels for update notifications
 	Label::Spec spec(Place::CR, 10, 0);
 	Label lbButton("", spec), lbButtons("", spec), lbSlider("", spec), 
-		lbSlider2("", spec), lbSliderGrid("", spec),
+		lbSlider2("", spec), lbSliderGrid("", spec), lbSliderRange("", spec),
 		lbNumberDialer("", spec);
 
 	// Attach some notifications
@@ -76,6 +77,7 @@ int main(int argc, char ** argv){
 	slider.attach(sliderUpdateLabel, Update::Value, &lbSlider);
 	slider2.attach(sliderUpdateLabel, Update::Value, &lbSlider2);
 	sliderGrid.attach(sliderUpdateLabel, Update::Value, &lbSliderGrid);
+	sliderRange.attach(sliderUpdateLabel, Update::Value, &lbSliderRange);
 	numberDialer.attach(dialerUpdateLabel, Update::Value, &lbNumberDialer);
 	
 	slider.attach(updateFocus, Update::Focus, &lbSlider);
@@ -89,6 +91,7 @@ int main(int argc, char ** argv){
 			<< (slider << lbSlider)
 			<< (slider2 << lbSlider2)
 			<< (sliderGrid << lbSliderGrid)
+			<< (sliderRange << lbSliderRange)
 			<< (numberDialer << lbNumberDialer);
 
 	Application::run();

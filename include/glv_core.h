@@ -333,7 +333,14 @@ public:
 	View(const Rect& rect=Rect(200, 200), Place::t anchor=Place::TL, drawCallback cb=0);
 
 	virtual ~View();
-	
+
+	virtual const char * className() const { return "View"; }
+	virtual void onDraw();							///< Main drawing callback
+	virtual bool onEvent(Event::t e, GLV& glv);		///< Main event callback
+	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
+	virtual void valueToString(std::string& v);
+	virtual bool valueFromString(const std::string& v);
+
 	// Doubly linked tree list of views
 	// TODO: move this stuff to a Node sub-class
 	View * parent;				///< My parent view
@@ -360,6 +367,7 @@ public:
 	int enabled(Property::t v) const;			///< Returns whether a property is set
 	bool hasCallback(Event::t e, eventCallback cb) const; ///< Returns whether a particular callback has been registered
 	bool hasCallbacks(Event::t e) const;		///< Returns whether there are callback(s) registered for a particular event
+	const std::string& name() const;			///< Get name
 	int numCallbacks(Event::t e) const;			///< Returns number of registered callbacks
 	const View * posAbs(space_t& al, space_t& at) const; ///< Computes absolute left-top position. Returns topmost parent view.
 	void printDescendents() const;				///< Print tree of descendent Views to stdout
@@ -410,12 +418,8 @@ public:
 	void removeCallback(Event::t e, eventCallback cb);	///< Remove a callback for a given event (if found)
 	void removeAllCallbacks(Event::t e);			///< Detach all callbacks for a given event	
 
-	virtual const char * className() const { return "View"; }
-	virtual void onDraw();						///< Main drawing callback
-	virtual bool onEvent(Event::t e, GLV& glv);	///< Main event callback
-	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
-
-	using Rect::pos;							// template "inheritance" fix
+	View& name(const std::string& v);			///< Set name
+	using Rect::pos;							// template inheritance fix
 	View& pos(Place::t p, space_t x, space_t y);///< Position a specific place at point (x,y)
 	View& pos(Place::t p);						///< Position a specific place at point (0,0)
 	View& stretch(space_t mx, space_t my);		///< Set parent resize stretch factors
@@ -430,6 +434,7 @@ protected:
 	space_t mAnchorX, mAnchorY;		// Position anchoring factors when parent is resized
 	space_t mStretchX, mStretchY;	// Stretch factors when parent is resized
 	Rect mRestore;					// Restoration geometry
+	std::string mName;				// Settable name
 
 	void drawBack() const;			// Draw the back rect
 	void drawBorder() const;		// Draw the border
@@ -531,12 +536,14 @@ protected:
 
 // View
 inline int View::enabled(Property::t v) const { return mFlags & v; }
+inline const std::string& View::name() const { return mName; }
 inline int View::visible() const { return enabled(Visible); }
 
 inline View& View::disable	(Property::t p){ mFlags = mFlags & Property::t(~int(p)); return *this; }
 inline View& View::enable	(Property::t p){ mFlags = mFlags | p; return *this; }
 inline View& View::property	(Property::t p, bool v){ v ? enable(p) : disable(p); return *this; }
 inline View& View::toggle	(Property::t p){ mFlags = mFlags ^ p; return *this; }
+inline View& View::name(const std::string& v){ mName=v; return *this; }
 
 // Keyboard
 inline int Keyboard::key() const { return mKeycode; }

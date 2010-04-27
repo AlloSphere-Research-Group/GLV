@@ -25,6 +25,28 @@ void ntFocus(const Notification& n){
 
 int main(int argc, char ** argv){
 
+	{
+		float rf;
+		double rd;
+		bool rb;
+		std::string rs;
+		
+		fromString(rf, "1e-2");		assert(rf == float(1e-2));
+		fromString(rf, "1000");		assert(rf == float(1000));
+		fromString(rd, "1e-2");		assert(rd == double(1e-2));
+		fromString(rd, "1000");		assert(rd == double(1000));
+		fromString(rb, "0");		assert(rb == 0);
+		fromString(rb, "1");		assert(rb == 1);
+		
+		toString(rs, 1000.f);		assert(rs == "1000");
+		toString(rs, 2000.0);		assert(rs == "2000");
+		//toString(rs, -2.1e100);		printf("%s\n", rs.c_str()); //assert(rs == "2e100");
+		//toString(rs, (float)-2.1e38);		printf("%s\n", rs.c_str()); //assert(rs == "2e100");
+		toString(rs, true);			assert(rs == "1");
+		toString(rs, false);		assert(rs == "0");
+	}
+
+
 	// test View linked list implementation
 	{
 		View n00, n10, n11, n20;
@@ -133,13 +155,31 @@ int main(int argc, char ** argv){
 		assert(w.value(0) == true);
 	}
 	
-//	{
-//		bool b=false;
-//		Slider w;
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value(0.99);
-//		assert(b);
-//	}
+	{
+		bool b=false;
+		Slider w;
+		w.attach(ntValue1, Update::Value, &b);
+		w.value(0.99f);
+		assert(b);
+		assert(w.value() == 0.99f);
+		
+		std::string s;
+		w.value(0.25);
+		w.valueToString(s);			assert(s == "0.25");
+		w.valueFromString("0.5");	assert(w.value() == 0.5);
+
+		assert(!w.valueFromString("invalid"));
+		assert(w.value() == 0.5);
+	}
+
+	{
+		bool b=false;
+		Sliders w(Rect(1), 4,4);
+		w.attach(ntValue1, Update::Value, &b);
+		w.value(0.99f, 13);
+		assert(b);
+		assert(w.value(13) == 0.99f);
+	}
 
 	{
 		bool b=false;
@@ -171,6 +211,36 @@ int main(int argc, char ** argv){
 		assert(b);
 		assert(w.value(0) == 1.f);
 		assert(w.value(1) == 1.f);
+	}
+
+	{
+		bool b=false;
+		SliderGrid<4> w;
+		w.attach(ntValue1, Update::Value, &b);
+		w.value(0.01f, 0);
+		assert(b);
+		assert(w.value(0) == 0.01f);
+	}
+	
+	{
+		bool b=false;
+		SliderRange w;
+		w.attach(ntValue1, Update::Value, &b);
+		w.value(0.01f, 0);
+		w.value(0.02f, 1);
+		assert(b);
+		assert(w.value(0) == 0.01f);
+		assert(w.value(1) == 0.02f);
+		assert(w.center() == 0.015f);
+		assert(w.range() == 0.01f);
+		
+		w.extrema(0,1);
+		assert(w.value(0) == 0);
+		assert(w.value(1) == 1);
+		
+		w.centerRange(0.5f, 0.2f);
+		assert(w.value(0) == 0.4f);
+		assert(w.value(1) == 0.6f);
 	}
 
 	{

@@ -26,42 +26,36 @@ public:
 	/// Constructor
 	SliderBase(const Rect& r);
 	
-	float value(int dim=0) const;			///< Returns a slider value
+	/// Get value at 1D index
+	float value(int idx=0) const;
 	
-	SliderBase& value(float val, int dim);		///< Sets a slider value
-	SliderBase& valueAdd(float val, int dim);	///< Add to a slider value
-	SliderBase& valueAdd(float val, int dim, float min, float max);
-	SliderBase& valueMax();						///< Max all slider values
-	SliderBase& valueMid();						///< Center all slider values
+	/// Set value at 1D index and notify observers
+	SliderBase& value(float val, int idx);
 	
-	static int dimensions(){ return Dim; }	///< Returns number of dimensions of slider
+	/// Add amount to value at 1D index and notify observers
+	SliderBase& valueAdd(float val, int idx);
+	
+	/// Add amount to value at 1D index and notify observers
+	SliderBase& valueAdd(float val, int idx, float min, float max);
+	
+	/// Set all values to maximum and notify observers
+	SliderBase& valueMax();
+	
+	/// Set all values to middle value and notify observers
+	SliderBase& valueMid();
+	
+	/// Returns number of dimensions of slider
+	static int dimensions(){ return Dim; }
 
 protected:
 	float mAcc[Dim], mVal[Dim];
-	//float mSens;
 	
 	void clip(float& v, float mn=0, float mx=1){ v<mn ? v=mn : v>mx ? v=mx : 0; }
 	void clipAccs(){ for(int i=0; i<Dim; ++i) clip(mAcc[i]); }
 	void clipAccs(float min, float max){ for(int i=0; i<Dim; ++i) clip(mAcc[i], min,max); }
 	bool validDim(int dim) const { return (dim < Dim) && (dim >= 0); }
 	float sens(const GLV& g){ return (g.mouse.left() && g.mouse.right()) ? 0.25 : 1; }
-
-	void updateValue(float v, int i, SliderBase& (SliderBase::* func)(float v, int i)){
-		float prevVal = value(i);
-		(this->*func)(v,i);
-		if(value(i) != prevVal)
-			notify(Update::Value, SliderChange(value(i), i));
-	}
-
-	void updateValue(float v, int i, float a1, float a2, SliderBase& (SliderBase::* func)(float v, int i, float a1, float a2)){
-		float prevVal = value(i);
-		(this->*func)(v,i,a1,a2);
-		if(value(i) != prevVal)
-			notify(Update::Value, SliderChange(value(i), i));
-	}
 };
-
-
 
 
 
@@ -85,13 +79,15 @@ public:
 };
 
 
+
+/// A slider with an adjustable interval
 class SliderRange : public SliderBase<2>{
 public:
 
 	/// @param[in] r			geometry
 	/// @param[in] val1			initial value on left or top
 	/// @param[in] val2			initial value on right or bottom
-	SliderRange(const Rect& r, float val1=0.25, float val2=0.5);
+	SliderRange(const Rect& r=glv::Rect(100,20), float val1=0.25, float val2=0.5);
 	
 	SliderRange& center(float v);							///< Set center of interval
 	SliderRange& centerRange(float center, float range);	///< Set center and range of interval
@@ -137,7 +133,7 @@ public:
 
 	/// @param[in] r			geometry
 	/// @param[in] knobSize		size of slider knob in pixels
-	SliderGrid(const Rect& r, space_t knobSize=4);
+	SliderGrid(const Rect& r=glv::Rect(100), space_t knobSize=4);
 
 	space_t knobSize; ///< Knob size
 
@@ -148,7 +144,6 @@ public:
 protected:
 	int cx, cy;
 };
-
 
 
 
@@ -193,7 +188,6 @@ protected:
 
 
 
-
 /// Single slider
 class Slider : public Slider1DBase<Values<float> >{
 public:
@@ -202,25 +196,68 @@ public:
 	/// @param[in] r			geometry
 	/// @param[in] v			initial value between 0 and 1
 	/// @param[in] isSigned		whether slider value is signed
-	Slider(const Rect& r=Rect(20), float v=0, bool isSigned=false)
+	Slider(const Rect& r=Rect(100, 20), float v=0, bool isSigned=false)
 	:	Base(r, 1, 1, false, isSigned)
 	{	value(v); }
 	
 	/// Get value
 	float value() const { return Base::value()[0]; }
 	
-	/// Set value
-	Slider& value(float v){ Base::value()[0] = v; return *this; }
+	/// Set value and notify observers
+	Slider& value(float v){
+		select(0); setValueNotify(v);
+		return *this;
+	}
 	
 	virtual const char * className() const { return "Slider"; }
+	virtual void valueToString(std::string& v){ toString(v, value()); }
+	virtual bool valueFromString(const std::string& v){
+		float r;
+		if(fromString(r,v)){
+			value(r);
+			return true;
+		}
+		return false;
+	}
 };
 
 
 
-
 /// Multiple sliders
-typedef Slider1DBase<Array<float> > Sliders;
+//typedef Slider1DBase<Array<float> > Sliders;
+class Sliders : public Slider1DBase<Array<float> >{
+public:
+	typedef Slider1DBase<Array<float> > Base;
 
+	/// @param[in] r			geometry
+	/// @param[in] nx			number along x (ignored by fixed size value types)
+	/// @param[in] ny			number along y (ignored by fixed size value types)
+	/// @param[in] dragSelect	whether new sliders are selected while dragging
+	/// @param[in] isSigned		whether slider values are signed
+	Sliders(const Rect& r=Rect(100, 20), int nx=1, int ny=1, bool dragSelect=false, bool isSigned=false)
+	:	Base(r, nx, ny, dragSelect, isSigned)
+	{}
+	
+	/// Get value array
+	const Array<float>& value() const { return Base::value(); }
+	
+	/// Get value at 1D index
+	float value(int i) const { return Base::value()[i]; }
+	
+	/// Set value at 1D index and notify observers
+	Sliders& value(float v, int i){
+		select(i); setValueNotify(v);
+		return *this;
+	}
+
+	/// Set value at 2D index and notify observers
+	Sliders& value(float v, int ix, int iy){
+		select(ix, iy); setValueNotify(v);
+		return *this;
+	}
+	
+	virtual const char * className() const { return "Sliders"; }
+};
 
 
 
@@ -613,8 +650,8 @@ TEM bool SliderGrid<Dim>::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 	case Event::MouseDrag:
-					updateValue( g.mouse.dx()/w * sens(g) * Dim, cx, &SliderGrid<Dim>::valueAdd);
-		if(cx!=cy)	updateValue(-g.mouse.dy()/h * sens(g) * Dim, cy, &SliderGrid<Dim>::valueAdd);
+					valueAdd( g.mouse.dx()/w * sens(g) * Dim, cx);
+		if(cx!=cy)	valueAdd(-g.mouse.dy()/h * sens(g) * Dim, cy);
 		break;
 		
 	case Event::MouseDown:
