@@ -5,12 +5,25 @@
 	See COPYRIGHT file for authors and license information */
 
 #include <cctype>
+#include <string>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <list>
 
 namespace glv {
+
+
+/// Convert a string to a value type
+template<class T>
+bool fromString(T& dst, const std::string& src);
+
+/// Convert a value type to a string
+template<class T>
+void toString(std::string& dst, const T& src);
+
+
+
 
 /// Smart pointer functionality to avoid deleting references.
 
@@ -414,6 +427,46 @@ private:
 	#undef BUFSIZE
 };
 
+
+
+
+// Implementation ______________________________________________________________
+
+template<>
+inline bool fromString<bool>(bool& dst, const std::string& src){
+	return sscanf(src.c_str(), "%d", &dst) > 0;
+}
+
+template<>
+inline bool fromString<float>(float& dst, const std::string& src){
+	return sscanf(src.c_str(), "%g", &dst) > 0;
+}
+
+template<>
+inline bool fromString<double>(double& dst, const std::string& src){
+	return sscanf(src.c_str(), "%lg", &dst) > 0;
+}
+
+
+
+template<>
+inline void toString<bool>(std::string& dst, const bool& src){
+	dst = src ? "1" : "0";
+}
+
+template<>
+inline void toString<float>(std::string& dst, const float& src){
+	char buf[32]; snprintf(buf, sizeof(buf), "%.24g", src);
+	dst = buf;
+}
+
+template<>
+inline void toString<double>(std::string& dst, const double& src){
+	char buf[40];
+	//snprintf(buf, sizeof(buf), "%la", src);
+	snprintf(buf, sizeof(buf), "%.32lg", src);
+	dst = buf;
+}
 
 
 //template <class T, int Nx=1, int Ny=1>
