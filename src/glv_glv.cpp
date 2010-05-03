@@ -148,6 +148,10 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 	draw::enable(ScissorTest);
 
 	while(true){
+	
+		// update state based on attached model variables
+		cv->onModelSync();
+	
 		// find the next view to draw
 		
 		// go to child node if exists and I'm drawable

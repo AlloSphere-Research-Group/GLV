@@ -338,6 +338,8 @@ public:
 	virtual void onDraw();							///< Main drawing callback
 	virtual bool onEvent(Event::t e, GLV& glv);		///< Main event callback
 	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
+	virtual void onModelSync(){}					///< Sync self to attached model variables
+	
 	virtual void valueToString(std::string& v);
 	virtual bool valueFromString(const std::string& v);
 

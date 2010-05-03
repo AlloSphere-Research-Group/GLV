@@ -102,7 +102,7 @@ void Label::rotateRect(){ t += w - h; transpose(); }
 	dig(mNI);
 
 NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac)
-:	View(r), CTOR_LIST
+:	Base(r, 1,1,0,false,false), CTOR_LIST
 {	
 	CTOR_BODY
 	mMax = maxVal();
@@ -111,28 +111,28 @@ NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac)
 }
 
 NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min)
-:	View(r), CTOR_LIST
+:	Base(r, 1,1,0,false,false), CTOR_LIST
 {	
 	CTOR_BODY
 	range(max, min);	
 }
 
 NumberDialer::NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min)
-:	View(Rect(l,t, (h-2)*(numInt+numFrac+1), h)), CTOR_LIST
+:	Base(Rect(l,t, (h-2)*(numInt+numFrac+1), h), 1,1,0,false,false), CTOR_LIST
 {
 	CTOR_BODY
 	range(max, min);
 }
 
 NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
-:	View(Rect(0,0, (12-2)*(numInt+numFrac+1), 12)), CTOR_LIST
+:	Base(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 1,1,0,false,false), CTOR_LIST
 {
 	CTOR_BODY
 	range(max, min);
 } 
 
 NumberDialer::NumberDialer(const NumberDialer& v)
-:	View(v), CTOR_LIST
+:	Base(v, 1,1,0,false,false), CTOR_LIST
 {
 	dig(v.sizeInteger());
 	resize(v.sizeInteger(), v.sizeFraction());
@@ -176,7 +176,8 @@ NumberDialer& NumberDialer::showSign(bool v){
 	return *this;
 }
 
-double NumberDialer::value() const{ return mVal * mValMul; }
+//double NumberDialer::value() const{ return mVal * mValMul; }
+double NumberDialer::value() const{ return values()[0]; }
 NumberDialer& NumberDialer::value(double v){ valSet(convert(v)); return *this; }
 
 void NumberDialer::onDraw(){ //printf("% g\n", value());

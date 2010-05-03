@@ -49,10 +49,14 @@ int main(int argc, char ** argv){
 
 
 	//---- Keyboard char view
-	CharView charView; layout << charView;
-	charView.width(charView.w * 8/11.);
-	charView.style(&top.style());
-	charView << new Label("Character View", 0, -10);
+//	CharView charView; layout << charView;
+//	charView.width(charView.w * 8/11.);
+//	charView.style(&top.style());
+//	charView << new Label("Character View", 0, -10);
+
+	RasterView rasterView(Rect(200),16,16); layout << rasterView;
+	rasterView.style(&top.style());
+	rasterView << new Label("Raster View", 0, -10);
 	
 	
 	//---- Color view

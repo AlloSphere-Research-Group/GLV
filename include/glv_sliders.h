@@ -20,8 +20,10 @@ typedef ChangedValue<float> SliderChange;
 /// The foreground color determines the color of the slider.
 ///
 template <int Dim>
-class SliderBase : public View{
+class SliderBase : public ValueWidget<Values<float, Dim>, float>{
 public:
+	typedef Values<float, Dim> value_type;
+	GLV_INHERIT_VALUEWIDGET(value_type, float);
 
 	/// Constructor
 	SliderBase(const Rect& r);
@@ -32,29 +34,28 @@ public:
 	/// Set value at 1D index and notify observers
 	SliderBase& value(float val, int idx);
 	
-	/// Add amount to value at 1D index and notify observers
-	SliderBase& valueAdd(float val, int idx);
-	
-	/// Add amount to value at 1D index and notify observers
-	SliderBase& valueAdd(float val, int idx, float min, float max);
-	
 	/// Set all values to maximum and notify observers
 	SliderBase& valueMax();
 	
 	/// Set all values to middle value and notify observers
 	SliderBase& valueMid();
-	
-	/// Returns number of dimensions of slider
-	static int dimensions(){ return Dim; }
+
 
 protected:
-	float mAcc[Dim], mVal[Dim];
+	float mAcc[Dim];
+//	float mVal[Dim];
+
+	virtual void onSetValueNotify(const float& v, int idx);
+
+	/// Add amount to value at 1D index and notify observers
+	SliderBase& valueAdd(float val, int idx);
 	
-	void clip(float& v, float mn=0, float mx=1){ v<mn ? v=mn : v>mx ? v=mx : 0; }
-	void clipAccs(){ for(int i=0; i<Dim; ++i) clip(mAcc[i]); }
-	void clipAccs(float min, float max){ for(int i=0; i<Dim; ++i) clip(mAcc[i], min,max); }
-	bool validDim(int dim) const { return (dim < Dim) && (dim >= 0); }
-	float sens(const GLV& g){ return (g.mouse.left() && g.mouse.right()) ? 0.25 : 1; }
+	/// Add amount to value at 1D index and notify observers
+	SliderBase& valueAdd(float val, int idx, float min, float max);
+
+//	void clip(float& v, float mn=0, float mx=1){ v<mn ? v=mn : v>mx ? v=mx : 0; }
+	void clipAccs(){ for(int i=0; i<Dim; ++i) mAcc[i] = glv::clip(mAcc[i]); }
+	void clipAccs(float min, float max){ for(int i=0; i<Dim; ++i) mAcc[i] = clip(mAcc[i], max,min); }
 };
 
 
@@ -149,9 +150,9 @@ protected:
 
 /// Base class for 1-D slider types
 template <class V>
-class Slider1DBase: public ValueWidget<V>{
+class Slider1DBase: public ValueWidget<V, float>{
 public:
-	GLV_INHERIT_VALUEWIDGET
+	GLV_INHERIT_VALUEWIDGET(V, float);
 
 	/// @param[in] r			geometry
 	/// @param[in] nx			number along x (ignored by fixed size value types)
@@ -170,19 +171,18 @@ public:
 	virtual const char * className() const { return "Slider1DBase"; }
 	
 protected:
-	typedef ValueWidget<V> Base;
 	float mAcc;
 	bool mSigned;
 
 	void selectSlider(GLV& g, bool click);
 	bool isVertical() const { return Base::dy() > Base::dx(); }
 	
-	// set currently selected value and send notification
-	void setValueNotify(float v){
-		v = isSigned() ? Base::clip(v, 1.f, -1.f) : Base::clip(v);
-		if(v == value()[selected()]) return;
-		value()[selected()] = v;
-		notify(Update::Value, SliderChange(v, selected()));
+	virtual void onSetValueNotify(const float& vnew, int idx){
+		float v=vnew;
+		v = isSigned() ? glv::clip(v, 1.f, -1.f) : glv::clip(v, 1.f, 0.f);
+		if(v == Base::values()[idx]) return;
+		Base::values()[idx] = v;
+		notify(Update::Value, SliderChange(v, idx));
 	}
 };
 
@@ -201,7 +201,7 @@ public:
 	{	value(v); }
 	
 	/// Get value
-	float value() const { return Base::value()[0]; }
+	float value() const { return Base::values()[0]; }
 	
 	/// Set value and notify observers
 	Slider& value(float v){
@@ -224,7 +224,6 @@ public:
 
 
 /// Multiple sliders
-//typedef Slider1DBase<Array<float> > Sliders;
 class Sliders : public Slider1DBase<Array<float> >{
 public:
 	typedef Slider1DBase<Array<float> > Base;
@@ -239,10 +238,10 @@ public:
 	{}
 	
 	/// Get value array
-	const Array<float>& value() const { return Base::value(); }
+	const Array<float>& values() const { return Base::values(); }
 	
 	/// Get value at 1D index
-	float value(int i) const { return Base::value()[i]; }
+	float value(int i) const { return Base::values()[i]; }
 	
 	/// Set value at 1D index and notify observers
 	Sliders& value(float v, int i){
@@ -353,58 +352,62 @@ protected:
 #define TEM template <int Dim>
 
 TEM SliderBase<Dim>::SliderBase(const Rect& r)
-:	View(r)
+:	Base(r, Dim, 1, 0, false, false, false)
 {
 	memset(mAcc, 0, sizeof(float) * Dim);
-	memset(mVal, 0, sizeof(float) * Dim);
+//	memset(mVal, 0, sizeof(float) * Dim);
 }
 
 TEM inline float SliderBase<Dim>::value(int dim) const{
-	return validDim(dim) ? mVal[dim] : 0;
+	return Base::validIndex(dim) ? Base::values()[dim] : 0;
 }
 
+TEM inline void SliderBase<Dim>::onSetValueNotify(const float& v, int idx){
 
-//	void updateValue(float v, int i, SliderBase& (SliderBase::* func)(float v, int i)){
-//		float prevVal = value(i);
-//		(this->*func)(v,i);
-//		if(value(i) != prevVal)
-//			notify(Update::Value, SliderChange(value(i), i));
-//	}
-//
-//	void updateValue(float v, int i, float a1, float a2, SliderBase& (SliderBase::* func)(float v, int i, float a1, float a2)){
-//		float prevVal = value(i);
-//		(this->*func)(v,i,a1,a2);
-//		if(value(i) != prevVal)
-//			notify(Update::Value, SliderChange(value(i), i));
-//	}
+	if(v == Base::values()[idx]) return;
+
+	//mAcc[idx] = value()[idx] = v;
+	Base::values()[idx] = v;
+	notify(Update::Value, SliderChange(v, idx));
+}
 
 TEM inline SliderBase<Dim>& SliderBase<Dim>::value(float v, int dim){
-	//if(validDim(dim)) mVal[dim] = mAcc[dim] = value;
 	
-	if(validDim(dim)){
-		//clip(v, min,max);
-		clip(v, 0,1);
-		if(mVal[dim] != v){
-			mAcc[dim] = mVal[dim] = v;
-			notify(Update::Value, SliderChange(mVal[dim], dim));
-		}
+//	if(validIndex(dim)){
+//		//v=clip(v, min,max);
+//		v=clip(v, 0,1);
+//		if(mVal[dim] != v){
+//			mAcc[dim] = mVal[dim] = v;
+//			notify(Update::Value, SliderChange(mVal[dim], dim));
+//		}
+//	}
+
+	if(Base::validIndex(dim)){
+		mAcc[dim] = v;
+		Base::setValueNotify(glv::clip(v, 1.f,0.f), dim);
 	}
 	return *this;
 }
 
 TEM inline SliderBase<Dim>& SliderBase<Dim>::valueAdd(float add, int dim, float min, float max){
-	if(validDim(dim)){
-		float valPrev = mVal[dim];
-
-		float acc = mAcc[dim] + add;
-		mAcc[dim] = mVal[dim] = acc;		
-		
-		clip(mVal[dim], min,max);
-		
-		if(valPrev != mVal[dim]){
-			notify(Update::Value, SliderChange(mVal[dim], dim));
-		}
+//	if(validDim(dim)){
+//		float valPrev = value()[dim];
+//
+//		float acc = mAcc[dim] + add;
+//		mAcc[dim] = value()[dim] = acc;		
+//		
+//		value()[dim] = clip(value()[dim], min,max);
+//		
+//		if(valPrev != value()[dim]){
+//			notify(Update::Value, SliderChange(mVal[dim], dim));
+//		}
+//	}
+	
+	if(Base::validIndex(dim)){
+		mAcc[dim] += add;
+		Base::setValueNotify(glv::clip(mAcc[dim], max,min), dim);
 	}
+	
 	return *this;
 }
 
@@ -425,7 +428,7 @@ TEM inline SliderBase<Dim>& SliderBase<Dim>::valueMid(){
 #define TEMV template <class V>
 
 TEMV Slider1DBase<V>::Slider1DBase(const Rect& r, int nx, int ny, bool dragSelect, bool sgn)
-:	ValueWidget<V>(r, nx, ny, 1, false, false, true),
+:	Base(r, nx, ny, 1, false, false, true),
 	mAcc(0), mSigned(sgn)
 {
 	property(SelectOnDrag, dragSelect);
@@ -435,13 +438,13 @@ TEMV void Slider1DBase<V>::onDraw(){
 
 	float x=padding()*0.5, xd=this->dx(), yd=this->dy();
 	
-	struct{
-		float operator()(float v, float d){
-			if(v < d && v >= 0) return d;
-			else if(v >-d && v < 0) return -d;
-			return v;	
-		}
-	} bump;
+//	struct{
+//		float operator()(float v, float d){
+//			if(v < d && v >= 0) return d;
+//			else if(v >-d && v < 0) return -d;
+//			return v;	
+//		}
+//	} bump;
 
 	if(isVertical()){
 		for(int i=0; i<sizeX(); ++i){
@@ -454,7 +457,7 @@ TEMV void Slider1DBase<V>::onDraw(){
 				else draw::color(colors().fore, colors().fore.a*0.5);
 				
 				if(isSigned()){
-					float v = value()[ind];
+					float v = Base::values()[ind];
 					//v = bump(v, 2/yd); // set minimum bar length to 1 pixel
 	
 					float d = yd*0.5;
@@ -467,7 +470,7 @@ TEMV void Slider1DBase<V>::onDraw(){
 					draw::shape(draw::Lines, x, linePos, x+xd, linePos);
 				}
 				else{
-					draw::rect(x, y+yd-value()[ind]*yd, x+xd-padding(), y+yd);
+					draw::rect(x, y+yd-Base::values()[ind]*yd, x+xd-padding(), y+yd);
 				}
 				y += yd;
 			}
@@ -484,7 +487,7 @@ TEMV void Slider1DBase<V>::onDraw(){
 				if(isSelected(i,j)) draw::color(colors().fore);
 				else draw::color(colors().fore, colors().fore.a*0.5);
 				if(isSigned()){
-					float v = value()[ind];
+					float v = Base::values()[ind];
 					//v = bump(v, 2/xd); // set minimum bar length to 1 pixel
 					
 					float d = xd*0.5;
@@ -497,7 +500,7 @@ TEMV void Slider1DBase<V>::onDraw(){
 					draw::shape(draw::Lines, linePos, y, linePos, y+yd);
 				}
 				else{
-					draw::rect(x, y, value()[ind]*xd+x, y+yd-padding());
+					draw::rect(x, y, Base::values()[ind]*xd+x, y+yd-padding());
 				}
 				y += yd;
 			}
@@ -520,7 +523,7 @@ TEMV bool Slider1DBase<V>::onEvent(Event::t e, GLV& g){
 				// accumulate differences
 				float ds = isSigned() ? 2.f : 1.f;
 				mAcc += (isVertical() ? -g.mouse.dy()*sizeY()/h : g.mouse.dx()*sizeX()/w) * this->sens(g.mouse)*ds;
-				setValueNotify(mAcc);
+				Base::setValueNotify(mAcc);
 			}
 			
 			return false;
@@ -530,15 +533,15 @@ TEMV bool Slider1DBase<V>::onEvent(Event::t e, GLV& g){
 			return false;
 			
 		case Event::KeyDown:{
-			ValueWidget<V>::onSelectKey(g);
+			Base::onSelectKey(g);
 			int i = selected();
 
 			switch(g.keyboard.key()){
 			case 'x':
 //			case 'a': value()[i] = this->clip1(value()[i] + 1/32.); return false;
 //			case 'z': value()[i] = this->clip1(value()[i] - 1/32.); return false;
-			case 'a': setValueNotify(value()[i] + 1/32.); return false;
-			case 'z': setValueNotify(value()[i] - 1/32.); return false;
+			case 'a': setValueNotify(Base::values()[i] + 1/32.); return false;
+			case 'z': setValueNotify(Base::values()[i] - 1/32.); return false;
 			default:;
 			}
 		}
@@ -554,7 +557,7 @@ TEMV void Slider1DBase<V>::selectSlider(GLV& g, bool click){
 	Mouse& m = g.mouse;
 	
 	int oldIdx = selected();
-	ValueWidget<V>::onSelectClick(g);
+	Base::onSelectClick(g);
 	
 	float val = isVertical() ? (1-(m.yRel()*sizeY()/h - selectedY())) : (m.xRel()*sizeX()/w - selectedX());
 	if(isSigned()) val = 2.f*val-1.f;
@@ -563,13 +566,13 @@ TEMV void Slider1DBase<V>::selectSlider(GLV& g, bool click){
 	
 	// if left-button, set value
 	if(m.left() && !m.right()){
-		setValueNotify(val);
+		Base::setValueNotify(val);
 	}
 	
 	// if click or new slider, reset accumulator
 	if(click || (oldIdx != idx)){
 		if(m.left() && !m.right()) mAcc = val;
-		else mAcc = value()[idx];
+		else mAcc = Base::values()[idx];
 	}
 }
 
@@ -650,8 +653,8 @@ TEM bool SliderGrid<Dim>::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 	case Event::MouseDrag:
-					valueAdd( g.mouse.dx()/w * sens(g) * Dim, cx);
-		if(cx!=cy)	valueAdd(-g.mouse.dy()/h * sens(g) * Dim, cy);
+					valueAdd( g.mouse.dx()/w * sens(g.mouse) * Dim, cx);
+		if(cx!=cy)	valueAdd(-g.mouse.dy()/h * sens(g.mouse) * Dim, cy);
 		break;
 		
 	case Event::MouseDown:

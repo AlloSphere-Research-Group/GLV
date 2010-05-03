@@ -97,8 +97,10 @@ protected:
 /// amount determines the spacing around the digits. For best looking
 /// characters use a Rect dimension ns x s where 'n' is the number of digits
 /// and 's' is the character size plus padding amount.
-class NumberDialer : public View{
+class NumberDialer : public ValueWidget<Values<double>, double>{
 public:
+	GLV_INHERIT_VALUEWIDGET(Values<double>, double);
+
 
 	/// @param[in] r		Geometry
 	/// @param[in] numInt	Number of places in integer part
@@ -152,6 +154,18 @@ protected:
 	float mAcc;
 	double mValMul;
 	bool mShowSign;
+	
+	void valSet(int v){	// converts fixed point to floating point value
+		mVal = glv::clip(v, mMax, mMin);
+		double val = mVal * mValMul;
+		Base::setValueNotify(val);
+	}
+	
+	virtual void onSetValueNotify(const double& v, int idx){
+		if(v == Base::values()[idx]) return;
+		Base::values()[idx] = v;
+		notify(Update::Value, NumberDialerChange(value()));	
+	}
 
 	void setWidth(){ w = (h-2)*size(); }
 	int convert(double v) const { return v / mValMul + (v>0. ? 0.5:-0.5); }
@@ -164,11 +178,7 @@ protected:
 	int size() const { return mNI + mNF + sizeSign(); }
 	int sizeSign() const { return mShowSign ? 1:0; }
 	void valAdd(int v){	valSet(v + mVal); }
-	void valSet(int v){
-		int prev = mVal;
-		mVal = v < mMin ? mMin : v > mMax ? mMax : v;
-		if(mVal != prev) notify(Update::Value, NumberDialerChange(value()));
-	}
+
 	void flipSign(){
 		if((mVal>0 && -mVal>=mMin) || (mVal<0 && -mVal<=mMax))
 			valSet(-mVal);

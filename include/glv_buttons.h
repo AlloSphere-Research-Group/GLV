@@ -18,9 +18,9 @@ typedef ChangedValue<bool> ButtonChange;
 
 /// Generic base class for buttons
 template <class V>
-class ButtonBase: public ValueWidget<V>{
+class ButtonBase: public ValueWidget<V, bool>{
 public:
-	GLV_INHERIT_VALUEWIDGET
+	GLV_INHERIT_VALUEWIDGET(V,bool);
 	
 	/// @param[in] r		geometry
 	/// @param[in] nx		number along x (ignored by fixed size value types)
@@ -34,7 +34,7 @@ public:
 		bool toggles=true, bool mutExc=false,
 		iconFunc on=draw::rect, iconFunc off=0
 	)
-	:	ValueWidget<V>(r, nx, ny, 3, toggles, mutExc, true),
+	:	Base(r, nx, ny, 3, toggles, mutExc, true),
 		mIconOff(off), mIconOn(on)
 	{}
 
@@ -47,17 +47,18 @@ public:
 	virtual const char * className() const { return "ButtonBase"; }
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& g);
-		
+
 protected:
 	iconFunc mIconOff, mIconOn;	// state icons
 
-	void setValueNotify(bool v);
+	virtual void onSetValueNotify(const bool& v, int idx);
 };
 
 
 
 /// Single button
-struct Button : public ButtonBase<Values<bool> >{
+class Button : public ButtonBase<Values<bool> >{
+public:
 
 	typedef ButtonBase<Values<bool> > Base;
 
@@ -70,7 +71,7 @@ struct Button : public ButtonBase<Values<bool> >{
 	{}
 
 	/// Get value
-	bool value() const { return Base::value()[0]; }
+	bool value() const { return Base::values()[0]; }
 
 	/// Set value and notify observers
 	Button& value(bool v){ select(0); setValueNotify(v); return *this; }
@@ -82,7 +83,8 @@ struct Button : public ButtonBase<Values<bool> >{
 
 
 /// Multiple buttons
-struct Buttons : public ButtonBase<Array<bool> >{
+class Buttons : public ButtonBase<Array<bool> >{
+public:
 
 	typedef ButtonBase<Array<bool> > Base;
 
@@ -98,14 +100,14 @@ struct Buttons : public ButtonBase<Array<bool> >{
 		bool toggles=true, bool mutExc=false,
 		iconFunc on=draw::rect, iconFunc off=0
 	)
-	:	Base(r, nx, ny, toggles, false, on, off)
+	:	Base(r, nx, ny, toggles, mutExc, on, off)
 	{}
 	
 	/// Get value array
-	const Array<bool>& value() const { return Base::value(); }
+	const Array<bool>& values() const { return Base::values(); }
 	
 	/// Get value at 1D index
-	bool value(int i) const { return Base::value()[i]; }
+	bool value(int i) const { return Base::values()[i]; }
 	
 	/// Set value at 1D index and notify observers
 	Buttons& value(bool v, int i){
@@ -135,7 +137,7 @@ void ButtonBase<V>::onDraw(){
 	float dy = h/sizeY();
 
 	// draw the grid lines
-	ValueWidget<V>::drawGrid();
+	Base::drawGrid();
 
 	float p1  = padding();
 	float p_2 = padding()*0.5;
@@ -148,8 +150,8 @@ void ButtonBase<V>::onDraw(){
 		for(int j=0; j<sizeY(); ++j){
 			int ind = index(i,j);
 			float y = dy*j + p_2;
-			if(value()[ind]){	if(mIconOn ) mIconOn (x, y, x+dx-p1, y+dy-p1); }
-			else{				if(mIconOff) mIconOff(x, y, x+dx-p1, y+dy-p1); }
+			if(Base::values()[ind]){	if(mIconOn ) mIconOn (x, y, x+dx-p1, y+dy-p1); }
+			else{						if(mIconOff) mIconOff(x, y, x+dx-p1, y+dy-p1); }
 		}		
 	}
 	
@@ -161,11 +163,11 @@ bool ButtonBase<V>::onEvent(Event::t e, GLV& g){
 	case Event::MouseDown:
 		if(g.mouse.left()){
 			
-			ValueWidget<V>::onSelectClick(g);
+			Base::onSelectClick(g);
 			
 			//if(enabled(MutualExc))	value().zero();
-			if(enabled(Toggleable))	setValueNotify(!value()[selected()]);
-			else					setValueNotify(true);
+			if(enabled(Toggleable))	Base::setValueNotify(!Base::values()[selected()]);
+			else					Base::setValueNotify(true);
 			return false;
 		}
 		break;
@@ -185,7 +187,7 @@ bool ButtonBase<V>::onEvent(Event::t e, GLV& g){
 	case Event::MouseUp:
 		if(g.mouse.button() == Mouse::Left){
 			if(!enabled(Toggleable)){
-				setValueNotify(false);
+				Base::setValueNotify(false);
 			}
 		}
 		break;
@@ -195,12 +197,13 @@ bool ButtonBase<V>::onEvent(Event::t e, GLV& g){
 	return true;
 }
 
+
 template <class V>
-inline void ButtonBase<V>::setValueNotify(bool v){
-	if(v == value()[selected()]) return;
-	if(enabled(MutualExc)) value().zero();
-	value()[selected()] = v;
-	notify(Update::Value, ButtonChange(v, selected()));
+void ButtonBase<V>::onSetValueNotify(const bool& v, int idx){
+	if(v == Base::values()[idx]) return;
+	if(enabled(MutualExc)) Base::values().zero();
+	Base::values()[idx] = v;
+	notify(Update::Value, ButtonChange(v, idx));
 }
 
 

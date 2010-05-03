@@ -121,6 +121,167 @@ protected:
 };
 
 
+
+class RasterView : public View{
+public:
+	RasterView(const Rect& r, int nx, int ny)
+	:	View(r), mSizeX(nx), mSizeY(ny), mPrim(draw::LineStrip)
+	{	
+		enable(DrawGrid);
+		deselect(); 
+	}
+
+	virtual void onDraw(){
+		using namespace glv::draw;
+		
+		if(enabled(DrawGrid)){
+			color(colors().fore, 0.15);
+			grid(0,0,w,h,mSizeX,mSizeY, false);
+		}
+		
+		color(colors().fore, 0.65);
+		stroke(2);
+		begin(mPrim);
+		for(unsigned i=0; i<mPoints.size(); ++i){
+			float x,y;
+			indexToPoint(x,y, mPoints[i]);
+			vertex(x,y);
+		}
+		end();
+
+		color(colors().fore);
+		draw::enable(PointSmooth);
+		stroke(6);
+		begin(Points);
+		for(unsigned i=0; i<mPoints.size(); ++i){
+			float x,y;
+			indexToPoint(x,y, mPoints[i]);
+			vertex(x,y);
+		}
+		if(isSelected()){
+			color(1,0,0);
+			float x,y;
+			indexToPoint(x,y, mPoints[mSelected]);
+			vertex(x,y);
+		}
+		end();
+
+	}
+	
+	virtual bool onEvent(Event::t e, GLV& g){
+		
+		Mouse& m = g.mouse;
+		Keyboard& k = g.keyboard;
+		
+		int idx; pointToIndex(idx, m.xRel(), m.yRel());
+		
+		switch(e){
+			case Event::MouseDown:
+				{
+				
+				if(k.shift()){		// append new point
+					mPoints.push_back(idx);
+				}
+				else if(k.ctrl()){	// insert new point
+					float dist = 1e7;
+					int inear = -1;
+					for(int i=mPoints.size()-1; i>0; --i){
+						int i1 = i-1;
+						int i2 = i;
+						float x1,y1, x2,y2, xn,yn;
+						indexToPoint(x1,y1, mPoints[i1]);
+						indexToPoint(x2,y2, mPoints[i2]);
+						indexToPoint(xn,yn, idx);
+						// measure distance to midpoint
+						float xm = (x1+x2)*0.5;
+						float ym = (y1+y2)*0.5;
+						float d = (xm-xn)*(xm-xn) + (ym-yn)*(ym-yn);
+						if(d < dist){ dist=d; inear=i2; }
+					}
+					if(inear >= 0){
+						mPoints.insert(mPoints.begin() + inear, idx);
+					}
+				}
+
+				bool clickMatch=false;
+				for(int i=mPoints.size()-1; i>=0; --i){
+					if(mPoints[i] == idx){
+						mSelected = i;
+						clickMatch = true;
+						break;
+					}
+				}
+				
+				if(!clickMatch) deselect();
+				
+
+				}
+				return false;
+				
+			case Event::MouseDrag:
+				if(isSelected()){
+					mPoints[mSelected] = idx;
+				}
+				return false;
+
+			case Event::KeyDown:
+			
+				switch(k.key()){
+					case 'c': mPoints.clear(); return false;
+					case 'p':
+						for(unsigned i=0; i<mPoints.size(); ++i){
+							printf("%c%d", i?',':'\0', mPoints[i]);
+						} printf("\n");
+						return false;
+					case '1': mPrim = draw::Lines; return false;
+					case '2': mPrim = draw::LineStrip; return false;
+					case '3': mPrim = draw::LineLoop; return false;
+					case '4': mPrim = draw::Triangles; return false;
+					case '5': mPrim = draw::TriangleStrip; return false;
+					case '6': mPrim = draw::TriangleFan; return false;
+					case '7': mPrim = draw::Quads; return false;
+					case '8': mPrim = draw::QuadStrip; return false;
+					case 'g': toggle(DrawGrid); return false;
+					case Key::Delete: 
+						if(isSelected()) mPoints.erase(mPoints.begin()+mSelected);
+						deselect();
+						return false;
+					default:;
+				}
+			default:;
+		}
+		return true;
+	}
+
+protected:
+	int mSizeX, mSizeY;
+	int mSelected;
+	int mPrim;
+
+	std::vector<int> mPoints;
+	float subDivX() const { return w/mSizeX; }
+	float subDivY() const { return h/mSizeY; }
+	
+	bool isSelected(){ return mSelected>=0; }
+	void deselect(){ mSelected=-1; }
+	
+	void pointToIndex(int& idx, float x, float y) const {
+		int ix = glv::clip<int>((x/w)*mSizeX, mSizeX-1);
+		int iy = glv::clip<int>((y/h)*mSizeY, mSizeY-1);
+		idx = iy*mSizeX + ix;	
+	}
+	
+	void indexToPoint(float& x, float& y, int idx){
+		int ix = idx % mSizeX;
+		int iy = idx / mSizeX;
+		x = ((ix+0.5)/mSizeX) * w;
+		y = ((iy+0.5)/mSizeY) * h;
+	}
+
+};
+
+
+
 } // glv::
 
 #endif

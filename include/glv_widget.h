@@ -9,40 +9,33 @@
 namespace glv {
 
 
-// One-to-one value maps
-//namespace map{
-//
-//	template <class T>
-//	T clip(T v, T max, T min){ return v<min ? min : v>max ? max : v; }
-//	
-//	template <class T>
-//	T wrap(T v, T max, T min){ return v<min ? v + (max-min) : v>max ? v - (max-min) : v; }
-//}
-
-
 // inheritance definitions for templated subclasses
-#define GLV_INHERIT_VALUEWIDGET\
-	using ValueWidget<V>::w;\
-	using ValueWidget<V>::h;\
-	using ValueWidget<V>::notify;\
-	using ValueWidget<V>::colors;\
-	using ValueWidget<V>::enabled;\
-	using ValueWidget<V>::property;\
-	using ValueWidget<V>::padding;\
-	using ValueWidget<V>::sizeX;\
-	using ValueWidget<V>::sizeY;\
-	using ValueWidget<V>::value;\
-	using ValueWidget<V>::index;\
-	using ValueWidget<V>::isSelected;\
-	using ValueWidget<V>::selected;\
-	using ValueWidget<V>::selectedX;\
-	using ValueWidget<V>::selectedY;\
+#define GLV_INHERIT_VALUEWIDGET(Tv,Tm)\
+	using ValueWidget<Tv,Tm>::w;\
+	using ValueWidget<Tv,Tm>::h;\
+	using ValueWidget<Tv,Tm>::notify;\
+	using ValueWidget<Tv,Tm>::colors;\
+	using ValueWidget<Tv,Tm>::enabled;\
+	using ValueWidget<Tv,Tm>::property;\
+	using ValueWidget<Tv,Tm>::padding;\
+	using ValueWidget<Tv,Tm>::size;\
+	using ValueWidget<Tv,Tm>::sizeX;\
+	using ValueWidget<Tv,Tm>::sizeY;\
+	using ValueWidget<Tv,Tm>::index;\
+	using ValueWidget<Tv,Tm>::isSelected;\
+	using ValueWidget<Tv,Tm>::selected;\
+	using ValueWidget<Tv,Tm>::selectedX;\
+	using ValueWidget<Tv,Tm>::selectedY;\
+	using ValueWidget<Tv,Tm>::variables;\
+	typedef ValueWidget<Tv,Tm> Base
 
 
-/// Base class of generic grid-based, valued widget
-template <class V>
+/// Base class for a widget with a grid of values
+template <class Tv, class Tm>
 class ValueWidget : public View{
 public:
+	typedef Tv values_types;
+	typedef Tm model_type;
 
 	/// @param[in] r		geometry
 	/// @param[in] nx		number along x (ignored by fixed size value types)
@@ -51,23 +44,14 @@ public:
 	/// @param[in] toggles	whether the value elements toggle
 	/// @param[in] mutExc	whether value elements operate mutually exclusively
 	/// @param[in] drawGrid	whether to draw grid separater for multiple elements
-	ValueWidget(const Rect& r, int nx, int ny, space_t pad, bool toggles, bool mutExc, bool drawGrid=true)
-	:	View(r),
-		mPadding(pad), sx(0), sy(0)
-	{
-		value().resize(nx, ny);	// req'd for dynamically sized values
-		value().zero();
-		property(DrawGrid, drawGrid);
-		property(MutualExc, mutExc);
-		property(Toggleable, toggles);
-	}
+	ValueWidget(const Rect& r, int nx, int ny, space_t pad, bool toggles, bool mutExc, bool drawGrid=true);
 
-	int size () const { return value().size (); }	///< Get total number of elements
-	int sizeX() const { return value().sizeX(); }	///< Get number of elements along x
-	int sizeY() const { return value().sizeY(); }	///< Get number of elements along y
-	
-	V& value(){ return mVal; }						///< Set value object without notifying observers
-	const V& value() const { return mVal; }			///< Get value object
+	/// Resize grid
+	void resize(int nx, int ny){ values().resize(nx,ny); }
+
+	int size () const { return values().size (); }	///< Get total number of elements
+	int sizeX() const { return values().sizeX(); }	///< Get number of elements along x
+	int sizeY() const { return values().sizeY(); }	///< Get number of elements along y
 
 	/// Returns whether this element coordinate is selected
 	bool isSelected(int x, int y) const { return x == selectedX() && y == selectedY(); }
@@ -76,6 +60,11 @@ public:
 	int selected() const { return index(sx, sy); }	///< Get selected element index
 	int selectedX() const { return sx; }			///< Get selected element x coordinate
 	int selectedY() const { return sy; }			///< Get selected element y coordinate
+
+	/// Attach a model variable at a specified index
+	void attachVariable(model_type& v, int i=0){
+		variables()[i] = &v;
+	}
 
 	/// Select element at 1D index
 	ValueWidget& select(int i){ return select(i%sizeX(), i/sizeX()); }
@@ -86,16 +75,50 @@ public:
 	/// Set element padding amount
 	ValueWidget& padding(space_t v){ mPadding=v; return *this; }
 
+	virtual void onModelSync();
+
 protected:
-	V mVal;
-	space_t mPadding;			// num pixels to inset icon
-	int sx, sy;					// last clicked position
+	Tv mVal;						// value(s)
+	space_t mPadding;				// num pixels to inset icon
+	int sx, sy;						// last clicked position
+	std::map<int, Tm *> mVariables;	// model variables to sync to
+
+	virtual void onSetValueNotify(const Tm& v, int idx){}
+
+	std::map<int, Tm *>& variables(){ return mVariables; }
+	const std::map<int, Tm *>& variables() const { return mVariables; }
+
+	void setValueNotify(const Tm& v){
+		setValueNotify(v, selected());
+	}
+
+	void setValueNotify(const Tm& v, int idx){
+		if(validIndex(idx)){
+			// Update model variable at this index, if any...
+			if(variables().count(idx)){
+				if(idx < size()) *(variables()[idx]) = v;
+			}
+			
+			// call derived class specialized value updater/notifier
+			//if(v != values()[idx]){	// call only when new value is different
+				onSetValueNotify(v, idx);
+			//}
+		}
+	}
+
+	Tv& values(){ return mVal; }
+	const Tv& values() const { return mVal; }
 
 	float dx() const { return w/sizeX(); } // width, in pixels, per element
 	float dy() const { return h/sizeY(); } // height, in pixels, per element
-	int index(int x, int y) const { return x + y*value().sizeX(); }
-	float sens(const Mouse& m){ return (m.left() && m.right()) ? 0.25 : 1; }
+	int index(int ix, int iy) const { return ix + iy*sizeX(); }
+	float sens(const Mouse& m) const { return (m.left() && m.right()) ? 0.25 : 1; }
 
+	static void clip(int& i, int max){ i<0 ? i=0 : i>=max ? i=max-1 : 0; }
+	//static float clip1(float v){ return v < 0. ? 0. : v > 1. ? 1 : v; }
+	//static float clip(float v, float mx=1, float mn=0){ return v < mn ? mn : v > mx ? mx : v; }
+	void clipIndices(){ clip(sx, sizeX()); clip(sy, sizeY()); }
+	bool validIndex(int i) const { return (i < size()) && (i >= 0); }
 
 	// draw the grid lines
 	void drawGrid(){
@@ -162,15 +185,48 @@ protected:
 		clipIndices();
 	}
 
-	
-	static void clip(int& i, int max){ i<0 ? i=0 : i>=max ? i=max-1 : 0; }
-	//static float clip1(float v){ return v < 0. ? 0. : v > 1. ? 1 : v; }
-	static float clip(float v, float mx=1, float mn=0){ return v < mn ? mn : v > mx ? mx : v; }
-	void clipIndices(){ clip(sx, sizeX()); clip(sy, sizeY()); }
 };
 
 
 
+
+template<class Tv, class Tm>
+ValueWidget<Tv,Tm>::ValueWidget(const Rect& r, int nx, int ny, space_t pad, bool toggles, bool mutExc, bool drawGrid)
+:	View(r),
+	mPadding(pad), sx(0), sy(0)
+{
+	resize(nx, ny);	// req'd for dynamically sized values
+	values().zero();
+	property(DrawGrid, drawGrid);
+	property(MutualExc, mutExc);
+	property(Toggleable, toggles);
+}
+
+template<class Tv, class Tm>
+void ValueWidget<Tv,Tm>::onModelSync(){
+	typename std::map<int, Tm *>::iterator it = variables().begin();
+	for(; it!=variables().end(); ++it){
+		int idx = it->first;
+		if(validIndex(idx)){
+			if(values()[idx] != *it->second){
+				onSetValueNotify(*it->second, idx);
+			}
+		}
+	}
+}
+
+
+// Scrapyard....
+
+// One-to-one value maps
+//namespace map{
+//
+//	template <class T>
+//	T clip(T v, T max, T min){ return v<min ? min : v>max ? max : v; }
+//	
+//	template <class T>
+//	T wrap(T v, T max, T min){ return v<min ? v + (max-min) : v>max ? v - (max-min) : v; }
+//}
 
 //class ValueMapper{
 //

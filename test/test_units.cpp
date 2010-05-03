@@ -144,6 +144,20 @@ int main(int argc, char ** argv){
 		w.value(true);
 		assert(b);
 		assert(w.value() == true);
+
+// Setting to current value should NOT send notification to avoid infinite loops
+		b=false;
+		w.value(w.value());
+		assert(!b);
+
+// Boolean model variable
+		bool v = false;
+		w.attachVariable(v);
+		w.value(true);		assert(v == true);
+		w.value(false);		assert(v == false);
+		
+		v = true;
+		w.onModelSync();	assert(w.value() == true);
 	}
 
 	{
@@ -153,6 +167,17 @@ int main(int argc, char ** argv){
 		w.value(true, 0);
 		assert(b);
 		assert(w.value(0) == true);
+		
+		w.resize(2,2);
+		
+		bool v1 = false;
+		bool v2 = false;
+		w.attachVariable(v1, 0);
+		w.attachVariable(v2, 2);
+		w.value(true, 0);		assert(v1 == true);
+		w.value(true, 2);		assert(v2 == true);
+		w.value(false, 0);		assert(v1 == false);
+		w.value(false, 2);		assert(v2 == false);
 	}
 	
 	{
@@ -162,7 +187,21 @@ int main(int argc, char ** argv){
 		w.value(0.99f);
 		assert(b);
 		assert(w.value() == 0.99f);
+
+// Setting to current value should NOT send notification to avoid infinite loops
+		b=false;
+		w.value(w.value());
+		assert(!b);
+
+		float v;
+		w.attachVariable(v);
+		w.value(0.99);
+		assert(v == 0.99f);
 		
+		v = 0;
+		w.onModelSync();
+		assert(w.value() == 0);
+
 		std::string s;
 		w.value(0.25);
 		w.valueToString(s);			assert(s == "0.25");
@@ -188,7 +227,8 @@ int main(int argc, char ** argv){
 		w.value(0.01f, 0);
 		assert(b);
 		assert(w.value(0) == 0.01f);
-		
+
+// Setting to current value should NOT send notification to avoid infinite loops
 		b=false;
 		w.value(0.01f, 0);
 		assert(!b);
@@ -199,18 +239,32 @@ int main(int argc, char ** argv){
 		assert(b);
 		assert(w.value(1) == 0.01f);
 		
-		b=false;
-		w.valueAdd(0.01f, 0);
-		w.valueAdd(0.01f, 1);
-		assert(b);
-		assert(w.value(0) == 0.01f);
-		assert(w.value(1) == 0.02f);
+//		b=false;
+//		w.valueAdd(0.01f, 0);
+//		w.valueAdd(0.01f, 1);
+//		assert(b);
+//		assert(w.value(0) == 0.01f);
+//		assert(w.value(1) == 0.02f);
 		
 		b=false;
 		w.valueMax();
 		assert(b);
 		assert(w.value(0) == 1.f);
 		assert(w.value(1) == 1.f);
+		
+		float v1, v2;
+		w.attachVariable(v1, 0);
+		w.attachVariable(v2, 1);
+		
+		w.value(0.5f, 0);	assert(v1 == 0.5f);
+		w.value(0.6f, 1);	assert(v2 == 0.6f);
+		
+		v1 = 0.1;
+		v2 = 0.2;
+		
+		w.onModelSync();
+		assert(w.value(0) == v1);
+		assert(w.value(1) == v2);
 	}
 
 	{
@@ -256,9 +310,22 @@ int main(int argc, char ** argv){
 		bool b=false;
 		NumberDialer w(1,2,1,0);
 		w.attach(ntValue1, Update::Value, &b);
-		w.value(0.99);
+		w.value(0.75);
 		assert(b);
-		assert(w.value() == 0.99);
+		assert(w.value() == 0.75);
+
+// Setting to current value should NOT send notification to avoid infinite loops
+		b=false;
+		w.value(w.value());
+		assert(!b);
+
+		double v=0;
+		w.attachVariable(v);
+		w.value(0.5);	assert(v == 0.5);
+		
+		v = 0.25;
+		w.onModelSync();
+		assert(w.value() == v);
 	}
 
 	{

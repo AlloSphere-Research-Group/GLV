@@ -74,9 +74,7 @@ struct SubView3D : View3D{
 void drawCB(View * v){
 	using namespace glv::draw;
 
-	for(int i=0; i<tabs.size(); ++i) groups[i].property(Visible, tabs.value()[i]);
-
-	sliders1.value()[0];
+	for(int i=0; i<tabs.size(); ++i) groups[i].property(Visible, tabs.value(i));
 
 	push3D(v->w, v->h);		// push into 3-D mode passing in width and height of view
 	
@@ -168,8 +166,8 @@ int main(int argc, char ** argv){
 	tabs << (new Label("TextView"		))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	tabs << (new Label("View3D"			))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	top << tabs;
-	
-	tabs(Event::MouseDrag, Behavior::mouseResize);
+
+	//tabs(Event::MouseDrag, Behavior::mouseResize);
 
 	//#define PRINT_SIZE(x) printf("sizeof(%s) = %d\n", #x, sizeof(x));
 	//PRINT_SIZE(View) PRINT_SIZE(Notifier) PRINT_SIZE(Rect)

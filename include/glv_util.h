@@ -14,6 +14,9 @@
 namespace glv {
 
 
+template <class T>
+T clip(const T& v, const T& mx=T(1), const T& mn=T(0)){ return v<mn ? mn : (v>mx ? mx : v); }
+
 /// Convert a string to a value type
 template<class T>
 bool fromString(T& dst, const std::string& src);

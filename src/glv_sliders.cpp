@@ -19,8 +19,8 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 		case Event::MouseDrag:
-			valueAdd( g.mouse.dx()/w * sens(g), 0);
-			valueAdd(-g.mouse.dy()/h * sens(g), 1);
+			valueAdd( g.mouse.dx()/w * sens(g.mouse), 0);
+			valueAdd(-g.mouse.dy()/h * sens(g.mouse), 1);
 			break;
 			
 		case Event::MouseDown:
@@ -234,7 +234,7 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 		return false;
 	
 	case Event::MouseDrag:
-		dv *= sens(g);
+		dv *= sens(g.mouse);
 		if(mDragMode == 3){
 			valueAdd(dv, 0, 0,  1-rg);
 			valueAdd(dv, 1, rg, 1   );
@@ -246,11 +246,11 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 
 	case Event::MouseUp:
 		if(mDragMode == 3){
-			clip(mAcc[0], 0, 1-rg);
-			clip(mAcc[1], rg, 1);
+			mAcc[0] = glv::clip(mAcc[0], 1-rg, 0.f);
+			mAcc[1] = glv::clip(mAcc[1], 1.f, rg);
 		}
-		else if(mDragMode == 1) clip(mAcc[0], 0, 1);
-		else if(mDragMode == 2) clip(mAcc[1], 0, 1);
+		else if(mDragMode == 1) mAcc[0] = glv::clip(mAcc[0], 1.f, 0.f);
+		else if(mDragMode == 2) mAcc[1] = glv::clip(mAcc[1], 1.f, 0.f);
 		return false;
 
 	default:;

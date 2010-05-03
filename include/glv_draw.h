@@ -43,20 +43,20 @@ const double C_2PI = 2. * C_PI;
 
 // primitives
 enum{
-#ifndef GLV_USE_OPENGL_ES
-	QuadStrip     = GL_TRIANGLE_STRIP,
-	Quads         = GL_POINTS,
-#else
-	QuadStrip     = GL_QUAD_STRIP,
-	Quads         = GL_QUADS,
-#endif
-	LineLoop      = GL_LINE_LOOP,
-	LineStrip     = GL_LINE_STRIP,
-	Lines         = GL_LINES,
 	Points        = GL_POINTS,
-	TriangleFan   = GL_TRIANGLE_FAN,
+	Lines         = GL_LINES,
+	LineStrip     = GL_LINE_STRIP,
+	LineLoop      = GL_LINE_LOOP,
+	Triangles     = GL_TRIANGLES,
 	TriangleStrip = GL_TRIANGLE_STRIP,
-	Triangles     = GL_TRIANGLES
+	TriangleFan   = GL_TRIANGLE_FAN,
+#ifdef GLV_USE_OPENGL_ES
+	Quads         = GL_POINTS,
+	QuadStrip     = GL_TRIANGLE_STRIP,
+#else
+	Quads         = GL_QUADS,
+	QuadStrip     = GL_QUAD_STRIP,
+#endif
 };
 
 // capabilities (for disable() and enable())
