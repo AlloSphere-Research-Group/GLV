@@ -437,7 +437,10 @@ private:
 
 template<>
 inline bool fromString<bool>(bool& dst, const std::string& src){
-	return sscanf(src.c_str(), "%d", &dst) > 0;
+	int v = dst;
+	bool r = sscanf(src.c_str(), "%d", &v) > 0;
+	dst = v;
+	return r;
 }
 
 template<>
