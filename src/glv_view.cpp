@@ -215,8 +215,15 @@ void View::constrainWithinParent(){
 }
 
 
-void View::drawBack() const{
+void View::drawPre(){
 	using namespace glv::draw;
+	
+	if(enabled(KeepWithinParent) && parent){
+		if(left() < 0) left(0);
+		if(top() < 0) top(0);
+		if(right() > parent->w) right(parent->w);
+		if(bottom() > parent->h) bottom(parent->h);
+	}
 	
 	if(enabled(DrawBack)){
 		color(colors().back);
@@ -225,7 +232,7 @@ void View::drawBack() const{
 }
 
 
-void View::drawBorder() const{
+void View::drawPost(){
 	using namespace glv::draw;
 	
 	if(enabled(DrawBorder)){

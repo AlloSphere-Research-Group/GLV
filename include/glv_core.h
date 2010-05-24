@@ -55,6 +55,7 @@ namespace Property{
 		Controllable	=1<< 9,	/**< Whether View can be controlled through events */
 		AlwaysBubble	=1<<10, /**< Whether to bubble all events to parent */
 		Maximized		=1<<11, /**< Whether geometry is matched to parent's */
+		KeepWithinParent=1<<12, /**< Ensure that View is fully contained within parent */
 		
 		DrawGrid		=1<<28,	/**< Whether to draw grid lines between widget elements */
 		MutualExc		=1<<29,	/**< Whether only one element of a widget can be non-zero */
@@ -438,8 +439,8 @@ protected:
 	Rect mRestore;					// Restoration geometry
 	std::string mName;				// Settable name
 
-	void drawBack() const;			// Draw the back rect
-	void drawBorder() const;		// Draw the border
+	void drawPre();					// Drawing routine called before calling user draw
+	void drawPost();				// Drawing routine called after calling user draw
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
 };
 

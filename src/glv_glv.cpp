@@ -191,9 +191,9 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 			//scissor(r.l, h - r.bottom() - 1, r.w+2, r.h+1);
 			scissor(pix(r.l), pix(h - r.bottom() - 1.499), pix(r.w+1), pix(r.h+1.499));
 
-			cv->drawBack();
+			cv->drawPre();
 			push(); cv->onDraw(); pop();		// push/pop model cuz user might forget to...
-			cv->drawBorder();
+			cv->drawPost();
 		}
 	}
 	
