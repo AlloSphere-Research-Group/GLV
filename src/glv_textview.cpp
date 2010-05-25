@@ -324,6 +324,7 @@ void TextView::onDraw(){
 	float tr = tl + Glyph::width();
 	float tt = 0 * (mSpacing * Glyph::baseline()) + addY + padY;
 	float tb = tt + Glyph::descent() - addY;
+	float strokeWidth = 1;
 	
 	// draw selection
 	if(selected()){
@@ -346,6 +347,7 @@ void TextView::onDraw(){
 		shape(Lines, tl, tt, tl, tb);
 	}
 
+	draw::lineWidth(strokeWidth);
 	color(colors().text);
 	draw::text(mText.c_str(), padX, padY);
 	draw::pop();
