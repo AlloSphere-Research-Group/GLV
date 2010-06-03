@@ -13,7 +13,6 @@
 
 namespace glv {
 
-
 struct Point2{
 	Point2(){}
 	Point2(float x_, float y_): x(x_), y(y_){}
@@ -127,6 +126,7 @@ void lineWidth(float val);							///< Set width of lines
 void matrixMode(int mode);							///< Set current transform matrix
 void ortho(float l, float r, float b, float t);		///< Set orthographic projection mode
 void paint(int prim, Point2 * verts, int numVerts);	///< Draw array of 2D vertices
+void paint(int prim, Point2 * verts, Color * cols, int numVerts);
 void paint(int prim, Point2 * verts, int * indices, int numIndices); ///< Draw indexed array of 2D vertices
 void paint(int prim, Point3 * verts, int numVerts);	///< Draw array of 3D vertices
 void paint(int prim, Point3 * verts, int * indices, int numIndices); ///< Draw indexed array of 3D vertices
@@ -267,6 +267,14 @@ inline void paint(int prim, Point2 * verts, int numVerts){
 	glVertexPointer(2, GL_FLOAT, 0, verts);
 	glDrawArrays(prim, 0, numVerts);
 	//glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+inline void paint(int prim, Point2 * verts, Color * cols, int numVerts){
+	glEnableClientState(GL_COLOR_ARRAY);
+	glVertexPointer(2, GL_FLOAT, 0, verts);
+	glColorPointer(4, GL_FLOAT, 0, cols);
+	glDrawArrays(prim, 0, numVerts);
+	glDisableClientState(GL_COLOR_ARRAY);
 }
 
 inline void paint(int prim, Point2 * verts, int * indices, int numIndices){
