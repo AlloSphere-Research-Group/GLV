@@ -431,6 +431,8 @@ public:
 	View& maximize();							///< Matches geometry to parent
 	View& restore();							///< Undoes maximization
 
+	void validate();
+
 protected:
 	Property::t mFlags;				// Property flags
 	Style * mStyle;					// Visual appearance

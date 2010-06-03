@@ -10,28 +10,28 @@ namespace glv{
 
 namespace Behavior{
 
-	static bool mouseMove(View * v, GLV & glv){
-		if(glv.mouse.left()){
-			v->move(glv.mouse.dx(), glv.mouse.dy());
+	static bool mouseMove(View * v, GLV& g){
+		if(g.mouse.left()){
+			v->move(g.mouse.dx(), g.mouse.dy());
 			return false;
 		}
 		return true;
 	}
 	
-	static bool mouseResizeCorner(View * v, GLV & glv){
-		if(glv.mouse.left()){
+	static bool mouseResizeCorner(View * v, GLV& g){
+		if(g.mouse.left()){
 
-			float mx = glv.mouse.xRel();
-			float my = glv.mouse.yRel();
+			float mx = g.mouse.xRel();
+			float my = g.mouse.yRel();
 
 			if(mx > (v->w-16) && my > (v->h-16)){
 
-				float dx = glv.mouse.dx();
-				float dy = glv.mouse.dy();
+				float dx = g.mouse.dx();
+				float dy = g.mouse.dy();
 
 				v->resizeRightTo(v->right() + dx);
 				v->resizeBottomTo(v->bottom() + dy);
-				v->fixNegativeExtent();		
+				v->validate();		
 				
 				return false;
 			}			
@@ -39,13 +39,13 @@ namespace Behavior{
 		return true;
 	}
 
-	static bool mouseResize(View * v, GLV & glv){
-		if(glv.mouse.middle()){
+	static bool mouseResize(View * v, GLV& g){
+		if(g.mouse.middle()){
 		
-			float dx = glv.mouse.dx();
-			float dy = glv.mouse.dy();
-			float mx = glv.mouse.xRel() / v->w;
-			float my = glv.mouse.yRel() / v->h;
+			float dx = g.mouse.dx();
+			float dy = g.mouse.dy();
+			float mx = g.mouse.xRel() / v->w;
+			float my = g.mouse.yRel() / v->h;
 		
 			if(mx < 0.5){
 				v->resizeLeftTo(v->l + dx);
@@ -55,7 +55,7 @@ namespace Behavior{
 				v->resizeRightTo(v->right() + dx);
 				my < 0.5 ? v->resizeTopTo(v->t + dy) : v->resizeBottomTo(v->bottom() + dy);					
 			}
-			v->fixNegativeExtent();
+			v->validate();
 			return false;
 		}
 		return true;

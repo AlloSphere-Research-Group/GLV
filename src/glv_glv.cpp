@@ -55,24 +55,43 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 
 	if(!v.enabled(Controllable)) return false;
 
-	bool bubble = v.onEvent(e, *this);					// Execute virtual callback
-	
-	if(bubble){
-		if(v.hasCallbacks(e)){
-			const eventCallbackList& cbl = v.callbackLists[e];
-			
-			// Execute callbacks in list
-			for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
-				//if(*it) bubble |= (*it)(&v, *this);
-				if(*it){
-					bool r = (*it)(&v, *this);
-					bubble &= r;
-					if(!r) break;
-				}
+//	bool bubble = v.onEvent(e, *this);					// Execute virtual callback
+//	
+//	if(bubble){
+//		if(v.hasCallbacks(e)){
+//			const eventCallbackList& cbl = v.callbackLists[e];
+//			
+//			// Execute callbacks in list
+//			for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
+//				//if(*it) bubble |= (*it)(&v, *this);
+//				if(*it){
+//					bool r = (*it)(&v, *this);
+//					bubble &= r;
+//					if(!r) break;
+//				}
+//			}
+//		}
+//	}
+//	
+//	return bubble | v.enabled(AlwaysBubble);
+
+	bool bubble = true;
+
+	if(v.hasCallbacks(e)){
+		const eventCallbackList& cbl = v.callbackLists[e];
+		
+		// Execute callbacks in list
+		for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
+			//if(*it) bubble |= (*it)(&v, *this);
+			if(*it){
+				bool r = (*it)(&v, *this);
+				bubble &= r;
+				if(!r) break;
 			}
 		}
 	}
 	
+	bubble &= v.onEvent(e, *this);
 	return bubble | v.enabled(AlwaysBubble);
 }
 
@@ -148,9 +167,9 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 	draw::enable(ScissorTest);
 
 	while(true){
-	
-		// update state based on attached model variables
-		cv->onModelSync();
+
+		cv->onModelSync();	// update state based on attached model variables
+		cv->validate();		// validate geometry
 	
 		// find the next view to draw
 		
@@ -206,8 +225,6 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 	// this weird call is necessary so that raster calls get scissored properly
 	// not entirely sure why this works, but it does.
 	scissor(0,0,(GLint)w,(GLint)h);
-
-	
 
 	pop2D();
 }

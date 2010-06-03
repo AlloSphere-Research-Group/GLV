@@ -201,7 +201,7 @@ StyleColor& View::colors() const { return style().color; }
 
 
 void View::constrainWithinParent(){
-	if (parent) {
+	if(parent){
 		// LJP: maybe this is too restrictive for top level children?
 //		l = l < 0 ? 0 : l > (parent->w - w) ? (parent->w - w) : l;
 //		t = t < 0 ? 0 : t > (parent->h - h) ? (parent->h - h) : t;
@@ -212,18 +212,12 @@ void View::constrainWithinParent(){
 		d = h < 20 ? h : 20;
 		t = t < d - h ? d - h : t > parent->h - d ? parent->h - d : t;
 	}
+	validate();
 }
 
 
 void View::drawPre(){
 	using namespace glv::draw;
-	
-	if(enabled(KeepWithinParent) && parent){
-		if(left() < 0) left(0);
-		if(top() < 0) top(0);
-		if(right() > parent->w) right(parent->w);
-		if(bottom() > parent->h) bottom(parent->h);
-	}
 	
 	if(enabled(DrawBack)){
 		color(colors().back);
@@ -252,6 +246,21 @@ void View::drawPost(){
 	}
 }
 
+void View::validate(){
+	fixNegativeExtent();
+
+	if(enabled(KeepWithinParent) && parent){
+		space_t maxw = parent->width();
+		space_t maxh = parent->height();
+		
+		extent(w>maxw?maxw:w, h>maxh?maxh:h);
+	
+		if(left() < 0) left(0);
+		if(top() < 0) top(0);
+		if(right() > maxw) right(maxw);
+		if(bottom() > maxh) bottom(maxh);
+	}
+}
 
 // This returns the last child and sibling View containing point.
 View * View::findTarget(space_t &x, space_t &y){
