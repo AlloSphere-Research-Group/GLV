@@ -337,7 +337,7 @@ public:
 
 	virtual const char * className() const { return "View"; }
 	virtual void onDraw();							///< Main drawing callback
-	virtual bool onEvent(Event::t e, GLV& glv);		///< Main event callback
+	virtual bool onEvent(Event::t e, GLV& glv);		///< Main event callback to be called after those in callback list
 	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
 	virtual void onModelSync(){}					///< Sync self to attached model variables
 	

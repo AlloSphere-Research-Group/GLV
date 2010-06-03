@@ -86,12 +86,13 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 			if(*it){
 				bool r = (*it)(&v, *this);
 				bubble &= r;
-				if(!r) break;
+				if(!bubble) goto end;
 			}
 		}
 	}
 	
 	bubble &= v.onEvent(e, *this);
+	end:
 	return bubble | v.enabled(AlwaysBubble);
 }
 
