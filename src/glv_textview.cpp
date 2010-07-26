@@ -49,7 +49,7 @@ Label& Label::label(const std::string& s){
 	return *this;
 }
 
-Label& Label::size(float pixels){ mSize = pixels/8.; fitExtent(); return *this; }
+Label& Label::size(float pixels){ mSize = pixels/draw::Glyph::baseline(); fitExtent(); return *this; }
 
 Label& Label::value(const std::string& s){ return label(s); }
 
