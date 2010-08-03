@@ -289,11 +289,11 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 
 
 
-TextView::TextView(const Rect& r)
+TextView::TextView(const Rect& r, float textSize)
 :	View(r), mSpacing(1), mPadX(4), mSel(0), mBlink(0)
 {
 	setPos(0);
-	size(8);
+	size(textSize);
 }
 
 void TextView::callNotify(){ notify(Update::Value, TextViewChange(&mText)); }

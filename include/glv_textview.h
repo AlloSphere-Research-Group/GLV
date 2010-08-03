@@ -191,7 +191,7 @@ protected:
 class TextView : public View{
 public:
 	/// Constructor
-	TextView(const Rect& r=glv::Rect(200,16));
+	TextView(const Rect& r=glv::Rect(200,16), float textSize=8);
 
 	/// Set size of font in pixels
 	TextView& size(float pixels);
