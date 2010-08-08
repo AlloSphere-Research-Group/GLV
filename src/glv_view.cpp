@@ -231,16 +231,24 @@ void View::drawPost(){
 	
 	if(enabled(DrawBorder)){
 		float borderWidth = 1.0;
-		//draw::color((mFocused && focusHighlight) ? colors().fore : colors().border);
 		
+		// changing brightness doesn't always look so great...
+//		if(enabled(Focused) && enabled(FocusHighlight)){
+//			HSV hsv(colors().border);
+//			hsv.v > 0.5 ? hsv.v -= 0.2 : hsv.v += 0.2;
+//			color(Color(hsv));
+//		}
+//		else{
+//			color(colors().border);
+//		}
+
+		color(colors().border);
+
+		// double border thickness if focused
 		if(enabled(Focused) && enabled(FocusHighlight)){
-			HSV hsv(colors().border);
-			hsv.v > 0.5 ? hsv.v -= 0.2 : hsv.v += 0.2;
-			color(Color(hsv));
+			borderWidth *= 2;
 		}
-		else{
-			color(colors().border);
-		}
+
 		lineWidth(borderWidth);
 		frame(0, 0, pix(w), pix(h));
 	}
