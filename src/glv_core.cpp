@@ -25,26 +25,41 @@ namespace Event{
 
 
 
-StyleColor::StyleColor()
-:	back(0.5, 0.5), border(0.5, 1), fore(1, 1), text(1, 1)
-{}
+StyleColor::StyleColor(){
+	set(BlackOnWhite);
+}
 
 
 
-void StyleColor::set(int preset){
+void StyleColor::set(Preset preset){
 	switch(preset){
-		case BlackOnWhite:	back.set(1  ); border.set(0); fore.set(0.5); text.set(0); break;
-		case Gray:			back.set(0.2); border.set(1); fore.set(1); text.set(0); break;
-		case WhiteOnBlack:	back.set(0  ); border.set(1); fore.set(0.5); text.set(1); break;
+		case BlackOnWhite:	back.set(1.0); border.set(0); fore.set(0.5); 
+							selection.set(0.7); text.set(0);
+							break;
+		case Gray:			back.set(0.6); border.set(0.1); fore.set(0.8);
+							selection.set(0.8); text.set(0);
+							break;
+		case WhiteOnBlack:	back.set(0.0); border.set(1); fore.set(0.5);
+							selection.set(0.2); text.set(1);
+							break;
 	}
 }
 
 
 void StyleColor::hsv(float h, float s, float v){
-	Color c; c.setHSV(h,s,v);
-	c.a = 0.2; back.set(c);
-	c.a = 0.5; border.set(c);
-	c.a = 1.0; fore.set(c);
+	Color c = HSV(h,s,v);
+
+	fore.set(c);
+
+	float vt;
+	vt = v + (v < 0.5 ? 0.4 : -0.4);
+	back.set(HSV(h,s,vt));
+
+	vt = v + (v < 0.5 ? 0.2 : -0.2);
+	selection.set(HSV(h,s,vt));
+	
+	text.set(c.inverse().blackAndWhite());
+	border.set(fore);
 }
 
 
