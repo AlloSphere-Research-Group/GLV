@@ -282,10 +282,11 @@ public:
 	
 	enum{ BlackOnWhite, Gray, WhiteOnBlack };
 
-	Color back;		///< Background
-	Color border;	///< Border outline
-	Color fore;		///< Foreground
-	Color text;		///< Text
+	Color back;			///< Background
+	Color border;		///< Border outline
+	Color fore;			///< Foreground
+	Color selection;	///< Selection
+	Color text;			///< Text
 
 	void set(int preset);
 	void hsv(float h, float s=1, float v=1);
@@ -306,8 +307,8 @@ public:
 		// Note: This uses a Construct On First Use Idiom to avoid unpredictable
 		// static initialization order.  The memory allocated will get freed from 
 		// the heap when the program exits.
-		static Style* ans = new Style(false);
-		return *ans;
+		static Style * v = new Style(false);
+		return *v;
 	}
 };
 
