@@ -226,6 +226,9 @@ public:
 	/// Get arrangement string
 	const std::string& arrangement() const { return mAlign; }
 
+	space_t padX() const { return mPad1; }
+	space_t padY() const { return mPad2; }
+
 	virtual const char * className() const { return "Table"; }
 
 protected:

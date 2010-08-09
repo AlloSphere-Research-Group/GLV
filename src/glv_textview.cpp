@@ -7,7 +7,7 @@
 
 namespace glv{
 
-#define CTOR_LIST mSize(1), mAlignX(0), mAlignY(0), mVertical(false)
+#define CTOR_LIST mAlignX(0), mAlignY(0), mVertical(false)
 #define CTOR_BODY\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
 	label(str);\
@@ -49,7 +49,11 @@ Label& Label::label(const std::string& s){
 	return *this;
 }
 
-Label& Label::size(float pixels){ mSize = pixels/draw::Glyph::baseline(); fitExtent(); return *this; }
+Label& Label::size(float pixels){
+	mFont.size(pixels);
+	fitExtent();
+	return *this;
+}
 
 Label& Label::value(const std::string& s){ return label(s); }
 
@@ -66,8 +70,9 @@ void Label::onDraw(){
 	lineWidth(1);
 	color(colors().text);
 	if(mVertical){ translate(0,h); rotate(0,0,-90); }
-	scale(mSize, mSize);
-	text(mLabel.c_str());
+	mFont.render(mLabel.c_str());
+	//scale(mSize, mSize);
+	//text(mLabel.c_str());
 }
 
 
@@ -85,11 +90,13 @@ void Label::fitExtent(){
 		}
 	}
 	
-	space_t dw = mw*mSize - w;
-	space_t dh = th*mSize - h;
+	float mul = mFont.scaleX();
+	
+	space_t dw = mw*mul - w;
+	space_t dh = th*mul - h;
 	posAdd(-dw*mAlignX, -dh*mAlignY);
 	
-	extent(mw*mSize, th*mSize);
+	extent(mw*mul, th*mul);
 	if(mVertical) rotateRect();
 }
 
@@ -187,7 +194,8 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 	
 	// draw box at position (only if focused)
 	if(enabled(Focused)){
-		color(colors().fore, colors().fore.a*0.4);
+//		color(colors().fore, colors().fore.a*0.4);
+		color(colors().selection);
 		rect(dig()*dx, 0, (dig()+1)*dx, h);
 	}
 	
@@ -204,32 +212,60 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 	if(mNI == 0) msd-=1;
 
 	color(colors().text);
-	draw::push();
-		float sx = (dx- 1.f*mPad)/Glyph::width();
-		float sy = (h - 2.f*mPad)/Glyph::baseline();
-		scale(sx, sy);
-		sx = 1.f/sx;
+//	draw::push();
+//		float sx = (dx- 1.f*mPad)/Glyph::width();
+//		float sy = (h - 2.f*mPad)/Glyph::baseline();
+//		scale(sx, sy);
+//		sx = 1.f/sx;
+//
+//		float tdx = Glyph::width()*0.5f;
+//		float x = (w - dx*0.5f)*sx - tdx;
+//		float y = mPad/sy;
+//		dx *= sx;
+//		
+//		int power = 1;
+//		bool drawChar = false; // don't draw until non-zero or past decimal point
+//
+//		// Draw the digits
+//		if(mNF  > 0) character('.', dx*(mNI+sizeSign()) - tdx, y);
+//		if(mShowSign && mVal < 0) character('-', dx*0.5 - tdx, y);
+//		
+//		for(int i=0; i<=msd; ++i){
+//			char c = '0' + (absVal % (power*10))/power;
+//			power *= 10;
+//			if(c!='0' || i>=mNF) drawChar = true;
+//			if(drawChar) character(c, x, y);
+//			x -= dx;
+//		}
+//	draw::pop();
 
-		float tdx = Glyph::width()*0.5f;
-		float x = (w - dx*0.5f)*sx - tdx;
-		float y = mPad/sy;
-		dx *= sx;
-		
-		int power = 1;
-		bool drawChar = false; // don't draw until non-zero or past decimal point
+	mFont.size(dx - mPad);
+	mFont.letterSpacing(mPad/mFont.size());
+	float x = mPad;
+	float y = mPad;
 
-		// Draw the digits
-		if(mNF  > 0) character('.', dx*(mNI+sizeSign()) - tdx, y);
-		if(mShowSign && mVal < 0) character('-', dx*0.5 - tdx, y);
-		
-		for(int i=0; i<=msd; ++i){
-			char c = '0' + (absVal % (power*10))/power;
-			power *= 10;
-			if(c!='0' || i>=mNF) drawChar = true;
-			if(drawChar) character(c, x, y);
-			x -= dx;
-		}
-	draw::pop();
+	char str[32];
+	int ic = size();
+	str[ic] = '\0';
+	for(int i=0; i<size(); ++i) str[i]=' ';
+	
+	int power = 1;
+	bool drawChar = false; // don't draw until non-zero or past decimal point
+
+	// Draw the digits
+	if(mShowSign && mVal < 0) str[0] = '-';
+	
+	for(int i=0; i<=msd; ++i){
+		char c = '0' + (absVal % (power*10))/power;
+		power *= 10;
+		if(c!='0' || i>=mNF) drawChar = true;
+		--ic;
+		if(drawChar) str[ic] = c;
+	}
+
+//	printf("%s\n", str);
+	mFont.render(str, x, y);
+	if(mNF>0) mFont.render(".", dx*(mNI+sizeSign()-0.5) + x, y);
 }
 
 
@@ -298,7 +334,10 @@ TextView::TextView(const Rect& r, float textSize)
 
 void TextView::callNotify(){ notify(Update::Value, TextViewChange(&mText)); }
 
-TextView& TextView::size(float pixels){ mSize = pixels/draw::Glyph::width(); return *this; }
+TextView& TextView::size(float pixels){
+	mFont.size(pixels);
+	return *this;
+}
 
 TextView& TextView::value(const std::string& v){
 	if(v != mText){
@@ -312,18 +351,15 @@ void TextView::onDraw(){
 	using namespace draw;
 	
 	if(++mBlink==40) mBlink=0; // update blink interval
-	
-	float padX = mPadX/mSize;
-	float padY = 4/mSize;
-	float addY =-2/mSize;	// subtraction from top since some letters go above cap
-	
-	draw::push();
-	draw::scale(mSize, mSize);
 
-	float tl = mPos * Glyph::width() + padX;
-	float tr = tl + Glyph::width();
-	float tt = 0 * (mSpacing * Glyph::baseline()) + addY + padY;
-	float tb = tt + Glyph::descent() - addY;
+	float padX = mPadX;
+	float padY = 4;
+	float addY =-2;		// subtraction from top since some letters go above cap
+
+	float tl = mPos * mFont.advance('M') + padX;
+	float tr = tl + mFont.advance('M');
+	float tt = addY + padY;
+	float tb = tt + mFont.descent() - addY;
 	float strokeWidth = 1;
 	
 	// draw selection
@@ -331,13 +367,13 @@ void TextView::onDraw(){
 		float sl, sr;
 		if(mSel>0){
 			sl = tl;
-			sr = sl + mSel*Glyph::width();
+			sr = sl + mSel*mFont.advance('M');
 		}
 		else{
 			sr = tl;
-			sl = sr + mSel*Glyph::width();
+			sl = sr + mSel*mFont.advance('M');
 		}
-		color(colors().fore, colors().fore.a*0.4);
+		color(colors().selection);
 		rect(sl, tt, sr, tb);
 	}
 
@@ -349,8 +385,7 @@ void TextView::onDraw(){
 
 	draw::lineWidth(strokeWidth);
 	color(colors().text);
-	draw::text(mText.c_str(), padX, padY);
-	draw::pop();
+	mFont.render(mText.c_str(), padX, padY);
 }
 
 bool TextView::onEvent(Event::t e, GLV& g){
@@ -459,7 +494,7 @@ void TextView::setPos(int v){
 }
 
 int TextView::xToPos(float x){
-	float charw = draw::Glyph::width() * mSize;
+	float charw = mFont.advance('M');
 	if(x<0) x=0;
 	int p = (x-mPadX*1)/charw;
 	if(p > (int)mText.size()) p = mText.size();

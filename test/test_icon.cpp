@@ -50,11 +50,21 @@ void drawCB(View * v){
 	x = 20.5; y += d + 10;
 	y = (int)y + 0.5;
 
-	for(int i=0; i<(127 - '!'); ++i){
-		float dx = (i%16) * 8;
-		float dy = (i/16) * 16;
-		character(i + '!', x + dx, y + dy);
-	}
+	text(
+		"!\"#$%&'()*+,-./0\n"
+		"123456789:;<=>?@\n"
+		"ABCDEFGHIJKLMNOP\n"
+		"QRSTUVWXYZ[\]^_`\n"
+		"abcdefghijklmnop\n"
+		"qrstuvwxyz{|}~",
+		20,300
+	);
+
+//	for(int i=0; i<(127 - '!'); ++i){
+//		float dx = (i%16) * 8;
+//		float dy = (i/16) * 16;
+//		character(i + '!', x + dx, y + dy);
+//	}
 }
 
 

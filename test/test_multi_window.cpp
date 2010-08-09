@@ -42,13 +42,11 @@ int main(int argc, char ** argv){
     using namespace glv;
     
 	GLV glv1;
-  	glv1.colors().back.set(0);
 	Window win1(640, 640, "Window One", &glv1);
     TestWindow test1;
     glv1 << test1;
     
 	GLV glv2;
-	glv2.colors().back.set(0);
 	Window win2(640, 640, "Window Two", &glv2);
 	win2.position(win1.right(), 0);
     TestWindow test2;

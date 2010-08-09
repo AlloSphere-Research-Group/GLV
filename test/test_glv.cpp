@@ -9,7 +9,11 @@ int main(int argc, char ** argv){
 
 	//---- Intialize GLV
 	GLV top;
+	top.colors().set(StyleColor::WhiteOnBlack);
+	top.colors().back.set(1,0.1);
+	top.cloneStyle();
 	top.colors().back.set(0);
+	
 
 	Window win(640, 640, "GLV Test", &top);
 

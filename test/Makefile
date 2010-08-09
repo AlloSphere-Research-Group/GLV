@@ -1,8 +1,12 @@
-include ../Makefile.config
-CFLAGS += -I../include/
-LFLAGS += ../libglv.a
+#=========================================================================
+# GLV test makefile
+#=========================================================================
 
-SRC =	test_examples.cpp \
+include ../Makefile.config
+CFLAGS += $(addprefix -I../, $(INC_DIRS))
+LFLAGS += -L../$(BIN_DIR) ../$(BIN_DIR)/$(SLIB_FILE)
+
+SRCS =	test_examples.cpp \
 	test_glv.cpp \
 	test_icon.cpp \
 	test_multi_window.cpp \
@@ -11,13 +15,13 @@ SRC =	test_examples.cpp \
 	test_widgets.cpp \
 	test_window.cpp
 
-TARGETS = $(SRC:.cpp=)
+TARGETS = $(addprefix ../$(BIN_DIR)/, $(SRCS:.cpp=))
 
+#--------------------------------------------------------------------------
+# Targets
+#--------------------------------------------------------------------------
 all: $(TARGETS)
 
-%: %.cpp ../libglv.a
+../$(BIN_DIR)/%: %.cpp
 	@echo CC $<
-	@$(CC) $(CFLAGS) -o $@ $< $(LFLAGS)
-
-clean:
-	@rm -f *.o $(TARGETS)
+	@$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)

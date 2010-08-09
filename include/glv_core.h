@@ -280,7 +280,11 @@ class StyleColor{
 public:
 	StyleColor();
 	
-	enum Preset{ BlackOnWhite, Gray, WhiteOnBlack };
+	enum Preset{
+		BlackOnWhite,
+		Gray,
+		WhiteOnBlack
+	};
 
 	Color back;			///< Background
 	Color border;		///< Border outline
@@ -291,8 +295,8 @@ public:
 	/// Set style based on preset
 	void set(Preset preset);
 	
-	/// Set style based on single HSV color
-	void hsv(float h, float s=1, float v=1);
+	/// Set style based on a single color
+	void set(const Color& c, float contrast=0.4);
 };
 
 

@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include "glv.h"
+#include "glv_behavior.h"
 #include "glv_binding.h"
 
 namespace glv{
@@ -34,7 +35,8 @@ struct CharView : public View{
 		lineWidth(thickness);
 		color(colors().fore);
 
-		character(input);
+		char str[2] = {input, '\0'};
+		text(str);
 	}
 	
 	virtual bool onEvent(Event::t e, GLV& glv){
@@ -135,7 +137,7 @@ public:
 		using namespace glv::draw;
 		
 		if(enabled(DrawGrid)){
-			color(colors().fore, 0.15);
+			color(colors().fore, 0.25);
 			grid(0,0,w,h,mSizeX,mSizeY, false);
 		}
 		

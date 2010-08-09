@@ -1,46 +1,73 @@
+#=========================================================================
+# GLV main makefile
+#=========================================================================
+
 include ./Makefile.config
-CFLAGS += -I./include/
-SRCDIR = ./src
 
-SRC = 	$(SRCDIR)/glv_buttons.cpp \
-	$(SRCDIR)/glv_color.cpp \
-	$(SRCDIR)/glv_core.cpp \
-	$(SRCDIR)/glv_draw.cpp \
-	$(SRCDIR)/glv_glv.cpp \
-	$(SRCDIR)/glv_inputdevice.cpp \
-	$(SRCDIR)/glv_layout.cpp \
- 	$(SRCDIR)/glv_plots.cpp \
-	$(SRCDIR)/glv_sliders.cpp \
-	$(SRCDIR)/glv_texture.cpp \
-	$(SRCDIR)/glv_textview.cpp \
-	$(SRCDIR)/glv_view.cpp \
-	$(SRCDIR)/glv_view3D.cpp
+SRCS = 	glv_buttons.cpp \
+	glv_color.cpp \
+	glv_core.cpp \
+	glv_draw.cpp \
+	glv_font.cpp \
+	glv_glv.cpp \
+	glv_inputdevice.cpp \
+	glv_layout.cpp \
+ 	glv_plots.cpp \
+	glv_sliders.cpp \
+	glv_texture.cpp \
+	glv_textview.cpp \
+	glv_view.cpp \
+	glv_view3D.cpp
 
-ifndef BINDING_NONE
-	SRC += $(SRCDIR)/glv_binding.cpp $(SRCDIR)/$(BINDING_SRC)
+ifdef WINDOW_BINDING
+	SRCS += glv_binding.cpp $(BINDING_SRC)
 endif
 
-OBJ = $(SRC:.cpp=.o)
+OBJS		= $(addsuffix .o, $(basename $(notdir $(SRCS))))
+CFLAGS		+= $(addprefix -I, $(INC_DIRS))
+LFLAGS		:= $(addprefix -L, $(LIB_DIRS)) $(LFLAGS)
+DLIB_FILE 	:= $(addprefix $(BIN_DIR)/, $(DLIB_FILE))
+SLIB_FILE 	:= $(addprefix $(BIN_DIR)/, $(SLIB_FILE))
 
-.cpp.o:
-	@echo CC $<
-	@$(CC) -c $(CFLAGS) -o $*.o $<
+#--------------------------------------------------------------------------
+# Targets
+#--------------------------------------------------------------------------
+# Build object file from C++ source
+$(OBJ_DIR)/%.o: %.cpp
+	@echo CC $< $@
+	@$(CC) -c $(CFLAGS) $< -o $@
 
-libglv.a: $(OBJ)
+# Build static library
+$(SLIB_FILE): createFolders $(addprefix $(OBJ_DIR)/, $(OBJS))
 	@echo AR $@
-	@$(AR) $@ $(OBJ)
+	@rm -f $@
+	@$(AR) $@ $(filter %.o, $^)
 	@$(RANLIB) $@
 
-.PHONY: tests
+# Dummy target to force rebuilds
+#FORCE:
 
-test: libglv.a
-	@cd test && make all
+.PHONY: test
+test: $(SLIB_FILE)
+	@make --directory $(TEST_DIR)
 
+.PHONY: clean
 clean:
-	@rm -f $(OBJ) libglv.a
-	@cd test && make clean
+	@rm -rf $(BIN_DIR)/*
+#	@cd test && make clean
 
-current:
-	libglv.a
+all: $(SLIB_FILE) test
 
-all: libglv.a test
+
+# Compile and run source files in test/ folder
+test/%.cpp: $(SLIB_FILE)
+	@$(CC) $(CFLAGS) -o $(BIN_DIR)/$(*F) $@ $(LFLAGS) $(SLIB_FILE)
+	@./$(BIN_DIR)/$(*F) &
+
+# Compile and run source files in example/ folder
+example/%.cpp: $(SLIB_FILE)
+	@$(CC) $(CFLAGS) -o $(BIN_DIR)/$(*F) $@ $(LFLAGS) $(SLIB_FILE)
+	@./$(BIN_DIR)/$(*F) &
+
+createFolders:
+	@mkdir -p $(OBJ_DIR)

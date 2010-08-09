@@ -10,7 +10,7 @@ namespace glv {
 
 class View3D : public View {
 public:
-	View3D(const Rect& r=Rect());
+	View3D(const Rect& r=Rect(0));
 	virtual ~View3D(){}
 	
 	/// 3D drawing callback

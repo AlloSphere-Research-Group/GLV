@@ -7,6 +7,7 @@
 #include <string>
 #include <string.h>
 #include "glv_core.h"
+#include "glv_font.h"
 #include "glv_widget.h"
 
 namespace glv{
@@ -75,8 +76,8 @@ public:
 	virtual void onDraw();
 
 protected:
+	Font mFont;
 	std::string mLabel;		// The label string
-	float mSize;
 	float mAlignX, mAlignY;
 	bool mVertical;
 	
@@ -148,6 +149,7 @@ public:
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
+	Font mFont;
 	int mNI, mNF, mPos;		// # digits in integer, # digits in fraction, selected digit position
 	int mVal, mMin, mMax;	// current value, min value, max value
 	space_t mPad;
@@ -209,8 +211,9 @@ public:
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
+	Font mFont;
 	std::string mText;		// The text string
-	float mSize;
+	//float mSize;
 	float mSpacing;
 	float mPadX;
 	int mPos;
@@ -227,6 +230,66 @@ protected:
 
 
 
+class ListSelect : public View {
+public:
+	ListSelect(const Rect& r=Rect(140,16), space_t pad=4)
+	:	View(r), mSelected(0), mPad(pad)
+	{}
+
+	ListSelect& add(const std::string& v){
+		mItems.push_back(v); return *this;
+	}
+
+	ListSelect& select(int i){
+		mSelected = glv::clip<int>(i,mItems.size()-1); return *this;
+	}
+
+	int selected() const { return mSelected; }
+
+	virtual const char * className() const { return "ListSelect"; }
+
+	virtual void onDraw(){
+		using namespace glv::draw;
+		if(mItems.size() < 1) return;
+		mFont.size(height() - 2*mPad);
+		
+		color(colors().text);
+		stroke(1);
+		mFont.render(mItems[selected()].c_str(), mPad, mPad);
+	}
+
+	virtual bool onEvent(Event::t e, GLV& g){
+	
+		const Keyboard& k = g.keyboard;
+		const Mouse& m = g.mouse;
+	
+		switch(e){
+		case Event::KeyDown:
+			switch(k.key()){
+			case Key::Up:	select(selected()-1); return false;
+			case Key::Down:	select(selected()+1); return false;
+			default:;
+			}
+		case Event::MouseDown:
+			return false;
+		case Event::MouseDrag:{
+			int dy = m.y() - m.y(m.button());
+			int inc = ((dy+800000) % 8 == 0) * (dy<0?-1:1);
+			select(selected()+inc);
+			return false;
+		}
+			
+		default:;
+		}
+		return true;
+	}
+
+private:
+	Font mFont;
+	int mSelected;
+	space_t mPad;
+	std::vector<std::string> mItems;
+};
 
 
 

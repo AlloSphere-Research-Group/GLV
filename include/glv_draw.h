@@ -17,14 +17,20 @@ struct Point2{
 	Point2(){}
 	Point2(float x_, float y_): x(x_), y(y_){}
 	void operator()(float x_, float y_){x=x_; y=y_;}
-	float x,y;
+	union{
+		struct{ float x,y; };
+		float elems[2];
+	};
 };
 
 struct Point3{
 	Point3(){}
 	Point3(float x_, float y_, float z_): x(x_), y(y_), z(z_){}
 	void operator()(float x_, float y_, float z_){x=x_; y=y_; z=z_;}
-	float x,y,z;
+	union{
+		struct{ float x,y,z; };
+		float elems[3];
+	};
 };
 
 
@@ -80,29 +86,29 @@ enum{
 };
 
 enum{
-	Model			= GL_MODELVIEW,
+	ModelView		= GL_MODELVIEW,
 	Projection		= GL_PROJECTION,
 	Texture			= GL_TEXTURE
 };
 
 
 
-struct Glyph{
-	enum{ Once=(1<<7), Dot1=(1<<5), Dot2=(2<<5), MaskDots=96, MaskSize=31 };
-	
-	const unsigned char field;
-	float x[8], y[8];
-	
-	static int cap()		{ return 0; }
-	static int median()		{ return 3; }
-	static int baseline()	{ return 8; }
-	static int descent()	{ return 11; }
-	static int width()		{ return 8; }
-	
-	unsigned char dots() const { return (field & MaskDots) >> 5; }
-	unsigned char once() const { return (field           ) >> 7; }
-	unsigned char size() const { return (field & MaskSize)     ; }
-};
+//struct Glyph{
+//	enum{ Once=(1<<7), Dot1=(1<<5), Dot2=(2<<5), MaskDots=96, MaskSize=31 };
+//	
+//	const unsigned char field;
+//	float x[8], y[8];
+//	
+//	static int cap()		{ return 0; }
+//	static int median()		{ return 3; }
+//	static int baseline()	{ return 8; }
+//	static int descent()	{ return 11; }
+//	static int width()		{ return 8; }
+//	
+//	unsigned char dots() const { return (field & MaskDots) >> 5; }
+//	unsigned char once() const { return (field           ) >> 7; }
+//	unsigned char size() const { return (field & MaskSize)     ; }
+//};
 
 
 
@@ -129,6 +135,7 @@ void paint(int prim, Point2 * verts, int numVerts);	///< Draw array of 2D vertic
 void paint(int prim, Point2 * verts, Color * cols, int numVerts);
 void paint(int prim, Point2 * verts, int * indices, int numIndices); ///< Draw indexed array of 2D vertices
 void paint(int prim, Point3 * verts, int numVerts);	///< Draw array of 3D vertices
+void paint(int prim, Point3 * verts, Color * cols, int numVerts);
 void paint(int prim, Point3 * verts, int * indices, int numIndices); ///< Draw indexed array of 3D vertices
 void pointSize(float val);							///< Set size of points
 void pointAtten(float c2=0, float c1=0, float c0=1); ///< Set distance attenuation of points. The scaling formula is clamp(size * sqrt(1/(c0 + c1*d + c2*d^2)))
@@ -202,17 +209,12 @@ void shape(int prim, float x0, float y0, float x1, float y1, float x2, float y2,
 
 void spokes(float l, float t, float w, float h, int sides, float angleNorm=0);
 
-/// Sends vertex calls for a printable ascii character.
-
-/// This function must be called within a begin(Lines) and end().  
-/// The coordinate system is an 8x8 grid with top-left at (0,0).
-bool character(int c, float dx=0, float dy=0);
 
 /// Draws a text string, including new lines and tabs.
 
-/// The spacing between characters is fixed at 8 units.
+/// The spacing between characters is fixed.
 ///
-void text(const char * s, float l=0, float t=0, float lineSpacing=1, unsigned int tabSpaces=4);
+void text(const char * s, float l=0, float t=0, unsigned fontSize=8, float lineSpacing=1, unsigned tabSpaces=4);
 
 
 
@@ -285,6 +287,14 @@ inline void paint(int prim, Point2 * verts, int * indices, int numIndices){
 inline void paint(int prim, Point3 * verts, int numVerts){
 	glVertexPointer(3, GL_FLOAT, 0, verts);
 	glDrawArrays(prim, 0, numVerts);
+}
+
+inline void paint(int prim, Point3 * verts, Color * cols, int numVerts){
+	glEnableClientState(GL_COLOR_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, verts);
+	glColorPointer(4, GL_FLOAT, 0, cols);
+	glDrawArrays(prim, 0, numVerts);
+	glDisableClientState(GL_COLOR_ARRAY);
 }
 
 inline void paint(int prim, Point3 * verts, int * indices, int numIndices){

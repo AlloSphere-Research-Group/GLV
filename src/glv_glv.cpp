@@ -9,7 +9,7 @@ GLV::GLV(drawCallback cb, space_t width, space_t height)
 :	View(0, 0, width, height, cb), mFocusedView(this)
 {
 	disable(DrawBorder | FocusHighlight);
-	cloneStyle();
+//	cloneStyle();
 	instances().push_back(this);
 }
 
@@ -238,6 +238,7 @@ std::vector<GLV *>& GLV::instances(){
 void GLV::preamble(unsigned int w, unsigned int h){
 	using namespace draw;
 	glDrawBuffer(GL_BACK);
+	//colors().back.print();
 	clearColor(colors().back.r, colors().back.g, colors().back.b, colors().back.a);
 	clear(ColorBufferBit | DepthBufferBit);	// TODO: this needs to be coordinated with the display settings
 }

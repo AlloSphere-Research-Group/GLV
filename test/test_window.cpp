@@ -24,15 +24,15 @@ void drawCB(View * v){
 		end();
 	pop3D();
 
-	color(1);
+	color(0);
 	text(
-		"Esc  toggle full screen\n"
+		"esc  toggle full screen\n"
 		"  g  toggle game mode\n"
 		"  h  hide\n"
 		"  i  iconify\n"
 		"  c  show/hide cursor\n"
 		"  q  quit",
-		8.5, 8.5
+		8, 8
 	);
 }
 
@@ -58,6 +58,7 @@ bool evQuit(View * v, GLV& g){ printf("Event::Quit\n"); return false; }
 
 int main(){
 	GLV glv(drawCB);
+	glv.colors().set(StyleColor::Gray);
 	glv(Event::KeyDown, evKeyDown);
 	glv(Event::WindowResize, evWinResize);
 	glv(Event::WindowCreate, evWinCreate);

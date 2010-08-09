@@ -4,82 +4,227 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include <vector>
+#include <set>
 #include "glv_core.h"
+#include "glv_draw.h"
 
 namespace glv {
+
+/* TODO:
+- multiple representations of the same data (use 1D pointers and copy-on-draw)
+- multiple plots on same graph
+*/
+
+
+/*
+Plot plotX, plotY, plotXY;
+
+vector<Point2> data1, data2;
+
+plotX.addData(&data1[0].x, data1.size(), 2, PlotDim::X);
+plotY.addData(&data1[0].y, data1.size(), 2, PlotDim::Y);
+plotXY.addData(&data1[0], data1.size(), 1, PlotDim::XY);
+*/
+
+class Plot;
+
+/// Define the dependent dimension(s) of a plot
+namespace PlotDim{ 
+	enum t{
+//		None= 0,
+		X	= 1<<0,
+		Y	= 1<<1,
+		XY	= X|Y
+	};
+	inline t operator| (const t& a, const t& b){ return t(int(a) | int(b)); }
+}
+
+
+class PlotData{
+public:
+
+	PlotData();
+	explicit PlotData(int size, PlotDim::t dim);
+
+	~PlotData();
+
+	PlotData& dotEnds(bool v);				///< Set whether to draw dots at end points of 2-D plot
+	PlotData& dotPoints(bool v);			///< Set whether to draw dots at points of 2-D plot
+	PlotData& interpolate(bool v);			///< Set whether to apply cubic interpolation to 2-D plot
+	PlotData& color(const Color& c);		///< Set plotting color
+	PlotData& drawType(int primitive);		///< Set drawing primitive type
+	PlotData& interval(int min, int max);	///< Set range of buffer indices to plot to [min, max)
+	PlotData& stroke(float width);			///< Set stroke width of pen
+
+	PlotData& reference(int dim, float * src, int size, int stride=1){
+		mPointsRef[dim] = src;
+		mStrides[dim] = stride;
+		mSize=size;
+		interval(0, mSize);
+		return *this;
+	}
+
+	PlotData& resize(int size, PlotDim::t dim);		///< Change size of internal buffers
+	PlotData& zero();								///< Zero point buffer
+
+	Color * colors();
+	float * points(int dim) const;
+
+	bool dotPoints() const { return mDotPoints; }	///< Get whether points are dotted
+	bool dotEnds() const { return mDotEnds; }		///< Get whether endpoints are dotted
+	int size() const { return mSize; }				///< Get size of internal data buffer(s)
+	int stride(int dim) const { return mPointsRef[dim] ? mStrides[dim] : 1; }
+	float stroke() const { return mStroke;}			///< Get stroke width
+
+protected:
+	friend class Plot;
+	enum{ DIMS=2 };
+
+	int mSize;
+	int mIMin, mIMax;
+	int mStrides[DIMS];
+	float * mPoints[DIMS];
+	float * mPointsRef[DIMS];
+	Color * mColor;
+	Color * mColors;
+
+	int mDrawPrim;
+	float mStroke;
+	bool mDotEnds, mDotPoints, mInterpolate;
+
+	bool isX() const { return mPoints[0] || mPointsRef[0]; }
+	bool isY() const { return mPoints[1] || mPointsRef[1]; }
+	bool isXY() const { return isX() && isY(); }
+
+	void allocColors(){ freeColors(); mColors = new Color[size()]; }
+	void free(){
+		for(int i=0; i<DIMS; ++i){
+			if(mPoints[i]) delete[] mPoints[i];
+		}
+		freeColors();
+	}
+	void freeColors(){ if(mColors) delete[] mColors; mColors=0; }
+};
+
+
+
+
+//class PlotData{
+//public:
+//
+//	PlotData();
+//	~PlotData();
+//
+//	explicit PlotData(int size);//, const Color& color=Color(0.5));
+//
+//	Point2 * points();
+//	Color * colors();
+//
+//	PlotData& dotEnds(bool v);				///< Set whether to draw dots at end points of 2-D plot
+//	PlotData& dotPoints(bool v);			///< Set whether to draw dots at points of 2-D plot
+//	PlotData& interpolate(bool v);			///< Set whether to apply cubic interpolation to 2-D plot
+//	PlotData& color(const Color& c);		///< Set plotting color
+//	PlotData& drawType(int primitive);		///< Set drawing primitive type
+//	PlotData& interval(int min, int max);	///< Set range of buffer indices to plot to [min, max)
+//	PlotData& PlotData::plotDim(PlotDim::t v);
+//	PlotData& stroke(float width);			///< Set stroke width of pen
+//
+//	PlotData& resize(int n);				///< Change size of internal buffers
+//	PlotData& zero();						///< Zero point buffer
+//
+//	bool dotPoints() const { return mDotPoints; }	///< Get whether points are dotted
+//	bool dotEnds() const { return mDotEnds; }		///< Get whether endpoints are dotted
+//	int size() const { return mSize; }				///< Get size of internal data buffer(s)
+//	float stroke() const { return mStroke;}			///< Get stroke width
+//
+//	void draw(float mulX, float addX, float mulY, float addY, const Color& defaultCol) const;
+//
+//protected:
+//	PlotDim::t mPlotDim;
+//	int mSize;
+//	int mIMin, mIMax;
+//	Point2 * mPoints;
+//	Color * mColors;
+//	Color * mColor;
+//	int mDrawPrim;
+//	float mStroke;
+//	bool mDotEnds, mDotPoints, mInterpolate;
+//
+//	void allocPoints(){ freePoints(); mPoints = new Point2[size()]; zero(); }
+//	void allocColors(){ freeColors(); mColors = new Color[size()]; }
+//	void freePoints(){ if(mPoints) delete[] mPoints; mPoints=0; }
+//	void freeColors(){ if(mColors) delete[] mColors; mColors=0; }
+//	bool hasX() const { return mPlotDim==PlotDim::X || mPlotDim==PlotDim::XY; }
+//	bool hasY() const { return mPlotDim==PlotDim::Y || mPlotDim==PlotDim::XY; }
+//};
 
 
 /// A 1D or 2D function plot
 
 ///
 ///
-class FunctionPlot : public View{
+class Plot : public View{
 public:
+
+	Plot(const Rect& r=Rect(100));
+
+//	/// @param[in] r			geometry
+//	/// @param[in] data			plot data
+//	Plot(const Rect& r, const PlotData& data);
+
+	Plot(const Rect& r, const Color& plotColor);
 
 	/// @param[in] r			geometry
 	/// @param[in] size			size of internal data buffer(s)
-	FunctionPlot(const Rect& r=Rect(0), int size=128);
+	Plot(const Rect& r, int size, PlotDim::t dim);
 	
 	/// @param[in] r			geometry
 	/// @param[in] size			size of internal data buffer(s)
 	/// @param[in] plotColor	color of plot
-	FunctionPlot(const Rect& r, int size, const Color& plotColor);
+	Plot(const Rect& r, int size, PlotDim::t dim, const Color& plotColor);
 
-	~FunctionPlot();
-	
-	FunctionPlot& drawType(int primitive);			///< Set drawing primitive type
-	FunctionPlot& center();							///< Center axes
-	FunctionPlot& dotEnds(bool v);					///< Set whether to draw dots at end points of 2-D plot
-	FunctionPlot& dotPoints(bool v);				///< Set whether to draw dots at points of 2-D plot
-	FunctionPlot& interpolate(bool v);				///< Set whether to apply cubic interpolation to 2-D plot
-	FunctionPlot& plotColor(const Color& c);		///< Set plotting color
-	FunctionPlot& range(float ext);					///< Set range of x & y axes to [-ext,ext]
-	FunctionPlot& rangeIndex(int min, int max);		///< Set range of buffer indices to plot to [min, max)
-	FunctionPlot& rangeX(float ext);				///< Set range of x axis to [-ext,ext]
-	FunctionPlot& rangeY(float ext);				///< Set range of y axis to [-ext,ext]
-	FunctionPlot& rangeX(float min, float max);		///< Set range of x axis to [min,max]
-	FunctionPlot& rangeY(float min, float max);		///< Set range of y axis to [min,max]
-	FunctionPlot& resize(int n);					///< Change size of internal buffers
-	FunctionPlot& showAxes(bool v);					///< Set whether to show axes
-	FunctionPlot& stroke(float width);				///< Set stroke width of pen
-	FunctionPlot& tickMajor(float d);				///< Set major tick distance (<= 0 turns off)
-	
-	FunctionPlot& zero();							///< Zeroes all buffer elements
-	
-	float * bufferX();								///< Returns internal x value buffer
-	float * bufferY();								///< Returns internal y value buffer
-	Color * bufferColor();							///< Returns internal color (z) buffer
+	virtual ~Plot();
 
-	bool dotPoints() const { return mDotPoints; }	///< Get whether points are dotted
-	bool dotEnds() const { return mDotEnds; }		///< Get whether endpoints are dotted
-	int size() const { return mSize; }				///< Get size of internal data buffer(s)
-	float stroke() const { return mStroke; }
+	Plot& center();							///< Center axes
+	Plot& equalizeAxes();					///< Make axis dimensions the same
+	Plot& preserveAspect(bool v);			///< Set whether aspect ratio is preserved to 1:1
+	Plot& range(float ext);					///< Set range of x & y axes to [-ext,ext]
+	Plot& rangeFit(float padPercentage=10);
+	Plot& rangeX(float ext);				///< Set range of x axis to [-ext,ext]
+	Plot& rangeY(float ext);				///< Set range of y axis to [-ext,ext]
+	Plot& rangeX(float min, float max);		///< Set range of x axis to [min,max]
+	Plot& rangeY(float min, float max);		///< Set range of y axis to [min,max]
+	Plot& showAxes(bool v);					///< Set whether to show axes
+	Plot& tickMajor(float d);				///< Set major tick distance for x and y (<= 0 turns off)
+	Plot& tickMajorX(float d);				///< Set major tick distance for x (<= 0 turns off)
+	Plot& tickMajorY(float d);				///< Set major tick distance for x (<= 0 turns off)
+//	Plot& zero();							///< Zeroes all buffer elements
 
-	virtual const char * className() const { return "FunctionPlot"; }
+	PlotData * createData(int size, PlotDim::t dim);
+	Plot& addData(PlotData& v);
+
+	PlotData& data(int i=0);
+
+	virtual const char * className() const { return "Plot"; }
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& glv);
 
 protected:
-	int mSize;
-	int mIMin, mIMax;
-	float * mBufX, * mBufY;
-	Color * mBufCol;
-	Color * mPlotColor;
-	float mMinX, mMaxX, mMinY, mMaxY;
-	int mDrawPrim;
-	float mStroke;
-	float mTickMajor;
-	bool mShowAxes, mDotEnds, mDotPoints, mInterpolate;
-	void allocX(){ freeX(); mBufX = new float[size()]; zero(mBufX); }
-	void allocY(){ freeY(); mBufY = new float[size()]; zero(mBufY); }
-	void allocCol(){ freeCol(); mBufCol = new Color[size()]; }
-	void freeX(){ if(mBufX) delete[] mBufX; mBufX=0; }
-	void freeY(){ if(mBufY) delete[] mBufY; mBufY=0; }
-	void freeCol(){ if(mBufCol) delete[] mBufCol; mBufCol=0; }
+	enum{ DIM=2 };
+	std::vector<Point2> mPoints;
+	std::vector<PlotData *> mData;
+	std::set<PlotData *> mOwnData;
+
+	float mMin[DIM], mMax[DIM];
+	float mTickMajorX, mTickMajorY;
+	bool mShowAxes, mPreserveAspect;
+
 	void plotExtent(float& pw, float& ph);
-	template<class T> void sort(T& a, T& b){ if(a>b){ T t=a; a=b; b=t; }  }
-	void zero(float * b){ for(int i=0; i<size(); ++i) b[i]=0.f; }
 	void zoom(float px, float py, float zm);
+	Plot& validate();
+
+	void draw(const PlotData& d, float mulX, float addX, float mulY, float addY, const Color& defaultCol);
 };
 
 

@@ -18,11 +18,11 @@ ButtonBase<Array<bool> > bta(Rect(80), 1, 1);
 FunctionGraph fg(Rect(200, 100), 4, 10);
 
 const int plotSize=64;
-FunctionPlot	plotXY(Rect(150), plotSize, Color(0,0,1)),
-				plotX(Rect(150,60), plotSize, Color(1,0,0)),
-				plotY(Rect(60,150), plotSize, Color(0,1,0));
+Plot	plotXY(Rect(150), plotSize, PlotDim::XY, Color(0,0,0.5)),
+		plotX(Rect(150,60), Color(0.5,0,0)),
+		plotY(Rect(60,150), Color(0,0.5,0));
 
-NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,3, 8,0);
+NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,8, 8,0);
 Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100)), sl1HS(sl1H,0,true), sl1VS(sl1V,0,true);
 Slider2D sl2(Rect(100));
 SliderGrid<3> sg3(Rect(100));
@@ -33,12 +33,30 @@ Table table(	". v - -,"
 				"> p ^ q,"
 				"| < x >,"
 				"| b v d", 12, 6, Rect(0));
-TextView tv1(Rect(200,16));
+TextView tv1(Rect(200,16), 8);
+
+struct FontView : View {
+	FontView(const Rect& r=Rect(0)): View(r){}
+	
+	virtual void onDraw(){
+		draw::color(colors().text);
+		float x = tabs.width()+10;
+		font.size(6);
+		font.render("Amazingly few discotheques provide jukeboxes.", x, 10);
+		font.size(8);
+		font.render("Amazingly few discotheques provide jukeboxes.", x, 30);
+		font.size(12);
+		font.render("Amazingly few discotheques\nprovide jukeboxes.", x, 50);
+	}
+	
+	Font font;
+} fontView;
 
 struct SubView3D : View3D{
 	SubView3D(const Rect& r): View3D(r), angle(0){
+		addCallback(Event::MouseDrag, Behavior::mouseResizeCorner);
 		addCallback(Event::MouseDrag, Behavior::mouseMove);
-		addCallback(Event::MouseDrag, Behavior::mouseResize);
+		enable(KeepWithinParent);
 	}
 	
 	virtual void onDraw3D(){
@@ -87,12 +105,14 @@ int main(int argc, char ** argv){
 	
 	GLV top(drawCB);
 	Window win(600, 400, "GLV Examples", &top);
-	
-	top.colors().back.set(1);
+
 	sliders1.isSigned(true);
 //	sliders2.isSigned(true);
 	
 	glv::Style::standard().color.set(StyleColor::BlackOnWhite);
+//	glv::Style::standard().color.set(StyleColor::WhiteOnBlack);
+//	glv::Style::standard().color.set(StyleColor::Gray);
+//	glv::Style::standard().color.hsv(0.5,0.5,0.2);
 	
 	for(int i=0; i<pages; ++i){
 		top << groups[i].disable(Visible|HitTest).stretch(1,1);
@@ -108,16 +128,22 @@ int main(int argc, char ** argv){
 	//table.enable(DrawBorder);
 	
 	const float ffreq = 2*M_PI/(plotSize-1);
-	plotXY.stroke(2);
+
+	plotXY.data().stroke(2);
+	plotXY.preserveAspect(true);
+	plotXY.addCallback(Event::MouseDrag, Behavior::mouseResizeCorner);
+	plotX.addCallback(Event::MouseDrag, Behavior::mouseResizeCorner);
 	for(int i=0; i<plotSize; ++i){
 		float phs = i*ffreq;
 		float sigX = (cos(phs) + 0.5*cos(2*phs))*0.6;
 		float sigY = (sin(phs) + 0.5*sin(2*phs))*0.6;
-		plotXY.bufferX()[i] = sigX;
-		plotXY.bufferY()[i] = sigY;
-		plotX.bufferX()[i] = sigX;
-		plotY.bufferY()[i] = sigY;
+		plotXY.data().points(0)[i] = sigX;
+		plotXY.data().points(1)[i] = sigY;
 	}
+	plotX.data().reference(1, plotXY.data().points(0), plotSize);
+	plotY.data().reference(0, plotXY.data().points(1), plotSize);
+	plotX.tickMajorX(8).rangeFit();
+	plotY.tickMajorY(8).rangeFit();
 		
 	v3D << v3D2.pos(Place::BR).anchor(Place::BR);
 
@@ -128,6 +154,7 @@ int main(int argc, char ** argv){
 	groups[  i]<< bts41.pos(Place::TL, 0, 4).anchor(Place::CC);
 	groups[  i]<< bts44.pos(Place::BL).anchor(Place::CC);
 	groups[++i]<< fg.pos(Place::BL).anchor(Place::CC);
+//	groups[++i]<< fontView.stretch(1,1);
 	groups[++i]<< (new Label("Horizontal"))->pos(Place::BL).anchor(Place::CC);
 	groups[  i]<< (new Label("Vertical", true))->pos(Place::BR,-16,0).anchor(Place::CC);
 	groups[++i]<< nd1.pos(Place::BL).anchor(Place::CC);

@@ -139,7 +139,7 @@ void Slider2D::onDraw(){
 
 
 SliderRange::SliderRange(const Rect& r, float val1, float val2)
-:	SliderBase<2>(r), mJump(0.1), mDragMode(0)
+:	SliderBase<2>(r), mDragMode(0), mJump(0.1)
 {
 	extrema(val1, val2);
 }
@@ -194,7 +194,7 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 	float mp = (w>h) ? g.mouse.xRel()/w : g.mouse.yRel()/h;
 	float d1 = mp-value(0); if(d1<0) d1=-d1;
 	float d2 = mp-value(1); if(d2<0) d2=-d2;
-	int ind = d1<d2 ? 0:1;
+//	int ind = d1<d2 ? 0:1;
 	float rg = range();
 	float endRegion = 4 / (w>h ? w:h);
 

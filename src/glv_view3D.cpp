@@ -5,7 +5,7 @@
 namespace glv{
 
 View3D::View3D(const Rect& r)
-: View(r), mNear(1), mFar(100), mFOVY(45)
+: View(r), mNear(0.1), mFar(100), mFOVY(45)
 {}
 
 void View3D::onDraw(){

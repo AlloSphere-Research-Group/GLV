@@ -44,10 +44,11 @@ bool keyDownCB(View * v, GLV& glv){
 int main (int argc, char ** argv){
 
 	GLV top(drawCB);
-	top.colors().back.set(0);
 	top(Event::KeyDown, keyDownCB);
 
-	glv::Style::standard().color.hsv(0, 0, 0.5);
+	top.colors().set(HSV(0.3,0.,0.6), 0.55);
+	//top.colors().back.set(0);
+	//glv::Style::standard().color.hsv(0, 0, 0.5);
 
 	Window win(800, 600, "GLV Widgets", &top);
 

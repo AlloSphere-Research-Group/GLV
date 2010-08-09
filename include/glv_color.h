@@ -130,19 +130,18 @@ inline void	Color::set(float re, float gr, float bl, float al){
 
 inline void	Color::set(float re, float gr, float bl){ set(re, gr, bl, a); }
 
-inline void	Color::set(const Color & c, float rgbScale){
+inline void	Color::set(const Color& c, float rgbScale){
 	set(c.r, c.g, c.b, c.a);
 	scale(rgbScale);
 }
 inline void	Color::set(float v){ set(v,v,v); }
 inline void	Color::set(float v, float al){ set(v,v,v,al); }
 
-
 inline void Color::setHSV(float h, float s, float v){
 	setHSV6(h * 6.f, s, v);		
 }
 
-inline void Color::getHSV(float &h, float &s, float &v) const{
+inline void Color::getHSV(float& h, float& s, float& v) const{
 	getHSV6(h,s,v);
 	h *= 0.166666667f;				// 0..1
 }

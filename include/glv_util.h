@@ -15,7 +15,14 @@ namespace glv {
 
 
 template <class T>
-T clip(const T& v, const T& mx=T(1), const T& mn=T(0)){ return v<mn ? mn : (v>mx ? mx : v); }
+inline T clip(const T& v, const T& mx=T(1), const T& mn=T(0)){ return v<mn ? mn : (v>mx ? mx : v); }
+
+template <class T> inline T max(const T& a, const T& b){ return a<b ? b:a; }
+template <class T> inline T min(const T& a, const T& b){ return a<b ? a:b; }
+template <class T> inline T mean(const T& a, const T& b){ return (a+b)*T(0.5); }
+
+/// Sort arguments so that a<b
+template<class T> inline void sort(T& a, T& b){ if(a>b){ T t=a; a=b; b=t; }  }
 
 /// Convert a string to a value type
 template<class T>

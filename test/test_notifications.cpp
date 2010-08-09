@@ -49,7 +49,6 @@ void dialerUpdateLabel(const Notification& n){
 int main(int argc, char ** argv){
 
 	GLV glv;
-	glv.colors().back.set(0);
 
 	Window win(320, 400);
 	win.setGLV(glv);

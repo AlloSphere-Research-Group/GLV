@@ -46,21 +46,24 @@ void StyleColor::set(Preset preset){
 }
 
 
-void StyleColor::hsv(float h, float s, float v){
-	Color c = HSV(h,s,v);
-
-	fore.set(c);
+void StyleColor::set(const Color& c, float contrast){
+	HSV hsv = c;
+	float h = hsv.h;
+	float s = hsv.s;
+	float v = hsv.v;
+	
+	fore = c;
 
 	float vt;
-	vt = v + (v < 0.5 ? 0.4 : -0.4);
-	back.set(HSV(h,s,vt));
+	vt = v + (v < 0.5 ? contrast : -contrast);
+	back = Color(HSV(h,s,vt), c.a);
 
-	vt = v + (v < 0.5 ? 0.2 : -0.2);
-	selection.set(HSV(h,s,vt));
+	vt = v + (v < 0.5 ? contrast/2 : -contrast/2);
+	selection = Color(HSV(h,s,vt), c.a);
 	
-	text.set(c.inverse().blackAndWhite());
-	border.set(fore);
+	//text = c.inverse().blackAndWhite();
+	text = back.inverse().blackAndWhite();
+	border = fore;
 }
-
 
 } // glv::
