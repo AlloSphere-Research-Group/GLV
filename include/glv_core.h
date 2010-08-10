@@ -362,6 +362,17 @@ public:
 	void makeLastSibling();		///< Put self at end of sibling chain
 	void remove();				///< Remove myself from the parent view, and update linked lists
 
+	/// An action to be called when traversing the node tree
+	struct TraversalAction{
+		virtual ~TraversalAction(){}
+		virtual bool operator()(View * v, int depth){ return false; }
+		virtual bool operator()(const View * v, int depth){ return false; }
+	};
+
+	/// Traverse tree depth-first
+	static void traverseDepth(View * top, TraversalAction& action);
+	static void traverseDepth(const View * top, TraversalAction& action);
+
 	/// Add a child view to myself
 	View& operator << (View& newChild){ add(newChild); return *this; }
 	View& operator << (View* newChild){ add(newChild); return *this; }

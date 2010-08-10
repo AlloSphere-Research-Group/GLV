@@ -54,10 +54,10 @@ void drawCB(View * v){
 		"!\"#$%&'()*+,-./0\n"
 		"123456789:;<=>?@\n"
 		"ABCDEFGHIJKLMNOP\n"
-		"QRSTUVWXYZ[\]^_`\n"
+		"QRSTUVWXYZ[\\]^_`\n"
 		"abcdefghijklmnop\n"
 		"qrstuvwxyz{|}~",
-		20,300
+		x,y
 	);
 
 //	for(int i=0; i<(127 - '!'); ++i){

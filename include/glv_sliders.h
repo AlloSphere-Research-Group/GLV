@@ -40,6 +40,15 @@ public:
 	/// Set all values to middle value and notify observers
 	SliderBase& valueMid();
 
+	virtual void valueToString(std::string& s){ toString(s, &Base::values()[0], size()); }
+	virtual bool valueFromString(const std::string& s){
+		float v[size()];
+		if(fromString(v,size(), s)){
+			for(int i=0; i<size(); ++i) value(v[i], i);
+			return true;
+		}
+		return false;
+	}
 
 protected:
 	float mAcc[Dim];
@@ -212,12 +221,7 @@ public:
 	virtual const char * className() const { return "Slider"; }
 	virtual void valueToString(std::string& v){ toString(v, value()); }
 	virtual bool valueFromString(const std::string& v){
-		float r;
-		if(fromString(r,v)){
-			value(r);
-			return true;
-		}
-		return false;
+		float r; if(fromString(r,v)){ value(r);	return true; } return false;
 	}
 };
 

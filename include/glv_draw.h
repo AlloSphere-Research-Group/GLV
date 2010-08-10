@@ -92,26 +92,6 @@ enum{
 };
 
 
-
-//struct Glyph{
-//	enum{ Once=(1<<7), Dot1=(1<<5), Dot2=(2<<5), MaskDots=96, MaskSize=31 };
-//	
-//	const unsigned char field;
-//	float x[8], y[8];
-//	
-//	static int cap()		{ return 0; }
-//	static int median()		{ return 3; }
-//	static int baseline()	{ return 8; }
-//	static int descent()	{ return 11; }
-//	static int width()		{ return 8; }
-//	
-//	unsigned char dots() const { return (field & MaskDots) >> 5; }
-//	unsigned char once() const { return (field           ) >> 7; }
-//	unsigned char size() const { return (field & MaskSize)     ; }
-//};
-
-
-
 // Basic rendering commands
 void begin(int primitive);							///< Begin vertex group delimitation
 void blendFunc(int sfactor, int dfactor);			///< Set blending function
@@ -133,10 +113,11 @@ void matrixMode(int mode);							///< Set current transform matrix
 void ortho(float l, float r, float b, float t);		///< Set orthographic projection mode
 void paint(int prim, Point2 * verts, int numVerts);	///< Draw array of 2D vertices
 void paint(int prim, Point2 * verts, Color * cols, int numVerts);
-void paint(int prim, Point2 * verts, int * indices, int numIndices); ///< Draw indexed array of 2D vertices
+void paint(int prim, Point2 * verts, unsigned * indices, int numIndices); ///< Draw indexed array of 2D vertices
 void paint(int prim, Point3 * verts, int numVerts);	///< Draw array of 3D vertices
 void paint(int prim, Point3 * verts, Color * cols, int numVerts);
-void paint(int prim, Point3 * verts, int * indices, int numIndices); ///< Draw indexed array of 3D vertices
+void paint(int prim, Point3 * verts, unsigned * indices, int numIndices); ///< Draw indexed array of 3D vertices
+void paint(int prim, Point3 * verts, Color * cols, unsigned * indices, int numIndices); 
 void pointSize(float val);							///< Set size of points
 void pointAtten(float c2=0, float c1=0, float c0=1); ///< Set distance attenuation of points. The scaling formula is clamp(size * sqrt(1/(c0 + c1*d + c2*d^2)))
 void pop();											///< Pop current transform matrix stack
@@ -279,9 +260,9 @@ inline void paint(int prim, Point2 * verts, Color * cols, int numVerts){
 	glDisableClientState(GL_COLOR_ARRAY);
 }
 
-inline void paint(int prim, Point2 * verts, int * indices, int numIndices){
+inline void paint(int prim, Point2 * verts, unsigned * indices, int numIndices){
 	glVertexPointer(2, GL_FLOAT, 0, verts);
-	glDrawElements(prim, numIndices, GL_INT, indices);
+	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
 }
 
 inline void paint(int prim, Point3 * verts, int numVerts){
@@ -297,9 +278,17 @@ inline void paint(int prim, Point3 * verts, Color * cols, int numVerts){
 	glDisableClientState(GL_COLOR_ARRAY);
 }
 
-inline void paint(int prim, Point3 * verts, int * indices, int numIndices){
+inline void paint(int prim, Point3 * verts, unsigned * indices, int numIndices){
 	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glDrawElements(prim, numIndices, GL_INT, indices);
+	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
+}
+
+inline void paint(int prim, Point3 * verts, Color * cols, unsigned * indices, int numIndices){
+	glEnableClientState(GL_COLOR_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, verts);
+	glColorPointer(4, GL_FLOAT, 0, cols);
+	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
+	glDisableClientState(GL_COLOR_ARRAY);
 }
 
 inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5*(t+b), l+(r-l)*0.3,b, r,t); }

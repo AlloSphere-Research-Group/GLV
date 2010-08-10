@@ -25,25 +25,45 @@ void ntFocus(const Notification& n){
 
 int main(int argc, char ** argv){
 
-	{
-		float rf;
-		double rd;
-		bool rb;
-		std::string rs;
+	{	//for(int i=0;i<4;++i) printf("%g\n", f4[i]);
+		//printf("%s\n", s1.c_str());
+		bool b1;
+		float f1;
+		double d1;
+		std::string s1;
 		
-		fromString(rf, "1e-2");		assert(rf == float(1e-2));
-		fromString(rf, "1000");		assert(rf == float(1000));
-		fromString(rd, "1e-2");		assert(rd == double(1e-2));
-		fromString(rd, "1000");		assert(rd == double(1000));
-		fromString(rb, "0");		assert(rb == 0);
-		fromString(rb, "1");		assert(rb == 1);
+		bool b4[4];
+		float f4[4];
+		double d4[4];
 		
-		toString(rs, 1000.f);		assert(rs == "1000");
-		toString(rs, 2000.0);		assert(rs == "2000");
+		#define SET4(x, a,b,c,d) x[0]=a; x[1]=b; x[2]=c; x[3]=d
+		#define EQ4(x, a,b,c,d) (x[0]==a && x[1]==b && x[2]==c && x[3]==d)
+		
+		fromString(f1, "1e-2");		assert(f1 == float(1e-2));
+		fromString(f1, "1000");		assert(f1 == float(1000));
+		fromString(d1, "1e-2");		assert(d1 == double(1e-2));
+		fromString(d1, "1000");		assert(d1 == double(1000));
+		fromString(b1, "0");		assert(b1 == 0);
+		fromString(b1, "1");		assert(b1 == 1);
+		
+		fromString(b4,4, "{1,0,1,1}");				assert(EQ4(b4, 1,0,1,1));
+		fromString(b4,4, "{0,  1, 0,0}");			assert(EQ4(b4, 0,1,0,0));
+		fromString(f4,4, "{1, -1.2, 1e10, +.1}");	assert(EQ4(f4, 1.f,-1.2f,1e10f,+.1f));
+		fromString(d4,4, "{1, -1.2, 1e10, +.1}");	assert(EQ4(d4, 1,-1.2,1e10,+.1));
+
+		toString(s1, 1000.f);		assert(s1 == "1000");
+		toString(s1, 2000.0);		assert(s1 == "2000");
 		//toString(rs, -2.1e100);		printf("%s\n", rs.c_str()); //assert(rs == "2e100");
 		//toString(rs, (float)-2.1e38);		printf("%s\n", rs.c_str()); //assert(rs == "2e100");
-		toString(rs, true);			assert(rs == "1");
-		toString(rs, false);		assert(rs == "0");
+		toString(s1, true);			assert(s1 == "1");
+		toString(s1, false);		assert(s1 == "0");
+		
+		SET4(b4, 1,0,1,1); toString(s1, b4,4);		assert(s1 == "{1, 0, 1, 1}");
+		SET4(f4,-1,0.1,3,1e10); toString(s1, f4,4); assert(s1 == "{-1, 0.1, 3, 1e+10}");
+		SET4(d4,-1,0.1,3,1e10); toString(s1, d4,4); assert(s1 == "{-1, 0.1, 3, 1e+10}");
+
+		#undef EQ4
+		#undef SET4
 	}
 
 
@@ -158,6 +178,16 @@ int main(int argc, char ** argv){
 		
 		v = true;
 		w.onModelSync();	assert(w.value() == true);
+
+		std::string s;
+		w.value(true);
+		w.valueToString(s);			assert(s == "1");
+		w.value(false);
+		w.valueToString(s);			assert(s == "0");
+		w.valueFromString("0");		assert(w.value() == false);
+		w.valueFromString("1");		assert(w.value() == true);
+
+		assert(!w.valueFromString("invalid"));
 	}
 
 	{
@@ -178,6 +208,18 @@ int main(int argc, char ** argv){
 		w.value(true, 2);		assert(v2 == true);
 		w.value(false, 0);		assert(v1 == false);
 		w.value(false, 2);		assert(v2 == false);
+
+		std::string s;
+		w.value(false, 0);
+		w.value(false, 1);
+		w.value(false, 2);
+		w.value(false, 3);
+		w.valueToString(s);		assert(s == "{0, 0, 0, 0}");
+		
+		v1 = v2 = false;
+		w.valueFromString("{1,1,1,1}");
+		assert(w.value(0) && w.value(1) && w.value(2) && w.value(3));
+		assert(v1 && v2);
 	}
 	
 	{
@@ -206,6 +248,7 @@ int main(int argc, char ** argv){
 		w.value(0.25);
 		w.valueToString(s);			assert(s == "0.25");
 		w.valueFromString("0.5");	assert(w.value() == 0.5);
+									assert(v == 0.5);
 
 		assert(!w.valueFromString("invalid"));
 		assert(w.value() == 0.5);
@@ -265,6 +308,16 @@ int main(int argc, char ** argv){
 		w.onModelSync();
 		assert(w.value(0) == v1);
 		assert(w.value(1) == v2);
+	
+		std::string s;
+		w.value(0.2, 0);
+		w.value(0.3, 1);
+		w.valueToString(s);		assert(s == "{0.2, 0.3}");
+		
+		v1 = v2 = 0;
+		w.valueFromString("{0.7, 0.8}");
+		assert(w.value(0)==0.7f && w.value(1)==0.8f);
+		assert(v1==w.value(0) && v2==w.value(1));
 	}
 
 	{
@@ -295,6 +348,20 @@ int main(int argc, char ** argv){
 		w.centerRange(0.5f, 0.2f);
 		assert(w.value(0) == 0.4f);
 		assert(w.value(1) == 0.6f);
+
+		float v1,v2;
+		w.attachVariable(v1, 0);
+		w.attachVariable(v2, 1);
+
+		std::string s;
+		w.value(0.2, 0);
+		w.value(0.3, 1);
+		w.valueToString(s);		assert(s == "{0.2, 0.3}");
+		
+		v1 = v2 = 0;
+		w.valueFromString("{0.7, 0.8}");
+		assert(w.value(0)==0.7f && w.value(1)==0.8f);
+		assert(v1==w.value(0) && v2==w.value(1));
 	}
 
 	{
@@ -326,6 +393,14 @@ int main(int argc, char ** argv){
 		v = 0.25;
 		w.onModelSync();
 		assert(w.value() == v);
+
+		std::string s;
+		w.value(0.2);
+		w.valueToString(s);		assert(s == "0.2");
+		
+		v = 0;
+		w.valueFromString("0.8");
+		assert(w.value()==0.8 && w.value()==v);
 	}
 
 	{

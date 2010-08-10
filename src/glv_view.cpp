@@ -420,38 +420,18 @@ const View * View::posAbs(space_t& al, space_t& at) const{
 	return toAbs(al, at);
 }
 
-void View::printDescendents() const{
-	//printf("%p\n", this);
+void View::printDescendents() const {
+
+	struct PrintNode : View::TraversalAction{
+		bool operator()(View * v, int depth){ return false; }
+		bool operator()(const View * v, int depth){
+			for(int i=0; i<depth; ++i) printf("|\t");
+			printf("%s %p\n", v->className(), v);
+			return true;
+		}	
+	} action;
 	
-	int level=0;
-	View * v = child;
-	
-	// go to down to child first
-	// when bottom is reached, go across siblings
-	// when siblings are traversed, go up and look for sibling
-	//	if sibling found, go to sibling
-	//	if back at top, stop
-	while(v){
-		for(int i=0; i<level; ++i) printf("|\t");
-		printf("%s %p\n", v->className(), v);
-		
-		if(v->child){			// down stage
-			++level;
-			v = v->child;
-		}
-		else if(v->sibling){	// across stage
-			v = v->sibling;
-		}
-		else{					// up and over stage
-			while(v->parent){
-				--level;
-				v = v->parent;
-				if(v==this) return;
-				else if(v->sibling){ v = v->sibling; break; }
-			}
-		}
-		
-	}
+	traverseDepth(this, action);
 }
 
 void View::printFlags() const{
@@ -536,6 +516,60 @@ const View * View::toAbs(space_t& x, space_t& y) const {
  	}
  	return v;
 }
+
+#define TRAVERSE_DEPTH(VIEW)\
+void View::traverseDepth(VIEW * top, TraversalAction& action){\
+	VIEW * const root = top;\
+	VIEW * n = root;\
+	int depth = 0;\
+	while(n){\
+		action(n, depth);\
+		if(n->child){			/* down to child */\
+			++depth;\
+			n = n->child;\
+		}\
+		else if(n->sibling){	/* across to sibling */\
+			n = n->sibling;\
+		}\
+		else{					/* up and over to next branch */\
+			if(!n->parent) return; /* triggers if only node in tree */\
+			while(n->parent){\
+				--depth;\
+				n = n->parent;\
+				if(root == n) return;\
+				else if(n->sibling){ n = n->sibling; break; }\
+			}\
+		}\
+	}\
+}
+TRAVERSE_DEPTH(View)
+TRAVERSE_DEPTH(const View)
+
+//void View::traverseDepth(const View * top, TraversalAction& action){
+//	const View * const root = top;
+//	const View * n = root;
+//	int depth = 0;
+//
+//	while(n){
+//		action(n, depth);
+//		
+//		if(n->child){			// down to child
+//			++depth;
+//			n = n->child;
+//		}
+//		else if(n->sibling){	// across to sibling
+//			n = n->sibling;
+//		}
+//		else{					// up and over to next branch
+//			while(n->parent){
+//				--depth;
+//				n = n->parent;
+//				if(root == n) return;
+//				else if(n->sibling){ n = n->sibling; break; }
+//			}
+//		}
+//	}
+//}
 
 void View::valueToString(std::string& v){ v=""; }
 

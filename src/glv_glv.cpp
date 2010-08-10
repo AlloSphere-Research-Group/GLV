@@ -24,27 +24,17 @@ GLV::~GLV(){ //printf("~GLV\n");
 
 void GLV::broadcastEvent(Event::t e){ 
 
-	View * const root = this;
-	View * cv = root;
-	
-	doEventCallbacks(*cv, e);
-	
-	while(true){
-		if(cv->child) cv = cv->child;
-		
-		else if(cv->sibling) cv = cv->sibling;
-		
-		// retrace upwards until a parent's sibling is found
-		else{
-			while(cv != root && cv->sibling == 0) cv = cv->parent;
-			
-			if(cv->sibling) cv = cv->sibling;
-
-			else break; // break the loop when the traversal returns to the root
+	struct Action : View::TraversalAction{
+		GLV& glv; Event::t event;
+		Action(GLV& g, Event::t e): glv(g), event(e){}
+		bool operator()(View * v, int depth){
+			glv.doEventCallbacks(*v, event);
+			return true;
 		}
-		
-		doEventCallbacks(*cv, e);
-	}
+		bool operator()(const View * v, int depth){ return false; }
+	} action(*this, e);
+	
+	traverseDepth(this, action);
 }
 
 
@@ -52,7 +42,7 @@ void GLV::broadcastEvent(Event::t e){
 // The bubbling return values from the virtual and function pointer callbacks
 // are ANDed together.
 bool GLV::doEventCallbacks(View& v, Event::t e){
-
+//	printf("doEventCallbacks: %s %d\n", v.className(), e);
 	if(!v.enabled(Controllable)) return false;
 
 //	bool bubble = v.onEvent(e, *this);					// Execute virtual callback

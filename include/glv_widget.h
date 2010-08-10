@@ -83,6 +83,9 @@ protected:
 	int sx, sy;						// last clicked position
 	std::map<int, Tm *> mVariables;	// model variables to sync to
 
+	Tv& values(){ return mVal; }
+	const Tv& values() const { return mVal; }
+
 	virtual void onSetValueNotify(const Tm& v, int idx){}
 
 	std::map<int, Tm *>& variables(){ return mVariables; }
@@ -105,9 +108,6 @@ protected:
 			//}
 		}
 	}
-
-	Tv& values(){ return mVal; }
-	const Tv& values() const { return mVal; }
 
 	float dx() const { return w/sizeX(); } // width, in pixels, per element
 	float dy() const { return h/sizeY(); } // height, in pixels, per element

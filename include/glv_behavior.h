@@ -17,7 +17,7 @@ namespace Behavior{
 		}
 		return true;
 	}
-	
+
 	static bool mouseResizeCorner(View * v, GLV& g){
 		if(g.mouse.left()){
 

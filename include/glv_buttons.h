@@ -77,6 +77,10 @@ public:
 	Button& value(bool v){ select(0); setValueNotify(v); return *this; }
 	
 	virtual const char * className() const { return "Button"; }
+	virtual void valueToString(std::string& s){ toString(s, value()); }
+	virtual bool valueFromString(const std::string& s){
+		bool v;	if(fromString(v,s)){ value(v); return true; } return false;
+	}
 };
 
 
@@ -122,6 +126,15 @@ public:
 	}
 	
 	virtual const char * className() const { return "Buttons"; }
+	virtual void valueToString(std::string& s){ toString(s, &values()[0], size()); }
+	virtual bool valueFromString(const std::string& s){
+		bool v[size()];
+		if(fromString(v,size(), s)){
+			for(int i=0; i<size(); ++i) value(v[i], i);
+			return true;
+		}
+		return false;
+	}
 };
 
 
