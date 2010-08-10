@@ -45,6 +45,7 @@ int main(int argc, char ** argv){
 		fromString(d1, "1000");		assert(d1 == double(1000));
 		fromString(b1, "0");		assert(b1 == 0);
 		fromString(b1, "1");		assert(b1 == 1);
+		fromString(s1, "\"test\"");	assert(s1 == "test");
 		
 		fromString(b4,4, "{1,0,1,1}");				assert(EQ4(b4, 1,0,1,1));
 		fromString(b4,4, "{0,  1, 0,0}");			assert(EQ4(b4, 0,1,0,0));
@@ -57,6 +58,7 @@ int main(int argc, char ** argv){
 		//toString(rs, (float)-2.1e38);		printf("%s\n", rs.c_str()); //assert(rs == "2e100");
 		toString(s1, true);			assert(s1 == "1");
 		toString(s1, false);		assert(s1 == "0");
+		toString(s1, "test");		assert(s1 == "\"test\"");
 		
 		SET4(b4, 1,0,1,1); toString(s1, b4,4);		assert(s1 == "{1, 0, 1, 1}");
 		SET4(f4,-1,0.1,3,1e10); toString(s1, f4,4); assert(s1 == "{-1, 0.1, 3, 1e+10}");

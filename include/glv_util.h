@@ -35,6 +35,7 @@ int fromString(T * dst, int size, const std::string& src);
 /// Convert a value type to a string
 template<class T>
 void toString(std::string& dst, const T& src);
+void toString(std::string& dst, const char * src);
 
 /// Convert a value array to a string
 template<class T>

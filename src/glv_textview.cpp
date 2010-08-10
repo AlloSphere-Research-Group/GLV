@@ -10,14 +10,14 @@ namespace glv{
 #define CTOR_LIST mAlignX(0), mAlignY(0), mVertical(false)
 #define CTOR_BODY\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
-	label(str);\
+	value(str);\
 	vertical(vert);
 
 Label::Label(const std::string& str, const Spec& s)
 :	View(0,0,0,0), mAlignX(0), mAlignY(0)
 {
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);
-	label(str);
+	value(str);
 	vertical(s.vert);
 	size(s.size);
 	pos(s.posAnch, s.dx, s.dy).anchor(s.posAnch);
@@ -42,20 +42,18 @@ Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool ve
 
 Label& Label::align(float vx, float vy){ mAlignX=vx; mAlignY=vy; return *this; }
 
-Label& Label::label(const std::string& s){
-	mLabel = s;
-	fitExtent();
-	if(numObservers(Update::Value)) notify(Update::Value, LabelChange(s));
-	return *this;
-}
-
 Label& Label::size(float pixels){
 	mFont.size(pixels);
 	fitExtent();
 	return *this;
 }
 
-Label& Label::value(const std::string& s){ return label(s); }
+Label& Label::value(const std::string& s){
+	mLabel = s;
+	fitExtent();
+	if(numObservers(Update::Value)) notify(Update::Value, LabelChange(s));
+	return *this;
+}
 
 Label& Label::vertical(bool v){
 	if(v != mVertical){

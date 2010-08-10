@@ -74,6 +74,10 @@ public:
 
 	virtual const char * className() const { return "Label"; }
 	virtual void onDraw();
+	virtual void valueToString(std::string& s){ toString(s, value()); }
+	virtual bool valueFromString(const std::string& s){
+		std::string r; if(fromString(r,s)){ value(r); return true; } return false;
+	}
 
 protected:
 	Font mFont;
@@ -151,6 +155,7 @@ public:
 	virtual bool valueFromString(const std::string& s){
 		double v; if(fromString(v,s)){ value(v); return true; } return false;
 	}
+
 protected:
 	Font mFont;
 	int mNI, mNF, mPos;		// # digits in integer, # digits in fraction, selected digit position
@@ -212,6 +217,10 @@ public:
 	virtual const char * className() const { return "TextView"; }
 	virtual void onDraw();	
 	virtual bool onEvent(Event::t e, GLV& g);
+	virtual void valueToString(std::string& s){ toString(s, value()); }
+	virtual bool valueFromString(const std::string& s){
+		std::string r; if(fromString(r,s)){ value(r); return true; } return false;
+	}
 
 protected:
 	Font mFont;
