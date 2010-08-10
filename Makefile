@@ -16,6 +16,7 @@ SRCS = 	glv_buttons.cpp \
 	glv_sliders.cpp \
 	glv_texture.cpp \
 	glv_textview.cpp \
+	glv_util.cpp \
 	glv_view.cpp \
 	glv_view3D.cpp
 
