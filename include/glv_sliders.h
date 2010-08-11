@@ -260,6 +260,15 @@ public:
 	}
 	
 	virtual const char * className() const { return "Sliders"; }
+	virtual void valueToString(std::string& s){ toString(s, &Base::values()[0], size()); }
+	virtual bool valueFromString(const std::string& s){
+		float v[size()];
+		if(fromString(v,size(), s)){
+			for(int i=0; i<size(); ++i) value(v[i], i);
+			return true;
+		}
+		return false;
+	}
 };
 
 
@@ -439,7 +448,7 @@ TEMV Slider1DBase<V>::Slider1DBase(const Rect& r, int nx, int ny, bool dragSelec
 }
 
 TEMV void Slider1DBase<V>::onDraw(){
-
+	using namespace glv::draw;
 	float x=padding()*0.5, xd=this->dx(), yd=this->dy();
 	
 //	struct{
@@ -449,6 +458,29 @@ TEMV void Slider1DBase<V>::onDraw(){
 //			return v;	
 //		}
 //	} bump;
+
+//	TODO: dial drawing code...
+//		for(int i=0; i<sizeX(); ++i){
+//			float y=padding()*0.5;
+//		
+//			for(int j=0; j<sizeY(); ++j){
+//				int ind = index(i,j);
+//				if(isSelected(i,j)) color(colors().fore);
+//				else color(colors().fore, colors().fore.a*0.5);
+//				
+//				color(colors().fore, colors().fore.a*0.5);
+//				disc<32>(x,y,xd,yd);
+//				lineWidth(1);
+//				float v = Base::values()[ind];
+//				color(colors().fore);
+//				static const float pi = 3.141592653589793;
+//				shape(Lines, xd/2, yd/2, xd/2 + xd/2*cos(v*2*pi+pi/2), yd/2 + yd/2*sin(v*2*pi-pi/2));
+//
+//				y += yd;
+//			}
+//			x += xd;	
+//		}
+
 
 	if(isVertical()){
 		for(int i=0; i<sizeX(); ++i){

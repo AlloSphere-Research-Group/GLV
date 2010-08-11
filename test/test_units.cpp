@@ -258,11 +258,38 @@ int main(int argc, char ** argv){
 
 	{
 		bool b=false;
-		Sliders w(Rect(1), 4,4);
+		Sliders w(Rect(1), 2,2);
 		w.attach(ntValue1, Update::Value, &b);
-		w.value(0.99f, 13);
+		w.value(0.99f, 3);
 		assert(b);
-		assert(w.value(13) == 0.99f);
+		assert(w.value(3) == 0.99f);
+
+		float v1, v2;
+		w.attachVariable(v1, 0);
+		w.attachVariable(v2, 1);
+
+		w.value(0.1f, 0); assert(v1 == 0.1f);
+		w.value(0.2f, 0); assert(v1 == 0.2f);
+		
+		v1 = 0.8f; v2 = 0.9f;
+		w.onModelSync();
+		assert(w.value(0) == 0.8f);
+		assert(w.value(1) == 0.9f);
+		
+		std::string s;
+		w.value(0.1f, 0);
+		w.value(0.2f, 1);
+		w.value(0.3f, 2);
+		w.value(0.4f, 3);
+		w.valueToString(s);	assert(s == "{0.1, 0.2, 0.3, 0.4}");
+		
+		v1=v2=0;
+		w.valueFromString("{0.4,0.3,0.2,0.1}");
+		assert(w.value(0) == 0.4f);
+		assert(w.value(1) == 0.3f);
+		assert(w.value(2) == 0.2f);
+		assert(w.value(3) == 0.1f);
+		assert(v1 == w.value(0) && v2 == w.value(1));
 	}
 
 	{
@@ -329,6 +356,33 @@ int main(int argc, char ** argv){
 		w.value(0.01f, 0);
 		assert(b);
 		assert(w.value(0) == 0.01f);
+
+		float v1, v2;
+		w.attachVariable(v1, 0);
+		w.attachVariable(v2, 1);
+
+		w.value(0.1f, 0); assert(v1 == 0.1f);
+		w.value(0.2f, 0); assert(v1 == 0.2f);
+		
+		v1 = 0.8f; v2 = 0.9f;
+		w.onModelSync();
+		assert(w.value(0) == 0.8f);
+		assert(w.value(1) == 0.9f);
+		
+		std::string s;
+		w.value(0.1f, 0);
+		w.value(0.2f, 1);
+		w.value(0.3f, 2);
+		w.value(0.4f, 3);
+		w.valueToString(s);	assert(s == "{0.1, 0.2, 0.3, 0.4}");
+		
+		v1=v2=0;
+		w.valueFromString("{0.4,0.3,0.2,0.1}");
+		assert(w.value(0) == 0.4f);
+		assert(w.value(1) == 0.3f);
+		assert(w.value(2) == 0.2f);
+		assert(w.value(3) == 0.1f);
+		assert(v1 == w.value(0) && v2 == w.value(1));
 	}
 	
 	{
@@ -370,9 +424,18 @@ int main(int argc, char ** argv){
 		bool b=false;
 		Label w;
 		w.attach(ntValue1, Update::Value, &b);
-		w.value("hello");
+		w.value("test");
 		assert(b);
-		assert(w.value() == "hello");
+		assert(w.value() == "test");
+		
+		std::string v;
+		w.attachVariable(v);
+		
+		std::string s;
+		w.valueToString(s);		assert(s == "\"test\"");
+		
+		w.value("");
+		w.valueFromString("\"test\"");	assert(w.value() == "test");
 	}
 
 	{
