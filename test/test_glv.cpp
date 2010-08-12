@@ -58,7 +58,7 @@ int main(int argc, char ** argv){
 //	charView.style(&top.style());
 //	charView << new Label("Character View", 0, -10);
 
-	RasterView rasterView(Rect(200),16,16); layout << rasterView;
+	RasterView rasterView(glv::Rect(200),16,16); layout << rasterView;
 	rasterView.style(&top.style());
 	rasterView << new Label("Raster View", 0, -10);
 	

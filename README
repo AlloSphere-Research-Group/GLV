@@ -1,45 +1,60 @@
 GLV - GUI Building Toolkit
 
-Build Instructions
-------------------
-
-Mac OSX: Xcode
----------------
-The Xcode project is located at ./osx/GLV.xcodeproj. There are targets for
-building a static library, a framework, and all of the examples programs in
-./test.
+========================================
+1. About
+========================================
+GLV (Graphics Library of Views) is a GUI building toolkit written in C++ for Linux, OSX, and Win32. GLV is specially designed for creating interfaces to real-time, multimedia applications using hardware accelerated graphics. GLV has no dependencies on other libraries other than OpenGL which is provided by all modern operating systems. Although windowing is technically not a part of GLV, it does provide an abstraction layer for creating bindings to a particular windowing system for creating an OpenGL context and getting mouse and keyboard input. A binding to GLUT is currently provided. 
 
 
-Linux and Mac OSX: Make
------------------------
+========================================
+2. Compilation Instructions
+========================================
 
-The following options must be set correctly before attempting a build. They
-can be passed in as options to make (OPTION=value) or changed directly in
-Makefile.config.
+The source code can either be built into a library or directly compiled from source into an application. In the following, the base directory is where this README file is located.
 
-Option		Description			Possible Values
----------------------------------------------------------------
-PLATFORM	The platform under which	macosx (default), linux
-		GLV is being built.
+----------------------------------------
+2.1 Building a Library
+----------------------------------------
+........................................
+Make (Linux, OS X)
+........................................
+First, ensure that the correct build options are set. These can be set directly in Makefile.config or passed in as options to Make as OPTION=value. Once Make has been configured properly, run
 
-USE_OPEN_GL_ES	Whether to compile for use	0 (default), 1
-		with the OpenGL ES embedded
-		systems API.
+	make
 
-WINDOW_BINDING	Specifies a binding for the	GLUT (default), none
-		OS window and control events.
+to build the library.
+
+There are several other targets within Makefile. These are:
+
+	make all		- builds library and tests
+	make clean		- removes binaries from build folder
+	make test		- builds the unit tests and other empirical testing code
+	make test/x.cpp		- builds and runs source file 'x'
+	make example/x.cpp	- builds and runs source file 'x'
+
+Binaries are located in build/release or build/debug depending on the build configuration. 
+
+........................................
+Xcode (OS X)
+........................................
+1) Open osx/GLV.xcodeproj
+2) Select 'ALL' as the active target and build.
+
+A static library and framework will be in project build folder.
 
 
-To build the main library, run:
+----------------------------------------
+2.2 Compiling Direct From Source
+----------------------------------------
+GLV can easily be compiled directly from source into an existing project.
 
-	./make
+Make sure to pass in the following flags to the compiler:
 
-To build the library and test applications, run:
-
-	./make all
-
-Note: if you are building under Linux, you need to have development versions of OpenGL, GLU, and GLUT installed.
+	-finline-functions (or -O3)
+	-fpeel-loops
 
 
-
-		
+----------------------------------------
+2.3 Dependencies
+----------------------------------------
+GLV requires only OpenGL and GLU. There are no other dependencies, unless a window binding is used, such as GLUT.
