@@ -129,13 +129,6 @@ private:
 template <int Dim>
 class SliderGrid : public SliderBase<Dim>{
 public:
-	using SliderBase<Dim>::colors;
-	using SliderBase<Dim>::w;
-	using SliderBase<Dim>::h;
-	using SliderBase<Dim>::value;
-	using SliderBase<Dim>::clipAccs;
-	using SliderBase<Dim>::sens;
-	using SliderBase<Dim>::diam;
 
 	/// @param[in] r			geometry
 	/// @param[in] knobSize		size of slider knob in pixels
@@ -146,6 +139,15 @@ public:
 	virtual const char * className() const { return "SliderGrid"; }
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& glv);
+
+	using SliderBase<Dim>::colors;
+	using SliderBase<Dim>::w;
+	using SliderBase<Dim>::h;
+	using SliderBase<Dim>::value;
+	using SliderBase<Dim>::clipAccs;
+	using SliderBase<Dim>::sens;
+	using SliderBase<Dim>::diam;
+	using SliderBase<Dim>::toInterval;
 
 protected:
 	int cx, cy;
