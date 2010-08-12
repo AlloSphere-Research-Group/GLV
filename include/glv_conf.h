@@ -11,7 +11,7 @@
 
 
 // OpenGL platform-dependent includes
-#if defined(__IPHONE_3_0)
+#if defined(USE_OPENGL_ES) && defined(__IPHONE_3_0)
 
 	#define GLV_PLATFORM		"IPHONE"
 	#define GLV_PLATFORM_IPHONE
