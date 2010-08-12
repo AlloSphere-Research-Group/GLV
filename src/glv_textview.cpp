@@ -119,21 +119,21 @@ NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac, double max, d
 :	Base(r, 1,1,0,false,false), CTOR_LIST
 {	
 	CTOR_BODY
-	range(max, min);	
+	interval(max, min);	
 }
 
 NumberDialer::NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min)
 :	Base(Rect(l,t, (h-2)*(numInt+numFrac+1), h), 1,1,0,false,false), CTOR_LIST
 {
 	CTOR_BODY
-	range(max, min);
+	interval(max, min);
 }
 
 NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
 :	Base(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 1,1,0,false,false), CTOR_LIST
 {
 	CTOR_BODY
-	range(max, min);
+	interval(max, min);
 } 
 
 NumberDialer::NumberDialer(const NumberDialer& v)
@@ -141,26 +141,22 @@ NumberDialer::NumberDialer(const NumberDialer& v)
 {
 	dig(v.sizeInteger());
 	resize(v.sizeInteger(), v.sizeFraction());
-	range(v.max(), v.min());
+	interval(v.max(), v.min());
 }
 
 #undef CTOR_LIST
 #undef CTOR_BODY
 
-double NumberDialer::max() const { return mMax*mValMul; }
-double NumberDialer::min() const { return mMin*mValMul; }
 int NumberDialer::sizeFraction() const { return mNF; }
 int NumberDialer::sizeInteger() const { return mNI; }
 
 NumberDialer& NumberDialer::padding(space_t v){ mPad=v; return *this; }
 
-static void sort(double& v1, double& v2){ if(v1>v2){ double t=v1; v1=v2; v2=t; } }
-
-NumberDialer& NumberDialer::range(double max, double min){
-	sort(min,max);
-	mMin = convert(min);
-	mMax = convert(max);
-	int m = maxVal();	// do not allow numbers larger than can be displayed
+NumberDialer& NumberDialer::interval(double max, double min){
+	glv::sort(min,max);
+	mMin = min;
+	mMax = max;
+	double m = maxVal();	// do not allow numbers larger than can be displayed
 	if(mMin<-m) mMin=-m;
 	if(mMax> m) mMax= m;
 	showSign(min < 0);
@@ -355,7 +351,7 @@ void TextView::onDraw(){
 	float addY =-2;		// subtraction from top since some letters go above cap
 
 	float tl = mPos * mFont.advance('M') + padX;
-	float tr = tl + mFont.advance('M');
+//	float tr = tl + mFont.advance('M');
 	float tt = addY + padY;
 	float tb = tt + mFont.descent() - addY;
 	float strokeWidth = 1;

@@ -106,8 +106,12 @@ int main(int argc, char ** argv){
 	GLV top(drawCB);
 	Window win(600, 400, "GLV Examples", &top);
 
-	sliders1.isSigned(true);
-//	sliders2.isSigned(true);
+	sl1HS.interval(1,-1);
+	sl1VS.interval(1,-1);
+	sliders1.interval(1,-1);
+	sg3.interval(20,-20);
+	sl2.interval(20,-20);
+	slRH.interval(2,-2);
 	
 	glv::Style::standard().color.set(StyleColor::BlackOnWhite);
 //	glv::Style::standard().color.set(StyleColor::WhiteOnBlack);

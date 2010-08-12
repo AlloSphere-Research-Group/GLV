@@ -19,14 +19,14 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 		case Event::MouseDrag:
-			valueAdd( g.mouse.dx()/w * sens(g.mouse), 0);
-			valueAdd(-g.mouse.dy()/h * sens(g.mouse), 1);
+			valueAdd( g.mouse.dx()/w * diam() * sens(g.mouse), 0);
+			valueAdd(-g.mouse.dy()/h * diam() * sens(g.mouse), 1);
 			break;
 			
 		case Event::MouseDown:
 			if(g.mouse.left() && !g.mouse.right()){
-				value(      g.mouse.xRel() / w, 0);
-				value(1.f - g.mouse.yRel() / h, 1);
+				value(toInterval(    g.mouse.xRel()/w), 0);
+				value(toInterval(1.f-g.mouse.yRel()/h), 1);
 			}
 			break;
 			
@@ -34,10 +34,10 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 			
 		case Event::KeyDown:
 			switch(g.keyboard.key()){
-				case 'x': valueAdd(-1./w, 0); break;
-				case 'c': valueAdd( 1./w, 0); break;
-				case 'a': valueAdd( 1./h, 1); break;
-				case 'z': valueAdd(-1./h, 1); break;
+				case 'x': valueAdd(-diam()/w, 0); break;
+				case 'c': valueAdd( diam()/w, 0); break;
+				case 'a': valueAdd( diam()/h, 1); break;
+				case 'z': valueAdd(-diam()/h, 1); break;
 				default: return true;
 			}
 			break;
@@ -51,8 +51,8 @@ void Slider2D::drawKnob(const Slider2D& s){
 	using namespace glv::draw;
 	float sz = s.knobSize;	// size of indicator block
 	float sz2 = sz * 0.5f;
-	float posX = sz2 + (s.w - sz) * s.value(0);
-	float posY = sz2 + (s.h - sz) * (1.f - s.value(1));
+	float posX = sz2 + (s.w - sz) * s.to01(s.value(0));
+	float posY = sz2 + (s.h - sz) * (1.f - s.to01(s.value(1)));
 	
 	color(s.colors().fore);
 	rect(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
@@ -151,15 +151,21 @@ float SliderRange::range() const { return value(1)-value(0); }
 SliderRange& SliderRange::center(float v){ return centerRange(v, range()); }
 
 SliderRange& SliderRange::centerRange(float c, float r){
+//	float mn = c-(r/2.);
+//	float mx = mn+r;
+//	if(mn<0){ mx -= mn  ; mn=0; }
+//	if(mx>1){ mn -= mx-1; mx=1; }
+//	return extrema(mn,mx);
 	float mn = c-(r/2.);
 	float mx = mn+r;
-	if(mn<0){ mx -= mn  ; mn=0; }
-	if(mx>1){ mn -= mx-1; mx=1; }
+	// adjust min/max values to preserve range
+	if(mn<mMin){ mx += mMin-mn; mn=mMin; }
+	if(mx>mMax){ mn -= mx-mMax; mx=mMax; }
 	return extrema(mn,mx);
 }
 
 SliderRange& SliderRange::extrema(float min, float max){
-	if(min>max){ float t=min; min=max; max=t; }
+	glv::sort(min,max);
 	value(min,0);
 	value(max,1);
 	return *this;
@@ -171,11 +177,11 @@ SliderRange& SliderRange::range(float v){ return centerRange(center(), v); }
 void SliderRange::onDraw(){
 	using namespace glv::draw;
 
-	float v1 = value(0);
-	float v2 = value(1);
+	float v1 = to01(value(0));
+	float v2 = to01(value(1));
 	if(v2<v1){ float t=v1; v1=v2; v2=t; }
 	
-	// prevent degenerecy
+	// prevent degeneracy
 	float p1 = 1./((w>h)?w:h); // 1 pixel
 	if(v2-v1 <= p1){ v1-=p1*0.5; v2+=p1*0.5; }
 
@@ -190,42 +196,54 @@ void SliderRange::onDraw(){
 
 bool SliderRange::onEvent(Event::t e, GLV& g){
 
+	float value0 = to01(value(0));
+	float value1 = to01(value(1));
+	
+	//printf("%f %f\n", value0, value1);
+
 	float dv = (w>h) ? g.mouse.dx()/w : g.mouse.dy()/h;
 	float mp = (w>h) ? g.mouse.xRel()/w : g.mouse.yRel()/h;
-	float d1 = mp-value(0); if(d1<0) d1=-d1;
-	float d2 = mp-value(1); if(d2<0) d2=-d2;
-//	int ind = d1<d2 ? 0:1;
+	float d1 = mp-value0; if(d1<0) d1=-d1;
+	float d2 = mp-value1; if(d2<0) d2=-d2;
 	float rg = range();
-	float endRegion = 4 / (w>h ? w:h);
+	float endRegion = 4./(w>h ? w:h);
 
 	switch(e){
 	case Event::MouseDown:
-		//if(g.mouse.right()) value(pt,ind);
 		
 		// NOTE: There is more than one way we might want to move the slider 
 		// on a click. We can set its center or increment its center in the
 		// direction of the click. Also, we may not want to move the slider
 		// if the click lands within the range...
 		if(g.mouse.left()){
-			float v1 = value(0);
-			float v2 = value(1);
+			float v1 = value0;
+			float v2 = value1;
+			float center_ = to01(center());
+			
+			// click outside of range
 			if(mp<(v1-endRegion) || mp>(v2+endRegion)){
-				float dc = mp - center();
+				float dc = mp - center_;
 				float dcAbs = dc<0 ? -dc : dc;
 				if(jump() > dcAbs){
-					center(mp);
+					center(toInterval(mp));
 				}
 				else{
-					center(center() + (dc<0 ? -jump() : jump()));
+					center(toInterval(center_ + (dc<0 ? -jump() : jump())));
 				}
 				mDragMode=0;
 			}
+			
+			// click on lower edge
 			else if(mp > (v1-endRegion) && mp < (v1+endRegion)){
 				mDragMode=1;
 			}
+			
+			// click on upper edge
 			else if(mp > (v2-endRegion) && mp < (v2+endRegion)){
 				mDragMode=2;
 			}
+			
+			// click on range
 			else{
 				mDragMode=3;
 			}
@@ -234,23 +252,23 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 		return false;
 	
 	case Event::MouseDrag:
-		dv *= sens(g.mouse);
-		if(mDragMode == 3){
-			valueAdd(dv, 0, 0,  1-rg);
-			valueAdd(dv, 1, rg, 1   );
+		dv *= diam() * sens(g.mouse);
+		if(3==mDragMode){
+			valueAdd(dv, 0, mMin, mMax-rg);
+			valueAdd(dv, 1, mMin+rg, mMax);
 		}
-		else if(mDragMode == 1) valueAdd(dv, 0, 0, 1);
-		else if(mDragMode == 2) valueAdd(dv, 1, 0, 1);
+		else if(1==mDragMode) valueAdd(dv, 0);
+		else if(2==mDragMode) valueAdd(dv, 1);
 
 		return false;
 
 	case Event::MouseUp:
-		if(mDragMode == 3){
-			mAcc[0] = glv::clip(mAcc[0], 1-rg, 0.f);
-			mAcc[1] = glv::clip(mAcc[1], 1.f, rg);
+		if(3==mDragMode){
+			mAcc[0] = glv::clip(mAcc[0], mMax-rg, mMin);
+			mAcc[1] = glv::clip(mAcc[1], mMax, mMin+rg);
 		}
-		else if(mDragMode == 1) mAcc[0] = glv::clip(mAcc[0], 1.f, 0.f);
-		else if(mDragMode == 2) mAcc[1] = glv::clip(mAcc[1], 1.f, 0.f);
+		else if(1==mDragMode) mAcc[0] = glv::clip(mAcc[0], mMax, mMin);
+		else if(2==mDragMode) mAcc[1] = glv::clip(mAcc[1], mMax, mMin);
 		return false;
 
 	default:;

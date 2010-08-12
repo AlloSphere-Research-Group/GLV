@@ -21,28 +21,28 @@ void updateSlider21(const Notification& n){
 void updateFocus(const Notification& n){
 	Slider& s = *(Slider *)n.sender();
 	Label& l = *(Label *)n.receiver();
-	l.label(s.enabled(Focused) ? "get focus" : "lose focus");
+	l.value(s.enabled(Focused) ? "get focus" : "lose focus");
 }
 
 void buttonsUpdateLabel(const Notification& n){
 	Label& l = *(Label *)n.receiver();
 	ButtonChange v = *(ButtonChange *)n.data();
 	char buf[16]; snprintf(buf, sizeof(buf), "[%2d] = %d", v.index(), v.value());
-	l.label(buf);
+	l.value(buf);
 }
 
 void sliderUpdateLabel(const Notification& n){
 	Label& l = *(Label *)n.receiver();
 	SliderChange v = *(SliderChange *)n.data();
 	char buf[16]; snprintf(buf, sizeof(buf), "[%2d] = %4.2f", v.index(), v.value());
-	l.label(buf);
+	l.value(buf);
 }
 
 void dialerUpdateLabel(const Notification& n){
 	Label& l = *(Label *)n.receiver();
 	NumberDialerChange v = *(NumberDialerChange *)n.data();
 	char buf[16]; snprintf(buf, sizeof(buf), "[%2d] = %4.2f", v.index(), v.value());
-	l.label(buf);
+	l.value(buf);
 }
 
 

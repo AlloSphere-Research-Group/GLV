@@ -14,8 +14,9 @@
 namespace glv {
 
 
+/// Return value clipped to interval [min, max)
 template <class T>
-inline T clip(const T& v, const T& mx=T(1), const T& mn=T(0)){ return v<mn ? mn : (v>mx ? mx : v); }
+inline T clip(const T& v, const T& max=T(1), const T& min=T(0)){ return v<min? min:(v>max? max:v); }
 
 template <class T> inline T max(const T& a, const T& b){ return a<b ? b:a; }
 template <class T> inline T min(const T& a, const T& b){ return a<b ? a:b; }

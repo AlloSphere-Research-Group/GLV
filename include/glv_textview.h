@@ -64,7 +64,6 @@ public:
 	Label(const std::string& str, Place::t posAnch, space_t px, space_t py, bool vert=false);
 
 	Label& align(float vx, float vy);		///< Set alignment factors for label area
-	Label& label(const std::string& s);		///< Set label string
 	Label& size(float pixels);				///< Set label size
 	Label& value(const std::string& s);		///< Set label string
 	Label& vertical(bool v);				///< Set whether label is displayed vertically
@@ -125,8 +124,6 @@ public:
 
 	NumberDialer(const NumberDialer& v);
 
-	double max() const;
-	double min() const;
 	int sizeFraction() const;
 	int sizeInteger() const;
 
@@ -137,7 +134,7 @@ public:
 	NumberDialer& padding(space_t v);
 	
 	/// Set max and min output range. Values larger than displayable range will be clipped.
-	NumberDialer& range(double max, double min=0);
+	NumberDialer& interval(double max, double min=0);
 
 	/// Set number of digits in integer and fraction parts
 	NumberDialer& resize(int numInt, int numFrac);
@@ -159,14 +156,14 @@ public:
 protected:
 	Font mFont;
 	int mNI, mNF, mPos;		// # digits in integer, # digits in fraction, selected digit position
-	int mVal, mMin, mMax;	// current value, min value, max value
+	int mVal;				// current value
 	space_t mPad;
 	float mAcc;
 	double mValMul;
 	bool mShowSign;
 	
 	void valSet(int v){	// converts fixed point to floating point value
-		mVal = glv::clip(v, mMax, mMin);
+		mVal = glv::clip(v, convert(mMax), convert(mMin));
 		double val = mVal * mValMul;
 		Base::setValueNotify(val);
 	}
@@ -178,19 +175,19 @@ protected:
 	}
 
 	void setWidth(){ w = (h-2)*size(); }
-	int convert(double v) const { return v / mValMul + (v>0. ? 0.5:-0.5); }
+	int convert(double v) const { return (v/mValMul) + (v>0. ? 0.5:-0.5); }
 	int mag() const { return pow(10, size()-1-dig()); }
 	bool onNumber() const { return mPos != signPos(); }
 	int dig() const { return mPos; }
 	void dig(int v){ mPos = v < 0 ? 0 : v >= size() ? size()-1 : v; }
-	int maxVal() const { return pow(10, mNI+mNF)-1; }
+	double maxVal() const { return (pow(10, mNI+mNF)-1)/pow(10, mNF); }
 	int signPos() const { return mShowSign ? 0 : -1; }
 	int size() const { return mNI + mNF + sizeSign(); }
 	int sizeSign() const { return mShowSign ? 1:0; }
 	void valAdd(int v){	valSet(v + mVal); }
 
 	void flipSign(){
-		if((mVal>0 && -mVal>=mMin) || (mVal<0 && -mVal<=mMax))
+		if((mVal>0 && -mVal>=convert(mMin)) || (mVal<0 && -mVal<=convert(mMax)))
 			valSet(-mVal);
 	}
 };

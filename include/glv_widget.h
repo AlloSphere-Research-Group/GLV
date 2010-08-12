@@ -27,6 +27,11 @@ namespace glv {
 	using ValueWidget<Tv,Tm>::selectedX;\
 	using ValueWidget<Tv,Tm>::selectedY;\
 	using ValueWidget<Tv,Tm>::variables;\
+	using ValueWidget<Tv,Tm>::diam;\
+	using ValueWidget<Tv,Tm>::to01;\
+	using ValueWidget<Tv,Tm>::toInterval;\
+	using ValueWidget<Tv,Tm>::mMin;\
+	using ValueWidget<Tv,Tm>::mMax;\
 	typedef ValueWidget<Tv,Tm> Base
 
 
@@ -46,16 +51,17 @@ public:
 	/// @param[in] drawGrid	whether to draw grid separater for multiple elements
 	ValueWidget(const Rect& r, int nx, int ny, space_t pad, bool toggles, bool mutExc, bool drawGrid=true);
 
-	/// Resize grid
-	void resize(int nx, int ny){ values().resize(nx,ny); }
-
 	int size () const { return values().size (); }	///< Get total number of elements
 	int sizeX() const { return values().sizeX(); }	///< Get number of elements along x
 	int sizeY() const { return values().sizeY(); }	///< Get number of elements along y
 
 	/// Returns whether this element coordinate is selected
 	bool isSelected(int x, int y) const { return x == selectedX() && y == selectedY(); }
-	
+
+	const Tm& max() const { return mMax; }
+	const Tm& min() const { return mMin; }
+	Tm mid() const { return (max()+min())/2; }
+
 	space_t padding() const { return mPadding; }	///< Get element padding amount
 	int selected() const { return index(sx, sy); }	///< Get selected element index
 	int selectedX() const { return sx; }			///< Get selected element x coordinate
@@ -66,14 +72,21 @@ public:
 		variables()[i] = &v;
 	}
 
+	ValueWidget& interval(const Tm& max, const Tm& min=Tm(0)){
+		sort(mMin=min, mMax=max); return *this;
+	}
+
+	/// Set element padding amount
+	ValueWidget& padding(space_t v){ mPadding=v; return *this; }
+
+	/// Resize grid
+	void resize(int nx, int ny){ values().resize(nx,ny); }
+
 	/// Select element at 1D index
 	ValueWidget& select(int i){ return select(i%sizeX(), i/sizeX()); }
 
 	/// Select element at 2D index
 	ValueWidget& select(int ix, int iy){ sx=ix; sy=iy; return *this; }
-
-	/// Set element padding amount
-	ValueWidget& padding(space_t v){ mPadding=v; return *this; }
 
 	virtual void onModelSync();
 
@@ -82,6 +95,7 @@ protected:
 	space_t mPadding;				// num pixels to inset icon
 	int sx, sy;						// last clicked position
 	std::map<int, Tm *> mVariables;	// model variables to sync to
+	Tm mMin, mMax;
 
 	Tv& values(){ return mVal; }
 	const Tv& values() const { return mVal; }
@@ -97,15 +111,16 @@ protected:
 
 	void setValueNotify(const Tm& v, int idx){
 		if(validIndex(idx)){
-			// Update model variable at this index, if any...
-			if(variables().count(idx)){
-				if(idx < size()) *(variables()[idx]) = v;
-			}
 			
 			// call derived class specialized value updater/notifier
 			//if(v != values()[idx]){	// call only when new value is different
 				onSetValueNotify(v, idx);
 			//}
+
+			// Update model variable at this index, if any...
+			if(variables().count(idx)){
+				if(idx < size()) *(variables()[idx]) = values()[idx];
+			}
 		}
 	}
 
@@ -115,10 +130,12 @@ protected:
 	float sens(const Mouse& m) const { return (m.left() && m.right()) ? 0.25 : 1; }
 
 	static void clip(int& i, int max){ i<0 ? i=0 : i>=max ? i=max-1 : 0; }
-	//static float clip1(float v){ return v < 0. ? 0. : v > 1. ? 1 : v; }
-	//static float clip(float v, float mx=1, float mn=0){ return v < mn ? mn : v > mx ? mx : v; }
 	void clipIndices(){ clip(sx, sizeX()); clip(sy, sizeY()); }
 	bool validIndex(int i) const { return (i < size()) && (i >= 0); }
+
+	Tm diam() const { return max()-min(); }
+	Tm to01(const Tm& v) const { return (v-min())/diam(); }
+	Tm toInterval(const Tm& v) const { return v*diam() + min(); }
 
 	// draw the grid lines
 	void drawGrid(){
@@ -191,9 +208,11 @@ protected:
 
 
 template<class Tv, class Tm>
-ValueWidget<Tv,Tm>::ValueWidget(const Rect& r, int nx, int ny, space_t pad, bool toggles, bool mutExc, bool drawGrid)
+ValueWidget<Tv,Tm>::ValueWidget(
+	const Rect& r, int nx, int ny, space_t pad, bool toggles, bool mutExc, bool drawGrid
+)
 :	View(r),
-	mPadding(pad), sx(0), sy(0)
+	mPadding(pad), sx(0), sy(0), mMin(0), mMax(1)
 {
 	resize(nx, ny);	// req'd for dynamically sized values
 	values().zero();

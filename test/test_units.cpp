@@ -428,9 +428,6 @@ int main(int argc, char ** argv){
 		assert(b);
 		assert(w.value() == "test");
 		
-		std::string v;
-		w.attachVariable(v);
-		
 		std::string s;
 		w.valueToString(s);		assert(s == "\"test\"");
 		
