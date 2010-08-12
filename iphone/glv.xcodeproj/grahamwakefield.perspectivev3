@@ -268,16 +268,19 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateExpansionKey</key>
 							<array>
 								<string>29B97314FDCFA39411CA2CEA</string>
+								<string>362127591173A41C009CB6FC</string>
 								<string>080E96DDFE201D6D7F000001</string>
+								<string>29B97315FDCFA39411CA2CEA</string>
 								<string>1C37FBAC04509CD000000102</string>
 								<string>3621279A1173A44A009CB6FC</string>
+								<string>36212A1E11743899009CB6FC</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>22</integer>
-									<integer>20</integer>
-									<integer>19</integer>
+									<integer>8</integer>
+									<integer>1</integer>
+									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -298,7 +301,7 @@
 							<real>185</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>458 50 854 823 0 0 1440 878 </string>
+						<string>566 55 854 823 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -309,12 +312,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>362126E31173A0C5009CB6FC</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>glv_draw.h</string>
+								<string>glv_conf.h</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -322,25 +327,34 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>362126E41173A0C5009CB6FC</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>glv_draw.h</string>
+										<string>glv_conf.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>362127A81173A44A009CB6FC</string>
+										<string>36212A3411743899009CB6FC</string>
 										<key>history</key>
 										<array>
-											<string>3621279B1173A44A009CB6FC</string>
-											<string>3621279C1173A44A009CB6FC</string>
-											<string>3621279D1173A44A009CB6FC</string>
-											<string>3621279E1173A44A009CB6FC</string>
-											<string>3621279F1173A44A009CB6FC</string>
-											<string>362127A01173A44A009CB6FC</string>
-											<string>362127A11173A44A009CB6FC</string>
 											<string>362127A21173A44A009CB6FC</string>
-											<string>362127A41173A44A009CB6FC</string>
 											<string>362127A51173A44A009CB6FC</string>
 											<string>362127A61173A44A009CB6FC</string>
-											<string>362127A71173A44A009CB6FC</string>
+											<string>36212A1F11743899009CB6FC</string>
+											<string>36212A2011743899009CB6FC</string>
+											<string>36212A2111743899009CB6FC</string>
+											<string>36212A2211743899009CB6FC</string>
+											<string>36212A2311743899009CB6FC</string>
+											<string>36212A2411743899009CB6FC</string>
+											<string>36212A2511743899009CB6FC</string>
+											<string>36212A2611743899009CB6FC</string>
+											<string>36212A2711743899009CB6FC</string>
+											<string>36212A2811743899009CB6FC</string>
+											<string>36212A2A11743899009CB6FC</string>
+											<string>36212A2B11743899009CB6FC</string>
+											<string>36212A2D11743899009CB6FC</string>
+											<string>36212A2E11743899009CB6FC</string>
+											<string>36212A2F11743899009CB6FC</string>
+											<string>36212A3011743899009CB6FC</string>
+											<string>36212A3111743899009CB6FC</string>
+											<string>36212A3311743899009CB6FC</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -354,18 +368,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {647, 398}}</string>
+								<string>{{0, 0}, {647, 777}}</string>
 								<key>RubberWindowFrame</key>
-								<string>458 50 854 823 0 0 1440 878 </string>
+								<string>566 55 854 823 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>398pt</string>
+							<string>777pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>379pt</string>
+							<string>0pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -395,7 +409,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 31}, {603, 297}}</string>
+										<string>{{10, 27}, {647, 352}}</string>
 									</dict>
 									<key>Module</key>
 									<string>PBXProjectFindModule</string>
@@ -433,9 +447,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {647, 352}}</string>
+										<string>{{10, 27}, {647, -27}}</string>
 										<key>RubberWindowFrame</key>
-										<string>458 50 854 823 0 0 1440 878 </string>
+										<string>566 55 854 823 0 0 1440 878 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -659,7 +673,7 @@
 		<string>/Users/grahamwakefield/Source/glv-svn/trunk/iphone/glv.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>458 50 854 823 0 0 1440 878 </string>
+	<string>566 55 854 823 0 0 1440 878 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>

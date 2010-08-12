@@ -16,7 +16,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [glView startAnimation];
+    const GLubyte * version = glGetString(GLenum name);
+	NSLog(@"version", version);
+	
+	[glView startAnimation];
     return YES;
 }
 
