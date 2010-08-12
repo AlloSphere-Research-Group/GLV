@@ -34,10 +34,50 @@ namespace glv {
 	using ValueWidget<Tv,Tm>::mMax;\
 	typedef ValueWidget<Tv,Tm> Base
 
+/*
+Button:
+	bool value() const { return Base::values()[0]; }
+
+	Button& value(bool v){ select(0); setValueNotify(v); return *this; }
+
+Buttons:
+	bool value(int i) const { return Base::values()[i]; }
+
+	Buttons& value(bool v, int i){ select(i); setValueNotify(v); return *this; }
+
+	Buttons& value(bool v, int ix, int iy){ select(ix, iy); setValueNotify(v); return *this; }
+
+SliderBase (Slider2D, SliderRange, SliderGrid):
+	float value(int idx=0) const {
+		return Base::validIndex(dim) ? Base::values()[dim] : 0;
+	}
+	SliderBase& value(float val, int idx){
+		if(Base::validIndex(dim)){
+			mAcc[dim] = v;
+			Base::setValueNotify(glv::clip(v, mMax,mMin), dim);
+		}
+		return *this;
+	}
+	
+Slider:
+	float value() const { return Base::values()[0]; }
+
+	Slider& value(float v){	select(0); setValueNotify(v); return *this; }
+
+Sliders:
+	float value(int i) const { return Base::values()[i]; }
+	
+	Sliders& value(float v, int i){ select(i); setValueNotify(v); return *this; }
+
+	Sliders& value(float v, int ix, int iy){ select(ix, iy); setValueNotify(v); return *this; }
+*/
 
 /// Base class for a widget with a grid of values
 template <class Tv, class Tm>
 class ValueWidget : public View{
+protected:
+	virtual void onSetValueNotify(const Tm& v, int idx) = 0;
+
 public:
 	typedef Tv values_types;
 	typedef Tm model_type;
@@ -51,21 +91,22 @@ public:
 	/// @param[in] drawGrid	whether to draw grid separater for multiple elements
 	ValueWidget(const Rect& r, int nx, int ny, space_t pad, bool toggles, bool mutExc, bool drawGrid=true);
 
-	int size () const { return values().size (); }	///< Get total number of elements
-	int sizeX() const { return values().sizeX(); }	///< Get number of elements along x
-	int sizeY() const { return values().sizeY(); }	///< Get number of elements along y
-
 	/// Returns whether this element coordinate is selected
 	bool isSelected(int x, int y) const { return x == selectedX() && y == selectedY(); }
 
-	const Tm& max() const { return mMax; }
-	const Tm& min() const { return mMin; }
-	Tm mid() const { return (max()+min())/2; }
+	const Tm& max() const { return mMax; }			///< Get maximum of value interval
+	const Tm& min() const { return mMin; }			///< Get minimum of value interval
+	Tm mid() const { return (max()+min())/2; }		///< Get middle point of value interval
 
 	space_t padding() const { return mPadding; }	///< Get element padding amount
+
 	int selected() const { return index(sx, sy); }	///< Get selected element index
 	int selectedX() const { return sx; }			///< Get selected element x coordinate
 	int selectedY() const { return sy; }			///< Get selected element y coordinate
+	int size () const { return values().size (); }	///< Get total number of elements
+	int sizeX() const { return values().sizeX(); }	///< Get number of elements along x
+	int sizeY() const { return values().sizeY(); }	///< Get number of elements along y
+	const Tv& values() const { return mVal; }		///< Returns 1D value array
 
 	/// Attach a model variable at a specified index
 	void attachVariable(model_type& v, int i=0){
@@ -98,9 +139,6 @@ protected:
 	Tm mMin, mMax;
 
 	Tv& values(){ return mVal; }
-	const Tv& values() const { return mVal; }
-
-	virtual void onSetValueNotify(const Tm& v, int idx){}
 
 	std::map<int, Tm *>& variables(){ return mVariables; }
 	const std::map<int, Tm *>& variables() const { return mVariables; }

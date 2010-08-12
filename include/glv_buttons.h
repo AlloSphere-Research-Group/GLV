@@ -107,9 +107,6 @@ public:
 	:	Base(r, nx, ny, toggles, mutExc, on, off)
 	{}
 	
-	/// Get value array
-	const Array<bool>& values() const { return Base::values(); }
-	
 	/// Get value at 1D index
 	bool value(int i) const { return Base::values()[i]; }
 	

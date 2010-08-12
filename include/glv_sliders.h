@@ -239,9 +239,6 @@ public:
 	:	Base(r, nx, ny, dragSelect, isSigned)
 	{}
 	
-	/// Get value array
-	const Array<float>& values() const { return Base::values(); }
-	
 	/// Get value at 1D index
 	float value(int i) const { return Base::values()[i]; }
 	
