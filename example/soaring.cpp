@@ -55,8 +55,8 @@ struct Scene : View3D{
 				float v = (v1 + v2 + v3 + v4)*0.25;
 				v *= v*v;
 				
-				terV[ind].y = v*4 - 0.5;
-				terC[ind] = v<0 ? HSV(0.6,1,-v) : HSV(0.1, 0.7*(1-v*v), v*0.5);				
+				terV[ind].y = v*5 - 0.5;
+				terC[ind] = v<0 ? HSV(0.6+v4*0.05,1,-v/(0.5-v)) : HSV(0.1+v4*v4*0.1, 0.7*(1-v*v), v);				
 			}
 		}
 
@@ -80,7 +80,7 @@ Slider2D sliderXZ(Rect(100));
 
 int main (int argc, char ** argv){
 	GLV top;
-	top.colors().set(Color(HSV(0.6,0.2,0.5), 0.9), 0.4);
+	top.colors().set(Color(HSV(0.6,0.2,0.6), 0.9), 0.4);
 
 	sliderXZ.interval(0.02, -0.02);
 	sliderXZ.attachVariable(scene.incx, 0);
