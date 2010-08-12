@@ -10,7 +10,7 @@ GLV (Graphics Library of Views) is a GUI building toolkit written in C++ for Lin
 2. Compilation Instructions
 ========================================
 
-The source code can either be built into a library or directly compiled from source into an application. In the following, the base directory is where this README file is located.
+The source code can either be built into a library or directly compiled from source into an application. In the following instructions, the base directory is where this README file is located.
 
 ----------------------------------------
 2.1 Building a Library
@@ -57,4 +57,4 @@ Make sure to pass in the following flags to the compiler:
 ----------------------------------------
 2.3 Dependencies
 ----------------------------------------
-GLV requires only OpenGL and GLU. There are no other dependencies, unless a window binding is used, such as GLUT.
+GLV requires only OpenGL, GLU, and GLEW (Linux only). There are no other dependencies, unless a window binding is used, such as GLUT.
