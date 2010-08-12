@@ -10,23 +10,23 @@ struct Scene : View3D{
 	virtual void onDraw3D(){
 		using namespace glv::draw;
 
-		if((rx+=incx) >= 360) rx-=360;
-		if((ry+=incy) >= 360) ry-=360;
-		if((rz+=incz) >= 360) rz-=360;
+		if((ax+=vx) >= 360) ax-=360;
+		if((ay+=vy) >= 360) ay-=360;
+		if((az+=vz) >= 360) az-=360;
 
 		Point3 p[] = {
 			Point3(-0.5,-0.5,0), Point3(+0.5,-0.5,0), Point3(0,+1,0)
 		};
 		
 		Color c[] = { HSV(0.1), HSV(0.2), Color(0) };
-		
+
 		translateZ(-3);
-		rotate(rx, ry, rz);
+		rotate(ax, ay, az);
 		paint(Triangles, p,c,3);
 	}
 	
-	float incx, incy, incz;
-	float rx, ry, rz;
+	float vx, vy, vz;
+	float ax, ay, az;
 };
 
 Slider slider1(Rect(200, 40)), slider2(slider1), slider3(slider1);
@@ -37,22 +37,22 @@ Scene scene(Rect(0,toolBar.h, 0,-(toolBar.h+statusBar.h)));
 
 void ntStatusString(const Notification& n){
 	View * s = (View *)n.sender();
-	statusString.value(s->className() + std::string(" ") + s->name() + ": " + s->valueToString());
+	statusString.value(s->className() + std::string(": ") + s->name() + " = " + s->valueToString());
 }
 
 int main (int argc, char ** argv){
 
-	slider1.name("inc x");
-	slider2.name("inc y");
-	slider3.name("inc z");
+	slider1.name("Angular Velocity x");
+	slider2.name("Angular Velocity y");
+	slider3.name("Angular Velocity z");
 
 	slider1.interval(30,-30);
 	slider2.interval(30,-30);
 	slider3.interval(30,-30);
 
-	slider1.attachVariable(scene.incx);
-	slider2.attachVariable(scene.incy);
-	slider3.attachVariable(scene.incz);
+	slider1.attachVariable(scene.vx);
+	slider2.attachVariable(scene.vy);
+	slider3.attachVariable(scene.vz);
 	
 	slider1.attach(ntStatusString, Update::Value);
 	slider2.attach(ntStatusString, Update::Value);
