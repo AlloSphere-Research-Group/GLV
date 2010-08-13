@@ -23,7 +23,7 @@
 
 // GLV core:
 #include "glv_core.h"
-//#include "glv_behavior.h"
+#include "glv_behavior.h"
 #include "glv_font.h"
 #include "glv_layout.h"
 

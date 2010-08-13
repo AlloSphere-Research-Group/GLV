@@ -34,43 +34,6 @@ namespace glv {
 	using ValueWidget<Tv,Tm>::mMax;\
 	typedef ValueWidget<Tv,Tm> Base
 
-/*
-Button:
-	bool value() const { return Base::values()[0]; }
-
-	Button& value(bool v){ select(0); setValueNotify(v); return *this; }
-
-Buttons:
-	bool value(int i) const { return Base::values()[i]; }
-
-	Buttons& value(bool v, int i){ select(i); setValueNotify(v); return *this; }
-
-	Buttons& value(bool v, int ix, int iy){ select(ix, iy); setValueNotify(v); return *this; }
-
-SliderBase (Slider2D, SliderRange, SliderGrid):
-	float value(int idx=0) const {
-		return Base::validIndex(dim) ? Base::values()[dim] : 0;
-	}
-	SliderBase& value(float val, int idx){
-		if(Base::validIndex(dim)){
-			mAcc[dim] = v;
-			Base::setValueNotify(glv::clip(v, mMax,mMin), dim);
-		}
-		return *this;
-	}
-	
-Slider:
-	float value() const { return Base::values()[0]; }
-
-	Slider& value(float v){	select(0); setValueNotify(v); return *this; }
-
-Sliders:
-	float value(int i) const { return Base::values()[i]; }
-	
-	Sliders& value(float v, int i){ select(i); setValueNotify(v); return *this; }
-
-	Sliders& value(float v, int ix, int iy){ select(ix, iy); setValueNotify(v); return *this; }
-*/
 
 /// Base class for a widget with a grid of values
 template <class Tv, class Tm>
@@ -271,6 +234,45 @@ void ValueWidget<Tv,Tm>::onModelSync(){
 		}
 	}
 }
+
+
+/*
+Button:
+	bool value() const { return Base::values()[0]; }
+
+	Button& value(bool v){ select(0); setValueNotify(v); return *this; }
+
+Buttons:
+	bool value(int i) const { return Base::values()[i]; }
+
+	Buttons& value(bool v, int i){ select(i); setValueNotify(v); return *this; }
+
+	Buttons& value(bool v, int ix, int iy){ select(ix, iy); setValueNotify(v); return *this; }
+
+SliderBase (Slider2D, SliderRange, SliderGrid):
+	float value(int idx=0) const {
+		return Base::validIndex(dim) ? Base::values()[dim] : 0;
+	}
+	SliderBase& value(float val, int idx){
+		if(Base::validIndex(dim)){
+			mAcc[dim] = v;
+			Base::setValueNotify(glv::clip(v, mMax,mMin), dim);
+		}
+		return *this;
+	}
+	
+Slider:
+	float value() const { return Base::values()[0]; }
+
+	Slider& value(float v){	select(0); setValueNotify(v); return *this; }
+
+Sliders:
+	float value(int i) const { return Base::values()[i]; }
+	
+	Sliders& value(float v, int i){ select(i); setValueNotify(v); return *this; }
+
+	Sliders& value(float v, int ix, int iy){ select(ix, iy); setValueNotify(v); return *this; }
+*/
 
 
 // Scrapyard....

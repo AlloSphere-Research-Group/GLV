@@ -39,7 +39,7 @@ public:
 
 	Placer(space_t absX=0, space_t absY=0);
 
-	Placer(View& parent, Direction dir, Place::t align, space_t x, space_t y, space_t pad=4);
+	Placer(View& parent, Direction dir, Place::t align=Place::TL, space_t x=0, space_t y=0, space_t pad=4);
 
 	/// Set a view's position
 	Placer& operator<< (View& v);

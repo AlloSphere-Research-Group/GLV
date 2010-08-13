@@ -283,6 +283,7 @@ public:
 	enum Preset{
 		BlackOnWhite,
 		Gray,
+		SmokeyGray,
 		WhiteOnBlack
 	};
 
@@ -349,7 +350,7 @@ public:
 	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
 	virtual void onModelSync(){}					///< Sync self to attached model variables
 
-	std::string valueToString(){ std::string r; valueToString(r); return r; }
+	std::string valueString(){ std::string r; valueToString(r); return r; }
 	virtual void valueToString(std::string& v);
 	virtual bool valueFromString(const std::string& v);
 
@@ -423,7 +424,7 @@ public:
 
 
 	View& bringToFront();						///< Brings to front of parent View
-	void cloneStyle();							///< Creates own copy of current style
+	View& cloneStyle();							///< Creates own copy of current style
 	void constrainWithinParent();				///< Force to remain in parent	
 
 

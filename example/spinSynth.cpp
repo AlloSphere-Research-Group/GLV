@@ -37,7 +37,7 @@ Scene scene(Rect(0,toolBar.h, 0,-(toolBar.h+statusBar.h)));
 
 void ntStatusString(const Notification& n){
 	View * s = (View *)n.sender();
-	statusString.value(s->className() + std::string(": ") + s->name() + " = " + s->valueToString());
+	statusString.value(s->className() + std::string(": ") + s->name() + " = " + s->valueString());
 }
 
 int main (int argc, char ** argv){

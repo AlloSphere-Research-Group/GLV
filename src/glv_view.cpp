@@ -186,7 +186,7 @@ View& View::anchor(Place::t p){
 View& View::bringToFront(){ makeLastSibling(); return *this; }
 
 
-void View::cloneStyle(){
+View& View::cloneStyle(){
 	if(mStyle){		
 		style(new Style(*mStyle));
 		mStyle->deletable(true);
@@ -194,6 +194,7 @@ void View::cloneStyle(){
 	else{
 		mStyle = new Style(true);
 	}
+	return *this;
 }
 
 
