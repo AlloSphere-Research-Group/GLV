@@ -4,7 +4,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-#define	GLV_VERSION "0.94"
+#define	GLV_VERSION "0.95"
 #define	GLV_MAX_MOUSE_BUTTONS 8
 
 //#define GLV_USE_OPENGL_ES 1
