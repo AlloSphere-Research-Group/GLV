@@ -17,12 +17,12 @@ namespace glv {
 //	: View(r), mSliderStyle(false), mIsHSV(isHSV), mControlsAlpha(controlsAlpha)
 //	{
 //		//mDeletesChildren = false;
-//		
+//
 //		mComp1 = new Slider;
 //		mComp2 = new Slider;
 //		mComp3 = new Slider;
 //		mCompA = new Slider;
-//		
+//
 //		int num = mControlsAlpha ? 4 : 3;
 //		mComp1->anchor(0,0./num).stretch(1,1./num).set(0,0./num,0,0);
 //		mComp2->anchor(0,1./num).stretch(1,1./num).set(0,1./num,0,0);
@@ -35,20 +35,20 @@ namespace glv {
 //		setColor();
 //		(*this) << mComp1 << mComp2 << mComp3 << mCompA;
 //		mCompA->property(Visible, mControlsAlpha);
-//		
+//
 ////		printf("%x\n", this);
 ////		printf("\t%x\n", &mComp1);
 ////		printf("\t%x\n", &mComp2);
 ////		printf("\t%x\n", &mComp3);
 ////		printf("\t%x\n", &mCompA);
 //	}
-//	
+//
 //	bool isHSV() const { return mIsHSV; }
 //	const Color& value() const { return mColor; }
 //	ColorSliders& value(const Color& c){ setColor(c); return *this; }
-//	
+//
 //	virtual const char * className() const { return "ColorSliders"; }
-//	
+//
 //protected:
 //	Color mColor;
 //	Style mSliderStyle;
@@ -83,7 +83,7 @@ namespace glv {
 class ColorSliders : public View{
 public:
 
-	ColorSliders(const Rect& r, bool isHSV=true, bool controlsAlpha=false)
+	ColorSliders(const Rect& r=Rect(100, 30), bool isHSV=true, bool controlsAlpha=false)
 	: View(r), mSliderStyle(false), mIsHSV(isHSV), mControlsAlpha(controlsAlpha)
 	{
 		int num = mControlsAlpha ? 4 : 3;
@@ -99,14 +99,14 @@ public:
 		(*this) << mComp1 << mComp2 << mComp3 << mCompA;
 		mCompA.property(Visible, mControlsAlpha);
 	}
-	
+
 	bool isHSV() const { return mIsHSV; }
 	const Color& value() const { return mColor; }
 	ColorSliders& value(const Color& v){ setColor(v); return *this; }
 	ColorSliders& value(const HSV& v){ setColor(v); return *this; }
 
 	virtual const char * className() const { return "ColorSliders"; }
-	
+
 protected:
 	Color mColor;
 	Style mSliderStyle;
