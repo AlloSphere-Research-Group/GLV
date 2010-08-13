@@ -58,3 +58,18 @@ Make sure to pass in the following flags to the compiler:
 2.3 Dependencies
 ----------------------------------------
 GLV requires only OpenGL, GLU, and GLEW (Linux only). There are no other dependencies, unless a window binding is used, such as GLUT.
+
+
+========================================
+3. File Organization
+========================================
+
+include/	GLV headers
+src/		GLV source
+
+example/	example source demonstrating various features of GLV
+test/		unit and visual testing source
+
+doc/		documentation of GLV source, design, etc.
+
+
