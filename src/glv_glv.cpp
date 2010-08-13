@@ -22,7 +22,7 @@ GLV::~GLV(){ //printf("~GLV\n");
 }
 
 
-void GLV::broadcastEvent(Event::t e){ 
+void GLV::broadcastEvent(Event::t e){
 
 	struct Action : View::TraversalAction{
 		GLV& glv; Event::t event;
@@ -33,7 +33,7 @@ void GLV::broadcastEvent(Event::t e){
 		}
 		bool operator()(const View * v, int depth){ return false; }
 	} action(*this, e);
-	
+
 	traverseDepth(this, action);
 }
 
@@ -46,11 +46,11 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 	if(!v.enabled(Controllable)) return false;
 
 //	bool bubble = v.onEvent(e, *this);					// Execute virtual callback
-//	
+//
 //	if(bubble){
 //		if(v.hasCallbacks(e)){
 //			const eventCallbackList& cbl = v.callbackLists[e];
-//			
+//
 //			// Execute callbacks in list
 //			for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
 //				//if(*it) bubble |= (*it)(&v, *this);
@@ -62,14 +62,14 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 //			}
 //		}
 //	}
-//	
+//
 //	return bubble | v.enabled(AlwaysBubble);
 
 	bool bubble = true;
 
 	if(v.hasCallbacks(e)){
 		const eventCallbackList& cbl = v.callbackLists[e];
-		
+
 		// Execute callbacks in list
 		for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
 			//if(*it) bubble |= (*it)(&v, *this);
@@ -80,7 +80,7 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 			}
 		}
 	}
-	
+
 	bubble &= v.onEvent(e, *this);
 	end:
 	return bubble | v.enabled(AlwaysBubble);
@@ -92,7 +92,7 @@ void GLV::doFocusCallback(bool get){
 
 	if(mFocusedView){
 		mFocusedView->focused(get);
-		
+
 		if(mFocusedView->numCallbacks(e) ){
 			eventType(e);
 			doEventCallbacks(*mFocusedView, e);
@@ -124,11 +124,11 @@ static void drawContext(float tx, float ty, View * v, float& cx, float& cy, View
 static void computeCrop(std::vector<Rect>& cr, int lvl, space_t ax, space_t ay, View * v){
 	if(v->enabled(CropChildren)){
 		cr[lvl].set(ax, ay, v->w, v->h);	// set absolute rect
-		
+
 		// get intersection with myself and previous level
 		if(lvl>0) cr[lvl].intersection(cr[lvl-1], cr[lvl]);
 	}
-	
+
 	// if no child cropping, then inherit previous level's crop rect
 	else{ cr[lvl] = cr[lvl-1]; }
 }
@@ -141,56 +141,56 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 	View * const root = this;
 	View * cv = root;
 
-	// The crop region is the intersection of all parent rects up to the top 
-	// view. The intersections also need to be done in absolute coordinates.	
+	// The crop region is the intersection of all parent rects up to the top
+	// view. The intersections also need to be done in absolute coordinates.
 	std::vector<Rect> cropRects(16, Rect(w, h));	// index is hierarchy level
 	int lvl = 0;	// start at root = 0
-	
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_INDEX_ARRAY);
 	//glEnableClientState(GL_COLOR_ARRAY);
 	//glColorPointer(4, GL_FLOAT, 0, 0);
-	
+
 	push2D(w, h);	// initialise the OpenGL renderer for our 2D GUI world
 	onDraw();		// draw myself
 	push();			// push model matrix because of transformations in drawContext()
-	
+
 	draw::enable(ScissorTest);
 
 	while(true){
 
 		cv->onModelSync();	// update state based on attached model variables
 		cv->validate();		// validate geometry
-	
+
 		// find the next view to draw
-		
+
 		// go to child node if exists and I'm drawable
 		if(cv->child && cv->visible()){
 			drawContext(cv->child->l, cv->child->t, cv->child, cx, cy, cv);
 			computeCrop(cropRects, ++lvl, cx, cy, cv);
 		}
-		
+
 		// go to sibling node if exists
 		else if(cv->sibling){
 			drawContext(cv->sibling->l - cv->l, cv->sibling->t - cv->t, cv->sibling, cx, cy, cv);
 			computeCrop(cropRects, lvl, cx, cy, cv);
 		}
-		
+
 		// retrace upwards until a parent's sibling is found
 		else{
 			while(cv != root && cv->sibling == 0){
 				drawContext(-cv->l, -cv->t, cv->parent, cx, cy, cv);
 				lvl--;
 			}
-			
+
 			if(cv->sibling){
 				drawContext(cv->sibling->l - cv->l, cv->sibling->t - cv->t, cv->sibling, cx, cy, cv);
 				computeCrop(cropRects, lvl, cx, cy, cv);
 			}
 			else break; // break the loop when the traversal returns to the root
 		}
-		
-		
+
+
 		// draw the current view
 		if(cv->visible()){
 
@@ -206,13 +206,13 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 			cv->drawPost();
 		}
 	}
-	
+
 	glDisableClientState(GL_INDEX_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	//glDisableClientState(GL_COLOR_ARRAY);
-	
+
 	pop();
-	
+
 	// this weird call is necessary so that raster calls get scissored properly
 	// not entirely sure why this works, but it does.
 	scissor(0,0,(GLint)w,(GLint)h);
@@ -243,8 +243,8 @@ bool GLV::propagateEvent(){ //printf("GLV::propagateEvent(): %s\n", Event::getNa
 void GLV::setFocus(View * v){
 
 	// save current event since we do not want to propagate GetFocus and LoseFocus
-	Event::t currentEvent = eventType();	
-											
+	Event::t currentEvent = eventType();
+
 	doFocusCallback(false);	// Call current focused View's LoseFocus callback
 	mFocusedView = v;		// Set the currently focused View
 	doFocusCallback(true);	// Call newly focused View's GetFocus callback
@@ -265,7 +265,7 @@ void GLV::setKeyUp(int keycode){
 }
 
 void GLV::setMouseDown(space_t& x, space_t& y, int button, int clicks){
-	eventType(Event::MouseDown);	
+	eventType(Event::MouseDown);
 	//if(button == Mouse::Left)
 		setFocus(findTarget(x, y));
 	mouse.posRel(x,y);
