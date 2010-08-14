@@ -77,10 +77,17 @@ struct Scene : View3D{
 
 Scene scene;
 Slider2D sliderXZ(Rect(100));
+Window win(800, 600, "Soaring");
+
+bool evKeyDown(View * v, GLV& g){
+	if(g.keyboard.key() == Key::Escape) win.fullScreenToggle();
+	return false;
+}
 
 int main (int argc, char ** argv){
 	GLV top;
 	top.colors().set(Color(HSV(0.6,0.2,0.6), 0.9), 0.4);
+	top(Event::KeyDown, evKeyDown);
 
 	sliderXZ.interval(0.02, -0.02);
 	sliderXZ.attachVariable(scene.incx, 0);
@@ -90,7 +97,7 @@ int main (int argc, char ** argv){
 	
 	top << (scene << sliderXZ);
 
-	Window win(800, 600, "Soaring", &top);
+	win.setGLV(top);
 	Application::run();
 }
 
