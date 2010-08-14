@@ -10,7 +10,7 @@ namespace glv{
 
 namespace Behavior{
 
-	bool mouseMove(View * v, GLV& g){
+	inline bool mouseMove(View * v, GLV& g){
 		if(g.mouse.left()){
 			v->move(g.mouse.dx(), g.mouse.dy());
 			return false;
@@ -18,7 +18,7 @@ namespace Behavior{
 		return true;
 	}
 
-	bool mouseResizeCorner(View * v, GLV& g){
+	inline bool mouseResizeCorner(View * v, GLV& g){
 		if(g.mouse.left()){
 
 			float mx = g.mouse.xRel();
@@ -39,7 +39,7 @@ namespace Behavior{
 		return true;
 	}
 
-	bool mouseResize(View * v, GLV& g){
+	inline bool mouseResize(View * v, GLV& g){
 		if(g.mouse.middle()){
 		
 			float dx = g.mouse.dx();
