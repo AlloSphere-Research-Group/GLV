@@ -42,6 +42,9 @@ int toString(std::string& dst, const char * src);
 template<class T>
 int toString(std::string& dst, const T * src, int size);
 
+/// Returns a stringification of an object
+template <class T>
+inline std::string toString(const T& obj){ std::string r; toString(r,obj); return r; }
 
 
 /// Smart pointer functionality to avoid deleting references.
