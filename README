@@ -32,7 +32,7 @@ There are several other targets within Makefile. These are:
 	make test/x.cpp		- builds and runs source file 'x'
 	make example/x.cpp	- builds and runs source file 'x'
 
-Binaries are located in build/release or build/debug depending on the build configuration. 
+Binaries are located in build/Release or build/Debug depending on the build configuration. 
 
 ........................................
 Xcode (OS X)
