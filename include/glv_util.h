@@ -33,14 +33,15 @@ int fromString(T& dst, const std::string& src);
 template<class T>
 int fromString(T * dst, int size, const std::string& src);
 
-/// Convert a value type to a string
+/// Convert a value type to a string. Returns number of elements converted.
 template<class T>
-void toString(std::string& dst, const T& src);
-void toString(std::string& dst, const char * src);
+int toString(std::string& dst, const T& src);
+int toString(std::string& dst, const char * src);
 
-/// Convert a value array to a string
+/// Convert a value array to a string. Returns number of elements converted.
 template<class T>
-void toString(std::string& dst, const T * src, int size);
+int toString(std::string& dst, const T * src, int size);
+
 
 
 /// Smart pointer functionality to avoid deleting references.
@@ -235,15 +236,22 @@ bool SmartObject<T>::withinFootPrint(void * m){
 
 
 
-template<class T> void toString(std::string& dst, const T * src, int size){
-	dst = "{";
-	std::string temp;
-	for(int i=0; i<size; ++i){
-		toString(temp, src[i]);
-		dst += temp;
-		if(i != (size-1)) dst += ", ";
+template<class T>
+int toString(std::string& dst, const T * src, int size){
+	if(1==size){ return toString(dst, *src); }
+	
+	else{
+		dst = "{";
+		std::string temp;
+		int count=0;
+		for(int i=0; i<size; ++i){
+			count += toString(temp, src[i]);
+			dst += temp;
+			if(i != (size-1)) dst += ", ";
+		}
+		dst += "}";
+		return count;
 	}
-	dst += "}";
 }
 
 
