@@ -57,6 +57,9 @@ clean:
 	@rm -rf $(BIN_DIR)/*
 #	@cd test && make clean
 
+cleanall:
+	@rm -rf $(BUILD_DIR)/*
+
 all: $(SLIB_FILE) test
 
 
