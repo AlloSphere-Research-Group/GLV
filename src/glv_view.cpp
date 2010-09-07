@@ -316,7 +316,7 @@ void View::fit(){
 void View::focused(bool b){
 	property(Focused, b);
 	if(b && enabled(FocusToTop)) makeLastSibling(); // move to end of chain, so drawn last
-	notify(Update::Focus);
+	notify(this, Update::Focus);
 }
 
 
@@ -353,8 +353,11 @@ void View::modelToString(std::string& v, const std::string& modelName) const {
 		bool operator()(const View * v, int depth){
 			std::string r;
 			const std::string& name = v->name();
-			if(v->hasName() && v->toToken(r)){
-				s += "\t" + name + " = " + r + ",\r\n";
+//			if(v->hasName() && v->toToken(r)){
+//				s += "\t" + name + " = " + r + ",\r\n";
+//			}
+			if(v->hasName()){
+				s += "\t" + name + " = " + v->model().toToken() + ",\r\n";
 			}
 			return true;
 		}
@@ -415,7 +418,7 @@ int View::modelFromString(const std::string& v){
 
 				if(nameView.count(key)){
 					//printf("%s = %s\n", key.c_str(), val.c_str());
-					nameView[key]->fromToken(val);
+					nameView[key]->modelFromToken(val);
 				}
 			}
 			b=e;

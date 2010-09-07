@@ -34,8 +34,8 @@ public:
 	/// @param[in] i	index of value
 	ChangedValue(const T& v, int i=0): mIndex(i), mValue(v){}
 	
-	T value() const { return mValue; }		///< Get value
-	int index() const { return mIndex; }	///< Get index of value
+	const T& value() const { return mValue; }	///< Get value
+	int index() const { return mIndex; }		///< Get index of value
 
 private:
 	int mIndex;
@@ -54,16 +54,19 @@ public:
 	/// @param[in] sndr		Pointer to sending object (subject)
 	/// @param[in] rcvr		Pointer to receiving object (observer)
 	/// @param[in] data		Pointer to data object
-	Notification(Notifier * sndr, void * rcvr=0, const void * data=0)
+	Notification(void * sndr, void * rcvr=0, const void * data=0)
 	:	mSender(sndr), mReceiver(rcvr), mData(data)
 	{}
 
-	Notifier * sender() const { return mSender; }	///< Get pointer to sending object
+	template <class T>
+	T * sender() const { return static_cast<T *>(mSender); }
+
+	void * sender() const { return mSender; }		///< Get pointer to sending object
 	void * receiver() const { return mReceiver; }	///< Get pointer to receiving object
 	const void * data() const { return mData; }		///< Get pointer to data object
 
 protected:
-	Notifier * mSender;
+	void * mSender;
 	void * mReceiver;
 	const void * mData;
 };
@@ -104,7 +107,7 @@ public:
 
 
 	/// Notify observers of a specific update type
-	void notify(Update::t n, void * data=0){
+	void notify(void * sender, Update::t n, void * data=0){
 	
 		if(!hasHandlers() || handlers()[n].empty()) return;
 
@@ -112,9 +115,12 @@ public:
 		int i=handlers()[n].size();
 		while(i--){
 			Handler& h = handlers()[n][i];
-			if(h.handler) h.handler(Notification(this, h.receiver, data));
+			if(h.handler) h.handler(Notification(sender, h.receiver, data));
 		}
 	}
+
+	/// Notify observers of a specific update type
+	void notify(Update::t n, void * data=0){ notify(this, n, data); }
 	
 	/// Notify observers of a specific update type
 	template <class T>

@@ -10,53 +10,29 @@ namespace glv{
 #define CTOR_LIST mAlignX(0), mAlignY(0), mVertical(false)
 #define CTOR_BODY\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
-	value(str);\
+	setValue(str);\
 	vertical(vert);
 
-//Label::Label(const std::string& str, const Spec& s)
-//:	Widget(Rect(0), Data(Data::STRING, 1)), mAlignX(0), mAlignY(0)
-//{
-//	disable(CropSelf | DrawBack | DrawBorder | HitTest);
-//	value(str);
-//	vertical(s.vert);
-//	size(s.size);
-//	pos(s.posAnch, s.dx, s.dy).anchor(s.posAnch);
-//}
-//
-//Label::Label(const std::string& str, bool vert)
-//:	Widget(Rect(0), Data(Data::STRING, 1)), CTOR_LIST
-//{	CTOR_BODY }
-//
-//Label::Label(const std::string& str, space_t l, space_t t, bool vert)
-//:	Widget(Rect(l,t,0,0), Data(Data::STRING, 1)), CTOR_LIST
-//{	CTOR_BODY }
-//
-//Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool vert)
-//:	Widget(Rect(0), Data(Data::STRING, 1)), CTOR_LIST
-//{	CTOR_BODY 
-//	pos(p, px, py).anchor(p);
-//}
-
 Label::Label(const std::string& str, const Spec& s)
-:	Widget(Rect(0)), mAlignX(0), mAlignY(0)
+:	Widget(Rect(0), Data(Data::STRING)), mAlignX(0), mAlignY(0)
 {
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);
-	value(str);
+	setValue(str);
 	vertical(s.vert);
 	size(s.size);
 	pos(s.posAnch, s.dx, s.dy).anchor(s.posAnch);
 }
 
 Label::Label(const std::string& str, bool vert)
-:	Widget(Rect(0)), CTOR_LIST
+:	Widget(Rect(0), Data(Data::STRING)), CTOR_LIST
 {	CTOR_BODY }
 
 Label::Label(const std::string& str, space_t l, space_t t, bool vert)
-:	Widget(Rect(l,t,0,0)), CTOR_LIST
+:	Widget(Rect(l,t,0,0), Data(Data::STRING)), CTOR_LIST
 {	CTOR_BODY }
 
 Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool vert)
-:	Widget(Rect(0)), CTOR_LIST
+:	Widget(Rect(0), Data(Data::STRING)), CTOR_LIST
 {	CTOR_BODY 
 	pos(p, px, py).anchor(p);
 }
@@ -72,12 +48,12 @@ Label& Label::size(float pixels){
 	return *this;
 }
 
-Label& Label::value(const std::string& s){
-	//mLabel = s;
-	//copyModel(Data(s));
-	model().set(s);
+Label& Label::setValue(const std::string& s){
+//	model().set(s);
+//	fitExtent();
+//	if(numObservers(Update::Value)) notify(Update::Value, LabelChange(s));
+	Widget::setValue(s);
 	fitExtent();
-	if(numObservers(Update::Value)) notify(Update::Value, LabelChange(s));
 	return *this;
 }
 
@@ -207,7 +183,7 @@ NumberDialer& NumberDialer::showSign(bool v){
 
 //double NumberDialer::value() const{ return mVal * mValMul; }
 double NumberDialer::value() const{ return model().at<double>(0); }
-NumberDialer& NumberDialer::value(double v){ valSet(convert(v)); return *this; }
+NumberDialer& NumberDialer::setValue(double v){ valSet(convert(v)); return *this; }
 
 void NumberDialer::onDraw(){ //printf("% g\n", value());
 	using namespace glv::draw;
@@ -330,7 +306,7 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 			case 'a': onNumber() ? valAdd( mag()) : flipSign(); return false;
 			case 'z': onNumber() ? valAdd(-mag()) : flipSign(); return false;
 			case '-': flipSign(); return false;
-			case 'c': value(0); return false;
+			case 'c': setValue(0); return false;
 			case '.': dig(size()-mNF); return false; // go to first fraction digit (if any)
 			case Key::Right: dig(dig()+1); return false;
 			case Key::Left:  dig(dig()-1); return false;
@@ -348,25 +324,33 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 
 
 TextView::TextView(const Rect& r, float textSize)
-:	View(r), mSpacing(1), mPadX(4), mSel(0), mBlink(0)
+:	Widget(r, Data(Data::STRING)), mSpacing(1), mPadX(4), mSel(0), mBlink(0)
 {
 	setPos(0);
 	size(textSize);
 }
 
-void TextView::callNotify(){ notify(Update::Value, TextViewChange(&mText)); }
+//void TextView::callNotify(){ notify(Update::Value, TextViewChange(&mText)); }
 
 TextView& TextView::size(float pixels){
 	mFont.size(pixels);
 	return *this;
 }
 
-TextView& TextView::value(const std::string& v){
-	if(v != mText){
-		mText=v;
-		callNotify();
+//TextView& TextView::setValue(const std::string& v){
+//	if(v != mText){
+//		mText=v;
+//		callNotify();
+//	}
+//	return *this;
+//}
+
+bool TextView::onAssignModel(Data& d, int ind1, int ind2){
+	if(Widget::onAssignModel(d, ind1, ind2)){
+		mText = value();
+		return true;
 	}
-	return *this;
+	return false;
 }
 
 void TextView::onDraw(){
@@ -420,7 +404,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 		case Event::KeyDown:
 			if(isprint(key)){
 				deleteSelected();
-				mText.insert(mPos, 1, k.key()); callNotify();
+				mText.insert(mPos, 1, k.key()); setValue(mText);
 				setPos(mPos+1);
 				return false;
 			}
@@ -496,7 +480,7 @@ void TextView::deleteSelected(){
 
 void TextView::deleteText(int start, int num){
 	mText.erase(start, num);
-	callNotify();
+	setValue(mText);
 }
 
 void TextView::select(int v){

@@ -104,15 +104,46 @@ template<> int toToken<std::string>(std::string& dst, const std::string& src){
 int toToken(std::string& dst, const char * src){ return toToken(dst, std::string(src)); }
 
 
+int fromToken(Data& d, const std::string& s){
+	switch(d.type()){
+	case Data::BOOL:	return glv::fromToken(       d.elems<bool>(), d.size(), s);
+	case Data::INT:		return glv::fromToken(        d.elems<int>(), d.size(), s);
+	case Data::FLOAT:	return glv::fromToken(      d.elems<float>(), d.size(), s);
+	case Data::DOUBLE:	return glv::fromToken(     d.elems<double>(), d.size(), s);
+	case Data::STRING:	return glv::fromToken(d.elems<std::string>(), d.size(), s);
+	default: return 0;
+	}
+}
+int toString(std::string& s, const Data& d){
+	switch(d.type()){
+	case Data::BOOL:	return glv::toString(s,        d.elems<bool>(), d.size());
+	case Data::INT:		return glv::toString(s,         d.elems<int>(), d.size());
+	case Data::FLOAT:	return glv::toString(s,       d.elems<float>(), d.size());
+	case Data::DOUBLE:	return glv::toString(s,      d.elems<double>(), d.size());
+	case Data::STRING:	return glv::toString(s, d.elems<std::string>(), d.size());
+	default: return 0;
+	}
+}
+int toToken(std::string& s, const Data& d){
+	switch(d.type()){
+	case Data::BOOL:	return glv::toToken(s,        d.elems<bool>(), d.size());
+	case Data::INT:		return glv::toToken(s,         d.elems<int>(), d.size());
+	case Data::FLOAT:	return glv::toToken(s,       d.elems<float>(), d.size());
+	case Data::DOUBLE:	return glv::toToken(s,      d.elems<double>(), d.size());
+	case Data::STRING:	return glv::toToken(s, d.elems<std::string>(), d.size());
+	default: return 0;
+	}
+}
 
 
-Data::Data(): mData(0), mSize1(0), mSize2(0), mType(Data::VOID){}
+
+Data::Data(): mData(0), mBegin(0), mSize1(0), mSize2(0), mType(Data::VOID){}
 
 Data::Data(Data& v){ *this = v; }
 Data::Data(const Data& v){ *this = v; }
 
 Data::Data(Data::Type type, int n1, int n2)
-:	mData(0), mSize1(n1), mSize2(n2), mType(type)
+:	mBegin(0), mData(0), mSize1(n1), mSize2(n2), mType(type)
 {}
 
 Data::~Data(){
@@ -121,45 +152,38 @@ Data::~Data(){
 
 Data& Data::operator= (const Data& v){
 	if(&v != this){
-		setRaw(v.mData, v.size1(), v.size2(), v.type());
-//		mData  = v.mData;
-//		mSize1 = v.size1();
-//		mSize2 = v.size2();
-//		mType  = v.type();
-//		incrementCount(mData);
+		setRaw(v.mData, v.mBegin, v.size1(), v.size2(), v.type());
 	}
 	return *this;
 }
 
 bool Data::operator==(const Data& v) const {
 	if(hasData() && v.hasData()){
-		// TODO: how do we compare different sizes?
 		// TODO: how do we compare numbers and strings?
 
-		//if(size() != v.size()) return false;
-
+		// compare maximum possible number of elements
 		int n = size() < v.size() ? size() : v.size();
 
 		#define OP(t1, t2)\
 			for(int i=0; i<n; ++i){\
-				if(data<t1>()[i] != v.data<t2>()[i]) return false;\
+				if(elems<t1>()[i] != v.elems<t2>()[i]) return false;\
 			} return true
 
 		#define OPALL(t)\
-			switch(v.typeKind()){\
-			case Data::BOOL:	OP(t, const bool);\
-			case Data::INT:		OP(t, const int);\
-			case Data::FLOAT:	OP(t, const float);\
-			case Data::DOUBLE:	OP(t, const double);\
+			switch(v.type()){\
+			case Data::BOOL:	OP(t, bool);\
+			case Data::INT:		OP(t, int);\
+			case Data::FLOAT:	OP(t, float);\
+			case Data::DOUBLE:	OP(t, double);\
 			default: return false;\
 			}
 
-		switch(typeKind()){
-		case Data::BOOL:	OPALL(const bool);
-		case Data::INT:		OPALL(const int);
-		case Data::FLOAT:	OPALL(const float);
-		case Data::DOUBLE:	OPALL(const double);
-		case Data::STRING:	OP(const std::string, const std::string);
+		switch(type()){
+		case Data::BOOL:	OPALL(bool);
+		case Data::INT:		OPALL(int);
+		case Data::FLOAT:	OPALL(float);
+		case Data::DOUBLE:	OPALL(double);
+		case Data::STRING:	OP(std::string, std::string);
 		default:;
 		}
 	}
@@ -174,18 +198,19 @@ Data& Data::assign(const Data& v, int ind1, int ind2){
 		int id= indexFlat(ind1,ind2);	// starting index of destination
 		int nd= size()-id;				// number of destination elements to assign
 		int n = nd < v.size() ? nd : v.size();
-//printf("%p: %d %d %d\n", this, id,nd,n);
+
 		#define OP(t1, t2)\
 			for(int i=0; i<n; ++i){\
-				data<t1>()[i+id] = v.data<t2>()[i];\
+				elems<t1>()[i+id] = v.elems<t2>()[i];\
 			} break
 
 		#define OPALL(t)\
-			switch(v.typeKind()){\
-			case BOOL:			OP(t, const bool);\
-			case INT:			OP(t, const int);\
-			case FLOAT:			OP(t, const float);\
-			case DOUBLE:		OP(t, const double);\
+			switch(v.type()){\
+			case BOOL:			OP(t, bool);\
+			case INT:			OP(t, int);\
+			case FLOAT:			OP(t, float);\
+			case DOUBLE:		OP(t, double);\
+			case STRING:\
 			default:;\
 			} break
 
@@ -195,13 +220,11 @@ Data& Data::assign(const Data& v, int ind1, int ind2){
 		case Data::FLOAT:	OPALL(float);
 		case Data::DOUBLE:	OPALL(double);
 		case Data::STRING: //printf("copy strings: %p -> %p\n", &v, this);
-			switch(v.typeKind()){
-	//		case Data::BOOL:	v.toString(data<std::string>());
-	//		case Data::FLOAT:	OP(t, float);
-	//		case Data::DOUBLE:	OP(t, double);
-			case Data::STRING:	OP(std::string, const std::string);
-				//for(int i=0; i<n; ++i) printf("%s %s\n", data<std::string>()[i].c_str(), v.data<const std::string>()[i].c_str());
-				
+			switch(v.type()){
+//			case Data::BOOL:	v.toString(data<std::string>());
+//			case Data::FLOAT:	OP(t, float);
+//			case Data::DOUBLE:	OP(t, double);
+			case Data::STRING:	OP(std::string, std::string);
 			default:;
 			} break;
 		default:;
@@ -216,12 +239,12 @@ void Data::clone(){
 	if(hasData()){
 		int cnt = references(mData);
 		
-		// cnt==0	data points to external data
-		// cnt >1	data points to another Data's cloned data
-		// cnt==1	data points to my own cloned data
+		// cnt == 0		data points to external, unmanaged data
+		// cnt  > 1		data points to another Data's cloned data
+		// cnt == 1		data points to my own cloned data
 //		if(cnt!=1){
 			Data old(*this);
-			realloc(typeKind(), size1(), size2());
+			realloc(type(), size1(), size2());
 			assign(old);
 //		}
 //		else{
@@ -229,7 +252,7 @@ void Data::clone(){
 //		}
 	}
 	else{
-		realloc(typeKind(), size1(), size2());
+		realloc(type(), size1(), size2());
 	}
 }
 
@@ -245,36 +268,45 @@ void Data::free(){
 		case Data::STRING:	delete[] data<std::string>(); break;
 		default:;
 		}
+//		::free(mData);
 	}
 	mData=0;
 	mSize1=mSize2=0;
+	mBegin=0;
 	mType=Data::VOID;
 }
 
 void Data::print() const{
-	printf("data: %p\nsize: %d x %d\ntype: %s\n\n",
-		mData, size1(), size2(), typeToString(type()).c_str());
+	printf("%p + %d, %d x %d, %s, %s\n",
+		mData, begin(), size1(), size2(), typeToString(type()).c_str(), toToken().c_str());
 }
 
 void Data::realloc(Data::Type t, int n1, int n2){
 //	if(type()!=t || size()!=sz){
 		free();
 		if(n1 && n2){
-			mType = t;
+			mType  = t;
 			mSize1 = n1;
 			mSize2 = n2;
-			
+			mBegin = 0;
+//			mData = pointer(::malloc(sizeBytes()));
+//			for(int i=0; i<size() ++i){	// ctor
+//			}
 			switch(type()){
-			case Data::BOOL:	mData = new bool[size()]; break;
-			case Data::INT:		mData = new int[size()]; break;
-			case Data::FLOAT:	mData = new float[size()]; break;
-			case Data::DOUBLE:	mData = new double[size()]; break;
-			case Data::STRING:	mData = new std::string[size()]; break;
+			case Data::BOOL:	mData = pointer(new bool[size()]); break;
+			case Data::INT:		mData = pointer(new int[size()]); break;
+			case Data::FLOAT:	mData = pointer(new float[size()]); break;
+			case Data::DOUBLE:	mData = pointer(new double[size()]); break;
+			case Data::STRING:	mData = pointer(new std::string[size()]); break;
 			default:			return;
 			}
 			acquire(mData);
 		}
 //	}
+}
+
+Data& Data::resize(int size1, int size2){
+	realloc(type(), size1, size2); return *this;
 }
 
 Data& Data::set(Data::Type t, int n1, int n2){
@@ -291,9 +323,10 @@ Data& Data::set(Data::Type t, int n1, int n2){
 	return *this;
 }
 
-void Data::setRaw(void * dt, int n1, int n2, Type ty){
+void Data::setRaw(void * dt, int beg, int n1, int n2, Type ty){
 	free();
-	mData  = dt;
+	mData  = pointer(dt);
+	mBegin = beg;
 	mSize1 = n1;
 	mSize2 = n2;
 	mType  = ty;
@@ -301,7 +334,7 @@ void Data::setRaw(void * dt, int n1, int n2, Type ty){
 }
 
 int Data::sizeType() const {
-	switch(typeKind()){
+	switch(type()){
 	case Data::BOOL:	return sizeof(bool);
 	case Data::INT:		return sizeof(int);
 	case Data::FLOAT:	return sizeof(float);
@@ -311,56 +344,20 @@ int Data::sizeType() const {
 	}
 }
 
-int toString(std::string& s, const Data& d){
-	switch(d.typeKind()){
-	case Data::BOOL:	return glv::toString(s,        d.data<const bool>(), d.size());
-	case Data::INT:		return glv::toString(s,         d.data<const int>(), d.size());
-	case Data::FLOAT:	return glv::toString(s,       d.data<const float>(), d.size());
-	case Data::DOUBLE:	return glv::toString(s,      d.data<const double>(), d.size());
-	case Data::STRING:	return glv::toString(s, d.data<const std::string>(), d.size());
-	default: return 0;
-	}
-}
-int fromToken(Data& d, const std::string& s){
-	switch(d.type()){
-	case Data::BOOL:	return glv::fromToken(       d.data<bool>(), d.size(), s);
-	case Data::INT:		return glv::fromToken(        d.data<int>(), d.size(), s);
-	case Data::FLOAT:	return glv::fromToken(      d.data<float>(), d.size(), s);
-	case Data::DOUBLE:	return glv::fromToken(     d.data<double>(), d.size(), s);
-	case Data::STRING:	return glv::fromToken(d.data<std::string>(), d.size(), s);
-	default: return 0;
-	}
-}
-int toToken(std::string& s, const Data& d){
-	switch(d.typeKind()){
-	case Data::BOOL:	return glv::toToken(s,        d.data<const bool>(), d.size());
-	case Data::INT:		return glv::toToken(s,         d.data<const int>(), d.size());
-	case Data::FLOAT:	return glv::toToken(s,       d.data<const float>(), d.size());
-	case Data::DOUBLE:	return glv::toToken(s,      d.data<const double>(), d.size());
-	case Data::STRING:	return glv::toToken(s, d.data<const std::string>(), d.size());
-	default: return 0;
-	}
-}
+Data Data::slice(int beg, int sz) const {
+	Data r(*this);
+	int b = r.begin() + beg;
+	
+	// constrain begin and size to limits of parent data
+	if(b < 0) b = 0;
 
-//bool Data::toString(std::string& s) const {
-//	switch(type()){
-//	case Data::BOOL:   glv::toString(s,        data<bool>(), size()); return true;
-//	case Data::FLOAT:  glv::toString(s,       data<float>(), size()); return true;
-//	case Data::DOUBLE: glv::toString(s,      data<double>(), size()); return true;
-//	case Data::STRING: glv::toString(s, data<std::string>(), size()); return true;
-//	default: return false;
-//	}
-//}
-//
-//bool Data::fromToken(const std::string& s){
-//	switch(type()){
-//	case Data::BOOL:   return glv::fromToken(       data<bool>(), size(), s);
-//	case Data::FLOAT:  return glv::fromToken(      data<float>(), size(), s);
-//	case Data::DOUBLE: return glv::fromToken(     data<double>(), size(), s);
-//	case Data::STRING: return glv::fromToken(data<std::string>(), size(), s);
-//	default: return 0;
-//	}
-//}
+	// TODO: constrain size
+	int s = sz;
+	
+	r.mBegin = b;
+	r.size(s);
+	return r;
+}
 
 std::string Data::typeToString(Type t){
 	switch(t){
@@ -375,7 +372,7 @@ std::string Data::typeToString(Type t){
 
 
 
-void ModelManager::add(const std::string& name, Stringifiable& s){
+void ModelManager::add(const std::string& name, Model& s){
 	if(isIdentifier(name)){
 		mNameObj[name] = &s;
 	}
@@ -390,7 +387,7 @@ bool ModelManager::toToken(std::string& dst, const std::string& modelName){
 	std::string t;
 	for(; i!=mNameObj.end(); ++i){
 		dst += "\t" + i->first + " = ";
-		if(i->second->toToken(t)) dst += t+",\r\n";
+		if(i->second->model().toToken(t)) dst += t+",\r\n";
 	}
 	
 	dst += "}\r\n";
@@ -432,7 +429,7 @@ int ModelManager::fromToken(const std::string& src){
 
 				if(mNameObj.count(key)){
 					//printf("%s = %s\n", key.c_str(), val.c_str());
-					mNameObj[key]->fromToken(val);
+					mNameObj[key]->modelFromToken(val);
 				}
 			}
 			b=e;

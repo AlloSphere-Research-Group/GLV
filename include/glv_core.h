@@ -324,7 +324,7 @@ public:
 
 
 /// The base class of all GUI elements.
-class View : public Rect, public Model, public Stringifiable, public Notifier, public SmartObject<View> {
+class View : public Rect, public Model, public Notifier, public SmartObject<View> {
 
 friend class GLV;
 
@@ -350,10 +350,6 @@ public:
 	virtual bool onEvent(Event::t e, GLV& glv);		///< Main event callback to be called after those in callback list
 	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
 	virtual void onModelSync(){}					///< Update internal values if different from attached model variables
-//	virtual bool toString(std::string& v) const;	///< Convert model value(s) to string. Returns true on success.
-//	virtual bool fromString(const std::string& v);	///< Set model value(s) from string. Returns true on success.
-//	virtual bool valueToString(std::string& v) const;	///< Convert model value(s) to string. Returns true on success.
-//	virtual bool valueFromString(const std::string& v);	///< Set model value(s) from string. Returns true on success.
 
 	/// Convert all named View model values to a list of name-value pairs
 	void modelToString(std::string& v, const std::string& modelName="") const;

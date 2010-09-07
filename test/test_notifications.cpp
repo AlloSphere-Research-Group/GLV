@@ -8,41 +8,26 @@ using namespace glv;
 void updateSlider12(const Notification& n){
 	Slider2D& s2 = *(Slider2D *)n.receiver();
 	Slider& s = *(Slider *)n.sender();
-	SliderChange v = *(SliderChange *)n.data();
-	s2.value(s.value(), 0);
+	s2.setValue(s.value(), 0);
 }
 
 void updateSlider21(const Notification& n){
 	Slider2D& s2 = *(Slider2D *)n.sender();
 	Slider& s = *(Slider *)n.receiver();
-	s.value(s2.value(0));
+//	s.setValue(s2.value(0));
 }
 
 void updateFocus(const Notification& n){
 	Slider& s = *(Slider *)n.sender();
 	Label& l = *(Label *)n.receiver();
-	l.value(s.enabled(Focused) ? "get focus" : "lose focus");
+	l.setValue(s.enabled(Focused) ? "get focus" : "lose focus");
 }
 
-void buttonsUpdateLabel(const Notification& n){
+void updateLabel(const Notification& n){
 	Label& l = *(Label *)n.receiver();
-	ButtonChange v = *(ButtonChange *)n.data();
-	char buf[16]; snprintf(buf, sizeof(buf), "[%2d] = %d", v.index(), v.value());
-	l.value(buf);
-}
-
-void sliderUpdateLabel(const Notification& n){
-	Label& l = *(Label *)n.receiver();
-	SliderChange v = *(SliderChange *)n.data();
-	char buf[16]; snprintf(buf, sizeof(buf), "[%2d] = %4.2f", v.index(), v.value());
-	l.value(buf);
-}
-
-void dialerUpdateLabel(const Notification& n){
-	Label& l = *(Label *)n.receiver();
-	NumberDialerChange v = *(NumberDialerChange *)n.data();
-	char buf[16]; snprintf(buf, sizeof(buf), "[%2d] = %4.2f", v.index(), v.value());
-	l.value(buf);
+	ModelChange v = *(ModelChange *)n.data();
+	char buf[16]; snprintf(buf, sizeof(buf), "[%2d] = ", v.index());
+	l.setValue(buf + v.value().slice(v.index(), 1).toToken());
 }
 
 
@@ -56,7 +41,7 @@ int main(int argc, char ** argv){
 	// Make some widgets
 	Button button(Rect(32));
 	Buttons buttons(Rect(64), 4,4);
-	Slider slider(Rect(10, 10, 100, 20), 0, false);
+	Slider slider(Rect(10, 10, 100, 20), 0); slider.interval(1,-1);
 	Slider2D slider2(Rect(10, 40, 100, 100));
 	SliderGrid<4> sliderGrid(Rect(100));
 	SliderRange sliderRange(Rect(100,20));
@@ -71,13 +56,13 @@ int main(int argc, char ** argv){
 		lbNumberDialer("", spec);
 
 	// Attach some notifications
-	button.attach(buttonsUpdateLabel, Update::Value, &lbButton);
-	buttons.attach(buttonsUpdateLabel, Update::Value, &lbButtons);
-	slider.attach(sliderUpdateLabel, Update::Value, &lbSlider);
-	slider2.attach(sliderUpdateLabel, Update::Value, &lbSlider2);
-	sliderGrid.attach(sliderUpdateLabel, Update::Value, &lbSliderGrid);
-	sliderRange.attach(sliderUpdateLabel, Update::Value, &lbSliderRange);
-	numberDialer.attach(dialerUpdateLabel, Update::Value, &lbNumberDialer);
+	button.attach(updateLabel, Update::Value, &lbButton);
+	buttons.attach(updateLabel, Update::Value, &lbButtons);
+	slider.attach(updateLabel, Update::Value, &lbSlider);
+	slider2.attach(updateLabel, Update::Value, &lbSlider2);
+	sliderGrid.attach(updateLabel, Update::Value, &lbSliderGrid);
+	sliderRange.attach(updateLabel, Update::Value, &lbSliderRange);
+	numberDialer.attach(updateLabel, Update::Value, &lbNumberDialer);
 	
 	slider.attach(updateFocus, Update::Focus, &lbSlider);
 	slider.attach(updateSlider12, Update::Value, &slider2);

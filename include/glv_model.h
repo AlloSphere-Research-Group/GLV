@@ -10,6 +10,8 @@
 
 namespace glv {
 
+class Data;
+
 /// Convert object to a string. Returns number of elements converted.
 template<class T>
 int toString(std::string& dst, const T& src);
@@ -46,45 +48,47 @@ template <class T>
 inline std::string toToken(const T& obj){ std::string r; toToken(r,obj); return r; }
 
 
-
-struct Stringifiable{
-
-	virtual ~Stringifiable(){}
-
-	/// Convert from string. Returns true on success.
-	virtual bool fromToken(const std::string& v){ return false; }
-
-	/// Convert to string. Returns true on success.
-	virtual bool toToken(std::string& v) const { return false; }
-	
-	std::string toToken(){ std::string r; toString(r); return r; }
-};
+int toString(std::string& dst, const Data& src);
+int toToken(std::string& dst, const Data& src);
+int fromToken(Data& dst, const std::string& src);
 
 
+//struct Stringifiable{
+//
+//	virtual ~Stringifiable(){}
+//
+//	/// Convert from string. Returns true on success.
+//	virtual int fromToken(const std::string& v){ return 0; }
+//
+//	/// Convert to string. Returns true on success.
+//	virtual int toToken(std::string& v) const { return 0; }
+//	
+//	std::string toToken(){ std::string r; toString(r); return r; }
+//};
 
-template <class T>
-class ReferenceCounted {
+
+class ReferenceCounter {
 public:
 
 	/// Returns number of pointers to memory address being managed
-	static int references(T * const m){ return counting(m) ? refCount()[m] : 0; }
+	static int references(void * const m){ return counting(m) ? refCount()[m] : 0; }
 
 protected:
-	typedef std::map<T *, int> RefCount;
+	typedef std::map<void *, int> RefCount;
 
 	// Begin counting reference or increment count if already counting
-	static void acquire(T * m){
+	static void acquire(void * m){
 		if(!m) return; // do not count null pointers for obvious reasons
 		counting(m) ? ++refCount()[m] : refCount()[m]=1;
 	}
 	
 	// Increment count of reference if reference is being counted
-	static void incrementCount(T * m){
+	static void incrementCount(void * m){
 		if(counting(m))	++refCount()[m];
 	}
 
 	// Returns true if the reference was being counted and can now be freed
-	static bool release(T * m){
+	static bool release(void * m){
 		if(counting(m)){
 			int& c = refCount()[m];
 			if(1==c){
@@ -102,24 +106,91 @@ protected:
 	}
 	
 	// is reference being counted already?
-	static bool counting(T* const m){ return refCount().count(m) != 0; }
-//	static bool owner(T* const m){ return references(m) != 1; }
+	static bool counting(void * const m){ return refCount().count(m) != 0; }
+//	static bool owner(void * const m){ return references(m) != 1; }
 };
 
 
+//template <class T>
+//class ReferenceCounted {
+//public:
+//
+//	/// Returns number of pointers to memory address being managed
+//	static int references(T * const m){ return counting(m) ? refCount()[m] : 0; }
+//
+//protected:
+//	typedef std::map<T *, int> RefCount;
+//
+//	// Begin counting reference or increment count if already counting
+//	static void acquire(T * m){
+//		if(!m) return; // do not count null pointers for obvious reasons
+//		counting(m) ? ++refCount()[m] : refCount()[m]=1;
+//	}
+//	
+//	// Increment count of reference if reference is being counted
+//	static void incrementCount(T * m){
+//		if(counting(m))	++refCount()[m];
+//	}
+//
+//	// Returns true if the reference was being counted and can now be freed
+//	static bool release(T * m){
+//		if(counting(m)){
+//			int& c = refCount()[m];
+//			if(1==c){
+//				refCount().erase(m);
+//				return true;
+//			}
+//			--c;
+//		}
+//		return false;
+//	}
+//
+//	static RefCount& refCount(){
+//		static RefCount * o = new RefCount;
+//		return *o;
+//	}
+//	
+//	// is reference being counted already?
+//	static bool counting(T* const m){ return refCount().count(m) != 0; }
+////	static bool owner(T* const m){ return references(m) != 1; }
+//};
+
+
+
+
+/*
+General array slicing can be implemented (whether or not built into the 
+language) by referencing every array through a dope vector or descriptor — a 
+record that contains the address of the first array element, and then the range 
+of each index and the corresponding coefficient in the indexing formula. This 
+technique also allows immediate array transposition, index reversal, 
+subsampling, etc. For languages like C, where the indices always start at zero,
+the dope vector of an array with d indices has at least 1 + 2d parameters.
+
+
+template <int R>
+class Data{
+
+protected:
+	typedef char* pointer;
+	pointer mData;			// pointer to source array
+	pointer mBegin;			// pointer to beginning of data
+	
+	Type mType;	
+	int mStrides[R];
+	int mSizes[R];
+};
+
+*/
 
 /// Generic wrapper around single or arrayed primitive types
-class Data : public ReferenceCounted<void>{
+
+/// For operations between data with different types, standard type conversions
+/// will be used when possible.
+class Data : public ReferenceCounter {
 public:
 	enum Type{
-//		CONST=(1<<31),
-		VOID=0, BOOL, INT, FLOAT, DOUBLE, STRING,
-//		CONST_VOID		= CONST|VOID,
-//		CONST_BOOL		= CONST|BOOL,
-//		CONST_INT		= CONST|INT,
-//		CONST_FLOAT		= CONST|FLOAT,
-//		CONST_DOUBLE	= CONST|DOUBLE,
-//		CONST_STRING	= CONST|STRING
+		VOID=0, BOOL, INT, FLOAT, DOUBLE, STRING
 	};
 	static std::string typeToString(Type t);
 
@@ -127,7 +198,7 @@ public:
 	Data();
 	Data(Data& v);
 	Data(const Data& v);
-	Data(Data::Type type, int size1, int size2);
+	Data(Data::Type type, int size1=1, int size2=1);
 
 	template <class T>
 	explicit Data(T& value){ set(&value, 1); }
@@ -139,26 +210,30 @@ public:
 	Data(T * data, int size1, int size2=1){ set(data, size1, size2); }
 
 	~Data();
+
+
+	/// Returns whether elements from each array are equal.
 	
-
-//	/// Convert variable to human-readable string
-//	virtual bool toString(std::string& dst) const;
-//	
-//	/// Convert human-readable string to variable
-//	virtual bool fromString(const std::string& src);
-
+	/// If the number of elements differ, then the maximum possible number of
+	/// elements are used in the comparison.
 	bool operator==(const Data& v) const;
+	
+	/// Returns whether elements from each array are not equal
+	
+	/// If the number of elements differ, then the maximum possible number of
+	/// elements are used in the comparison.
 	bool operator!=(const Data& v) const { return !((*this)==v); }
 
 	template <class T>
-	const T at(int ind1, int ind2=0) const;
+	const T at(int ind1) const;
 
 	template <class T>
-	const T * data() const { return static_cast<const T *>(mData); }
+	const T at(int ind1, int ind2) const;
 
+	int begin() const { return mBegin; }
 	bool hasData() const { return mData!=0; }
 	int indexFlat(int i1, int i2) const { return i1 + i2*size1(); }
-	void indexTo2(int i, int& i1, int& i2) const { i1=i%size1(); i2=i/size1(); }
+	void indexTo2(int& i1, int& i2, const int& i) const { i1=i%size1(); i2=i/size1(); }
 	bool indexValid(int i1, int i2){ return (i1>=0) && (i1<size1()) && (i2>=0) && (i2<size2()); }
 	bool isNumerical() const { return type() != Data::STRING; }
 	int size() const { return size1()*size2(); }
@@ -166,11 +241,16 @@ public:
 	int size2() const { return mSize2; }
 	int sizeType() const;
 	Type type() const { return mType; }
-	Type typeKind() const { return (Type)(type() & maskType()); }
 
+	Data slice(int begin, int size) const;
 
 	void print() const;
+
+	int fromToken(const std::string& v){ return glv::fromToken(*this, v); }
 	std::string toString() const { return glv::toString(*this); }
+	std::string toToken() const { return glv::toToken(*this); }
+	int toToken(std::string& dst) const { return glv::toToken(dst, *this); }
+
 
 	/// Perform shallow copy from another Data
 	Data& operator= (const Data& v);
@@ -192,15 +272,20 @@ public:
 	/// Allocate internal memory and copy over previous data
 	void clone();
 
+	/// Returns pointer to first element
 	// note: this is potentially dangerous call, therefore use with caution...
 	template <class T>
-	T * data(){ return static_cast<T *>(mData); }
+	T * elems(){ return ((T *)mData) + begin(); }
+
+	template <class T>
+	const T * elems() const { return (const T *)(((T *)mData) + begin()); }
 
 	/// Set an element at specified index
 	template <class T>
 	Data& put(const T& v, int ind1=0, int ind2=0);
 	
-	//Data& resize(int size1, int size2=1);
+	/// Resize array
+	Data& resize(int size1, int size2=1);
 
 	template <class T>
 	Data& set(T& v){ return set(&v,1); }
@@ -216,46 +301,63 @@ public:
 	Data& set(Data::Type type, int size1, int size2);
 
 protected:
-	void * mData;	// pointer to first array element
+	typedef char* pointer;
+
+	pointer mData;	// pointer to first array element
+	int mBegin;		// index offest into array
 	int mSize1;		// number of elements in dimension 1
 	int mSize2;		// number of elements in dimension 1
 	Type mType;		// data type
-	
+
+	Data& begin(int i){ mBegin=i; return *this; }
+	Data& size(int n1, int n2=1){ mSize1=n1; mSize2=n2; return *this; }
+
+	template <class T>
+	const T * data() const { return (const T *)(mData); }
+
 	void free();
 	void realloc(Data::Type type, int size1, int size2=1);
-	
-	void setRaw(void * data, int size1, int size2, Type type);
-
-	static int maskType (){ return 0x7FFFFFFF; }
-	static int maskConst(){ return 0x80000000; }
+	void setRaw(void * data, int begin, int size1, int size2, Type type);
+	int sizeBytes() const { return size()*sizeType(); }
 };
-
-int toString(std::string& dst, const Data& src);
-int toToken(std::string& dst, const Data& src);
-int fromToken(Data& dst, const std::string& src);
-
 
 
 
 class Model{
 public:
 	virtual ~Model(){}
+
 	const Data& model() const { return mData; }
 
-//	template <class T>
-//	void put(const T& v, int ind1, int ind2){
-//		
-//	}
+	Data& model(){ return mData; }
+
+	int modelFromToken(const std::string& v){
+		Data d = model();
+		d.clone();
+		int r = d.fromToken(v);
+		if(r) assignModel(d);
+		return r;
+	}
 
 protected:
 	Data mData;
 
-	Data& model(){ return mData; }
+	void assignModel(const Data& d, int ind=0){
+		int i1=0,i2=0; model().indexTo2(i1,i2, ind);
+		assignModel(d, i1,i2);
+	}
 
-	void assignModel(Data& d, int ind1, int ind2){
+	// Assigns argument to elements at specified index.
+	
+	// onAssignModel() is called with the input data if the indices are valid.
+	// onAssignModel() can be used to constrain the input data before it is
+	// assigned.
+	void assignModel(const Data& d, int ind1, int ind2){
 		if(model().indexValid(ind1, ind2)){
-			onAssignModel(d, ind1, ind2);
-			model().assign(d, ind1, ind2);
+			Data t=d; t.clone();
+			if(onAssignModel(t, ind1, ind2)){
+				//model().assign(t, ind1, ind2);
+			}
 		}
 	}
 
@@ -263,7 +365,7 @@ protected:
 		mData = d;
 	}
 	
-	virtual void onAssignModel(Data& d, int ind1, int ind2){}
+	virtual bool onAssignModel(Data& d, int ind1, int ind2){ return false; }
 };
 
 
@@ -326,10 +428,10 @@ public:
 	int fromToken(const std::string& src);
 
 	/// Add new stringifiable object
-	void add(const std::string& name, Stringifiable& s);
+	void add(const std::string& name, Model& s);
 
 protected:
-	typedef std::map<std::string, Stringifiable *> NameObjMap;
+	typedef std::map<std::string, Model *> NameObjMap;
 
 	NameObjMap mNameObj;
 	std::map<std::string, std::string> mModelStrings;
@@ -373,40 +475,44 @@ int toToken(std::string& dst, const T * src, int size){
 	}
 }
 
-
 template <class T>
-const T Data::at(int ind1, int ind2) const {
-	int i = indexFlat(ind1,ind2);
-	switch(typeKind()){
-	case Data::BOOL:	return static_cast<const T>(data<const bool>()[i]);
-	case Data::INT:		return static_cast<const T>(data<const int>()[i]);
-	case Data::FLOAT:	return static_cast<const T>(data<const float>()[i]);
-	case Data::DOUBLE:	return static_cast<const T>(data<const double>()[i]);
+const T Data::at(int i) const {
+	switch(type()){
+	case Data::BOOL:	return static_cast<const T>(elems<bool>()[i]);
+	case Data::INT:		return static_cast<const T>(elems<int>()[i]);
+	case Data::FLOAT:	return static_cast<const T>(elems<float>()[i]);
+	case Data::DOUBLE:	return static_cast<const T>(elems<double>()[i]);
 	case Data::STRING: {
-		T v; if(glv::fromToken(v, data<const std::string>()[i])){ return v; }
+		T v; if(glv::fromToken(v, elems<std::string>()[i])){ return v; }
 	}
 	default: return T();
 	}
 }
 
 template<>
-inline const std::string Data::at<std::string>(int ind1, int ind2) const {
-	int i = indexFlat(ind1,ind2);
-	switch(typeKind()){
-	case Data::BOOL:	return glv::toString(data<const bool>()[i]);
-	case Data::INT:		return glv::toString(data<const int>()[i]);
-	case Data::FLOAT:	return glv::toString(data<const float>()[i]);
-	case Data::DOUBLE:	return glv::toString(data<const double>()[i]);
-	case Data::STRING:	return data<const std::string>()[i];
+inline const std::string Data::at<std::string>(int i) const {
+	switch(type()){
+	case Data::BOOL:	return glv::toString(elems<bool>()[i]);
+	case Data::INT:		return glv::toString(elems<int>()[i]);
+	case Data::FLOAT:	return glv::toString(elems<float>()[i]);
+	case Data::DOUBLE:	return glv::toString(elems<double>()[i]);
+	case Data::STRING:	return elems<std::string>()[i];
 	default: return "";
 	}
 }
 
 template <class T>
+const T Data::at(int ind1, int ind2) const { return at<T>(indexFlat(ind1,ind2)); }
+
+template <class T>
 Data& Data::put(const T& v, int ind1, int ind2){ 
 	Data d;
+//	d.setRaw(
+//		mData + sizeType()*(begin() + indexFlat(ind1,ind2)),
+//		1,1, type()
+//	);
 	d.setRaw(
-		static_cast<char *>(mData) + sizeType()*indexFlat(ind1,ind2),
+		mData, begin() + indexFlat(ind1,ind2),
 		1,1, type()
 	);
 	d.assign(v);
@@ -415,16 +521,13 @@ Data& Data::put(const T& v, int ind1, int ind2){
 
 #define DATA_SET(t, T)\
 template<> inline Data& Data::set<t>(t * src, int n1, int n2){\
-	free(); mData=src; mSize1=n1; mSize2=n2; mType=Data::T; return *this;\
+	free(); mData=(char*)(src); mBegin=0; mSize1=n1; mSize2=n2; mType=Data::T; return *this;\
 }\
 template<> inline Data& Data::set<const t>(const t * src, int n1, int n2){\
 	if((n1*n2)!=size() || Data::T!=type()) realloc(Data::T, n1, n2);\
-	for(int i=0; i<size(); ++i){ data<t>()[i] = src[i]; }\
+	for(int i=0; i<size(); ++i){ elems<t>()[i] = src[i]; }\
 	return *this;\
 }
-//template<> inline Data& Data::set<const t>(const t * data, int size){\
-//	free(); mData=const_cast<t *>(data); mSize=size; mType=CONST_##T; return *this;\
-//}
 
 DATA_SET(bool, BOOL)
 DATA_SET(int, INT)

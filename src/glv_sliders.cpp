@@ -6,27 +6,178 @@
 
 namespace glv{
 
+Sliders::Sliders(const Rect& r, int nx, int ny, bool dragSelect)
+:	Widget(r, Data(Data::DOUBLE, nx,ny), 1, false, false, true),
+	mAcc(0)
+{
+	property(SelectOnDrag, dragSelect);
+}
+
+void Sliders::onDraw(){
+	using namespace glv::draw;
+	float x=padding()*0.5, xd=dx(), yd=dy();
+
+//	TODO: dial drawing code...
+//		for(int i=0; i<sizeX(); ++i){
+//			float y=padding()*0.5;
+//		
+//			for(int j=0; j<sizeY(); ++j){
+//				int ind = index(i,j);
+//				if(isSelected(i,j)) color(colors().fore);
+//				else color(colors().fore, colors().fore.a*0.5);
+//				
+//				color(colors().fore, colors().fore.a*0.5);
+//				disc<32>(x,y,xd,yd);
+//				lineWidth(1);
+//				float v = Base::values()[ind];
+//				color(colors().fore);
+//				static const float pi = 3.141592653589793;
+//				shape(Lines, xd/2, yd/2, xd/2 + xd/2*cos(v*2*pi+pi/2), yd/2 + yd/2*sin(v*2*pi-pi/2));
+//
+//				y += yd;
+//			}
+//			x += xd;	
+//		}
+
+
+	if(isVertical()){
+		for(int i=0; i<sizeX(); ++i){
+		
+			float y=padding()*0.5;
+		
+			for(int j=0; j<sizeY(); ++j){
+				int ind = index(i,j);
+				if(isSelected(i,j)) color(colors().fore);
+				else color(colors().fore, colors().fore.a*0.5);
+
+				float v01 = to01(value(ind));
+				float y0 = to01(0)*yd;
+				//rect(x + x0, y, f*xd+x, y+yd-padding());
+				
+				rect(x, y+yd-v01*yd, x+xd-padding(), y+yd-y0);
+
+				// if zero line showing
+				if(mMax>0 && mMin<0){
+					color(colors().border);
+					float linePos = draw::pix(y+yd-y0);
+					shape(draw::Lines, x, linePos, x+xd, linePos);
+				}
+				y += yd;
+			}
+			x += xd;	
+		}
+	}
+	else{
+		for(int i=0; i<sizeX(); ++i){
+		
+			float y=padding()*0.5;
+		
+			for(int j=0; j<sizeY(); ++j){
+				int ind = index(i,j);
+				if(isSelected(i,j)) color(colors().fore);
+				else color(colors().fore, colors().fore.a*0.5);
+
+				float v01 = to01(value(ind));
+				float x0 = to01(0)*xd;
+				rect(x + x0, y, v01*xd+x, y+yd-padding());
+
+				// if zero line showing
+				if(mMax>0 && mMin<0){
+					color(colors().border);
+					float linePos = draw::pix(x+x0);
+					shape(draw::Lines, linePos, y, linePos, y+yd);
+				}
+				y += yd;
+			}
+			x += xd;
+		}
+	}
+}
+
+bool Sliders::onEvent(Event::t e, GLV& g){
+
+	switch(e){
+		case Event::MouseDrag:
+			// if drag settable
+			if(enabled(SelectOnDrag)){
+				selectSlider(g, false);
+			}
+			if(g.mouse.right() || g.mouse.left()) {
+				// accumulate differences
+				mAcc += diam()*(isVertical() ? -g.mouse.dy()/h*sizeY() : g.mouse.dx()/w*sizeX()) * g.mouse.sens();
+				setValue(mAcc);
+			}
+			
+			return false;
+			
+		case Event::MouseDown:
+			selectSlider(g, true);
+			return false;
+			
+		case Event::KeyDown:{
+			onSelectKey(g);
+			int i = selected();
+
+			switch(g.keyboard.key()){
+			case 'x':
+			case 'a': setValue(value(i) + diam()/32.); return false;
+			case 'z': setValue(value(i) - diam()/32.); return false;
+			default:;
+			}
+		}
+
+		default:;
+			
+	}
+	return true;
+}
+
+void Sliders::selectSlider(GLV& g, bool click){
+
+	Mouse& m = g.mouse;
+	
+	int oldIdx = selected();
+	onSelectClick(g);
+	
+	float val = isVertical() ? (1-(m.yRel()/h*sizeY() - selectedY())) : (m.xRel()/w*sizeX() - selectedX());
+	val = toInterval(val);
+
+	int idx = selected();
+	
+	// if left-button, set value
+	if(m.left() && !m.right()){
+		setValue(val);
+	}
+	
+	// if click or new slider, reset accumulator
+	if(click || (oldIdx != idx)){
+		if(m.left() && !m.right()) mAcc = val;
+		else mAcc = value(idx);
+	}
+}
+
+
 // Slider2D
 
-Slider2D::Slider2D(const Rect& r, float valX, float valY, space_t knobSize)
+Slider2D::Slider2D(const Rect& r, double valX, double valY, space_t knobSize)
 :	SliderBase<2>(r), knobSize(knobSize)
 {
-	value(valX, 0);
-	value(valY, 1);
+	setValue(valX, 0);
+	setValue(valY, 1);
 }
 
 bool Slider2D::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 		case Event::MouseDrag:
-			valueAdd( g.mouse.dx()/w * diam() * sens(g.mouse), 0);
-			valueAdd(-g.mouse.dy()/h * diam() * sens(g.mouse), 1);
+			valueAdd( g.mouse.dx()/w * diam() * g.mouse.sens(), 0);
+			valueAdd(-g.mouse.dy()/h * diam() * g.mouse.sens(), 1);
 			break;
 			
 		case Event::MouseDown:
 			if(g.mouse.left() && !g.mouse.right()){
-				value(toInterval(    g.mouse.xRel()/w), 0);
-				value(toInterval(1.f-g.mouse.yRel()/h), 1);
+				setValue(toInterval(    g.mouse.xRel()/w), 0);
+				setValue(toInterval(1.f-g.mouse.yRel()/h), 1);
 			}
 			break;
 			
@@ -138,41 +289,41 @@ void Slider2D::onDraw(){
 
 
 
-SliderRange::SliderRange(const Rect& r, float val1, float val2)
+SliderRange::SliderRange(const Rect& r, double val1, double val2)
 :	SliderBase<2>(r), mDragMode(0), mJump(0.1)
 {
 	extrema(val1, val2);
 }
 
-float SliderRange::center() const { return (value(0) + value(1))*0.5; }
-float SliderRange::jump() const { return mJump; }
-float SliderRange::range() const { return value(1)-value(0); }
+double SliderRange::center() const { return (value(0) + value(1))*0.5; }
+double SliderRange::jump() const { return mJump; }
+double SliderRange::range() const { return value(1)-value(0); }
 
-SliderRange& SliderRange::center(float v){ return centerRange(v, range()); }
+SliderRange& SliderRange::center(double v){ return centerRange(v, range()); }
 
-SliderRange& SliderRange::centerRange(float c, float r){
-//	float mn = c-(r/2.);
-//	float mx = mn+r;
+SliderRange& SliderRange::centerRange(double c, double r){
+//	double mn = c-(r/2.);
+//	double mx = mn+r;
 //	if(mn<0){ mx -= mn  ; mn=0; }
 //	if(mx>1){ mn -= mx-1; mx=1; }
 //	return extrema(mn,mx);
-	float mn = c-(r/2.);
-	float mx = mn+r;
+	double mn = c-(r/2.);
+	double mx = mn+r;
 	// adjust min/max values to preserve range
 	if(mn<mMin){ mx += mMin-mn; mn=mMin; }
 	if(mx>mMax){ mn -= mx-mMax; mx=mMax; }
 	return extrema(mn,mx);
 }
 
-SliderRange& SliderRange::extrema(float min, float max){
+SliderRange& SliderRange::extrema(double min, double max){
 	glv::sort(min,max);
-	value(min,0);
-	value(max,1);
+	setValue(min,0);
+	setValue(max,1);
 	return *this;
 }
 
-SliderRange& SliderRange::jump(float v){ mJump=v; return *this; }
-SliderRange& SliderRange::range(float v){ return centerRange(center(), v); }
+SliderRange& SliderRange::jump(double v){ mJump=v; return *this; }
+SliderRange& SliderRange::range(double v){ return centerRange(center(), v); }
 
 void SliderRange::onDraw(){
 	using namespace glv::draw;
@@ -252,7 +403,7 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 		return false;
 	
 	case Event::MouseDrag:
-		dv *= diam() * sens(g.mouse);
+		dv *= diam() * g.mouse.sens();
 		if(3==mDragMode){
 			valueAdd(dv, 0, mMin, mMax-rg);
 			valueAdd(dv, 1, mMin+rg, mMax);

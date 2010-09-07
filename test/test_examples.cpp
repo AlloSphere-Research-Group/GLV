@@ -25,7 +25,7 @@ Plot	plotXY(Rect(150), plotSize, PlotDim::XY, Color(0,0,0.5)),
 		plotY(Rect(60,150), Color(0,0.5,0));
 
 NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,8, 8,0);
-Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100)), sl1HS(sl1H,0,true), sl1VS(sl1V,0,true);
+Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100)), sl1HS(sl1H,0), sl1VS(sl1V,0);
 Slider2D sl2(Rect(100));
 SliderGrid<3> sg3(Rect(100));
 SliderGrid<4> sg4(Rect(100));

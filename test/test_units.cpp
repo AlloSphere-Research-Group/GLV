@@ -6,17 +6,20 @@
 
 using namespace glv;
 
-void ntValue1(const Notification& n){
+void ntValue(const Notification& n){
+	bool& b = *(bool *)n.receiver();
+	b = true;
+	
+//	View& v = *n.sender<View>();
+//	int idx = ((ModelChange*)n.data())->index();
+//	printf("%s: %s (i = %d)\n", v.className(), (v.model().toToken()).c_str(), idx);
+}
+
+void ntSetBool1(const Notification& n){
 	bool& b = *(bool *)n.receiver();
 	b = true;
 }
-
-void ntValue2(const Notification& n){
-	bool& b = *(bool *)n.receiver();
-	b = true;
-}
-
-void ntFocus(const Notification& n){
+void ntSetBool2(const Notification& n){
 	bool& b = *(bool *)n.receiver();
 	b = true;
 }
@@ -66,101 +69,101 @@ int main(){
 	}
 
 
-//	// test View linked list implementation
-//	{
-//		View n00, n10, n11, n20;
-//
-//		n00.add(n10);
-//		n00.add(n11);
-//		n10.add(n20);
-//		
-//		// check all of our links
-//		assert( n00.child == &n10);
-//		assert(!n00.parent);
-//		assert(!n00.sibling);
-//		assert( n10.parent == &n00);
-//		assert( n10.sibling == &n11);
-//		assert( n10.child == &n20);
-//		assert( n11.parent == &n00);
-//		assert(!n11.child);
-//		assert(!n11.sibling);
-//		assert( n20.parent == &n10);
-//		assert(!n20.child);
-//		assert(!n20.sibling);
-//		
-//		n10.makeLastSibling();
-//		assert(!n10.sibling);
-//		assert(n11.sibling == &n10);
-//		n11.makeLastSibling();
-//
-//		n10.remove();
-//		assert(!n10.parent);
-//		assert(!n10.sibling);
-//		assert(!n00.child->sibling);
-//		
-//		n11.remove();
-//		assert(!n00.child);
-//
-//		assert(n10.child == &n20);
-//	}
-//
-//	
-//	// test View memory management
-//	{
-//		View * v0d = new View;
-//		View v1s;
-//		View * v1d = new View;
-//		
-//		assert(v0d->dynamicAlloc());
-//		assert(!v1s.dynamicAlloc());
-//
-//		*v0d << v1s << v1d;
-//		
-//		delete v0d;
-//	}
-//
-//
-//
-//	// Notifications	
-//	{
-//		bool bv1=false, bv2=false, bf=false;
-//		Notifier n;
-//		
-//		assert(n.numObservers(Update::Value) == 0);
-//		
-//		n.attach(ntValue1, Update::Value, &bv1);
-//		n.attach(ntValue2, Update::Value, &bv2);
-//		n.attach(ntFocus, Update::Focus, &bf);
-//
-//		assert(n.numObservers(Update::Value) == 2);
-//		assert(n.numObservers(Update::Focus) == 1);
-//
-//		n.notify(Update::Value);
-//		assert(bv1);
-//		assert(bv2);
-//		assert(!bf);
-//
-//		n.notify(Update::Focus);
-//		assert(bf);
-//		
-//		bv1=bv2=false;
-//		n.detach(ntValue1, Update::Value, &bv1);
-//		n.notify(Update::Value);
-//		assert(!bv1);
-//		assert(bv2);
-//
-//		bv1=bv2=false;
-//		n.detach(ntValue2, Update::Value, &bv2);
-//		n.notify(Update::Value);
-//		assert(!bv1);
-//		assert(!bv2);
-//	}
-//	
+	// test View linked list implementation
+	{
+		View n00, n10, n11, n20;
+
+		n00.add(n10);
+		n00.add(n11);
+		n10.add(n20);
+		
+		// check all of our links
+		assert( n00.child == &n10);
+		assert(!n00.parent);
+		assert(!n00.sibling);
+		assert( n10.parent == &n00);
+		assert( n10.sibling == &n11);
+		assert( n10.child == &n20);
+		assert( n11.parent == &n00);
+		assert(!n11.child);
+		assert(!n11.sibling);
+		assert( n20.parent == &n10);
+		assert(!n20.child);
+		assert(!n20.sibling);
+		
+		n10.makeLastSibling();
+		assert(!n10.sibling);
+		assert(n11.sibling == &n10);
+		n11.makeLastSibling();
+
+		n10.remove();
+		assert(!n10.parent);
+		assert(!n10.sibling);
+		assert(!n00.child->sibling);
+		
+		n11.remove();
+		assert(!n00.child);
+
+		assert(n10.child == &n20);
+	}
+
+	
+	// test View memory management
+	{
+		View * v0d = new View;
+		View v1s;
+		View * v1d = new View;
+		
+		assert(v0d->dynamicAlloc());
+		assert(!v1s.dynamicAlloc());
+
+		*v0d << v1s << v1d;
+		
+		delete v0d;
+	}
+
+
+
+	// Notifications	
+	{
+		bool bv1=false, bv2=false, bf=false;
+		Notifier n;
+	
+		assert(n.numObservers(Update::Value) == 0);
+
+		n.attach(ntSetBool1, Update::Value, &bv1);
+		n.attach(ntSetBool2, Update::Value, &bv2);
+		n.attach(ntSetBool1, Update::Focus, &bf);
+
+		assert(n.numObservers(Update::Value) == 2);
+		assert(n.numObservers(Update::Focus) == 1);
+
+		n.notify(Update::Value);
+		assert(bv1);
+		assert(bv2);
+		assert(!bf);
+
+		n.notify(Update::Focus);
+		assert(bf);
+		
+		bv1=bv2=false;
+		n.detach(ntSetBool1, Update::Value, &bv1);
+		n.notify(Update::Value);
+		assert(!bv1);
+		assert(bv2);
+
+		bv1=bv2=false;
+		n.detach(ntSetBool2, Update::Value, &bv2);
+		n.notify(Update::Value);
+		assert(!bv1);
+		assert(!bv2);
+	}
+	
 //	{
 //		bool b=false;
 //		Button w;
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value(true);
+//		w.attach(ntValue, Update::Value, &b);
+//		w.setValue(true);
 //		assert(b);
 //		assert(w.value() == true);
 //
@@ -172,71 +175,72 @@ int main(){
 //// Boolean model variable
 //		bool v = false;
 //		w.attachVariable(v);
-//		w.value(true);		assert(v == true);
-//		w.value(false);		assert(v == false);
+//		w.setValue(true);		assert(v == true);
+//		w.setValue(false);		assert(v == false);
 //		
 //		v = true;
-//		w.onModelSync();	assert(w.value() == true);
+//		w.onModelSync();		assert(w.value() == true);
 //
-//		std::string s;
-//		w.value(true);
-//		w.toString(s);			assert(s == "1");
-//		w.value(false);
-//		w.toString(s);			assert(s == "0");
-//		w.fromString("0");		assert(w.value() == false);
-//		w.fromString("1");		assert(w.value() == true);
+//		w.setValue(true);
 //
-//		assert(!w.fromString("invalid"));
+//		assert(w.model().toToken() == "1");
+//		w.setValue(false);
+//		assert(w.model().toToken() == "0");
+//		w.modelFromToken("0");	assert(w.value() == false);
+//		w.modelFromToken("1");	assert(w.value() == true);
+//
+//		assert(!w.fromToken("invalid"));
 //	}
 //
 //	{
-//		bool b=false;
 //		Buttons w;
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value(true, 0);
+//		bool b=false;
+//		w.attach(ntValue, Update::Value, &b);
+//		w.setValue(true, 0);
 //		assert(b);
 //		assert(w.value(0) == true);
 //		
-//		w.resize(2,2);
-//		
+//		w.model().resize(2,2);
+//		w.model().assignAll(0);
+//
 //		bool v1 = false;
 //		bool v2 = false;
 //		w.attachVariable(v1, 0);
 //		w.attachVariable(v2, 2);
-//		w.value(true, 0);		assert(v1 == true);
-//		w.value(true, 2);		assert(v2 == true);
-//		w.value(false, 0);		assert(v1 == false);
-//		w.value(false, 2);		assert(v2 == false);
 //
-//		std::string s;
-//		w.value(false, 0);
-//		w.value(false, 1);
-//		w.value(false, 2);
-//		w.value(false, 3);
-//		w.toString(s);		assert(s == "{0, 0, 0, 0}");
+//		w.setValue(true, 0);		assert(v1 == true);
+//		w.setValue(true, 2);		assert(v2 == true);
+//		w.setValue(false, 0);		assert(v1 == false);
+//		w.setValue(false, 2);		assert(v2 == false);
+//
+//		w.setValue(false, 0);
+//		w.setValue(false, 1);
+//		w.setValue(false, 2);
+//		w.setValue(false, 3);
+//		assert(w.model().toToken() == "{0, 0, 0, 0}");
 //		
 //		v1 = v2 = false;
-//		w.fromString("{1,1,1,1}");
+//		w.modelFromToken("{1,1,1,1}");
 //		assert(w.value(0) && w.value(1) && w.value(2) && w.value(3));
 //		assert(v1 && v2);
 //	}
-//	
+//
 //	{
 //		bool b=false;
 //		Slider w;
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value(0.99f);
+//		w.attach(ntValue, Update::Value, &b);
+//		w.setValue(0.99f);
 //		assert(b);
 //		assert(w.value() == 0.99f);
 //
 //// Setting to current value should NOT send notification to avoid infinite loops
 //		b=false;
-//		w.value(w.value());
+//		w.setValue(w.value());
 //		assert(!b);
 //
 //		float v;
 //		w.attachVariable(v);
-//		w.value(0.99);
+//		w.setValue(0.99);
 //		assert(v == 0.99f);
 //		
 //		v = 0;
@@ -244,243 +248,242 @@ int main(){
 //		assert(w.value() == 0);
 //
 //		std::string s;
-//		w.value(0.25);
-//		w.toString(s);			assert(s == "0.25");
-//		w.fromString("0.5");	assert(w.value() == 0.5);
+//		w.setValue(0.25);
+//		assert(w.model().toToken() == "0.25");
+//		w.modelFromToken("0.5");	assert(w.value() == 0.5);
 //									assert(v == 0.5);
 //
-//		assert(!w.fromString("invalid"));
+//		assert(!w.modelFromToken("invalid"));
 //		assert(w.value() == 0.5);
 //	}
-//
-//	{
-//		bool b=false;
-//		Sliders w(Rect(1), 2,2);
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value(0.99f, 3);
-//		assert(b);
-//		assert(w.value(3) == 0.99f);
-//
-//		float v1, v2;
-//		w.attachVariable(v1, 0);
-//		w.attachVariable(v2, 1);
-//
-//		w.value(0.1f, 0); assert(v1 == 0.1f);
-//		w.value(0.2f, 0); assert(v1 == 0.2f);
-//		
-//		v1 = 0.8f; v2 = 0.9f;
+
+	{
+		bool b=false;
+		Sliders w(Rect(1), 2,2);
+		w.attach(ntValue, Update::Value, &b);
+		w.setValue(0.99f, 3);
+		assert(b);
+		assert(w.value(3) == 0.99f);
+
+		float v1, v2;
+		w.attachVariable(v1, 0);
+		w.attachVariable(v2, 1);
+
+		w.setValue(0.1f, 0); assert(v1 == 0.1f);
+		w.setValue(0.2f, 0); assert(v1 == 0.2f);
+		
+		v1 = 0.8f; v2 = 0.9f;
+		w.onModelSync();
+		assert(w.value(0) == 0.8f);
+		assert(w.value(1) == 0.9f);
+
+		w.setValue(0.1f, 0);
+		w.setValue(0.2f, 1);
+		w.setValue(0.3f, 2);
+		w.setValue(0.4f, 3);
+		assert(w.model().toToken() == "{0.1, 0.2, 0.3, 0.4}");
+		
+		v1=v2=0;
+		w.modelFromToken("{0.4,0.3,0.2,0.1}");
+		assert(w.value(0) == 0.4);
+		assert(w.value(1) == 0.3);
+		assert(w.value(2) == 0.2);
+		assert(w.value(3) == 0.1);
+		assert(v1 == (float)w.value(0) && v2 == (float)w.value(1));
+		
+//		double vs[4] = {0.11, 0.22, 0.33, 0.44};
+//		w.attachVariable(vs,4);
 //		w.onModelSync();
-//		assert(w.value(0) == 0.8f);
-//		assert(w.value(1) == 0.9f);
+//		for(int i=0; i<4; ++i) printf("%f\n", w.values()[i]);
 //		
-//		std::string s;
-//		w.value(0.1f, 0);
-//		w.value(0.2f, 1);
-//		w.value(0.3f, 2);
-//		w.value(0.4f, 3);
-//		w.toString(s);	assert(s == "{0.1, 0.2, 0.3, 0.4}");
-//		
-//		v1=v2=0;
-//		w.fromString("{0.4,0.3,0.2,0.1}");
-//		assert(w.value(0) == 0.4f);
-//		assert(w.value(1) == 0.3f);
-//		assert(w.value(2) == 0.2f);
-//		assert(w.value(3) == 0.1f);
-//		assert(v1 == w.value(0) && v2 == w.value(1));
-//		
-////		double vs[4] = {0.11, 0.22, 0.33, 0.44};
-////		w.attachVariable(vs,4);
-////		w.onModelSync();
-////		for(int i=0; i<4; ++i) printf("%f\n", w.values()[i]);
-////		
-////		w.value(0.44, 0);
-////		w.value(0.33, 0);
-////		w.value(0.22, 0);
-////		w.value(0.11, 0);
-////		for(int i=0; i<4; ++i) printf("%f\n", vs[i]);
-//	}
-//
-//	{
-//		bool b=false;
-//		Slider2D w;
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value(0.01f, 0);
-//		assert(b);
-//		assert(w.value(0) == 0.01f);
-//
-//// Setting to current value should NOT send notification to avoid infinite loops
-//		b=false;
-//		w.value(0.01f, 0);
-//		assert(!b);
-//		
-//		b=false;
-//		w.value(0.00f, 0);
-//		w.value(0.01f, 1);
-//		assert(b);
-//		assert(w.value(1) == 0.01f);
-//		
-////		b=false;
-////		w.valueAdd(0.01f, 0);
-////		w.valueAdd(0.01f, 1);
-////		assert(b);
-////		assert(w.value(0) == 0.01f);
-////		assert(w.value(1) == 0.02f);
-//		
-//		b=false;
-//		w.valueMax();
-//		assert(b);
-//		assert(w.value(0) == 1.f);
-//		assert(w.value(1) == 1.f);
-//		
-//		float v1, v2;
-//		w.attachVariable(v1, 0);
-//		w.attachVariable(v2, 1);
-//		
-//		w.value(0.5f, 0);	assert(v1 == 0.5f);
-//		w.value(0.6f, 1);	assert(v2 == 0.6f);
-//		
-//		v1 = 0.1;
-//		v2 = 0.2;
-//		
-//		w.onModelSync();
-//		assert(w.value(0) == v1);
-//		assert(w.value(1) == v2);
-//	
-//		std::string s;
-//		w.value(0.2, 0);
-//		w.value(0.3, 1);
-//		w.toString(s);		assert(s == "{0.2, 0.3}");
-//		
-//		v1 = v2 = 0;
-//		w.fromString("{0.7, 0.8}");
-//		assert(w.value(0)==0.7f && w.value(1)==0.8f);
-//		assert(v1==w.value(0) && v2==w.value(1));
-//	}
-//
-//	{
-//		bool b=false;
-//		SliderGrid<4> w;
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value(0.01f, 0);
-//		assert(b);
-//		assert(w.value(0) == 0.01f);
-//
-//		float v1, v2;
-//		w.attachVariable(v1, 0);
-//		w.attachVariable(v2, 1);
-//
-//		w.value(0.1f, 0); assert(v1 == 0.1f);
-//		w.value(0.2f, 0); assert(v1 == 0.2f);
-//		
-//		v1 = 0.8f; v2 = 0.9f;
-//		w.onModelSync();
-//		assert(w.value(0) == 0.8f);
-//		assert(w.value(1) == 0.9f);
-//		
-//		std::string s;
-//		w.value(0.1f, 0);
-//		w.value(0.2f, 1);
-//		w.value(0.3f, 2);
-//		w.value(0.4f, 3);
-//		w.toString(s);	assert(s == "{0.1, 0.2, 0.3, 0.4}");
-//		
-//		v1=v2=0;
-//		w.fromString("{0.4,0.3,0.2,0.1}");
-//		assert(w.value(0) == 0.4f);
-//		assert(w.value(1) == 0.3f);
-//		assert(w.value(2) == 0.2f);
-//		assert(w.value(3) == 0.1f);
-//		assert(v1 == w.value(0) && v2 == w.value(1));
-//	}
-//	
-//	{
-//		bool b=false;
-//		SliderRange w;
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value(0.01f, 0);
-//		w.value(0.02f, 1);
-//		assert(b);
-//		assert(w.value(0) == 0.01f);
-//		assert(w.value(1) == 0.02f);
-//		assert(w.center() == 0.015f);
-//		assert(w.range() == 0.01f);
-//		
-//		w.extrema(0,1);
-//		assert(w.value(0) == 0);
-//		assert(w.value(1) == 1);
-//		
-//		w.centerRange(0.5f, 0.2f);
-//		assert(w.value(0) == 0.4f);
-//		assert(w.value(1) == 0.6f);
-//
-//		float v1,v2;
-//		w.attachVariable(v1, 0);
-//		w.attachVariable(v2, 1);
-//
-//		std::string s;
-//		w.value(0.2, 0);
-//		w.value(0.3, 1);
-//		w.toString(s);		assert(s == "{0.2, 0.3}");
-//		
-//		v1 = v2 = 0;
-//		w.fromString("{0.7, 0.8}");
-//		assert(w.value(0)==0.7f && w.value(1)==0.8f);
-//		assert(v1==w.value(0) && v2==w.value(1));
-//	}
-//
-//	{
-//		bool b=false;
-//		Label w;
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value("test");
-//		assert(b);
-//		assert(w.value() == "test");
-//		
-//		std::string s;
-//		w.toString(s);		assert(s == "\"test\"");
-//		
-//		w.value("");
-//		w.fromString("\"test\"");	assert(w.value() == "test");
-//	}
-//
-//	{
-//		bool b=false;
-//		NumberDialer w(1,2,1,0);
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value(0.75);
-//		assert(b);
-//		assert(w.value() == 0.75);
-//
-//// Setting to current value should NOT send notification to avoid infinite loops
-//		b=false;
-//		w.value(w.value());
-//		assert(!b);
-//
-//		double v=0;
-//		w.attachVariable(v);
-//		w.value(0.5);	assert(v == 0.5);
-//		
-//		v = 0.25;
-//		w.onModelSync();
-//		assert(w.value() == v);
-//
-//		std::string s;
-//		w.value(0.2);
-//		w.toString(s);		assert(s == "0.2");
-//		
-//		v = 0;
-//		w.fromString("0.8");
-//		assert(w.value()==0.8 && w.value()==v);
-//	}
-//
-//	{
-//		bool b=false;
-//		TextView w;
-//		w.attach(ntValue1, Update::Value, &b);
-//		w.value("hello");
-//		assert(b);
-//		assert(w.value() == "hello");
-//	}
+//		w.value(0.44, 0);
+//		w.value(0.33, 0);
+//		w.value(0.22, 0);
+//		w.value(0.11, 0);
+//		for(int i=0; i<4; ++i) printf("%f\n", vs[i]);
+	}
+
+	{
+		bool b=false;
+		Slider2D w;
+		w.attach(ntSetBool1, Update::Value, &b);
+		w.setValue(0.01f, 0);
+		assert(b);
+		assert(w.value(0) == 0.01f);
+
+// Setting to current value should NOT send notification to avoid infinite loops
+		b=false;
+		w.setValue(0.01f, 0);
+		assert(!b);
+		
+		b=false;
+		w.setValue(0.00f, 0);
+		w.setValue(0.01f, 1);
+		assert(b);
+		assert(w.value(1) == 0.01f);
+		
+		b=false;
+		w.setValueMax();
+		assert(b);
+		assert(w.value(0) == 1.f);
+		assert(w.value(1) == 1.f);
+		
+		float v1, v2;
+		w.attachVariable(v1, 0);
+		w.attachVariable(v2, 1);
+		
+		w.setValue(0.5f, 0);	assert(v1 == 0.5f);
+		w.setValue(0.6f, 1);	assert(v2 == 0.6f);
+		
+		v1 = 0.1;
+		v2 = 0.2;
+		
+		w.onModelSync();
+		assert(w.value(0) == v1);
+		assert(w.value(1) == v2);
+	
+		w.setValue(0.2, 0);
+		w.setValue(0.3, 1);
+		assert(w.model().toToken() == "{0.2, 0.3}");
+		
+		v1 = v2 = 0;
+		w.modelFromToken("{0.7, 0.8}");
+		assert(w.value(0)==0.7 && w.value(1)==0.8);
+		assert(v1==(float)w.value(0) && v2==(float)w.value(1));
+	}
+
+	{
+		bool b=false;
+		SliderGrid<4> w;
+		w.attach(ntValue, Update::Value, &b);
+		w.setValue(0.01f, 0);
+		assert(b);
+		assert(w.value(0) == 0.01f);
+
+		float v1, v2;
+		w.attachVariable(v1, 0);
+		w.attachVariable(v2, 1);
+
+		w.setValue(0.1f, 0); assert(v1 == 0.1f);
+		w.setValue(0.2f, 0); assert(v1 == 0.2f);
+		
+		v1 = 0.8f; v2 = 0.9f;
+		w.onModelSync();
+		assert(w.value(0) == 0.8f);
+		assert(w.value(1) == 0.9f);
+
+		w.setValue(0.1f, 0);
+		w.setValue(0.2f, 1);
+		w.setValue(0.3f, 2);
+		w.setValue(0.4f, 3);
+		assert(w.model().toToken() == "{0.1, 0.2, 0.3, 0.4}");
+		
+		v1=v2=0;
+		w.modelFromToken("{0.4,0.3,0.2,0.1}");
+		assert(w.value(0) == 0.4);
+		assert(w.value(1) == 0.3);
+		assert(w.value(2) == 0.2);
+		assert(w.value(3) == 0.1);
+		assert(v1 == (float)w.value(0) && v2 == (float)w.value(1));
+	}
+	
+	{
+		bool b=false;
+		SliderRange w;
+		w.attach(ntValue, Update::Value, &b);
+		w.setValue(0.01f, 0);
+		w.setValue(0.02f, 1);
+		assert(b);
+		assert(w.value(0) == 0.01f);
+		assert(w.value(1) == 0.02f);
+		assert(w.center() == 0.015f);
+		assert(w.range() == 0.01f);
+		
+		w.extrema(0,1);
+		assert(w.value(0) == 0);
+		assert(w.value(1) == 1);
+		
+		w.centerRange(0.5, 0.25);
+		assert(w.value(0) == (0.5-0.25/2));
+		assert(w.value(1) == (0.5+0.25/2));
+
+		float v1,v2;
+		w.attachVariable(v1, 0);
+		w.attachVariable(v2, 1);
+
+		w.setValue(0.2, 0);
+		w.setValue(0.3, 1);
+		assert(w.model().toToken() == "{0.2, 0.3}");
+		
+		v1 = v2 = 0;
+		w.modelFromToken("{0.7, 0.8}");
+		assert(w.value(0)==0.7 && w.value(1)==0.8);
+		assert(v1==(float)w.value(0) && v2==(float)w.value(1));
+	}
+
+	{
+		bool b=false;
+		Label w;
+		w.attach(ntValue, Update::Value, &b);
+		w.setValue("test");
+		assert(b);
+		assert(w.value() == "test");
+		
+		assert(w.model().toToken() == "\"test\"");
+		
+		w.setValue("");
+		w.modelFromToken("\"test\"");	assert(w.value() == "test");
+	}
+
+	{
+		bool b=false;
+		NumberDialer w(1,2,1,0);
+		w.attach(ntValue, Update::Value, &b);
+		w.setValue(0.75);
+		assert(b);
+		assert(w.value() == 0.75);
+
+// Setting to current value should NOT send notification to avoid infinite loops
+		b=false;
+		w.setValue(w.value());
+		assert(!b);
+
+		double v=0;
+		w.attachVariable(v);
+		w.setValue(0.5);	assert(v == 0.5);
+		
+		v = 0.25;
+		w.onModelSync();
+		assert(w.value() == v);
+
+		w.setValue(0.2);
+		assert(w.model().toToken() == "0.2");
+		
+		v = 0;
+		w.modelFromToken("0.8");
+		assert(w.value()==0.8 && w.value()==v);
+	}
+
+	{
+		bool b=false;
+		TextView w;
+		w.attach(ntValue, Update::Value, &b);
+		w.setValue("hello");
+		assert(b);
+		assert(w.value() == "hello");
+		
+		assert(w.model().toToken() == "\"hello\"");
+
+		std::string v = "test";
+		w.attachVariable(v);
+		
+		w.onModelSync();
+		assert(w.value() == "test");
+
+		w.modelFromToken("\"world\"");
+		assert(w.value() == "world");
+		assert(v == "world");
+	}
 //	
 //	
 //	{
@@ -520,25 +523,23 @@ int main(){
 		
 		Data d(cf);
 
-//		assert(d.data<float>() == &cf);
-//		assert(dcf.data<float>()[0] = 10);	// TODO: how can we prevent this?
 		assert(d.hasData());
 		assert(d.size() == 1);
 		assert(d.type() == Data::FLOAT);
-		//assert(d.typeKind() == Data::FLOAT);
 		assert(d.at<float>(0) == cf);
 		assert(d.toString() == "10");
 		assert(d.at<std::string>(0) == "10");
+		
+//		d.put(std::string("8"));
+//		assert(d.at<float>(0) == 8);
 		
 		d.assign(11.f);
 		assert(d.at<float>(0) == 11.f);
 		
 		d.clone();
-//		assert(d.data<float>() != &cf);
 		assert(d.hasData());
 		assert(d.size() == 1);
 		assert(d.type() == Data::FLOAT);
-//		assert(d.at<float>(0) == cf);
 
 		d.assign(11.f);
 		assert(d.at<float>(0) == 11.f);
@@ -547,7 +548,7 @@ int main(){
 		assert(d.at<float>(0) == 100);
 		
 		d.set(f);
-		assert(d.data<float>() == &f);
+		assert(d.elems<float>() == &f);
 		assert(d.at<float>(0) == f);
 		
 //		d.set(s);
@@ -562,7 +563,7 @@ int main(){
 //		d.data<std::string>()[0] = "test";
 //		assert(s == "hello");
 //		assert(d.at<std::string>(0) == "test");
-		
+
 		d.set("hello");
 		assert(d.type() == Data::STRING);
 		assert(d.at<std::string>(0) == "hello");
@@ -582,8 +583,6 @@ int main(){
 	{
 		Label l;
 		TextView tv;
-//		Button b;
-//		Buttons bs(Rect(), 2, 2);
 		Button b;
 		Buttons bs(Rect(), 2, 2);
 		Slider s;
@@ -596,58 +595,58 @@ int main(){
 //		// Advantage:		simplicity- just name Views to be part of model
 //		// Disadvantages:	cannot add arbitrary model data not contained in a View
 //		//					all View's must have an extra name variable
-		l.value("Hello Label!").name("ls");
-		tv.value("Hello TextView!").name("tv");
+		l.setValue("Hello Label!").name("ls");
+		tv.setValue("Hello TextView!").name("tv");
 		b.setValue(true).name("b");
 		bs.setValue(true, 0,1).name("bs");
-		s.value(0.5).name("s");
-		ss.value(0.4, 1).name("ss");
-		s2D.value(0.5, 0).value(0.1, 1).name("s2D");
-		nd.value(-0.54941).name("nd");
+		s.setValue(0.5).name("s");
+		ss.setValue(0.4, 1).name("ss");
+		s2D.setValue(0.5, 0).setValue(0.1, 1).name("s2D");
+		nd.setValue(-0.54941).name("nd");
 
 		const View * views[] = {&l, &tv, &b, &bs, &s, &ss, &s2D, &nd};
 		for(unsigned i=0; i<sizeof(views)/sizeof(View *); ++i){
 			const Data& d = views[i]->model();
-			printf("%p: %s\n", &d, d.toString().c_str());
-			//views[i]->model().print();
+			//printf("%p: %s\n", &d, d.toString().c_str());
+			//views[i]->model().print(); printf("\n");
 		}
 
-//		View top;
-//		top << l << tv << b << bs << s << ss << s2D << nd;
-//		
-//		std::string str1, str2;
-//		top.modelToString(str1, "test model");		
-//		printf("size=%d\n%s\n", str1.size(), str1.c_str());
-//		
-//		top.modelFromString(str1);
-//		top.modelToString(str2);
-//		//printf("%s\n", str2.c_str());
+		View top;
+		top << l << tv << b << bs << s << ss << s2D << nd;
+		
+		std::string str1, str2;
+		top.modelToString(str1, "test model");		
+		printf("%s\n", str1.c_str());
+
+		top.modelFromString(str1);
+		top.modelToString(str2);
+		printf("%s\n", str2.c_str());
 //		//assert(str1 == str2);
 
 
-//		// Method #2: explicit
-//		// Advantage: can add arbitrary data to model
-//		// Disadvantage: 
-//		ModelManager mm;
-//		
-//		mm.add("l", l);
-//		mm.add("tv", tv);
-//		mm.add("b", b);
-//		mm.add("bs", bs);
-//		mm.add("s" , s);
-//		mm.add("ss", ss);
-//		mm.add("s2D",s2D);
-//		mm.add("nd", nd);
-//		mm.add("strings", *new Data(strings, 3));
-//		
-//		mm.toString(str1, "test");
-//		printf("%s\n", str1.c_str());
-//		
-//		mm.fromString(str1);
-//		mm.toString(str2, "test");
-//		printf("%s\n", str2.c_str());
+		// Method #2: explicit
+		// Advantage: can add arbitrary data to model
+		// Disadvantage: 
+		ModelManager mm;
+		
+		mm.add("l", l);
+		mm.add("tv", tv);
+		mm.add("b", b);
+		mm.add("bs", bs);
+		mm.add("s" , s);
+		mm.add("ss", ss);
+		mm.add("s2D",s2D);
+		mm.add("nd", nd);
+		//mm.add("strings", *new Data(strings, 3));
+		
+		mm.toToken(str1, "test");
+		printf("%s\n", str1.c_str());
+		
+		mm.fromToken(str1);
+		mm.toToken(str2, "test");
+		printf("%s\n", str2.c_str());
 
-//		// How can we send notifications when values change?
+//		// Problem: How can we send notifications when values change?
 //		StateSpace states;
 //		states.add("strings", Data(strings, 3));
 //		states.add("tv", Data(tv.value()));

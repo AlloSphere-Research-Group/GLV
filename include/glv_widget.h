@@ -9,6 +9,8 @@
 
 namespace glv {
 
+typedef ChangedValue<Data> ModelChange;
+
 
 class Widget : public View {
 public:
@@ -16,7 +18,7 @@ public:
 	Widget(
 		const Rect& r, const Data& data=Data(),
 		space_t pad=3, bool toggles=false, bool mutExc=false, bool drawGrid=true)
-	:	View(r), mPadding(pad), sx(0), sy(0), mMin(0), mMax(1), mUseInterval(false)
+	:	View(r), mPadding(pad), sx(0), sy(0), mMin(0), mMax(1), mUseInterval(true)
 	{
 		setModel(data);
 		model().clone();
@@ -46,9 +48,16 @@ public:
 	int size () const { return model().size(); }	///< Get total number of elements
 	int sizeX() const { return model().size1(); }	///< Get number of elements along x
 	int sizeY() const { return model().size2(); }	///< Get number of elements along y
-
 	bool useInterval() const { return mUseInterval; }
 
+
+	/// Attach a single variable at a specified index
+	template <class V>
+	void attachVariable(V& val, int i=0){
+		variables()[i] = Data(val);
+	}
+
+	/// Set interval for numerical values
 	Widget& interval(const double& max, const double& min=0){
 		glv::sort(mMin=min, mMax=max); return *this;
 	}
@@ -57,28 +66,44 @@ public:
 	Widget& padding(space_t v){ mPadding=v; return *this; }
 
 	/// Select element at 1D index
-	Widget& select(int i){ int i1,i2; model().indexTo2(i,i1,i2); return select(i1, i2); }
+	Widget& select(int i){ int i1,i2; model().indexTo2(i1,i2,i); return select(i1, i2); }
 
 	/// Select element at 2D index
 	Widget& select(int ix, int iy){ sx=ix; sy=iy; return *this; }
 
-	Widget& useInterval(bool v){ mUseInterval=v; return *this; }
-
-//	Widget& value(bool v, int i){ select(i); setValueNotify(v); return *this; }
-//
-//	Widget& value(bool v, int ix, int iy){ select(ix, iy); setValueNotify(v); return *this; }
-
 	template <class T>
-	Widget& setValue(const T& v, int ix=0, int iy=0){
-		select(ix,iy);
-		return setValueSelected(v);
-	}
+	Widget& setValue(const T& v){ return setValueSelected(v); }
+
+	/// Set value at specified 1D index
+	template <class T>
+	Widget& setValue(const T& v, int i){ select(i); return setValue(v); }
+
+	/// Set value at specified 2D index
+	template <class T>
+	Widget& setValue(const T& v, int ix, int iy){ select(ix,iy); return setValue(v); }
+
+	/// Set all values to maximum
+	Widget& setValueMax();
+	
+	/// Set all values to middle value
+	Widget& setValueMid();
+
+	Widget& useInterval(bool v){ mUseInterval=v; return *this; }
+	
+	virtual void onModelSync();
+	virtual const char * className(){ return "Widget"; }
 
 protected:
+	typedef std::map<int, glv::Data> IndexDataMap;
+
+	IndexDataMap mVariables;		// external variables to sync to, index-Data
 	space_t mPadding;				// num pixels to inset icon
 	int sx, sy;						// last clicked position
 	double mMin, mMax;				// value interval for all elements
 	bool mUseInterval;
+
+	IndexDataMap& variables(){ return mVariables; }
+	const IndexDataMap& variables() const { return mVariables; }
 
 	float dx() const { return w/sizeX(); } // width, in pixels, per element
 	float dy() const { return h/sizeY(); } // height, in pixels, per element
@@ -93,13 +118,28 @@ protected:
 	double toInterval(const double& v) const { return v*diam() + min(); }
 
 	template <class T>
+	Widget& setValue(const T& v, int i, double mn, double mx){
+		double omn=min(), omx=max();
+		interval(mx, mn);
+		select(i); setValue(v);
+		return interval(omx, omn);
+	}
+	
+	Widget& setValueSelected(const char * v){ return setValueSelected(std::string(v)); }
+
+	template <class T>
 	Widget& setValueSelected(const T& v){
-		T t=v; Data d(v); assignModel(d, selectedX(), selectedY());
+		T t = v;
+		Data d(v);
+		assignModel(d, selectedX(), selectedY());
 		return *this;
 	}
 
-	virtual void onAssignModel(Data& d, int ind1, int ind2){
 	
+
+	// note: indices passed in are always valid
+	virtual bool onAssignModel(Data& d, int ind1, int ind2){
+
 		if(enabled(MutualExc)){
 			double v = 0;
 			if(useInterval()) v = glv::clip(v, mMax, mMin);
@@ -107,13 +147,56 @@ protected:
 		}
 	
 		if(useInterval()){
-			double v = d.at<double>(0);
-			v = glv::clip(v, max(), min());
-			d.put(v);
+			for(int i=0; i<d.size(); ++i){
+				double v = d.at<double>(i);
+				v = glv::clip(v, max(), min());
+				d.put(v, i);
+			}
 		}
 
-		// TODO: notify observers...
+		int idx = model().indexFlat(ind1,ind2);	// starting index of model
+
+		// Update any attached variables containing this index
+		IndexDataMap::iterator it = variables().begin();
+		for(; it != variables().end(); ++it){
+			Data& v = it->second;
+			
+			// get destination/source intervals in terms of model indices
+			int id0 = it->first;
+			int id1 = id0 + v.size();
+			int is0 = idx;
+			int is1 = is0 + d.size();
+			
+			// the intersection
+			int i0 = glv::max(id0, is0);
+			int i1 = glv::min(id1, is1);
+			
+			if(i0 < i1){
+//				printf("[%d, %d), [%d, %d), [%d, %d)\n", id0, id1, is0, is1, i0, i1);
+				v.slice(i0-id0, i1-i0).assign(
+					d.slice(i0-is0, i1-i0)
+				);
+			}
+		}
+		
+//		if(variables().count(idx)){
+//			Data& v = variables()[idx];
+//			printf("1: %s %s\n", v.toToken().c_str(), d.toToken().c_str());
+//			v.assign(d);
+//			printf("2: %s %s\n", v.toToken().c_str(), d.toToken().c_str());
+//		}
+
+		Data modelOffset = model().slice(idx, model().size()-idx);
+
+		if(d != modelOffset){
+			model().assign(d, ind1, ind2);
+			ModelChange modelChange(model(), idx);
+			notify(this, Update::Value, &modelChange);
+		}
+
+		return true;
 	}
+
 
 	// draw the grid lines
 	void drawGrid(){
@@ -147,7 +230,6 @@ protected:
 		clipIndices();
 	}
 
-	
 	void onSelectKey(GLV& g){
 		//printf("shift %d\n", g.keyboard.shift());
 		//printf("shift %d\n", g.keyboard.key());
@@ -178,8 +260,7 @@ protected:
 		}
 		clipIndices();
 	}
-
-
+	
 //	void setValueNotify(const T& v){
 //		setValueNotify(v, selected());
 //	}
@@ -199,8 +280,32 @@ protected:
 //			}
 //		}
 //	}
-
 };
+
+inline void Widget::onModelSync(){
+	IndexDataMap::iterator it = variables().begin();
+
+	for(; it!=variables().end(); ++it){
+		int idx = it->first;
+
+		if(validIndex(idx)){
+			const Data& data = it->second;
+			if(model().slice(idx, model().size()-idx) != data){
+				assignModel(data, idx);
+			}
+		}
+	}
+}
+
+inline Widget& Widget::setValueMax(){
+	for(int i=0; i<size(); ++i){ setValue(max(), i); } return *this;
+}
+
+inline Widget& Widget::setValueMid(){
+	for(int i=0; i<size(); ++i){ setValue(mid(), i); } return *this;
+}
+
+
 
 
 // inheritance definitions for templated subclasses

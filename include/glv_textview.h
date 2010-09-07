@@ -12,8 +12,6 @@
 
 namespace glv{
 
-typedef ChangedValue<std::string> LabelChange;
-typedef ChangedValue<double> NumberDialerChange;
 typedef ChangedValue<std::string *> TextViewChange;
 
 
@@ -65,12 +63,12 @@ public:
 
 	Label& align(float vx, float vy);		///< Set alignment factors for label area
 	Label& size(float pixels);				///< Set label size
-	Label& value(const std::string& s);		///< Set label string
+	Label& setValue(const std::string& s);	///< Set label string
 	Label& vertical(bool v);				///< Set whether label is displayed vertically
 
 	/// Get value
 	const std::string& value() const {
-		return model().data<std::string>()[0];
+		return model().elems<std::string>()[0];
 	}
 
 	virtual const char * className() const { return "Label"; }
@@ -138,7 +136,7 @@ public:
 	NumberDialer& showSign(bool v);
 
 	/// Set value
-	NumberDialer& value(double v);
+	NumberDialer& setValue(double v);
 
 	virtual const char * className() const { return "NumberDialer"; }
 	virtual void onDraw();
@@ -156,7 +154,7 @@ protected:
 	void valSet(int v){	// converts fixed point to floating point value
 		mVal = glv::clip(v, convert(mMax), convert(mMin));
 		double val = mVal * mValMul;
-		setValue(val);
+		Widget::setValue(val);
 	}
 	
 //	virtual void onSetValueNotify(const double& v, int idx){
@@ -168,9 +166,9 @@ protected:
 	void setWidth(){ w = (h-2)*size(); }
 	int convert(double v) const { return (v/mValMul) + (v>0. ? 0.5:-0.5); }
 	int mag() const { return pow(10, size()-1-dig()); }
-	bool onNumber() const { return mPos != signPos(); }
+	bool onNumber() const { return mPos!=signPos(); }
 	int dig() const { return mPos; }
-	void dig(int v){ mPos = v < 0 ? 0 : v >= size() ? size()-1 : v; }
+	void dig(int v){ mPos = v<0 ? 0 : v>=size() ? size()-1 : v; }
 	double maxVal() const { return (pow(10, mNI+mNF)-1)/pow(10, mNF); }
 	int signPos() const { return mShowSign ? 0 : -1; }
 	int size() const { return mNI + mNF + sizeSign(); }
@@ -186,35 +184,36 @@ protected:
 
 
 /// View for editing text
-class TextView : public View{
+class TextView : public Widget{
 public:
 	/// Constructor
 	TextView(const Rect& r=glv::Rect(200,16), float textSize=8);
 
+	/// Get value
+	const std::string& value() const {
+		return model().elems<std::string>()[0];
+	}
+
 	/// Set size of font in pixels
 	TextView& size(float pixels);
 	
-	/// Set text string
-	TextView& value(const std::string& v);
+//	/// Set text string
+//	TextView& setValue(const std::string& v);
 
 	void select(int v);
 	void deselect(){ mSel=0; }
 	
-	std::string& value(){ return mText; }
-	const std::string& value() const { return mText; }
+//	std::string& value(){ return mText; }
+//	const std::string& value() const { return mText; }
 
 	virtual const char * className() const { return "TextView"; }
 	virtual void onDraw();	
 	virtual bool onEvent(Event::t e, GLV& g);
-	virtual bool toString(std::string& s) const { glv::toToken(s, value()); return true; }
-	virtual bool fromString(const std::string& s){
-		std::string r; if(glv::fromToken(r,s)){ value(r); return true; } return false;
-	}
 
 protected:
 	Font mFont;
 	std::string mText;		// The text string
-	//float mSize;
+
 	float mSpacing;
 	float mPadX;
 	int mPos;
@@ -226,7 +225,8 @@ protected:
 	void deleteSelected();
 	bool selected(){ return mSel!=0; }
 	void deleteText(int start, int num);
-	void callNotify();
+
+	virtual bool onAssignModel(Data& d, int ind1, int ind2);
 };
 
 

@@ -13,9 +13,6 @@ namespace glv {
 typedef void (* iconFunc)(float l, float t, float r, float b);
 
 
-typedef ChangedValue<bool> ButtonChange;
-
-
 
 /// One or more buttons on a grid
 class Buttons:  public Widget {
@@ -35,7 +32,7 @@ public:
 	)
 	:	Widget(r, Data(Data::BOOL, nx,ny), 3, toggles, mutExc, true),
 		mIconOff(off), mIconOn(on)
-	{}
+	{	useInterval(false); }
 
 	const iconFunc& iconOff() const { return mIconOff; }
 	const iconFunc& iconOn () const { return mIconOn; }
@@ -47,12 +44,10 @@ public:
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& g);
 
-	bool value(int i1, int i2=0) const { return model().at<bool>(i1, i2); }
+	bool value(int i1=0, int i2=0) const { return model().at<bool>(i1, i2); }
 
 protected:
 	iconFunc mIconOff, mIconOn;	// state icons
-
-//	void onSetValueNotify(const bool& v, int idx);
 };
 
 
