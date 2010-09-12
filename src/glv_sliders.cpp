@@ -54,7 +54,7 @@ void Sliders::onDraw(){
 				float y0 = to01(0)*yd;
 				//rect(x + x0, y, f*xd+x, y+yd-padding());
 				
-				rect(x, y+yd-v01*yd, x+xd-padding(), y+yd-y0);
+				rectangle(x, y+yd-v01*yd, x+xd-padding(), y+yd-y0);
 
 				// if zero line showing
 				if(mMax>0 && mMin<0){
@@ -79,7 +79,7 @@ void Sliders::onDraw(){
 
 				float v01 = to01(value(ind));
 				float x0 = to01(0)*xd;
-				rect(x + x0, y, v01*xd+x, y+yd-padding());
+				rectangle(x + x0, y, v01*xd+x, y+yd-padding());
 
 				// if zero line showing
 				if(mMax>0 && mMin<0){
@@ -206,7 +206,7 @@ void Slider2D::drawKnob(const Slider2D& s){
 	float posY = sz2 + (s.h - sz) * (1.f - s.to01(s.value(1)));
 	
 	color(s.colors().fore);
-	rect(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
+	rectangle(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
 }
 
 /*
@@ -338,10 +338,10 @@ void SliderRange::onDraw(){
 
 	color(colors().fore);
 	if(w>h){	// horizontal
-		rect(v1*w,0, v2*w,h);
+		rectangle(v1*w,0, v2*w,h);
 	}
 	else{
-		rect(0,v1*h, w,v2*h);
+		rectangle(0,v1*h, w,v2*h);
 	}
 }
 

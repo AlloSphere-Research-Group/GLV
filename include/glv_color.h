@@ -14,10 +14,16 @@ class HSV;
 /// An RGBA color.
 struct Color{
 
-	float r;	///< Red component in [0, 1]
-	float g;	///< Green component in [0, 1]
-	float b;	///< Blue component in [0, 1]
-	float a;	///< Alpha component in [0, 1]
+	union{
+		struct{
+			float r;	///< Red component in [0, 1]
+			float g;	///< Green component in [0, 1]
+			float b;	///< Blue component in [0, 1]
+			float a;	///< Alpha component in [0, 1]
+		};
+		float components[4];
+	};
+
 
 	/// @param[in] r			red component
 	/// @param[in] g			green component
@@ -31,7 +37,12 @@ struct Color{
 
 	Color(const HSV& hsv, float a=1.f);
 	
-	// Setters
+	/// Set color component at index with no bounds checking
+	float& operator[](int i){ return components[i]; }
+	
+	/// Get color component at index with no bounds checking
+	const float& operator[](int i) const { return components[i]; }
+
 	
 	Color& operator= (const HSV& hsv);				///< Set color from HSV values
 	Color& operator*=(float v);						///< Multiply RGBA values by argument

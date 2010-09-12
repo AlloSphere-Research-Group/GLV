@@ -194,7 +194,7 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 	if(enabled(Focused)){
 //		color(colors().fore, colors().fore.a*0.4);
 		color(colors().selection);
-		rect(dig()*dx, 0, (dig()+1)*dx, h);
+		rectangle(dig()*dx, 0, (dig()+1)*dx, h);
 	}
 	
 	// draw number
@@ -380,7 +380,7 @@ void TextView::onDraw(){
 			sl = sr + mSel*mFont.advance('M');
 		}
 		color(colors().selection);
-		rect(sl, tt, sr, tb);
+		rectangle(sl, tt, sr, tb);
 	}
 
 	// draw cursor

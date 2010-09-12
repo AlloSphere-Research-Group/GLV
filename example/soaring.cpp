@@ -92,8 +92,8 @@ int main (int argc, char ** argv){
 	sliderXZ.interval(0.02, -0.02);
 	sliderXZ.attachVariable(scene.incx, 0);
 	sliderXZ.attachVariable(scene.incz, 1);
-	sliderXZ.value(0.0005, 0);
-	sliderXZ.value(0.0057, 1);
+	sliderXZ.setValue(0.0005, 0);
+	sliderXZ.setValue(0.0057, 1);
 	
 	top << (scene << sliderXZ);
 

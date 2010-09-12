@@ -8,6 +8,7 @@
 #include <set>
 #include "glv_core.h"
 #include "glv_draw.h"
+#include "glv_widget.h"
 
 namespace glv {
 
@@ -162,7 +163,7 @@ protected:
 
 /// A 1D or 2D function plot
 
-///
+/// This can be used for either line or scatter plots.
 ///
 class Plot : public View{
 public:
@@ -226,6 +227,23 @@ protected:
 
 	void draw(const PlotData& d, float mulX, float addX, float mulY, float addY, const Color& defaultCol);
 };
+
+
+/// Density plot
+class DensityPlot : public Widget {
+public:
+	DensityPlot(const Rect& r=Rect());
+
+	DensityPlot& color(const Color& v){ mColor1=v; return *this; }
+
+	virtual const char * className() const { return "DensityPlot"; }
+	virtual void onDraw();
+
+protected:
+	Color mColor1;
+	float val(int i, int j, int k){ return to01(model().at<float>(i,j,k)); }
+};
+
 
 
 } // glv::

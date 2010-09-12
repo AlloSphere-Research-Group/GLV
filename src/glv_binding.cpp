@@ -92,7 +92,9 @@ void Window::dimensions(const Dimensions& d){
 void Window::fit(){
 	if(glv()){
 		mGLV->fit();
-		resize(mGLV->w, mGLV->h);
+		if(mGLV->w > 0 && mGLV->h > 0){
+			resize(mGLV->w, mGLV->h);
+		}
 	}
 }
 

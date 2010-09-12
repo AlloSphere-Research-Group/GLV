@@ -223,7 +223,7 @@ void View::drawPre(){
 	
 	if(enabled(DrawBack)){
 		color(colors().back);
-		rect(0, 0, pix(w), pix(h));
+		rectangle(0, 0, pix(w), pix(h));
 	}
 }
 
@@ -345,88 +345,38 @@ View& View::maximize(){
 
 
 void View::modelToString(std::string& v, const std::string& modelName) const {
-	if(modelName.size())	v = "[\"" + modelName + "\"] = {\r\n";
-	else					v = "{\r\n";
 
-	struct AppendString: TraversalAction{
-		AppendString(std::string& v): s(v){}
+	ModelManager mm;
+
+	struct Add : TraversalAction{
+		Add(ModelManager& v): m(v){}
 		bool operator()(const View * v, int depth){
-			std::string r;
-			const std::string& name = v->name();
-//			if(v->hasName() && v->toToken(r)){
-//				s += "\t" + name + " = " + r + ",\r\n";
-//			}
-			if(v->hasName()){
-				s += "\t" + name + " = " + v->model().toToken() + ",\r\n";
-			}
+			if(v->hasName()) m.add(v->name(), *v);
 			return true;
 		}
-		std::string& s;	
-	} appendString(v);
+		ModelManager& m;	
+	} add(mm);
 
-	this->traverseDepth(appendString);
-	v += "}\r\n";
+	traverseDepth(add);
+	mm.toToken(v, modelName);
 }
 
 
 int View::modelFromString(const std::string& v){
 
-	unsigned p = v.find_first_of("{");
-	if(p == std::string::npos) return 0;		// no table found, so return
+	ModelManager mm;
 
-	// create map of relevant name-View pairs for faster access
-	std::map<std::string, View *> nameView;
-	struct CreateNameViewMap: TraversalAction{
-		CreateNameViewMap(std::map<std::string, View *>& v): m(v){}
-
+	struct Add : TraversalAction{
+		Add(ModelManager& v): m(v){}
 		bool operator()(View * v, int depth){
-			if(v->hasName()) m[v->name()] = v;
+			if(v->hasName()) m.add(v->name(), *v);
 			return true;
 		}
-		std::map<std::string, View *>& m;	
-	} createNameViewMap(nameView);
-	
-	traverseDepth(createNameViewMap);
+		ModelManager& m;	
+	} add(mm);
 
-	
-	std::string key, val;
-	const char * b = &v[p+1];	// start 1 character after opening '{'
-
-	while(*b && *b!='}'){
-		if(isalpha(*b) || *b=='_'){	// is character valid start of identifier?
-			const char * e = b+1;
-			while(isalnum(*e) || *e=='_') ++e;	// go to end of key name
-			key.assign(b, e-b);
-
-			while(isblank(*e) || *e=='=') ++e;	// go to '='
-			
-			#define ISNUM(c) (isdigit(c) || c=='.' || c=='-' || c=='+')
-			b=e=strpbrk(e, "\"{0123456789.-+");
-
-			if(*b){
-				if(*e == '\"'){
-					++e; while(*e!='\"') ++e; ++e;
-				}
-				else if(*e == '{'){
-					while(*e!='}') ++e; ++e;
-				}
-				else{
-					while(ISNUM(*e)) ++e;
-				}
-
-				val.assign(b,e-b);
-
-				if(nameView.count(key)){
-					//printf("%s = %s\n", key.c_str(), val.c_str());
-					nameView[key]->modelFromToken(val);
-				}
-			}
-			b=e;
-		}
-		++b;
-	}
-	//printf("%d\n", b-&v[0]);
-	return b-&v[0];
+	traverseDepth(add);
+	return mm.fromToken(v);
 }
 
 

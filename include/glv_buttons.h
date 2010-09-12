@@ -28,7 +28,7 @@ public:
 	Buttons(
 		const Rect& r=Rect(), int nx=1, int ny=1,
 		bool toggles=true, bool mutExc=false,
-		iconFunc on=draw::rect, iconFunc off=0
+		iconFunc on=draw::rectangle, iconFunc off=0
 	)
 	:	Widget(r, Data(Data::BOOL, nx,ny), 3, toggles, mutExc, true),
 		mIconOff(off), mIconOn(on)
@@ -69,7 +69,7 @@ inline void Buttons::onDraw(){
 		float x = dx*i + p_2;
 	
 		for(int j=0; j<sizeY(); ++j){
-			int ind = index(i,j);
+			//int ind = index(i,j);
 			float y = dy*j + p_2;
 			if(value(i,j)){	if(mIconOn ) mIconOn (x, y, x+dx-p1, y+dy-p1); }
 			else{			if(mIconOff) mIconOff(x, y, x+dx-p1, y+dy-p1); }
@@ -125,7 +125,7 @@ public:
 	/// @param[in] toggles	whether the button toggles
 	/// @param[in] on		the on state icon
 	/// @param[in] off		the off state icon
-	Button(const Rect& r=Rect(20), bool toggles=true, iconFunc on=draw::rect, iconFunc off=0)
+	Button(const Rect& r=Rect(20), bool toggles=true, iconFunc on=draw::rectangle, iconFunc off=0)
 	:	Buttons(r, 1, 1, toggles, false, on, off)
 	{}
 	

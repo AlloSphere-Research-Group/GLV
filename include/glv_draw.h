@@ -114,6 +114,7 @@ void ortho(float l, float r, float b, float t);		///< Set orthographic projectio
 void paint(int prim, Point2 * verts, int numVerts);	///< Draw array of 2D vertices
 void paint(int prim, Point2 * verts, Color * cols, int numVerts);
 void paint(int prim, Point2 * verts, unsigned * indices, int numIndices); ///< Draw indexed array of 2D vertices
+void paint(int prim, Point2 * verts, Color * cols, unsigned * indices, int numIndices); 
 void paint(int prim, Point3 * verts, int numVerts);	///< Draw array of 3D vertices
 void paint(int prim, Point3 * verts, Color * cols, int numVerts);
 void paint(int prim, Point3 * verts, unsigned * indices, int numIndices); ///< Draw indexed array of 3D vertices
@@ -163,7 +164,7 @@ template <int N> void disc(float l, float t, float r, float b);	///< Disc with N
 void frame		(float l, float t, float r, float b);			///< Rectangular frame
 void minus		(float l, float t, float r, float b);			///< Minus
 void plus		(float l, float t, float r, float b);			///< Plus
-void rect		(float l, float t, float r, float b);			///< Solid rectangle
+void rectangle	(float l, float t, float r, float b);			///< Solid rectangle
 void triangleR	(float l, float t, float r, float b);			///< Right pointing triangle
 void triangleL	(float l, float t, float r, float b);			///< Left pointing triangle
 void triangleU	(float l, float t, float r, float b);			///< Upward pointing triangle
@@ -265,6 +266,14 @@ inline void paint(int prim, Point2 * verts, unsigned * indices, int numIndices){
 	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
 }
 
+inline void paint(int prim, Point2 * verts, Color * cols, unsigned * indices, int numIndices){
+	glEnableClientState(GL_COLOR_ARRAY);
+	glVertexPointer(2, GL_FLOAT, 0, verts);
+	glColorPointer(4, GL_FLOAT, 0, cols);
+	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
+	glDisableClientState(GL_COLOR_ARRAY);
+}
+
 inline void paint(int prim, Point3 * verts, int numVerts){
 	glVertexPointer(3, GL_FLOAT, 0, verts);
 	glDrawArrays(prim, 0, numVerts);
@@ -345,6 +354,7 @@ inline void shape(int prim, float x0, float y0, float x1, float y1, float x2, fl
 	paint(prim, (Point2 *)v, 4);
 }
 
+inline void rectangle(float l, float t, float r, float b){ shape(TriangleStrip, l,t, l,b, r,t, r,b); }
 inline void stroke(float w){ lineWidth(w); pointSize(w); }
 inline void triangleD(float l, float t, float r, float b){ shape(Triangles, 0.5*(l+r),b, r,t, l,t); }
 inline void triangleL(float l, float t, float r, float b){ shape(Triangles, l,0.5*(t+b), r,b, r,t); }
@@ -418,7 +428,6 @@ inline void push(){ glPushMatrix(); }
 inline void pushAttrib(int attribs){ glPushAttrib(attribs); }
 inline void pop() { glPopMatrix(); }
 inline void popAttrib(){ glPopAttrib(); }
-inline void rect(float l, float t, float r, float b){ glRectf(r, b, l, t); }
 inline void rotateX(float deg){ glRotatef(deg, 1.f, 0.f, 0.f); }
 inline void rotateY(float deg){ glRotatef(deg, 0.f, 1.f, 0.f); }
 inline void rotateZ(float deg){ glRotatef(deg, 0.f, 0.f, 1.f); }

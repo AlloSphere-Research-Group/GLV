@@ -27,7 +27,7 @@ void drawCB(View * v){
 	rotate(sg33.value(0)*360, sg33.value(1)*360, sg33.value(2)*360);
 	scale(sg21.value(0), sg21.value(1));
 	
-	rect(-1, -1, 1, 1);
+	rectangle(-1, -1, 1, 1);
 
 	pop3D();
 }
@@ -79,9 +79,9 @@ int main (int argc, char ** argv){
 	btn2 << (new Label("Toggle"))->anchor(Place::CR).pos(Place::CL, 4,0);
 	btn3 << (new Label("Checkbox"))->anchor(Place::CR).pos(Place::CL, 4,0);
 	
-	sg31.valueMid();
-	sg32.valueMid();
-	sg21.valueMax();
+	sg31.setValueMid();
+	sg32.setValueMid();
+	sg21.setValueMax();
 
 
 	// Define south-bound layout. Views added to top GLV view.

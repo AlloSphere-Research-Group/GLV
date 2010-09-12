@@ -122,6 +122,16 @@
 		16A93E6B1002BA8F00F5404E /* glv_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5E7610D91F43B001153DA /* glv_layout.cpp */; };
 		16A93E6D1002BAB600F5404E /* test_units.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16A93E6C1002BAB600F5404E /* test_units.cpp */; };
 		16BC4093114B0678001246DB /* glv_view3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16BC4092114B0678001246DB /* glv_view3D.cpp */; };
+		16C9625D123CC5A2008735F3 /* glv_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C9625C123CC5A2008735F3 /* glv_widget.cpp */; };
+		16C9625E123CC5A2008735F3 /* glv_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C9625C123CC5A2008735F3 /* glv_widget.cpp */; };
+		16C9625F123CC5A2008735F3 /* glv_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C9625C123CC5A2008735F3 /* glv_widget.cpp */; };
+		16C96260123CC5A2008735F3 /* glv_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C9625C123CC5A2008735F3 /* glv_widget.cpp */; };
+		16C96261123CC5A2008735F3 /* glv_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C9625C123CC5A2008735F3 /* glv_widget.cpp */; };
+		16C96262123CC5A2008735F3 /* glv_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C9625C123CC5A2008735F3 /* glv_widget.cpp */; };
+		16C96263123CC5A2008735F3 /* glv_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C9625C123CC5A2008735F3 /* glv_widget.cpp */; };
+		16C96264123CC5A2008735F3 /* glv_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C9625C123CC5A2008735F3 /* glv_widget.cpp */; };
+		16C96265123CC5A2008735F3 /* glv_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C9625C123CC5A2008735F3 /* glv_widget.cpp */; };
+		16C96266123CC5A2008735F3 /* glv_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16C9625C123CC5A2008735F3 /* glv_widget.cpp */; };
 		16D11B110D7F1B3D00433B04 /* glv_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */; };
 		16D360720D9B2927003E59D0 /* glv_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7540BA2434200E819AF /* glv_color.cpp */; };
 		16D360730D9B2927003E59D0 /* glv_glv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7550BA2434200E819AF /* glv_glv.cpp */; };
@@ -295,6 +305,7 @@
 		16A93E6C1002BAB600F5404E /* test_units.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_units.cpp; sourceTree = "<group>"; };
 		16BC401D114AFAFD001246DB /* glv_view3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_view3D.h; sourceTree = "<group>"; };
 		16BC4092114B0678001246DB /* glv_view3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_view3D.cpp; sourceTree = "<group>"; };
+		16C9625C123CC5A2008735F3 /* glv_widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_widget.cpp; sourceTree = "<group>"; };
 		16D360670D9B2915003E59D0 /* test_examples.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_examples.cpp; sourceTree = "<group>"; };
 		16D360840D9B2927003E59D0 /* TestExamples_GLUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestExamples_GLUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16D3761B0E46418A00BCCD39 /* test_window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_window.cpp; sourceTree = "<group>"; };
@@ -540,6 +551,7 @@
 				7E40B0030D92EB3A00219F2C /* glv_textview.cpp */,
 				B917A75A0BA2434200E819AF /* glv_view.cpp */,
 				16BC4092114B0678001246DB /* glv_view3D.cpp */,
+				16C9625C123CC5A2008735F3 /* glv_widget.cpp */,
 			);
 			name = src;
 			path = ../src;
@@ -935,6 +947,7 @@
 				167F3474120EA5E40023A08C /* glv_draw.cpp in Sources */,
 				167F3477120EA5F10023A08C /* glv_color.cpp in Sources */,
 				16108832121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
+				16C96262123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -954,6 +967,7 @@
 				16258B361017D7500037164D /* glv_layout.cpp in Sources */,
 				16064E2F120F95180075A4E0 /* glv_font.cpp in Sources */,
 				16108831121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
+				16C96264123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -975,6 +989,7 @@
 				16F0FE891186153000612ABB /* glv_textview.cpp in Sources */,
 				167F3499120EA6260023A08C /* glv_font.cpp in Sources */,
 				16108830121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
+				16C96263123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -999,6 +1014,7 @@
 				16BC4093114B0678001246DB /* glv_view3D.cpp in Sources */,
 				167F30FB120E2EAE0023A08C /* glv_font.cpp in Sources */,
 				16108836121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
+				16C9625D123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1020,6 +1036,7 @@
 				08873FBF0E46728F00E4D193 /* glv_binding_glut.cpp in Sources */,
 				167F3438120EA36A0023A08C /* glv_font.cpp in Sources */,
 				1610882F121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
+				16C9625F123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1042,6 +1059,7 @@
 				16ED62580E5791F6006231EC /* test_notifications.cpp in Sources */,
 				167F3452120EA54C0023A08C /* glv_font.cpp in Sources */,
 				16108837121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
+				16C96261123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1064,6 +1082,7 @@
 				08F72F840E46652C001A58ED /* glv_binding.cpp in Sources */,
 				167F3406120EA0520023A08C /* glv_font.cpp in Sources */,
 				1610882E121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
+				16C9625E123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1087,6 +1106,7 @@
 				7E4B54EE0EA13EBE00701931 /* glv_texture.cpp in Sources */,
 				167F30F3120E1F1A0023A08C /* glv_font.cpp in Sources */,
 				16108835121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
+				16C96265123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1118,6 +1138,7 @@
 				08873FC40E4672B500E4D193 /* glv_binding.cpp in Sources */,
 				167F343F120EA3780023A08C /* glv_font.cpp in Sources */,
 				16108833121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
+				16C96260123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1141,6 +1162,7 @@
 				7E4DABDF0DAAEFC7009D2272 /* glv_texture.cpp in Sources */,
 				167F30F4120E1F1A0023A08C /* glv_font.cpp in Sources */,
 				1610882D121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
+				16C96266123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

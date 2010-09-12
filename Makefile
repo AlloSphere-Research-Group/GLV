@@ -12,13 +12,14 @@ SRCS = 	glv_buttons.cpp \
 	glv_glv.cpp \
 	glv_inputdevice.cpp \
 	glv_layout.cpp \
+	glv_model.cpp \
  	glv_plots.cpp \
 	glv_sliders.cpp \
 	glv_texture.cpp \
 	glv_textview.cpp \
-	glv_util.cpp \
 	glv_view.cpp \
-	glv_view3D.cpp
+	glv_view3D.cpp \
+	glv_widget.cpp
 
 ifdef WINDOW_BINDING
 	SRCS += glv_binding.cpp $(BINDING_SRC)

@@ -39,8 +39,8 @@ template<> int toString<std::string>(std::string& dst, const std::string& src){
 int toString(std::string& dst, const char * src){ return toString(dst, std::string(src)); }
 
 template<> int fromToken<bool>(bool& dst, const std::string& src){
-	int v = dst;
-	bool r = sscanf(src.c_str(), "%hhi", &v) > 0;
+	char v = dst;
+	int r = sscanf(src.c_str(), "%hhi", &v) > 0;
 	dst = v;
 	return r;
 }
@@ -115,6 +115,7 @@ int fromToken(Data& d, const std::string& s){
 	}
 }
 int toString(std::string& s, const Data& d){
+	if(!d.hasData()) return 0;
 	switch(d.type()){
 	case Data::BOOL:	return glv::toString(s,        d.elems<bool>(), d.size());
 	case Data::INT:		return glv::toString(s,         d.elems<int>(), d.size());
@@ -125,6 +126,7 @@ int toString(std::string& s, const Data& d){
 	}
 }
 int toToken(std::string& s, const Data& d){
+	if(!d.hasData()) return 0;
 	switch(d.type()){
 	case Data::BOOL:	return glv::toToken(s,        d.elems<bool>(), d.size());
 	case Data::INT:		return glv::toToken(s,         d.elems<int>(), d.size());
@@ -137,14 +139,21 @@ int toToken(std::string& s, const Data& d){
 
 
 
-Data::Data(): mData(0), mBegin(0), mSize1(0), mSize2(0), mType(Data::VOID){}
+Data::Data()
+:	mData(0), mOffset(0), mStride(1), mType(Data::VOID)
+{
+	shapeAll(0);
+}
 
 Data::Data(Data& v){ *this = v; }
 Data::Data(const Data& v){ *this = v; }
 
-Data::Data(Data::Type type, int n1, int n2)
-:	mBegin(0), mData(0), mSize1(n1), mSize2(n2), mType(type)
-{}
+Data::Data(Data::Type type, int n1, int n2, int n3, int n4)
+:	mData(0), mOffset(0), mStride(1), mType(type)
+{
+	int s[] = {n1,n2,n3,n4};
+	shape(s,4);
+}
 
 Data::~Data(){
 	free();
@@ -152,7 +161,9 @@ Data::~Data(){
 
 Data& Data::operator= (const Data& v){
 	if(&v != this){
-		setRaw(v.mData, v.mBegin, v.size1(), v.size2(), v.type());
+		setRaw(v.mData, v.offset(), v.type());
+		stride(v.stride());
+		for(int i=0;i<maxDim();++i) mSizes[i]=v.mSizes[i];
 	}
 	return *this;
 }
@@ -166,7 +177,7 @@ bool Data::operator==(const Data& v) const {
 
 		#define OP(t1, t2)\
 			for(int i=0; i<n; ++i){\
-				if(elems<t1>()[i] != v.elems<t2>()[i]) return false;\
+				if(elem<t1>(i) != v.elem<t2>(i)) return false;\
 			} return true
 
 		#define OPALL(t)\
@@ -201,7 +212,7 @@ Data& Data::assign(const Data& v, int ind1, int ind2){
 
 		#define OP(t1, t2)\
 			for(int i=0; i<n; ++i){\
-				elems<t1>()[i+id] = v.elems<t2>()[i];\
+				elem<t1>(i+id) = v.elem<t2>(i);\
 			} break
 
 		#define OPALL(t)\
@@ -237,14 +248,14 @@ Data& Data::assign(const Data& v, int ind1, int ind2){
 
 void Data::clone(){
 	if(hasData()){
-		int cnt = references(mData);
+		//int cnt = references(mData);
 		
 		// cnt == 0		data points to external, unmanaged data
 		// cnt  > 1		data points to another Data's cloned data
 		// cnt == 1		data points to my own cloned data
 //		if(cnt!=1){
 			Data old(*this);
-			realloc(type(), size1(), size2());
+			realloc(type());
 			assign(old);
 //		}
 //		else{
@@ -252,7 +263,7 @@ void Data::clone(){
 //		}
 	}
 	else{
-		realloc(type(), size1(), size2());
+		realloc(type());
 	}
 }
 
@@ -271,66 +282,101 @@ void Data::free(){
 //		::free(mData);
 	}
 	mData=0;
-	mSize1=mSize2=0;
-	mBegin=0;
+	mOffset=0;
+	mStride=1;
+	shapeAll(0);
 	mType=Data::VOID;
 }
 
+int Data::order() const {
+	int i=maxDim()-1;
+	for(; i>=0; --i){
+		if(size(i) > (i?1:0)) break;
+	}
+	return i+1;
+}
+
 void Data::print() const{
-	printf("%p + %d, %d x %d, %s, %s\n",
-		mData, begin(), size1(), size2(), typeToString(type()).c_str(), toToken().c_str());
+	printf("%p + %d, %d", mData, offset(), size(0));
+	for(int i=1;i<order();++i){
+		printf(" x %d", mSizes[i]);
+	}
+	printf(", %s %s\n", typeToString(type()).c_str(), toToken().c_str());
 }
 
-void Data::realloc(Data::Type t, int n1, int n2){
-//	if(type()!=t || size()!=sz){
+// if sizes==0, then keep current shape
+void Data::realloc(Data::Type t, const int * sizes, int n){
+	if(sizes){
 		free();
-		if(n1 && n2){
-			mType  = t;
-			mSize1 = n1;
-			mSize2 = n2;
-			mBegin = 0;
-//			mData = pointer(::malloc(sizeBytes()));
-//			for(int i=0; i<size() ++i){	// ctor
-//			}
-			switch(type()){
-			case Data::BOOL:	mData = pointer(new bool[size()]); break;
-			case Data::INT:		mData = pointer(new int[size()]); break;
-			case Data::FLOAT:	mData = pointer(new float[size()]); break;
-			case Data::DOUBLE:	mData = pointer(new double[size()]); break;
-			case Data::STRING:	mData = pointer(new std::string[size()]); break;
-			default:			return;
-			}
-			acquire(mData);
+		shape(sizes, n);
+	}
+	else{
+		Data old(*this);
+		free();
+		shape(old.mSizes, old.order());
+	}	
+
+	if(size()){
+		mType   = t;
+		mOffset = 0;
+		mStride = 1;
+
+		switch(type()){
+		case Data::BOOL:	mData = pointer(new bool[size()]); break;
+		case Data::INT:		mData = pointer(new int[size()]); break;
+		case Data::FLOAT:	mData = pointer(new float[size()]); break;
+		case Data::DOUBLE:	mData = pointer(new double[size()]); break;
+		case Data::STRING:	mData = pointer(new std::string[size()]); break;
+		default:			return;
 		}
-//	}
+		acquire(mData);
+	}
 }
 
-Data& Data::resize(int size1, int size2){
-	realloc(type(), size1, size2); return *this;
+Data& Data::resize(const int * sizes, int n){
+	if(product(sizes,n) != size()){
+		realloc(type(), sizes, n);
+	}
+	return *this;
 }
 
-Data& Data::set(Data::Type t, int n1, int n2){
-	if(type()!=t || size()!=(n1*n2)){
+Data& Data::set(Data::Type t, const int * sizes, int n){
+	if(type()!=t || size()!=product(sizes,n)){
 		if(hasData()){
-			realloc(t, n1,n2);
+			realloc(t, sizes,n);
 		}
 		else{
 			mType=t;
-			mSize1=n1;
-			mSize2=n2;
+			shape(sizes,n);
 		}
 	}
 	return *this;
 }
 
-void Data::setRaw(void * dt, int beg, int n1, int n2, Type ty){
+void Data::setRaw(void * dt, int off, Type ty){
 	free();
 	mData  = pointer(dt);
-	mBegin = beg;
-	mSize1 = n1;
-	mSize2 = n2;
+	mOffset= off;
 	mType  = ty;
 	incrementCount(mData);
+}
+
+Data& Data::shape(const int * sizes, int n){
+	if(n){
+		if(n <= maxDim()){
+			for(int i=0;i<n;++i) mSizes[i]=sizes[i];
+			for(int i=n;i<maxDim();++i) mSizes[i]=1;
+		}
+		else{
+			for(int i=0;i<maxDim();++i) mSizes[i]=sizes[i];
+		}
+	}
+	return *this; 
+}
+
+Data& Data::shapeAll(int n){
+	for(int i=0;i<maxDim();++i) mSizes[i]=n;
+	return *this;
 }
 
 int Data::sizeType() const {
@@ -346,15 +392,15 @@ int Data::sizeType() const {
 
 Data Data::slice(int beg, int sz) const {
 	Data r(*this);
-	int b = r.begin() + beg;
+	int b = r.offset() + beg;
 	
-	// constrain begin and size to limits of parent data
+	// constrain offset and size to limits of parent data
 	if(b < 0) b = 0;
 
 	// TODO: constrain size
 	int s = sz;
 	
-	r.mBegin = b;
+	r.mOffset = b;
 	r.size(s);
 	return r;
 }
@@ -370,27 +416,51 @@ std::string Data::typeToString(Type t){
 	}
 }
 
+// TODO:	need to delete allocated Models
+//			need to be able to remove Data
+void ModelManager::add(const std::string& name, Data& v){
+	if(isIdentifier(name)) mNameVal[name] = new Model(v);
+}
 
-
-void ModelManager::add(const std::string& name, Model& s){
-	if(isIdentifier(name)){
-		mNameObj[name] = &s;
+void ModelManager::remove(const std::string& name){
+	if(mNameVal.count(name)){
+//		Model * m = mNameVal[name];
+		mNameVal.erase(name);
+//		if(allocated(m)){
+//			delete m;
+//		}
 	}
 }
 
-bool ModelManager::toToken(std::string& dst, const std::string& modelName){
-	if(modelName.size())	dst = "[\"" + modelName + "\"] = {\r\n";
-	else					dst = "{\r\n";
+void ModelManager::add(const std::string& name, Model& v){
+	if(isIdentifier(name)) mNameVal[name] = &v;
+}
+void ModelManager::add(const std::string& name, const Model& v){
+	if(isIdentifier(name)) mNameConstVal[name] = &v;
+}
 
-	NameObjMap::iterator i = mNameObj.begin();
-	
+bool ModelManager::toToken(std::string& dst, const std::string& modelName) const {
+	#define NEWLINE "\r\n"
+	if(modelName.size())	dst = "[\"" + modelName + "\"] = {"NEWLINE;
+	else					dst = "{"NEWLINE;
+
 	std::string t;
-	for(; i!=mNameObj.end(); ++i){
-		dst += "\t" + i->first + " = ";
-		if(i->second->model().toToken(t)) dst += t+",\r\n";
+	{
+		NameValMap::const_iterator i = mNameVal.begin();
+		for(; i!=mNameVal.end(); ++i){
+			dst += "\t" + i->first + " = ";
+			if(i->second->model().toToken(t)) dst += t+","NEWLINE;
+		}
 	}
-	
-	dst += "}\r\n";
+	{
+		NameConstValMap::const_iterator i = mNameConstVal.begin();
+		for(; i!=mNameConstVal.end(); ++i){
+			dst += "\t" + i->first + " = ";
+			if(i->second->model().toToken(t)) dst += t+","NEWLINE;
+		}
+	}
+	dst += "}"NEWLINE;
+	#undef NEWLINE
 	return true;
 }
 
@@ -413,6 +483,8 @@ int ModelManager::fromToken(const std::string& src){
 			// find next valid token
 			b=e=strpbrk(e, "\"{0123456789.-+");
 
+			if(!b) b=e=&src[src.size()];	// no more valid tokens, so go to end of string
+
 			if(*b){
 				// munch characters until end of token
 				if(*e == '\"'){
@@ -427,9 +499,9 @@ int ModelManager::fromToken(const std::string& src){
 
 				val.assign(b,e-b);
 
-				if(mNameObj.count(key)){
+				if(mNameVal.count(key)){
 					//printf("%s = %s\n", key.c_str(), val.c_str());
-					mNameObj[key]->modelFromToken(val);
+					mNameVal[key]->modelFromToken(val);
 				}
 			}
 			b=e;

@@ -82,6 +82,8 @@ public:
 	void right(T v);				///< Set right edge preserving width.
 	
 	// Accessors
+	const TRect& rect() const;		///< Returns self
+	
 	T left() const { return l; }	///< Get left edge position
 	T top() const { return t; }		///< Get top edge position
 	T width() const { return w; }	///< Get width
@@ -182,6 +184,7 @@ TEM inline void TRect<T>::height(T v){ extent(w, v); }
 TEM inline void TRect<T>::bottom(T v){ t = v - h; }
 TEM inline void TRect<T>::right (T v){ l = v - w; }
 
+TEM inline const TRect<T>& TRect<T>::rect() const { return *this; }
 TEM inline T TRect<T>::right() const { return l + w; }
 TEM inline T TRect<T>::bottom() const { return t + h; }
 TEM inline T TRect<T>::area() const { return w * h; }

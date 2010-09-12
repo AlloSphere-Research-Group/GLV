@@ -73,7 +73,7 @@ struct ColorView : public View{
 				float hue = (float)j * incH;
 				col.setHSV(hue, 1, sat*sat);
 				draw::color(col);
-				draw::rect(w * hue, h * sat, w * (hue + incH), h * (sat + incS));
+				draw::rectangle(w * hue, h * sat, w * (hue + incH), h * (sat + incS));
 			}
 		}
 	}

@@ -29,22 +29,22 @@ struct Scene : View3D{
 	float ax, ay, az;
 };
 
-Slider slider1(Rect(200, 40)), slider2(slider1), slider3(slider1);
+Slider slider1(Rect(200, 40)), slider2(slider1.rect()), slider3(slider1.rect());
 View toolBar(Rect(0,60));
 View statusBar(Rect(0,-20,0,20));
 Label statusString("", 10, 4);
 Scene scene(Rect(0,toolBar.h, 0,-(toolBar.h+statusBar.h)));
 
 void ntStatusString(const Notification& n){
-	View * s = (View *)n.sender();
-	statusString.value(s->className() + std::string(": ") + s->name() + " = " + s->valueString());
+	View& v = *n.sender<View>();
+	statusString.setValue(v.className() + std::string(": ") + v.descriptor() + " = " + v.model().toString());
 }
 
 int main (int argc, char ** argv){
 
-	slider1.name("Angular Velocity x");
-	slider2.name("Angular Velocity y");
-	slider3.name("Angular Velocity z");
+	slider1.descriptor("Angular Velocity x");
+	slider2.descriptor("Angular Velocity y");
+	slider3.descriptor("Angular Velocity z");
 
 	slider1.interval(30,-30);
 	slider2.interval(30,-30);

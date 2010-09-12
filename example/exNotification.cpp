@@ -11,9 +11,9 @@ A Notification is used to set a label to a slider's value.
 #include "example.h"
 
 void ntSetLabel(const Notification& n){
-	Label& l = *(Label *)n.receiver();
-	Slider& s = *(Slider *)n.sender();
-	l.value(s.valueString());
+	Label& l = *n.receiver<Label>();
+	Slider& s = *n.sender<Slider>();
+	l.setValue(s.model().toString());
 }
 
 int main(int argc, char ** argv){

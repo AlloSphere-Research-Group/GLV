@@ -595,7 +595,7 @@ int main(){
 //		// Advantage:		simplicity- just name Views to be part of model
 //		// Disadvantages:	cannot add arbitrary model data not contained in a View
 //		//					all View's must have an extra name variable
-		l.setValue("Hello Label!").name("ls");
+		l.setValue("Hello Label!").name("l");
 		tv.setValue("Hello TextView!").name("tv");
 		b.setValue(true).name("b");
 		bs.setValue(true, 0,1).name("bs");
@@ -615,14 +615,17 @@ int main(){
 		top << l << tv << b << bs << s << ss << s2D << nd;
 		
 		std::string str1, str2;
-		top.modelToString(str1, "test model");		
-		printf("%s\n", str1.c_str());
+//		top.modelToString(str1, "test model");		
+//		printf("%s\n", str1.c_str());
+//
+//		l.setValue("changed...");
+//		top.modelFromString(str1);
+//		top.modelToString(str2);
+//		printf("%s\n", str2.c_str());
+//		assert(str1 == str2);
 
-		top.modelFromString(str1);
-		top.modelToString(str2);
-		printf("%s\n", str2.c_str());
-//		//assert(str1 == str2);
-
+//printf("sizeof(Data) = %d\n", sizeof(Data));
+//printf("sizeof(Model) = %d\n", sizeof(Model));
 
 		// Method #2: explicit
 		// Advantage: can add arbitrary data to model
@@ -637,6 +640,11 @@ int main(){
 		mm.add("ss", ss);
 		mm.add("s2D",s2D);
 		mm.add("nd", nd);
+		
+		Data dat(strings, 3);
+		//Data dat(10);
+		//dat.print();
+		mm.add("strings", dat);
 		//mm.add("strings", *new Data(strings, 3));
 		
 		mm.toToken(str1, "test");
