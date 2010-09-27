@@ -38,28 +38,28 @@ public:
 
 	/// Create label using a prototype
 
-	/// @param[in] str		Label string
+	/// @param[in] text		Label text
 	/// @param[in] spec		Label spec prototype
 	Label(const std::string& str, const Spec& spec);
 
-	/// @param[in] str		Label string
+	/// @param[in] str		Label text
 	/// @param[in] vert		Whether to draw label vertically
-	Label(const std::string& str, bool vert);
+	Label(const std::string& text, bool vert);
 
-	/// @param[in] str		Label string
+	/// @param[in] text		Label text
 	/// @param[in] l		Left position
 	/// @param[in] t		Top position
 	/// @param[in] vert		Whether to draw label vertically
-	Label(const std::string& str="", space_t l=0, space_t t=0, bool vert=false);
+	Label(const std::string& text="", space_t l=0, space_t t=0, bool vert=false);
 
 	/// Ctor for adding label to inside of another View
 
-	/// @param[in] str		Label string
+	/// @param[in] text		Label text
 	/// @param[in] posAnch	Position/anchor place relative to parent
 	/// @param[in] px		X position offset
 	/// @param[in] py		Y position offset
 	/// @param[in] vert		Whether to draw label vertically
-	Label(const std::string& str, Place::t posAnch, space_t px, space_t py, bool vert=false);
+	Label(const std::string& text, Place::t posAnch, space_t px, space_t py, bool vert=false);
 
 	Label& align(float vx, float vy);		///< Set alignment factors for label area
 	Label& size(float pixels);				///< Set label size
@@ -67,9 +67,7 @@ public:
 	Label& vertical(bool v);				///< Set whether label is displayed vertically
 
 	/// Get value
-	const std::string& value() const {
-		return model().elems<std::string>()[0];
-	}
+	const std::string& getValue() const { return model().elems<std::string>()[0]; }
 
 	virtual const char * className() const { return "Label"; }
 	virtual void onDraw();
@@ -121,7 +119,7 @@ public:
 	int sizeInteger() const;
 
 	/// Get value
-	double value() const;
+	double getValue() const { return Widget::getValue<double>(); }
 	
 	/// Set padding amount from top and bottom.
 	NumberDialer& padding(space_t v);
@@ -190,21 +188,13 @@ public:
 	TextView(const Rect& r=glv::Rect(200,16), float textSize=8);
 
 	/// Get value
-	const std::string& value() const {
-		return model().elems<std::string>()[0];
-	}
+	const std::string& getValue() const { return model().elems<std::string>()[0]; }
 
 	/// Set size of font in pixels
 	TextView& size(float pixels);
-	
-//	/// Set text string
-//	TextView& setValue(const std::string& v);
 
 	void select(int v);
 	void deselect(){ mSel=0; }
-	
-//	std::string& value(){ return mText; }
-//	const std::string& value() const { return mText; }
 
 	virtual const char * className() const { return "TextView"; }
 	virtual void onDraw();	

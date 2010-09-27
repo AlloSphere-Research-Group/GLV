@@ -5,6 +5,7 @@
 #include "glv.h"
 #include "glv_behavior.h"
 #include "glv_binding.h"
+#include "glv_icon.h"
 
 namespace glv{
 

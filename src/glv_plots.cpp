@@ -498,7 +498,9 @@ bool Plot::onEvent(Event::t e, GLV& g){
 
 DensityPlot::DensityPlot(const Rect& r)
 :	Widget(r)
-{}
+{
+	model().type(Data::DOUBLE);
+}
 
 void DensityPlot::onDraw(){
 
@@ -509,71 +511,84 @@ void DensityPlot::onDraw(){
 	int N0 = model().size(0);
 	int N1 = model().size(1);
 	int N2 = model().size(2);
-	int order = model().order();
-
-	int Np = (N1+1)*(N2+1);
-	Color cols[Np];
-	Point2 pts[Np];
-	unsigned inds[N1*2*N2 + 2*N2];
-	int ii=-1;
-	int iv=0;
-
+//	int order = model().order();
 	HSV hsv = mColor1;
-	for(int j=0; j<N2+1; ++j){
-		for(int i=0; i<N1+1; ++i){
-			float x = xd*i;
-			float y = yd*j;
-			int i1 = i!=N1 ? i : i-1;
-			int i2 = j!=N2 ? j : j-1;
-			
-			Color c;
-			if(N0 >= 3){
-				c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), N0>3?val(3,i1,i2):1);
-			}else{
-				c = HSV(hsv.h, hsv.s, hsv.v*val(0,i1,i2));
-			}
-			
-			cols[iv] = c;
-			pts[iv](x,y);
-			
-			inds[++ii] = (j  )*(N1+1) + i;
-			inds[++ii] = (j+1)*(N1+1) + i;
-			
-			if(i == N1){
-				inds[ii+1] = inds[ii]; ++ii;
-				inds[++ii] = (j+1)*(N1+1);
-			}
-			
-			++iv;
-		}
-	}
 
-	
-	draw::paint(draw::TriangleStrip, pts, cols, inds, ii);
+/*
+  .   .   .
+1        
+  .   .   .
+0        
+  .   .   .
+    0   1
 
-//	if(N0 >= 3){
-//		for(int j=0; j<N2; ++j){
-//			for(int i=0; i<N1; ++i){
-//				float x = xd*i;
-//				float y = yd*j;
-//				Color v(val(0,i,j), val(1,i,j), val(2,i,j), N0>3?val(3,i,j):1);
-//				draw::color(v);
-//				draw::rectangle(x,y, x+xd,y+yd);
+prim			Nv	Ni
+Quads			4N	4N
+Triangles		4N	6N
+TriangleStrip	4N	6N
+*/
+
+//	int Np = (N1+1)*(N2+1);
+//	Color cols[Np];
+//	Point2 pts[Np];
+//	unsigned inds[N1*2*N2 + 2*N2];
+//	int ii=-1;
+//	int iv=0;
+//
+//	glShadeModel(GL_FLAT);
+//
+//	for(int j=0; j<N2+1; ++j){
+//		for(int i=0; i<N1+1; ++i){
+//			float x = xd*i;
+//			float y = yd*j;
+//			int i1 = i!=N1 ? i : i-1;
+//			int i2 = j!=N2 ? j : j-1;
+//
+//			Color c;
+//			switch(N0){
+//			case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i1,i2)); break;
+//			case 2: c = HSV(hsv.h, hsv.s*val(1,i1,i2), hsv.v*val(0,i1,i2)); break;
+//			case 3:	c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), 1); break;
+//			default:c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), val(3,i1,i2));
+//			}
+//			
+//			cols[iv] = c;
+//			pts[iv](x,y);
+//			++iv;
+//			
+//			if(j < N2){
+//				inds[++ii] = (j  )*(N1+1) + i;
+//				inds[++ii] = (j+1)*(N1+1) + i;
+//				
+//				if(i == N1){
+//					inds[ii+1] = inds[ii]; ++ii;
+//					inds[++ii] = (j+1)*(N1+1);
+//				}
 //			}
 //		}
 //	}
-//	else{
-//		HSV hsv = mColor1;
-//		for(int j=0; j<N2; ++j){
-//			for(int i=0; i<N1; ++i){
-//				float x = xd*i;
-//				float y = yd*j;
-//				Color v = HSV(hsv.h, hsv.s, hsv.v*val(0,i,j));
-//				draw::color(v);
-//				draw::rectangle(x,y, x+xd,y+yd);
-//			}
-//		}	
-//	}
+//
+//	draw::paint(draw::TriangleStrip, pts, cols, inds, ii);
+//
+//	glShadeModel(GL_SMOOTH);
+
+	for(int j=0; j<N2; ++j){
+		for(int i=0; i<N1; ++i){
+			float x = xd*i;
+			float y = yd*j;
+
+			Color c;
+			switch(N0){
+			case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i,j)); break;
+			case 2: c = HSV(hsv.h, hsv.s*val(1,i,j), hsv.v*val(0,i,j)); break;
+			case 3:	c = Color(val(0,i,j), val(1,i,j), val(2,i,j), 1); break;
+			default:c = Color(val(0,i,j), val(1,i,j), val(2,i,j), val(3,i,j));
+			}
+
+			draw::color(c);
+			draw::rectangle(x,y, x+xd,y+yd);
+		}
+	}
 }
 
 

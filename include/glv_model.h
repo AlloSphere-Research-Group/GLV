@@ -12,6 +12,9 @@ namespace glv {
 
 class Data;
 
+/// Determines whether string is a valid C identifier for a variable
+bool isIdentifier(const std::string& s);
+
 /// Convert object to a string. Returns number of elements converted.
 template<class T>
 int toString(std::string& dst, const T& src);
@@ -19,7 +22,7 @@ int toString(std::string& dst, const char * src);
 
 /// Convert objects to a string. Returns number of elements converted.
 template<class T>
-int toString(std::string& dst, const T * src, int size);
+int toString(std::string& dst, const T * src, int size, int stride=1);
 
 /// Returns a stringification of an object
 template <class T>
@@ -32,7 +35,7 @@ int fromToken(T& dst, const std::string& src);
 
 /// Convert string token to objects. Returns number of elements converted.
 template<class T>
-int fromToken(T * dst, int size, const std::string& src);
+int fromToken(T * dst, int size, int stride, const std::string& src);
 
 /// Convert object to a string token. Returns number of elements converted.
 template<class T>
@@ -115,7 +118,7 @@ the dope vector of an array with d indices has at least 1 + 2d parameters.
 #endif
 
 
-/// Generic wrapper around single or arrayed primitive types
+/// Dynamically typed multidimensional array of primitive values
 
 /// For operations between data with different types, standard type conversions
 /// will be used when possible.
@@ -125,30 +128,35 @@ the dope vector of an array with d indices has at least 1 + 2d parameters.
 /// the comparison.
 class Data : public ReferenceCounter {
 public:
+
 	enum Type{
 		VOID=0, BOOL, INT, FLOAT, DOUBLE, STRING
 	};
 	static std::string typeToString(Type t);
 
-
+	/// This sets the data type to void and does not allocate memory
 	Data();
 	
 	/// @param[in] v		data to reference
 	Data(Data& v);
 	
-	/// @param[in] v		data to be cloned
+	/// @param[in] v		data to make clone of
 	Data(const Data& v);
 
-	/// @param[in] type		type of allocated data
-	/// @param[in] size1	size of dimension 1 of allocated data
-	/// @param[in] size2	size of dimension 2 of allocated data
-	/// @param[in] size3	size of dimension 3 of allocated data
-	/// @param[in] size4	size of dimension 4 of allocated data
+	/// Constructor that sets internal attributes without allocating memory
+
+	/// @param[in] type		type of data
+	/// @param[in] size1	size of dimension 1 
+	/// @param[in] size2	size of dimension 2
+	/// @param[in] size3	size of dimension 3
+	/// @param[in] size4	size of dimension 4
 	Data(Data::Type type, int size1=1, int size2=1, int size3=1, int size4=1);
 
+	/// @param[in] value	external value to reference
 	template <class T>
 	explicit Data(T& value){ set(&value, 1); }
 
+	/// @param[in] value	value to make clone of
 	template <class T>
 	explicit Data(const T& value){ set(&value, 1); }
 
@@ -167,23 +175,30 @@ public:
 
 
 	/// Returns whether elements from each array are equal
-	bool operator==(const Data& v) const;
+	bool operator== (const Data& v) const;
 	
 	/// Returns whether elements from each array are not equal
-	bool operator!=(const Data& v) const { return !((*this)==v); }
+	bool operator!= (const Data& v) const { return !((*this)==v); }
+	
+	Data& operator+= (const Data& v);
 
-	/// Get element at 1D index
+	/// Get element at 1D index, performing type cast if necessary
 	template <class T> const T at(int ind) const;
 
-	/// Get element at 2D index
+	/// Get element at 2D index, performing type cast if necessary
 	template <class T> const T at(int i1, int i2) const;
 
-	/// Get element at 3D index
+	/// Get element at 3D index, performing type cast if necessary
 	template <class T> const T at(int i1, int i2, int i3) const;
 
-	/// Get element at 4D index
+	/// Get element at 4D index, performing type cast if necessary
 	template <class T> const T at(int i1, int i2, int i3, int i4) const;
 
+	/// Get element at 1D index using pointer casting
+	template <class T>
+	const T& elem(int i) const { return elems<T>()[i*stride()]; }
+
+	/// Returns whether there is valid data that can be accessed
 	bool hasData() const { return mData!=0; }
 
 	/// Convert 2D index to 1D index
@@ -216,25 +231,57 @@ public:
 		indexDim(i1,i2,i3,i); i3%=size(2); i4=i/(size(0,1,2));
 	}
 
+	/// Returns whether 2D index is within bounds
 	bool indexValid(int i1, int i2) const { return (i1>=0) && (i1<size(0)) && (i2>=0) && (i2<size(1)); }
+	
+	/// Returns whether 3D index is within bounds
+	bool indexValid(int i1, int i2, int i3) const { return indexValid(i1,i2) && (i3>=0) && (i3<size(2)); }
+
+	/// Returns whether 4D index is within bounds
+	bool indexValid(int i1, int i2, int i3, int i4) const { return indexValid(i1,i2,i3) && (i4>=0) && (i4<size(3)); }
+	
+	/// Returns whether type is numerical, i.e., int, float, or double
 	bool isNumerical() const { return type() != Data::STRING; }
-	int offset() const { return mOffset; }
+
+	/// Get element offset into source array
+	int offset() const { return (mElems-mData)/sizeType(); }
+	
+	/// Get dimensionality of the array
 	int order() const;
+	
+	/// Returns reversed slice
+	Data reversed() const { return slice((size()-1)*stride(), size(), -stride()); }
+	
+	/// Get total number of elements
 	int size() const { return product(mSizes, maxDim()); }
+	
 	int size(int d) const { return mSizes[d]; }
 	int size(int d1, int d2) const { return size(d1)*size(d2); }
 	int size(int d1, int d2, int d3) const { return size(d1,d2)*size(d3); }
+	int size(int d1, int d2, int d3, int d4) const { return size(d1,d2,d3)*size(d4); }
+	
+	/// Get size array
+	const int * sizes() const { return mSizes; }
+	
+	/// Get size, in bytes, of element type
 	int sizeType() const;
-	Type type() const { return mType; }
 
 	/// Returns maximally sized slice at given offset
 	Data slice(int offset=0) const { return slice(offset, size()-offset); }
 
-	/// Returns slice of given size at offset
-	Data slice(int offset, int size) const;
+	/// Returns slice with given offset, and size
+	Data slice(int offset, int size) const { return slice(offset,size,stride()); }
 
+	/// Returns slice with given offset, size, and stride
+	Data slice(int offset, int size, int stride) const;
+
+	/// Get index stride
 	int stride() const { return mStride; }
 
+	/// Get element type
+	const Type& type() const { return mType; }
+
+	/// Print information to stdout
 	void print() const;
 
 	int fromToken(const std::string& v){ return glv::fromToken(*this, v); }
@@ -246,89 +293,130 @@ public:
 	/// Perform shallow copy from another Data
 	Data& operator= (const Data& v);
 
-	/// Assign all elements to argument
+	/// Assign value to first element
 	template <class T>
 	Data& assign(const T& v){ return assign(&v,1); }
 
+	/// Assign value to element at 1D index
+	template <class T>
+	Data& assign(const T& v, int i){ slice(i).assign(v); return *this; }
+
+	/// Assign value to element at 2D index
+	template <class T>
+	Data& assign(const T& v, int i1, int i2){ return assign(v,indexFlat(i1,i2)); }
+
+	/// Assign value to element at 3D index
+	template <class T>
+	Data& assign(const T& v, int i1, int i2, int i3){ return assign(v,indexFlat(i1,i2,i3)); }
+
+	/// Assign value to element at 4D index
+	template <class T>
+	Data& assign(const T& v, int i1, int i2, int i3, int i4){ return assign(v,indexFlat(i1,i2,i3,i4)); }
+
 	/// Assign elements from an external array
 	template <class T>
-	Data& assign(const T * src, int size){ return assign(Data(const_cast<T*>(src), size)); }
+	Data& assign(const T * src, int size, int stride=1){
+		return assign(Data(const_cast<T*>(src), size).stride(stride));
+	}
 
 	/// Assign elements to elements from argument Data
 	Data& assign(const Data& v, int ind1=0, int ind2=0);
 
+	/// Assign all elements to argument
 	template <class T>
-	Data& assignAll(const T& v){ for(int i=0;i<size();++i){put(v,i);} return *this; }
+	Data& assignAll(const T& v){ for(int i=0;i<size();++i){assign(v,i);} return *this; }
 
 	/// Allocate internal memory and copy over previous data
 	void clone();
 
+	/// Set element at 1D index using pointer casting
+	template <class T>
+	T& elem(int i){ return elems<T>()[i*stride()]; }
+
 	/// Returns pointer to first element
 	// note: this is potentially dangerous call, therefore use with caution...
 	template <class T>
-	T * elems(){ return ((T *)mData) + offset(); }
+	T * elems(){ return (T *)mElems; }
 
+	/// Get pointer to first element
 	template <class T>
-	const T * elems() const { return (const T *)(((T *)mData) + offset()); }
+	const T * elems() const { return (const T *)mElems; }
 
-	/// Set an element at specified index
-	template <class T>
-	Data& put(const T& v, int ind1=0, int ind2=0);
-	
-	/// Resize array
+	/// Resize array, allocating new memory if necessary
 	Data& resize(const int * sizes, int numDims);
 
+	/// Resize array, allocating new memory if necessary
+	Data& resize(int size1, int size2=1, int size3=1, int size4=1){
+		int s[]={size1,size2,size3,size4};
+		return resize(s,4);
+	}
+
+	/// Resize array, allocating new memory if necessary
+	Data& resize(Data::Type type, const int * sizes, int numDims);
+
+	/// Resize array allocating new memory, if necessary
+	Data& resize(Data::Type type, int size1=1, int size2=1, int size3=1, int size4=1){
+		int s[]={size1,size2,size3,size4}; return resize(type, s,4);
+	}
+
+	/// Set data to reference a scalar
 	template <class T>
 	Data& set(T& v){ return set(&v,1); }
 
+	/// Set new data from a scalar with specified value
 	template <class T>
 	Data& set(const T& v){ return set(&v,1); }
 
+	/// Set new data from a character string
 	Data& set(const char * v){ return set(std::string(v)); }
 
+	/// Set data to reference an external multidimensional array
 	template <class T>
 	Data& set(T * data, const int * sizes, int numDims);
 
+	/// Set data to reference an external 1D array
 	template <class T>
 	Data& set(T * data, int size){ return set(data, &size,1); }
 
-	Data& set(Data::Type type, const int * sizes, int numDims);
+	/// Set dimensions without reallocing new memory
+	Data& shape(const int * sizes, int n);
 
-	Data& set(Data::Type type, int size){ return set(type, &size,1); }
-
+	/// Set dimensions without reallocing new memory
 	Data& shape(int n1, int n2=1, int n3=1, int n4=1){
 		int n[]={n1,n2,n3,n4}; return shape(n,4);
 	}
 	
+	/// Set index stride factor
 	Data& stride(int v){ mStride=v; return *this; }
+	
+	/// Change type of data
+	
+	/// New memory will be allocated if the type differs from the current
+	/// type and the number of elements in the array is non-zero.
+	Data& type(Data::Type type);
+
+//	static int interpretToken(Data::Type& type, int *& sizes, std::string& src);
 
 protected:
-	typedef char* pointer;
-
-	pointer mData;				// pointer to first array element
-	int mOffset;				// index offest into array
+	typedef char* pointer;		// pointer to memory address;
+								// char vs. void to simplify pointer arithmetic
+	pointer mData;				// pointer to first element of source data
+	pointer mElems;				// pointer to first element in this slice
 	int mStride;				// stride factor
 	int mSizes[DATA_MAXDIM];	// sizes of each dimension
 	Type mType;					// data type
 
 	static int maxDim(){ return DATA_MAXDIM; }
 
-	Data& offset(int i){ mOffset=i; return *this; }
-	Data& shape(const int * sizes, int n);
+	Data& offset(int i){ mElems=mData+i*sizeType(); return *this; }
 	Data& shapeAll(int n);
 
 	template <class T>
-	const T * data() const { return (const T *)(mData); }
-
-	template <class T>
-	const T& elem(int i) const { return elems<T>()[i*stride()]; }
-
-	template <class T>
-	T& elem(int i){ return elems<T>()[i*stride()]; }
+	const T * data() const { return (const T *)mData; }
 
 	void free();
 	void realloc(Data::Type type, const int * sizes=0, int n=0);
-	void setRaw(void * data, int offset, Type type);
+	void setRaw(void * data, int offset, int stride, Type type);
 	int sizeBytes() const { return size()*sizeType(); }
 	
 	static int product(const int * v, int n){
@@ -339,7 +427,10 @@ protected:
 };
 
 
-/// This is a Data object that notifies its base class on changes
+/// Proxy Data object for signalling state changes
+
+/// This permits a user-defined action to be performed when any of the
+/// data values change.
 class Model{
 public:
 
@@ -352,17 +443,18 @@ public:
 
 	Data& model(){ return mData; }
 
-	int modelFromToken(const std::string& v){
+	virtual std::string modelToToken(){
+		return model().toToken();
+	}
+
+	virtual int modelFromToken(const std::string& v){
 		Data d = model();
 		d.clone();
 		int r = d.fromToken(v);
 		if(r) assignModel(d);
 		return r;
 	}
-
-protected:
-	Data mData;
-
+	
 	void assignModel(const Data& d, const int& ind=0){
 		int i1=0,i2=0; model().indexDim(i1,i2, ind);
 		assignModel(d, i1,i2);
@@ -382,100 +474,128 @@ protected:
 		}
 	}
 
-	void setModel(const Data& d){
-		mData = d;
-	}
+protected:
+	Data mData;
 	
 	virtual bool onAssignModel(Data& d, int ind1, int ind2){ return false; }
 };
 
 
 
-class StateSpace{
+/*
+memento		object that stores snapshot of another object
+originator	object from which snapshot is taken
+caretaker	keeps a list of mementos
+
+undo mechanism will request memento object from originator
+
+class ModelState{
 public:
-	
-	void add(const std::string& name, const Data& d){
-		if(!hasState(name)){
-			mState.push_back(d);
-			mNameToIndex[name] = mState.size()-1;
-		}
-	}
-	
-	void saveState(const std::string& name){
-		DataVector& v = mStates[name];
-		v.assign(mState.begin(), mState.end());
-		
-		for(unsigned i=0; i<v.size(); ++i){
-			v[i].clone();
-		}
-	}
-	
-	void loadState(const std::string& name){
-		if(hasState(name)){
-			DataVector& v = mStates[name];
-			for(unsigned i=0; i<mState.size(); ++i){
-				mState[i].assign(v[i]);
-				std::string t1, t2;
-				toToken(t1, mState[i]);
-				toToken(t2, v[i]);
-				//printf("%s <- %s\n", t1.c_str(), t2.c_str());
-			}
-		}
-	}
-	
-	bool stateToString(std::string& dst, const std::string& name="");
-
-protected:
-	typedef std::vector<Data> DataVector;
-	typedef std::map<std::string, int> NameToIndex;
-	
-	DataVector mState;
-	NameToIndex mNameToIndex;
-	
-	//std::map<std::string, Data *> mNameToData;
-	std::map<std::string, DataVector> mStates;
-
-	bool hasState(const std::string& name){ return mStates.count(name); }
+	virtual void toToken(std::string& dst);
+	virtual void fromToken(const std::string& src);
 };
 
+{
+["preset 1"] = {
+	author = "Davy Jones",
+	time = 10293339107,
+	keywords = {"fuzzy", "buzzy"},
+	buttons = {0, 1, 0, 1},
+	label = "hello",
+},
 
+["preset 2"] = {
+	author = "Jane Doe",
+	time = 10293339108,
+	keywords = {"funny", "bunny"},
+	buttons = {0, 0, 0, 1},
+	label = "world",
+},
+}
+*/
+
+/// When a snapshot is loaded, only data having an identifier having an 
+/// identical identifier of an attached model is loaded. If an attached model 
+/// variable exists, but does not have a corresponding variable in a snapshot,
+/// then the model data will not be modified when the snapshot is loaded.
 class ModelManager{
 public:
+
+	template <class Key, class Val>
+	class Map : public std::map<Key, Val>{
+	public:
+		const Val& operator[](const Key& key) const {
+			static const Val null;
+			typename Map::const_iterator it = find(key);
+			return (it!=this->end()) ? it->second : null;
+		}
+		Val& operator[](const Key& key){ return this->std::map<Key,Val>::operator[](key); }
+	};
+
+	typedef Map<std::string, Model*>		NamedModels;
+	typedef Map<std::string, const Model*>	NamedConstModels;
+	typedef Map<std::string, Data>			Snapshot;
+	typedef Map<std::string, Snapshot>		Snapshots;
 	
-	/// Convert current model state to string
-	bool toToken(std::string& dst, const std::string& modelName) const;
-	
-	/// Convert string to model state
-	int fromToken(const std::string& src);
+	/// Get snapshots
+	const Snapshots& snapshots() const { return mSnapshots; }
+
+	/// Save all snapshots to a file. Returns number of characters written.
+	int snapshotsToFile(const std::string& path) const;
+
+	/// Convert all snapshots to a table string. Returns number of characters written.
+	int snapshotsToString(std::string& dst) const;
+
+	/// Set snapshot from a table string. If the snapshot does not exist, a new one will be created.
+	int snapshotFromString(const std::string& src);
+
+	/// Load snapshots from a file. Returns number of characters read.
+	int snapshotsFromFile(const std::string& path, bool addtoExisting=true);
+
+	/// Set snapshots from a table string. If a snapshot does not exist, a new one will be created.
+	int snapshotsFromString(const std::string& src);
+
 
 	/// Add new name-value pair
 	
 	/// The added Data should have the same lifecycle as 'this'. This is because
 	/// pointers are stored internally.
-	void add(const std::string& name, Data& v);
+	//void add(const std::string& name, Data& v);
 	void add(const std::string& name, Model& v);
 	void add(const std::string& name, const Model& v);
 
-	/// Remove named value
+	void clearModels(){ mState.clear(); mConstState.clear(); }
+	void clearSnapshots(){ mSnapshots.clear(); }
+
+	/// Remove model data with given name
 	void remove(const std::string& name);
 
+	/// Save current model state as a snapshot with given name
+	
+	/// If a snapshot with the given name exists, then it will be overwritten.
+	///
+	void saveSnapshot(const std::string& name);
 
-	void saveState(const std::string& name){
-	}
-
-	void loadState(const std::string& name){
-	}
+	/// Load snapshot with given name into current model state
+	void loadSnapshot(const std::string& name);
 
 protected:
-	typedef std::map<std::string, Model *> NameValMap;
-	typedef std::map<std::string, const Model *> NameConstValMap;
+	NamedModels mState;
+	NamedConstModels mConstState;
+	Snapshots mSnapshots;
 
-	NameValMap mNameVal;
-	NameConstValMap mNameConstVal;
+	/// Convert current model state to string
+	bool stateToToken(std::string& dst, const std::string& modelName) const;
 	
-	static bool isIdentifier(const std::string& s);
-};
+	/// Convert string to model state
+	int stateFromToken(const std::string& src);
 
+	static std::string namedDataToString(const std::string& s, const Data& d){
+		std::string r;
+		if(d.toToken(r)) r = s + " = " + r + ",\r\n";
+		return r;
+	}
+};
 
 
 
@@ -483,7 +603,7 @@ protected:
 //------------------------------------------------------------------------------
 
 template<class T>
-int toString(std::string& dst, const T * src, int size){
+int toString(std::string& dst, const T * src, int size, int stride){
 	if(1==size){ return toString(dst, *src); }
 	
 	else{
@@ -491,7 +611,7 @@ int toString(std::string& dst, const T * src, int size){
 		std::string temp;
 		int count=0;
 		for(int i=0; i<size; ++i){
-			count += toString(temp, src[i]);
+			count += toString(temp, src[i*stride]);
 			dst += temp;
 			if(i != (size-1)) dst += ", ";
 		}
@@ -500,13 +620,13 @@ int toString(std::string& dst, const T * src, int size){
 }
 
 template<class T>
-int toToken(std::string& dst, const T * src, int size){
+int toToken(std::string& dst, const T * src, int size, int stride){
 	if(1==size){ return toToken(dst, *src); }
 	
 	else{
 		dst = "{";
 		std::string temp;
-		int count = toString(temp, src, size);
+		int count = toString(temp, src, size, stride);
 		dst += (temp += "}");
 		return count;
 	}
@@ -514,28 +634,26 @@ int toToken(std::string& dst, const T * src, int size){
 
 template <class T>
 const T Data::at(int i) const {
+	#define CS(TY,t) case Data::TY: return static_cast<const T>(elem<t>(i));
 	switch(type()){
-	case Data::BOOL:	return static_cast<const T>(elem<bool>(i));
-	case Data::INT:		return static_cast<const T>(elem<int>(i));
-	case Data::FLOAT:	return static_cast<const T>(elem<float>(i));
-	case Data::DOUBLE:	return static_cast<const T>(elem<double>(i));
+	CS(BOOL,bool) CS(INT,int) CS(FLOAT,float) CS(DOUBLE,double)
 	case Data::STRING: {
 		T v; if(glv::fromToken(v, elem<std::string>(i))){ return v; }
 	}
 	default: return T();
 	}
+	#undef CS
 }
 
 template<>
 inline const std::string Data::at<std::string>(int i) const {
+	#define CS(T,t) case Data::T: return glv::toString(elem<t>(i));
 	switch(type()){
-	case Data::BOOL:	return glv::toString(elem<bool>(i));
-	case Data::INT:		return glv::toString(elem<int>(i));
-	case Data::FLOAT:	return glv::toString(elem<float>(i));
-	case Data::DOUBLE:	return glv::toString(elem<double>(i));
-	case Data::STRING:	return elem<std::string>(i);
+	CS(BOOL,bool) CS(INT,int) CS(FLOAT,float) CS(DOUBLE,double)
+	CS(STRING,std::string)
 	default: return "";
 	}
+	#undef CS
 }
 
 template <class T>
@@ -547,18 +665,9 @@ inline const T Data::at(int i1, int i2, int i3) const { return at<T>(indexFlat(i
 template <class T>
 inline const T Data::at(int i1, int i2, int i3, int i4) const { return at<T>(indexFlat(i1,i2,i3,i4)); }
 
-template <class T>
-inline Data& Data::put(const T& v, int ind1, int ind2){ 
-	Data d;
-	d.setRaw(mData, offset() + indexFlat(ind1,ind2), type());
-	d.shapeAll(1);
-	d.assign(v);
-	return *this;
-}
-
 #define DATA_SET(t, T)\
 template<> inline Data& Data::set<t>(t * src, const int * sizes, int n){\
-	free(); mData=(char*)(src); mOffset=0; shape(sizes,n); mType=Data::T; return *this;\
+	setRaw(src,0,1,Data::T); shape(sizes,n); return *this;\
 }\
 template<> inline Data& Data::set<const t>(const t * src, const int * sizes, int n){\
 	if(product(sizes,n)!=size() || Data::T!=type()) realloc(Data::T, sizes,n);\

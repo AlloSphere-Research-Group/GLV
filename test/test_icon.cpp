@@ -13,7 +13,7 @@ void drawCB(View * v){
 	
 	color(0.2);
 	lineWidth(2);
-	rect		(x, y, x+d, y+d); x += inc;
+	rectangle	(x, y, x+d, y+d); x += inc;
 	frame		(x, y, x+d, y+d); x += inc;
 	triangleR	(x, y, x+d, y+d); x += inc;
 	triangleL	(x, y, x+d, y+d); x += inc;
@@ -65,6 +65,16 @@ void drawCB(View * v){
 //		float dy = (i/16) * 16;
 //		character(i + '!', x + dx, y + dy);
 //	}
+
+	{	Icon icon = Rectangle();
+		icon.draw(0,0,100,100);
+	}
+	{	Icon& icon = *new Rectangle();
+		icon.draw(100,0,200,100);
+	}
+	{	Icon * icon = new Rectangle;
+		icon->draw(200,0,300,100);
+	}
 }
 
 

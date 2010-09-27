@@ -344,40 +344,40 @@ View& View::maximize(){
 }
 
 
-void View::modelToString(std::string& v, const std::string& modelName) const {
-
-	ModelManager mm;
-
-	struct Add : TraversalAction{
-		Add(ModelManager& v): m(v){}
-		bool operator()(const View * v, int depth){
-			if(v->hasName()) m.add(v->name(), *v);
-			return true;
-		}
-		ModelManager& m;	
-	} add(mm);
-
-	traverseDepth(add);
-	mm.toToken(v, modelName);
-}
-
-
-int View::modelFromString(const std::string& v){
-
-	ModelManager mm;
-
-	struct Add : TraversalAction{
-		Add(ModelManager& v): m(v){}
-		bool operator()(View * v, int depth){
-			if(v->hasName()) m.add(v->name(), *v);
-			return true;
-		}
-		ModelManager& m;	
-	} add(mm);
-
-	traverseDepth(add);
-	return mm.fromToken(v);
-}
+//void View::modelToString(std::string& v, const std::string& modelName) const {
+//
+//	ModelManager mm;
+//
+//	struct Add : TraversalAction{
+//		Add(ModelManager& v): m(v){}
+//		bool operator()(const View * v, int depth){
+//			if(v->hasName()) m.add(v->name(), *v);
+//			return true;
+//		}
+//		ModelManager& m;	
+//	} add(mm);
+//
+//	traverseDepth(add);
+//	mm.stateToToken(v, modelName);
+//}
+//
+//
+//int View::modelFromString(const std::string& v){
+//
+//	ModelManager mm;
+//
+//	struct Add : TraversalAction{
+//		Add(ModelManager& v): m(v){}
+//		bool operator()(View * v, int depth){
+//			if(v->hasName()) m.add(v->name(), *v);
+//			return true;
+//		}
+//		ModelManager& m;	
+//	} add(mm);
+//
+//	traverseDepth(add);
+//	return mm.stateFromToken(v);
+//}
 
 
 

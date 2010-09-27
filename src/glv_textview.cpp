@@ -9,13 +9,15 @@ namespace glv{
 
 #define CTOR_LIST mAlignX(0), mAlignY(0), mVertical(false)
 #define CTOR_BODY\
+	model().resize(Data::STRING);\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
 	setValue(str);\
 	vertical(vert);
 
 Label::Label(const std::string& str, const Spec& s)
-:	Widget(Rect(0), Data(Data::STRING)), mAlignX(0), mAlignY(0)
+:	Widget(Rect(0)), mAlignX(0), mAlignY(0)
 {
+	model().resize(Data::STRING);
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);
 	setValue(str);
 	vertical(s.vert);
@@ -24,15 +26,15 @@ Label::Label(const std::string& str, const Spec& s)
 }
 
 Label::Label(const std::string& str, bool vert)
-:	Widget(Rect(0), Data(Data::STRING)), CTOR_LIST
+:	Widget(Rect(0)), CTOR_LIST
 {	CTOR_BODY }
 
 Label::Label(const std::string& str, space_t l, space_t t, bool vert)
-:	Widget(Rect(l,t,0,0), Data(Data::STRING)), CTOR_LIST
+:	Widget(Rect(l,t,0,0)), CTOR_LIST
 {	CTOR_BODY }
 
 Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool vert)
-:	Widget(Rect(0), Data(Data::STRING)), CTOR_LIST
+:	Widget(Rect(0)), CTOR_LIST
 {	CTOR_BODY 
 	pos(p, px, py).anchor(p);
 }
@@ -107,11 +109,12 @@ void Label::rotateRect(){ t += w - h; transpose(); }
 
 #define CTOR_LIST mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0), mShowSign(true)
 #define CTOR_BODY\
+	model().resize(Data::DOUBLE);\
 	resize(numInt, numFrac);\
 	dig(mNI);
 
 NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac)
-:	Widget(r, Data(Data::DOUBLE, 1,1), 0,false,false), CTOR_LIST
+:	Widget(r, 0,false,false), CTOR_LIST
 {	
 	CTOR_BODY
 	mMax = maxVal();
@@ -120,29 +123,30 @@ NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac)
 }
 
 NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min)
-:	Widget(r, Data(Data::DOUBLE, 1,1), 0,false,false), CTOR_LIST
+:	Widget(r, 0,false,false), CTOR_LIST
 {	
 	CTOR_BODY
 	interval(max, min);	
 }
 
 NumberDialer::NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min)
-:	Widget(Rect(l,t, (h-2)*(numInt+numFrac+1), h), Data(Data::DOUBLE, 1,1), 0,false,false), CTOR_LIST
+:	Widget(Rect(l,t, (h-2)*(numInt+numFrac+1), h), 0,false,false), CTOR_LIST
 {
 	CTOR_BODY
 	interval(max, min);
 }
 
 NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
-:	Widget(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), Data(Data::DOUBLE, 1,1), 0,false,false), CTOR_LIST
+:	Widget(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 0,false,false), CTOR_LIST
 {
 	CTOR_BODY
 	interval(max, min);
 } 
 
 NumberDialer::NumberDialer(const NumberDialer& v)
-:	Widget(v, Data(Data::DOUBLE, 1,1) ,0,false,false), CTOR_LIST
+:	Widget(v,0, false,false), CTOR_LIST
 {
+	model() = Data(Data::DOUBLE);
 	dig(v.sizeInteger());
 	resize(v.sizeInteger(), v.sizeFraction());
 	interval(v.max(), v.min());
@@ -181,8 +185,6 @@ NumberDialer& NumberDialer::showSign(bool v){
 	return *this;
 }
 
-//double NumberDialer::value() const{ return mVal * mValMul; }
-double NumberDialer::value() const{ return model().at<double>(0); }
 NumberDialer& NumberDialer::setValue(double v){ valSet(convert(v)); return *this; }
 
 void NumberDialer::onDraw(){ //printf("% g\n", value());
@@ -324,8 +326,9 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 
 
 TextView::TextView(const Rect& r, float textSize)
-:	Widget(r, Data(Data::STRING)), mSpacing(1), mPadX(4), mSel(0), mBlink(0)
+:	Widget(r), mSpacing(1), mPadX(4), mSel(0), mBlink(0)
 {
+	model().resize(Data::STRING);
 	setPos(0);
 	size(textSize);
 }
@@ -347,7 +350,7 @@ TextView& TextView::size(float pixels){
 
 bool TextView::onAssignModel(Data& d, int ind1, int ind2){
 	if(Widget::onAssignModel(d, ind1, ind2)){
-		mText = value();
+		mText = getValue();
 		return true;
 	}
 	return false;

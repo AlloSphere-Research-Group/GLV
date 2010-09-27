@@ -11,26 +11,29 @@
 namespace glv {
 
 
-/// Abstract multidimensional slider
+/// Base class for sliders that control a fixed-size vector of values
 
 /// The foreground color determines the color of the slider.
 ///
 template <int Dim>
-class SliderBase : public Widget {
+class SliderVector : public Widget {
 public:
 
 	/// Constructor
-	SliderBase(const Rect& r);
+	SliderVector(const Rect& r);
+
+	/// Get value at selected index
+	double getValue() const { return Widget::getValue<double>(); }
 	
 	/// Get value at 1D index
-	double value(int idx=0) const;
+	double getValue(int i) const { return Widget::getValue<double>(i); }
 
 protected:
 	double mAcc[Dim];
 
 	// Add amount to value at 1D index and notify observers
-	SliderBase& valueAdd(double val, int idx);
-	SliderBase& valueAdd(double val, int idx, double min, double max);
+	SliderVector& valueAdd(double val, int idx);
+	SliderVector& valueAdd(double val, int idx, double min, double max);
 
 	void clipAccs(){ for(int i=0; i<Dim; ++i) mAcc[i]=glv::clip(mAcc[i],mMax,mMin); }
 	virtual bool onAssignModel(Data& d, int ind1, int ind2);
@@ -39,7 +42,7 @@ protected:
 
 
 /// A 2-D slider
-class Slider2D : public SliderBase<2>{
+class Slider2D : public SliderVector<2>{
 public:
 
 	/// @param[in] r			geometry
@@ -60,7 +63,7 @@ public:
 
 
 /// A slider with an adjustable interval
-class SliderRange : public SliderBase<2>{
+class SliderRange : public SliderVector<2>{
 public:
 
 	/// @param[in] r			geometry
@@ -80,7 +83,7 @@ public:
 	SliderRange& range(double v);	///< Set range
 	
 	double center() const;			///< Get center of interval
-	double jump() const;				///< Get click jump amount
+	double jump() const;			///< Get click jump amount
 	double range() const;			///< Get distance of interval
 	
 	virtual const char * className() const { return "SliderRange"; }
@@ -101,7 +104,7 @@ private:
 /// and bottom-to-top along th y-axis. Cells along the diagonal control the
 /// parameters individually.
 template <int Dim>
-class SliderGrid : public SliderBase<Dim>{
+class SliderGrid : public SliderVector<Dim>{
 public:
 
 	/// @param[in] r			geometry
@@ -114,20 +117,20 @@ public:
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& glv);
 
-	using SliderBase<Dim>::colors;
-	using SliderBase<Dim>::w;
-	using SliderBase<Dim>::h;
-	using SliderBase<Dim>::value;
-	using SliderBase<Dim>::clipAccs;
-	using SliderBase<Dim>::diam;
-	using SliderBase<Dim>::toInterval;
+	using SliderVector<Dim>::colors;
+	using SliderVector<Dim>::w;
+	using SliderVector<Dim>::h;
+	using SliderVector<Dim>::getValue;
+	using SliderVector<Dim>::clipAccs;
+	using SliderVector<Dim>::diam;
+	using SliderVector<Dim>::toInterval;
 protected:
 	int cx, cy;
 };
 
 
 
-/// Base class for 1-D slider types
+/// A grid of 1-D sliders
 class Sliders: public Widget{
 public:
 
@@ -139,9 +142,14 @@ public:
 
 	virtual ~Sliders(){}
 
-	/// Get value
-	double value(int i1=0, int i2=0) const { return model().at<double>(i1, i2); }
-
+	/// Get value at selected index
+	double getValue() const { return Widget::getValue<double>(); }
+	
+	/// Get value at 1D index
+	double getValue(int i) const { return Widget::getValue<double>(i); }
+	
+	/// Get value at 2D index
+	double getValue(int i1, int i2) const { return Widget::getValue<double>(i1,i2); }
 
 	virtual void onDraw();
 	virtual bool onEvent(Event::t e, GLV& glv);
@@ -162,8 +170,6 @@ public:
 	Slider(const Rect& r=Rect(100, 20), double v=0)
 	:	Sliders(r, 1,1)
 	{	setValue(v); }
-
-	double value() const { return Sliders::value(); }
 
 	virtual const char * className() const { return "Slider"; }
 };
@@ -257,49 +263,29 @@ protected:
 
 // Implementation ______________________________________________________________
 
-// SliderBase
+// SliderVector
 
 #define TEM template <int Dim>
 
-TEM SliderBase<Dim>::SliderBase(const Rect& r)
-:	Widget(r, Data(Data::DOUBLE, Dim,1), 0, false, false, false)
+TEM SliderVector<Dim>::SliderVector(const Rect& r)
+:	Widget(r, 0, false, false, false)
 {
+	model().resize(Data::DOUBLE, Dim,1);
 	memset(mAcc, 0, sizeof(double) * Dim);
 }
 
-TEM inline double SliderBase<Dim>::value(int dim) const{
-	return model().Data::at<double>(dim);
-}
-
-//TEM inline void SliderBase<Dim>::onSetValueNotify(const float& v, int idx){
-//
-//	if(v == Base::values()[idx]) return;
-//
-//	//mAcc[idx] = value()[idx] = v;
-//	Base::values()[idx] = v;
-//	notify(Update::Value, SliderChange(v, idx));
-//}
-
-TEM inline bool SliderBase<Dim>::onAssignModel(Data& d, int ind1, int ind2){
+TEM inline bool SliderVector<Dim>::onAssignModel(Data& d, int ind1, int ind2){
 	Data t(mAcc, Dim);
 	int idx = model().indexFlat(ind1,ind2);
 	t.slice(idx, t.size()-idx).assign(d);
 	return Widget::onAssignModel(d,ind1,ind2);
 }
 
-//TEM inline SliderBase<Dim>& SliderBase<Dim>::setValue(float v, int dim){
-//	if(Base::validIndex(dim)){
-//		mAcc[dim] = v;
-//		Base::setValueNotify(glv::clip(v, mMax,mMin), dim);
-//	}
-//	return *this;
-//}
-
-TEM inline SliderBase<Dim>& SliderBase<Dim>::valueAdd(double add, int dim){
+TEM inline SliderVector<Dim>& SliderVector<Dim>::valueAdd(double add, int dim){
 	return valueAdd(add,dim,mMin,mMax);
 }
 
-TEM inline SliderBase<Dim>& SliderBase<Dim>::valueAdd(double add, int dim, double min, double max){	
+TEM inline SliderVector<Dim>& SliderVector<Dim>::valueAdd(double add, int dim, double min, double max){	
 	if(validIndex(dim)){
 		mAcc[dim] += add;
 		setValue(mAcc[dim], dim, min, max);
@@ -311,7 +297,7 @@ TEM inline SliderBase<Dim>& SliderBase<Dim>::valueAdd(double add, int dim, doubl
 
 
 TEM SliderGrid<Dim>::SliderGrid(const Rect& r, space_t knobSize)
-:	SliderBase<Dim>(r), knobSize(knobSize), cx(0), cy(0)
+:	SliderVector<Dim>(r), knobSize(knobSize), cx(0), cy(0)
 {
 	//this->cropSelf = false;
 	this->disable(CropSelf);
@@ -366,11 +352,11 @@ TEM void SliderGrid<Dim>::onDraw(){
 
 	Point2 pts[Dim*Dim];
 	for(int i=0; i<Dim; ++i){
-		float f = (i+to01(value(i))) * rDim;
+		float f = (i+to01(getValue(i))) * rDim;
 		float x = f*w;
 		
 		for(int j=0; j<Dim; ++j){
-			pts[i*Dim+j](x, (1.-(j+to01(value(j))) * rDim) * h);
+			pts[i*Dim+j](x, (1.-(j+to01(getValue(j))) * rDim) * h);
 		}
 	}
 	paint(Points, pts, GLV_ARRAY_SIZE(pts));
@@ -408,10 +394,6 @@ TEM bool SliderGrid<Dim>::onEvent(Event::t e, GLV& g){
 
 #undef TEM
 
-
-
-
 } // glv::
 
 #endif
-

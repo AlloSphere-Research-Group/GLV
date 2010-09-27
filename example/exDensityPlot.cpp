@@ -37,8 +37,10 @@ int main(){
 		glv << plots[i];
 	}
 
-	// These plots will show flattened 1D arrays
+	// This plot will show a flattened 1D color array
 	DensityPlot plot1(Rect(0,w+40*0, w*N,40));
+	
+	// These plots will show flattened color component arrays
 	DensityPlot plotR(Rect(0,w+40*1, w*N,40)); plotR.color(Color(1,0,0));
 	DensityPlot plotG(Rect(0,w+40*2, w*N,40)); plotG.color(Color(0,1,0));
 	DensityPlot plotB(Rect(0,w+40*3, w*N,40)); plotB.color(Color(0,0,1));
@@ -54,6 +56,13 @@ int main(){
 	win.fit();
 // 3% = base
 // 7% = rectangles
+
+//	plot1.name("plot1");
+//	plotR.name("plotR");
+//	std::string s;
+//	glv.modelToString(s);
+//	printf("%s\n", s.c_str());
+	
 
 	Application::run();
 }

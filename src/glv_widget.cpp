@@ -3,24 +3,34 @@
 
 namespace glv{
 
+bool Widget::widgetKeyDown(View * v, GLV& g){
+	Widget& w = *(Widget *)v;
+	switch(g.keyboard.key()){
+		case Key::Down:	++w.sy; break;
+		case Key::Up:	--w.sy; break;
+		case Key::Right:++w.sx; break;
+		case Key::Left:	--w.sx; break;
+		default: return true;
+	}
+	w.clipIndices();
+	return false;
+}
+
+
 Widget::Widget(
-	const Rect& r, const Data& data,
-	space_t pad, bool toggles, bool mutExc, bool drawGrid
+	const Rect& r, space_t pad, bool moment, bool mutExc, bool drawGrid
 )
 :	View(r), mPadding(pad), sx(0), sy(0), mMin(0), mMax(1), mUseInterval(true)
 {
-	setModel(data);
-	model().clone();
-	if(model().isNumerical()){ model().assignAll(0); }
-
 	property(DrawGrid, drawGrid);
 	property(MutualExc, mutExc);
-	property(Toggleable, toggles);
+	property(Momentary, moment);
+//	addCallback(Event::KeyDown, widgetKeyDown);
 }
 
 void Widget::drawGrid(){
 	
-	if(enabled(DrawGrid)){
+	if(enabled(DrawGrid) && size()>1){
 		using namespace glv::draw;
 
 		float xd = dx();
@@ -41,6 +51,47 @@ void Widget::drawGrid(){
 		}
 		paint(Lines, pts, GLV_ARRAY_SIZE(pts));
 	}
+}
+
+void Widget::drawSelectionBox(){
+	if(enabled(DrawSelectionBox)){
+		draw::lineWidth(1);
+		draw::color(colors().selection);
+		draw::frame(sx*dx(), sy*dy(), (sx+1)*dx(), (sy+1)*dy());
+	}
+}
+
+void Widget::onDraw(){
+	drawSelectionBox();
+	drawGrid();
+}
+
+bool Widget::onEvent(Event::t e, GLV& g){
+	switch(e){
+		case Event::KeyDown:
+			switch(g.keyboard.key()){
+				case Key::Down:	++sy; break;
+				case Key::Up:	--sy; break;
+				case Key::Right:++sx; break;
+				case Key::Left:	--sx; break;
+				default: return true;
+			}
+			clipIndices();
+			return false;
+
+		case Event::MouseUp:
+			if(enabled(Momentary)) setValue(mPrevVal);
+			return false;
+
+//		case Event::MouseDown:
+//			sx = (int)((g.mouse.xRel() / w) * sizeX());
+//			sy = (int)((g.mouse.yRel() / h) * sizeY());
+//			clipIndices();
+//			return false;
+
+		default:;
+	}
+	return true;
 }
 
 void Widget::onModelSync(){
@@ -71,7 +122,7 @@ bool Widget::onAssignModel(Data& d, int ind1, int ind2){
 		for(int i=0; i<d.size(); ++i){
 			double v = d.at<double>(i);
 			v = glv::clip(v, max(), min());
-			d.put(v, i);
+			d.assign(v, i);
 		}
 	}
 
@@ -118,41 +169,23 @@ bool Widget::onAssignModel(Data& d, int ind1, int ind2){
 	return true;
 }
 
-void Widget::onSelectClick(GLV& g){
-	sx = (int)((g.mouse.xRel() / w) * sizeX());
-	sy = (int)((g.mouse.yRel() / h) * sizeY());
-	clipIndices();
+void Widget::selectFromMousePos(GLV& g){
+	select(
+		(g.mouse.xRel() / w) * sizeX(),
+		(g.mouse.yRel() / h) * sizeY()
+	);
 }
 
-void Widget::onSelectKey(GLV& g){
-	//printf("shift %d\n", g.keyboard.shift());
-	//printf("shift %d\n", g.keyboard.key());
-	switch(g.keyboard.key()){
-	case Key::Down:	sy++; break;
-	case Key::Up:	sy--; break;
-	case Key::Right:sx++; break;
-	case Key::Left:	sx--; break;
-	case Key::Tab:
-		
-		if(!g.keyboard.shift()){
-			if(sx == sizeX()-1){
-				sx=0;
-				if(sy == sizeY()-1)	sy=0;
-				else				sy++;
-			}
-			else sx++;
-		}
-		else{	// doesn't work with GLUT; key == 25 (end-of-medium) with shift down
-			if(sx == 0){
-				sx=sizeX()-1;
-				if(sy == 0) sy=sizeY()-1;
-				else		sy--;
-			}
-			else sx--;
-		}
-		break;
+Widget& Widget::select(int ix, int iy){
+	clipIndices(ix,iy);
+	int iold = selected();
+	int inew = model().indexFlat(ix,iy);
+	if(iold != inew){
+		onCellChange(iold, inew);
+		sx=ix; sy=iy;
+		mPrevVal = model().at<double>(selected());
 	}
-	clipIndices();
+	return *this;
 }
 
 Widget& Widget::setValueMax(){

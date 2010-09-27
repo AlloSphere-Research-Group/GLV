@@ -230,6 +230,10 @@ protected:
 
 
 /// Density plot
+
+/// Model data should have a shape of (nc, nx, ny) where 'nc' si the number of
+/// components of the value (e.g., a scalar is 1) and 'nx' and 'ny' are the size
+/// of the x and y dimensions, respectively.
 class DensityPlot : public Widget {
 public:
 	DensityPlot(const Rect& r=Rect());
@@ -242,6 +246,49 @@ public:
 protected:
 	Color mColor1;
 	float val(int i, int j, int k){ return to01(model().at<float>(i,j,k)); }
+};
+
+
+/*
+Requirements:
+Multiple graphs viewable within same plotting region.
+Support for different plotting styles- line, bar, scatter, polar
+Support for 1D and 2D plots
+
+Shape
+(1, Nx,  1, 1)	1D independent on y-axis
+(1,  1, Ny, 1)	1D independent on x-axis
+(1, Nx, Ny, 1)	?
+(2, Nx,  1, 1)	2D x-y plot
+(2,  1, Ny, 1)	2D x-y plot
+()
+
+All plotters present multidimensional arrays in a consistent way. Dimensions
+are treated as follows:
+
+0: color/position
+1: along x
+2: along y
+3: planes
+
+Type		Shape			Memory
+1D x		(1, n, 1)		(x1, x2, x3)
+1D y		(1, 1, n)		((y1, y2, y3))
+2D Scatter	(2, n)			((x1, y1), (x2, y2), (x3, y3))				
+3D Scatter	(3, n)			((x1, y1, z1), (x2, y2, z2), (x3, y3, z3))
+xy			(n, 2)			((x1, x2, x3), (y1, y2, y3))
+xyz			(n, 3)			((x1, x2, x3), (y1, y2, y3), (z1, z2, z3))
+
+Density		(C, n, m)		((v11, v21, v31), (v12, v22, v32))
+Surface z	(1, n, m, 1)	((v11, v21, v31), (v12, v22, v32))
+Surface y	(1, n, 1, m)	((v11, v21, v31), (v12, v22, v32))
+Surface x	(1, 1, n, m)	((v11, v21, v31), (v12, v22, v32))
+
+*/
+class DataPlot : public Widget {
+public:
+
+protected:
 };
 
 

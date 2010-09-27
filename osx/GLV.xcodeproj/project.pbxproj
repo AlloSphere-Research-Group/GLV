@@ -91,6 +91,8 @@
 		162CD4BA0FF4ACCE00A58570 /* glv_binding_glut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08F72F080E465E8F001A58ED /* glv_binding_glut.cpp */; };
 		162CD4BB0FF4ACCE00A58570 /* glv_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */; };
 		162CD4BC0FF4ACCE00A58570 /* glv_plots.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16DEEE3B0FC28A0C006B373C /* glv_plots.cpp */; };
+		162FAF8B124F1D0800C7C494 /* glv_icon.h in Headers */ = {isa = PBXBuildFile; fileRef = 162FAF8A124F1D0800C7C494 /* glv_icon.h */; };
+		162FAF8C124F1D0800C7C494 /* glv_icon.h in Headers */ = {isa = PBXBuildFile; fileRef = 162FAF8A124F1D0800C7C494 /* glv_icon.h */; };
 		167F30B6120E05C80023A08C /* glv_font.h in Headers */ = {isa = PBXBuildFile; fileRef = 167F30B5120E05C80023A08C /* glv_font.h */; };
 		167F30B7120E05C80023A08C /* glv_font.h in Headers */ = {isa = PBXBuildFile; fileRef = 167F30B5120E05C80023A08C /* glv_font.h */; };
 		167F30F3120E1F1A0023A08C /* glv_font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 167F30F2120E1F1A0023A08C /* glv_font.cpp */; };
@@ -299,6 +301,7 @@
 		1610882A121DC37F00DC1DF1 /* glv_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_model.h; sourceTree = "<group>"; };
 		1610882B121DC37F00DC1DF1 /* glv_model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_model.cpp; sourceTree = "<group>"; };
 		161B38830DE359DD00936BA0 /* glv_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_widget.h; sourceTree = "<group>"; };
+		162FAF8A124F1D0800C7C494 /* glv_icon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_icon.h; sourceTree = "<group>"; };
 		167F30B5120E05C80023A08C /* glv_font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_font.h; sourceTree = "<group>"; };
 		167F30F2120E1F1A0023A08C /* glv_font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_font.cpp; sourceTree = "<group>"; };
 		16A93E5F1002BA4400F5404E /* TestWindowGLUT */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestWindowGLUT; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -569,6 +572,7 @@
 				B9183C980B9E36B100D8DA81 /* glv_core.h */,
 				7E55D1DE0CCE5A4400196525 /* glv_draw.h */,
 				167F30B5120E05C80023A08C /* glv_font.h */,
+				162FAF8A124F1D0800C7C494 /* glv_icon.h */,
 				16D5E75C0D91F3B8001153DA /* glv_layout.h */,
 				1610882A121DC37F00DC1DF1 /* glv_model.h */,
 				B9183C9A0B9E36B100D8DA81 /* glv_observer_pattern.h */,
@@ -628,6 +632,7 @@
 				7E4B54ED0EA13E9A00701931 /* glv_widget.h in Headers */,
 				167F30B6120E05C80023A08C /* glv_font.h in Headers */,
 				16108834121DC37F00DC1DF1 /* glv_model.h in Headers */,
+				162FAF8C124F1D0800C7C494 /* glv_icon.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -654,6 +659,7 @@
 				162CD4B80FF4ACA000A58570 /* glv_widget.h in Headers */,
 				167F30B7120E05C80023A08C /* glv_font.h in Headers */,
 				1610882C121DC37F00DC1DF1 /* glv_model.h in Headers */,
+				162FAF8B124F1D0800C7C494 /* glv_icon.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

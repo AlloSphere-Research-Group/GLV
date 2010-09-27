@@ -7,13 +7,16 @@
 namespace glv{
 
 Sliders::Sliders(const Rect& r, int nx, int ny, bool dragSelect)
-:	Widget(r, Data(Data::DOUBLE, nx,ny), 1, false, false, true),
+:	Widget(r, 1, false, false, false),
 	mAcc(0)
 {
+	model().resize(Data::DOUBLE, nx,ny);
 	property(SelectOnDrag, dragSelect);
 }
 
 void Sliders::onDraw(){
+	Widget::onDraw();
+
 	using namespace glv::draw;
 	float x=padding()*0.5, xd=dx(), yd=dy();
 
@@ -50,7 +53,7 @@ void Sliders::onDraw(){
 				if(isSelected(i,j)) color(colors().fore);
 				else color(colors().fore, colors().fore.a*0.5);
 
-				float v01 = to01(value(ind));
+				float v01 = to01(getValue(ind));
 				float y0 = to01(0)*yd;
 				//rect(x + x0, y, f*xd+x, y+yd-padding());
 				
@@ -77,7 +80,7 @@ void Sliders::onDraw(){
 				if(isSelected(i,j)) color(colors().fore);
 				else color(colors().fore, colors().fore.a*0.5);
 
-				float v01 = to01(value(ind));
+				float v01 = to01(getValue(ind));
 				float x0 = to01(0)*xd;
 				rectangle(x + x0, y, v01*xd+x, y+yd-padding());
 
@@ -95,7 +98,8 @@ void Sliders::onDraw(){
 }
 
 bool Sliders::onEvent(Event::t e, GLV& g){
-
+	Widget::onEvent(e,g);
+	
 	switch(e){
 		case Event::MouseDrag:
 			// if drag settable
@@ -107,7 +111,6 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 				mAcc += diam()*(isVertical() ? -g.mouse.dy()/h*sizeY() : g.mouse.dx()/w*sizeX()) * g.mouse.sens();
 				setValue(mAcc);
 			}
-			
 			return false;
 			
 		case Event::MouseDown:
@@ -115,13 +118,10 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 			return false;
 			
 		case Event::KeyDown:{
-			onSelectKey(g);
-			int i = selected();
-
 			switch(g.keyboard.key()){
 			case 'x':
-			case 'a': setValue(value(i) + diam()/32.); return false;
-			case 'z': setValue(value(i) - diam()/32.); return false;
+			case 'a': setValue(getValue() + diam()/32.); return false;
+			case 'z': setValue(getValue() - diam()/32.); return false;
 			default:;
 			}
 		}
@@ -137,12 +137,11 @@ void Sliders::selectSlider(GLV& g, bool click){
 	Mouse& m = g.mouse;
 	
 	int oldIdx = selected();
-	onSelectClick(g);
+	selectFromMousePos(g);
+	int idx = selected();
 	
 	float val = isVertical() ? (1-(m.yRel()/h*sizeY() - selectedY())) : (m.xRel()/w*sizeX() - selectedX());
 	val = toInterval(val);
-
-	int idx = selected();
 	
 	// if left-button, set value
 	if(m.left() && !m.right()){
@@ -152,7 +151,7 @@ void Sliders::selectSlider(GLV& g, bool click){
 	// if click or new slider, reset accumulator
 	if(click || (oldIdx != idx)){
 		if(m.left() && !m.right()) mAcc = val;
-		else mAcc = value(idx);
+		else mAcc = getValue(idx);
 	}
 }
 
@@ -160,7 +159,7 @@ void Sliders::selectSlider(GLV& g, bool click){
 // Slider2D
 
 Slider2D::Slider2D(const Rect& r, double valX, double valY, space_t knobSize)
-:	SliderBase<2>(r), knobSize(knobSize)
+:	SliderVector<2>(r), knobSize(knobSize)
 {
 	setValue(valX, 0);
 	setValue(valY, 1);
@@ -202,8 +201,8 @@ void Slider2D::drawKnob(const Slider2D& s){
 	using namespace glv::draw;
 	float sz = s.knobSize;	// size of indicator block
 	float sz2 = sz * 0.5f;
-	float posX = sz2 + (s.w - sz) * s.to01(s.value(0));
-	float posY = sz2 + (s.h - sz) * (1.f - s.to01(s.value(1)));
+	float posX = sz2 + (s.w - sz) * s.to01(s.getValue(0));
+	float posY = sz2 + (s.h - sz) * (1.f - s.to01(s.getValue(1)));
 	
 	color(s.colors().fore);
 	rectangle(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
@@ -212,8 +211,8 @@ void Slider2D::drawKnob(const Slider2D& s){
 /*
 static void drawQuad(const Slider2D& s){
 	using namespace glv::draw;
-	float posX = s.w * s.value(0);
-	float posY = s.h * (1.f - s.value(1));
+	float posX = s.w * s.getValue(0);
+	float posY = s.h * (1.f - s.getValue(1));
 	
 	color(s.colors().fore);
 	
@@ -290,14 +289,14 @@ void Slider2D::onDraw(){
 
 
 SliderRange::SliderRange(const Rect& r, double val1, double val2)
-:	SliderBase<2>(r), mDragMode(0), mJump(0.1)
+:	SliderVector<2>(r), mDragMode(0), mJump(0.1)
 {
 	extrema(val1, val2);
 }
 
-double SliderRange::center() const { return (value(0) + value(1))*0.5; }
+double SliderRange::center() const { return (getValue(0) + getValue(1))*0.5; }
 double SliderRange::jump() const { return mJump; }
-double SliderRange::range() const { return value(1)-value(0); }
+double SliderRange::range() const { return getValue(1)-getValue(0); }
 
 SliderRange& SliderRange::center(double v){ return centerRange(v, range()); }
 
@@ -328,8 +327,8 @@ SliderRange& SliderRange::range(double v){ return centerRange(center(), v); }
 void SliderRange::onDraw(){
 	using namespace glv::draw;
 
-	float v1 = to01(value(0));
-	float v2 = to01(value(1));
+	float v1 = to01(getValue(0));
+	float v2 = to01(getValue(1));
 	if(v2<v1){ float t=v1; v1=v2; v2=t; }
 	
 	// prevent degeneracy
@@ -347,8 +346,8 @@ void SliderRange::onDraw(){
 
 bool SliderRange::onEvent(Event::t e, GLV& g){
 
-	float value0 = to01(value(0));
-	float value1 = to01(value(1));
+	float value0 = to01(getValue(0));
+	float value1 = to01(getValue(1));
 	
 	//printf("%f %f\n", value0, value1);
 
@@ -677,4 +676,4 @@ int FunctionGraph::knotHitTest(space_t x, space_t y)
 	return idx;
 }
 
-} // end namespace glv
+} // glv::

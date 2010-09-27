@@ -34,6 +34,25 @@ void fog(float end, float start, const Color& c){
 }
 
 
+void genEllipse(
+	Point2 * pts, int n, double angle01, double loops,
+	float l, float t, float r, float b
+){
+	const double theta = loops*C_2PI/n;
+	double px=cos(angle01*C_2PI);
+	double py=sin(angle01*C_2PI);
+	double rx=cos( theta);
+	double ry=sin(-theta); // negative to ensure CCW winding for front facing polygon
+	double mx=0.5*(l+r), my=0.5*(t+b), sx=(r-l)*0.5, sy=(b-t)*0.5;
+
+	for(int i=0; i<n; ++i){
+		pts[i](mx+px*sx, my+py*sy);
+		double tx=px;
+		px = px*rx - py*ry;
+		py = tx*ry + py*rx;
+	}
+}
+
 void grid(float l, float t, float w, float h, float divx, float divy, bool incEnds){
 	double inc, r=l+w, b=t+h;
 
@@ -108,18 +127,10 @@ void linePattern(float l, float t, float w, float h, int n, const char * pat){
 }
 
 
-void pgon(float l, float t, float w, float h, int n, float a){
-	w *= 0.5; h *= 0.5;
-	push(); translate(l + w, t + h); scale(w, h); rotate(0, 0, a * 360);
-
+void pgon(float l, float t, float w, float h, int n, float a, double loops){
 	Point2 pts[n];
-	for(int i=0; i<n; ++i){
-		float p = (double)i / (double)n * C_2PI;
-		pts[i](cos(p), sin(p));
-	}
+	genEllipse(pts,n, a,loops, l,t,l+w,t+h);
 	paint(LineLoop, pts, GLV_ARRAY_SIZE(pts));
-
-	pop();
 }
 
 

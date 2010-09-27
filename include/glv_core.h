@@ -57,10 +57,11 @@ namespace Property{
 		Maximized		=1<<11, /**< Whether geometry is matched to parent's */
 		KeepWithinParent=1<<12, /**< Ensure that View is fully contained within parent */
 		
-		DrawGrid		=1<<28,	/**< Whether to draw grid lines between widget elements */
-		MutualExc		=1<<29,	/**< Whether only one element of a widget can be non-zero */
-		SelectOnDrag	=1<<30,	/**< Whether a new element of a widget is selected while dragging */
-		Toggleable		=1<<31	/**< Whether widget element toggles when clicked */
+		DrawGrid		=1<<27,	/**< Whether to draw grid lines between widget elements */
+		DrawSelectionBox=1<<28,	/**< Whether to draw a box around selected widget elements */
+		Momentary		=1<<29,	/**< Whether widget element goes back to initial value on mouse up */
+		MutualExc		=1<<30,	/**< Whether only one element of a widget can be non-zero */
+		SelectOnDrag	=1<<31,	/**< Whether a new element of a widget is selected while dragging */
 	};
 	inline t operator| (const t& a, const t& b){ return t(int(a) | int(b)); }
 	inline t operator& (const t& a, const t& b){ return t(int(a) & int(b)); }
@@ -301,6 +302,12 @@ public:
 	void set(const Color& c, float contrast=0.4);
 };
 
+//class StyleShape{
+//public:
+//
+//	void (* back  )(float l, float t, float r, float b);
+//	void (* border)(float l, float t, float r, float b);
+//};
 
 
 /// Overall appearance scheme.
@@ -351,15 +358,6 @@ public:
 	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
 	virtual void onModelSync(){}					///< Update internal values if different from attached model variables
 
-	/// Convert all named View model values to a list of name-value pairs
-	void modelToString(std::string& v, const std::string& modelName="") const;
-
-	/// Set named View model values from a string of name-value pairs
-	
-	/// Returns number of characters parsed.
-	///
-	int modelFromString(const std::string& v);
-
 	// Doubly linked tree list of views
 	// TODO: move this stuff to a Node sub-class
 	View * parent;				///< My parent view
@@ -403,7 +401,6 @@ public:
 	const View * posAbs(space_t& al, space_t& at) const; ///< Computes absolute left-top position. Returns topmost parent view.
 	void printDescendents() const;				///< Print tree of descendent Views to stdout
 	void printFlags() const;
-	//const Rect& rect() const;					///< Get rectangle geometry
 	bool showing() const;						///< Returns whether View is being shown
 	Style& style() const { return *mStyle; }	///< Get style object
 	const View * toAbs(space_t& x, space_t& y) const; ///< Converts relative View x-y coordinates to absolute. Returns topmost parent view.
@@ -582,9 +579,26 @@ public:
 	/// Returns true if there is a valid GLV instance at this address
 	static bool valid(const GLV * g);
 
+	ModelManager& modelManager(){ return mMM; }
+
+	void refreshModels(){
+		struct Add : TraversalAction{
+			Add(ModelManager& v): m(v){}
+			bool operator()(View * v, int depth){
+				if(v->hasName()) m.add(v->name(), *v);
+				return true;
+			}
+			ModelManager& m;	
+		} add(mMM);
+
+		mMM.clearModels();
+		traverseDepth(add);
+	}
+
 protected:
 	View * mFocusedView;	// current focused widget
 	Event::t mEventType;	// current event type
+	ModelManager mMM;
 	
 	// Returns whether the event should be bubbled to parent
 	bool doEventCallbacks(View& target, Event::t e);

@@ -8,7 +8,7 @@ using namespace glv;
 void updateSlider12(const Notification& n){
 	Slider2D& s2 = *(Slider2D *)n.receiver();
 	Slider& s = *(Slider *)n.sender();
-	s2.setValue(s.value(), 0);
+	s2.setValue(s.getValue(), 0);
 }
 
 void updateSlider21(const Notification& n){
@@ -40,7 +40,7 @@ int main(int argc, char ** argv){
 
 	// Make some widgets
 	Button button(Rect(32));
-	Buttons buttons(Rect(64), 4,4);
+	Buttons buttons(Rect(64), 4,4); buttons.enable(SelectOnDrag);
 	Slider slider(Rect(10, 10, 100, 20), 0); slider.interval(1,-1);
 	Slider2D slider2(Rect(10, 40, 100, 100));
 	SliderGrid<4> sliderGrid(Rect(100));
