@@ -27,11 +27,14 @@ public:
 	void near(double v){ mNear=v; }				///< Set near clip distance
 	void fovy(double v){ mFOVY=v; }				///< Set field of view angle, in degrees, in the y direction
 
-	/// Set 4x4 transform matrix (column-major)
+	/// Set 4x4 model transform matrix (column-major)
 	template <class T>
 	void matrix(T * mat4x4){
 		for(int i=0; i<16; ++i) mMatrix[i]=mat4x4[i];
 	}
+	
+	/// Get 4x4 model transform matrix
+	double * matrix(){ return mMatrix; }
 
 protected:
 	virtual void onDraw(GLV& g);
