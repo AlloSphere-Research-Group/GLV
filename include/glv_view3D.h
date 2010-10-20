@@ -14,7 +14,7 @@ public:
 	virtual ~View3D(){}
 	
 	/// 3D drawing callback
-	virtual void onDraw3D() = 0;
+	virtual void onDraw3D(GLV& g) = 0;
 
 	void far(double v){ mFar=v; }				///< Set far clip distance
 	void near(double v){ mNear=v; }				///< Set near clip distance
@@ -25,8 +25,27 @@ public:
 	double fovy() const { return mFOVY; }		///< Get field of view angle, in degrees, in the y direction
 
 protected:
-	virtual void onDraw();
+	virtual void onDraw(GLV& g);
 	double mNear, mFar, mFOVY;
+	
+//	struct ViewModel : public Model{
+//		ViewModel(View3D& self): v(self){}
+//
+//		virtual std::string modelToToken(){
+//			std::string s;
+//			addKeyValue(s, "near", v.mNear);
+//			addKeyValue(s, "far", v.mFar);
+//			addKeyValue(s, "fovy", v.mFOVY);
+//			return s;
+//		}
+//
+//		virtual int modelFromToken(const std::string& s){
+//			getValue(s, "near", v.mNear);
+//			getValue(s, "far", v.mFar);
+//			getValue(s, "fovy", v.mFOVY);
+//		}
+//		View3D& v;
+//	};
 };
 
 

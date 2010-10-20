@@ -39,7 +39,7 @@ TextView tv1(Rect(200,16), 8);
 struct FontView : View {
 	FontView(const Rect& r=Rect(0)): View(r){}
 	
-	virtual void onDraw(){
+	virtual void onDraw(GLV& g){
 		draw::color(colors().text);
 		float x = tabs.width()+10;
 		const char * str = "Amazingly few discotheques provide jukeboxes.";

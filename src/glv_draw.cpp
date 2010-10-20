@@ -127,6 +127,25 @@ void linePattern(float l, float t, float w, float h, int n, const char * pat){
 }
 
 
+void paint(int prim, const GraphicBuffers& b){
+	int Nc = b.colors().size();
+	int Nv2= b.vertices2().size();
+	int Nv3= b.vertices3().size();
+	int Ni = b.indices().size();
+
+	if(Nc){
+		glEnableClientState(GL_COLOR_ARRAY);
+		glColorPointer(4, GL_FLOAT, 0, &b.colors()[0]);
+	}
+	if(Nv3)	glVertexPointer(3, GL_FLOAT, 0, &b.vertices3()[0]);
+	else	glVertexPointer(2, GL_FLOAT, 0, &b.vertices2()[0]);
+	
+	if(Ni)	glDrawElements(prim, b.indices().size(), GL_UNSIGNED_INT, &b.indices()[0]);
+	else	glDrawArrays(prim, 0, Nv3 ? Nv3 : Nv2);
+	if(Nc) glDisableClientState(GL_COLOR_ARRAY);
+}
+
+
 void pgon(float l, float t, float w, float h, int n, float a, double loops){
 	Point2 pts[n];
 	genEllipse(pts,n, a,loops, l,t,l+w,t+h);

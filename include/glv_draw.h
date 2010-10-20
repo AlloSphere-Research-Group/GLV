@@ -211,6 +211,78 @@ void spokes(float l, float t, float w, float h, int sides, float angleNorm=0);
 void text(const char * s, float l=0, float t=0, unsigned fontSize=8, float lineSpacing=1, unsigned tabSpaces=4);
 
 
+/// Buffers of vertices, colors, and indices
+class GraphicBuffers{
+public:
+	const Buffer<Color>& colors() const { return mColors; }
+	const Buffer<unsigned>& indices() const { return mIndices; }
+	const Buffer<Point2>& vertices2() const { return mVertices2; }
+	const Buffer<Point3>& vertices3() const { return mVertices3; }
+
+	void reset(){
+		mVertices2.reset(); mVertices3.reset();
+		mColors.reset(); mIndices.reset();
+	}
+
+	void addColor(const Color& c){
+		colors().append(c); }
+
+	void addColor(const Color& c1, const Color& c2){
+		addColor(c1); addColor(c2); }
+
+	void addColor(const Color& c1, const Color& c2, const Color& c3){
+		addColor(c1,c2); addColor(c3); }
+
+	void addColor(const Color& c1, const Color& c2, const Color& c3, const Color& c4){
+		addColor(c1,c2,c3); addColor(c4); }
+
+	void addIndex(unsigned i){
+		indices().append(i); }
+
+	void addIndex(unsigned i1, unsigned i2){
+		addIndex(i1); addIndex(i2); }
+
+	void addIndex(unsigned i1, unsigned i2, unsigned i3){
+		addIndex(i1,i2); addIndex(i3); }
+
+	void addIndex(unsigned i1, unsigned i2, unsigned i3, unsigned i4){
+		addIndex(i1,i2,i3); addIndex(i4); }
+
+	void addVertex2(double x, double y){
+		vertices2().append(Point2(x,y)); }
+
+	void addVertex2(double x1, double y1, double x2, double y2){
+		addVertex2(x1,y1); addVertex2(x2,y2); }
+
+	void addVertex2(double x1, double y1, double x2, double y2, double x3, double y3){
+		addVertex2(x1,y1,x2,y2); addVertex2(x3,y3); }
+
+	void addVertex2(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4){
+		addVertex2(x1,y1,x2,y2,x3,y3); addVertex2(x4,y4); }
+
+	void addVertex3(double x, double y, double z){
+		vertices3().append(Point3(x,y,z)); }
+
+	template <class VEC3>
+	void addVertex3(const VEC3& v){
+		addVertex3(v[0], v[1], v[2]); }
+
+	Buffer<Color>& colors(){ return mColors; }
+	Buffer<unsigned>& indices(){ return mIndices; }
+	Buffer<Point2>& vertices2(){ return mVertices2; }
+	Buffer<Point3>& vertices3(){ return mVertices3; }
+
+protected:
+	Buffer<Point2> mVertices2;
+	Buffer<Point3> mVertices3;
+	Buffer<Color> mColors;
+	Buffer<unsigned> mIndices;
+};
+
+
+void paint(int prim, const GraphicBuffers& gb);
+
+
 /// Disables rendering capabilities
 struct Disable{
 

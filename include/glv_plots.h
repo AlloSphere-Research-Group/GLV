@@ -8,6 +8,7 @@
 #include <set>
 #include "glv_core.h"
 #include "glv_draw.h"
+#include "glv_grid.h"
 #include "glv_widget.h"
 
 namespace glv {
@@ -208,8 +209,8 @@ public:
 	PlotData& data(int i=0);
 
 	virtual const char * className() const { return "Plot"; }
-	virtual void onDraw();
-	virtual bool onEvent(Event::t e, GLV& glv);
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
 	enum{ DIM=2 };
@@ -241,7 +242,7 @@ public:
 	DensityPlot& color(const Color& v){ mColor1=v; return *this; }
 
 	virtual const char * className() const { return "DensityPlot"; }
-	virtual void onDraw();
+	virtual void onDraw(GLV& g);
 
 protected:
 	Color mColor1;
@@ -255,21 +256,33 @@ Multiple graphs viewable within same plotting region.
 Support for different plotting styles- line, bar, scatter, polar
 Support for 1D and 2D plots
 
+J
+	basic plot types:
+	surface/wire, line, symbol/dot
+	
+	array is set of points where dim=0 dependent, dim>0 independent
+
+Dimension=0 compact dimension
+Dimension>0 dimension of embedding space
+
 Shape
-(1, Nx,  1, 1)	1D independent on y-axis
-(1,  1, Ny, 1)	1D independent on x-axis
-(1, Nx, Ny, 1)	?
-(2, Nx,  1, 1)	2D x-y plot
-(2,  1, Ny, 1)	2D x-y plot
-()
+(1, Nx,  1, 1)	1D curve (dependent x, independent y)
+(1,  1, Ny, 1)	1D curve (dependent y, independent x)
+(2, Nx,  1, 1)	2D curve
+(2,  1, Ny, 1)	2D curve
+(3, Nx,  1, 1)	3D curve
+
+(1, Nx, Ny, 1)	2D density or 3D surface
+(2, Nx, Ny, 1)	2D density colored
+(3, Nx, Ny, 1)	2D density colored
 
 All plotters present multidimensional arrays in a consistent way. Dimensions
 are treated as follows:
 
-0: color/position
-1: along x
-2: along y
-3: planes
+0: inner dimensions (i.e., color, position, glyph shape)
+1: x dimensions
+2: y dimensions
+3: z dimensions
 
 Type		Shape			Memory
 1D x		(1, n, 1)		(x1, x2, x3)
@@ -285,10 +298,117 @@ Surface y	(1, n, 1, m)	((v11, v21, v31), (v12, v22, v32))
 Surface x	(1, 1, n, m)	((v11, v21, v31), (v12, v22, v32))
 
 */
-class DataPlot : public Widget {
+
+class Indexer{
 public:
 
+	Indexer(int size1=1, int size2=1, int size3=1){
+		resetIndex();
+		int sizes[] = {size1,size2,size3};
+		setSizes(sizes);
+	}
+
+	Indexer(const int * sizes){
+		resetIndex(); setSizes(sizes);
+	}
+
+	bool operator()() const {
+		if(++mIndex[0] == mSizes[0]){
+			if(++mIndex[1] == mSizes[1]){
+				if(++mIndex[2] == mSizes[2]){
+					return false;
+				}
+				mIndex[1] = 0;
+			}
+			mIndex[0] = 0;
+		}
+		return true;
+	}
+
+	int operator[](int i) const { return mIndex[i]; }
+
+	double frac(int i) const { return double(mIndex[i])/mSizes[i]; }
+
+	int size(int dim) const { return mSizes[dim]; }
+	int size() const { int r=1; for(int i=0; i<N; ++i) r*=size(i); return r; }
+
+	Indexer& reshape(const int * sizes, int n){ setSizes(sizes,n); return *this; }
+
+	Indexer& reshape(int size1, int size2=1, int size3=1){
+		int sizes[] = {size1, size2, size3};
+		return reshape(sizes, 3);
+	}
+
 protected:
+	enum{N=3};
+	mutable int mIndex[N];
+	int mSizes[N];
+	void resetIndex(){ mIndex[0]=-1; for(int i=1; i<N; ++i) mIndex[i]=0; }
+	void setSizes(const int* v, int n=N){ for(int i=0; i<n; ++i) mSizes[i]=v[i]; }
+};
+
+
+class DataRenderer{
+public:
+
+	DataRenderer(int prim=draw::Points): mPrim(prim){}
+
+	virtual ~DataRenderer(){}
+	
+	int prim() const { return mPrim; }
+	
+	DataRenderer& prim(int v){ mPrim=v; return *this; }
+
+	virtual void onDrawElements(draw::GraphicBuffers& b, const Data& d, const Indexer& ind){}
+
+protected:
+	int mPrim;
+};
+
+
+
+
+template <class DataRend = DataRenderer>
+class DataPlot : public Grid, public DataRend {
+public:
+
+	DataPlot(const Rect& r=Rect(0))
+	:	Grid(r)
+	{
+		resetValInd();
+	}
+
+	int valueIndex(int i) const { return mValInd[i]; }
+
+	DataPlot& valueIndex(int from, int to){
+		mValInd[from] = to; return *this;
+	}
+
+	virtual void onDraw(GLV& g){
+
+		Grid::onDraw(g);
+
+		if(!model().hasData()) return;
+	
+		draw::GraphicBuffers& gb = g.graphicBuffers();
+		gb.reset();
+
+		Indexer ind(model().shape()+1);
+
+		draw::color(colors().fore);
+
+		pushGrid();
+			onDrawElements(gb, model(), ind);
+			paint(this->prim(), gb);
+		popGrid();
+	}
+
+protected:
+	int mValInd[4];
+	
+	void resetValInd(){
+		for(int i=0; i<4; ++i) mValInd[i]=i;
+	}
 };
 
 

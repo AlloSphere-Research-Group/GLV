@@ -136,8 +136,8 @@ protected:
 	}
 
 	virtual bool onAssignModel(Data& d, int ind1, int ind2);
-	virtual void onDraw();
-	virtual bool onEvent(Event::t e, GLV& glv);
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
 
 	void drawGrid();
 	void drawSelectionBox();	

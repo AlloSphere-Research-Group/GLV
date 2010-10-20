@@ -14,8 +14,8 @@ Buttons::Buttons(
 	useInterval(false);
 }
 
-void Buttons::onDraw(){
-	Widget::onDraw();
+void Buttons::onDraw(GLV& g){
+	Widget::onDraw(g);
 
 	using namespace glv::draw;
 
@@ -84,6 +84,8 @@ bool Buttons::onEvent(Event::t e, GLV& g){
 		case ' ': if(enabled(Momentary)) setValue(false); return false;
 		}
 		break;
+
+	case Event::MouseUp: return false;
 
 	default: break;
 	}

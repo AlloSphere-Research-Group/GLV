@@ -6,7 +6,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <list>
+#include <vector>
 
 namespace glv {
 
@@ -14,6 +16,8 @@ namespace glv {
 /// Return value clipped to interval [min, max)
 template <class T>
 inline T clip(const T& v, const T& max=T(1), const T& min=T(0)){ return v<min? min:(v>max? max:v); }
+
+template <class T> inline T floor(const T& v, const T& step){ return ::floor(v/step)*step; }
 
 template <class T> inline T max(const T& a, const T& b){ return a<b ? b:a; }
 template <class T> inline T min(const T& a, const T& b){ return a<b ? a:b; }
@@ -130,7 +134,7 @@ public:
 	int size()  const { return sizeX() * sizeY(); }
 	int sizeX() const { return mSizeX; }
 	int sizeY() const { return mSizeY; }
-	
+
 	void zero(){ memset(mVal, 0, size()*sizeof(T)); }
 	
 protected:
@@ -140,34 +144,172 @@ protected:
 };
 
 
-
-
-/// One or more static values
-template <class T, int Nx=1, int Ny=1>
-class Values{
+/// Array optimized for dynamically changing its size
+template <class T, class Alloc=std::allocator<T> >
+class Buffer : protected Alloc{
 public:
 
-	// interface methods
-	T& operator[](int i){ return mVal[i]; }
-	const T& operator[](int i) const { return mVal[i]; }
-	
-	Values& operator= (const T& v){ for(int i=0; i<size(); ++i) (*this)[i]=v; return *this; }
-	
-	Values& data(){ return *this; }
-	const Values& data() const { return *this; }
-	
-	void resize(int nx, int ny){}
-	
-	int size()  const { return sizeX()*sizeY(); }
-	int sizeX() const { return Nx; }
-	int sizeY() const { return Ny; }
-	
-	void zero(){ memset(mVal, 0, size()*sizeof(T)); }
+	/// @param[in] size			Number of elements in buffer
+	explicit Buffer(int size=0): mSize(size), mElems(size){}
 
-protected:
-	T mVal[Nx*Ny];
+	/// @param[in] size			Number of elements in buffer
+	/// @param[in] capacity		Number of elements to allocate
+	Buffer(int size, int capacity): mSize(size), mElems(capacity){}
+
+	~Buffer(){}
+
+	/// Get mutable element at index
+	T& operator[](int i){ return mElems[i]; }
+	
+	/// Get const element at index
+	const T& operator[](int i) const { return mElems[i]; }
+
+	/// Returns number of elements before needing to allocate more memory
+	int capacity() const { return mElems.capacity(); }
+
+	/// Returns number of elements
+	int size() const { return mSize; }
+
+	/// Assign value to elements
+
+	/// This function fills a Buffer with n copies of the given value. Note that
+	/// the assignment completely changes the buffer and that the resulting size
+	/// is the same as the number of elements assigned.  Old data may be lost.
+	void assign(int n, const T& v){ mElems.assign(n,v); }
+
+	/// Empty buffer
+	void clear(){ mElems.clear(); reset(); }
+
+	/// Set size of buffer back to 0
+	void reset(){ setSize(0); }
+
+	/// Resize buffer
+	
+	/// This will set both the size and capacity of the buffer to the requested 
+	/// size. If the number is smaller than the current size the buffer is 
+	/// truncated, otherwise the buffer is extended and new elements are
+	/// default-constructed.
+	void resize(int n){
+		mElems.resize(n); setSize(n);
+	}
+	
+	/// Set size of buffer avoiding memory reallocation when possible
+	
+	/// If the requested size is larger than the current capacity, then the 
+	/// buffer will be resized.
+	void size(int n){
+		(capacity() >= n) ? setSize(n) : resize(n);
+	}
+
+	/// Appends element to end of buffer growing its size if necessary
+	void append(const T &v, double growFactor=2){
+		if(size() >= capacity()){
+			mElems.resize(size() ? size()*growFactor : 4);
+		}
+		Alloc::construct(&mElems[0] + size(), v);
+		++mSize;
+	}
+
+private:
+	int mSize;
+	std::vector<T, Alloc> mElems;
+	void setSize(int n){ mSize=n; }
 };
 
+
+/// A closed interval [min, max]
+
+/// An interval is a connected region of the real line. Geometrically, it
+/// describes a 0-sphere. Order is strongly enforced so that the endpoints will
+/// always satisfy min <= max.
+template <class T>
+class Interval{
+public:
+
+	Interval()
+	:	mMin(0), mMax(1){}
+
+	Interval(const T& min, const T& max)
+	{ endpoints(min,max); }
+
+	T center() const { return (max()+min())/T(2); }	///< Returns center point
+
+	/// Test is point is contained exclusively within interval
+	bool contains(const T& v) const { return v>=min() && v<=max(); }
+
+	bool degenerate() const { return min()==max(); }///< Returns true if diameter is zero
+	T diameter() const { return max()-min(); }		///< Returns absolute difference of endpoints
+	const T& max() const { return mMax; }			///< Get maximum endpoint
+	const T& min() const { return mMin; }			///< Get minimum endpoint
+	bool proper() const { return min()!=max(); }	///< Returns true if diameter is non-zero
+	T radius() const { return diameter()/T(2); }	///< Returns one-half the diameter
+
+	/// Linearly map point in interval to point in the unit interval
+	T toUnit(const T& v) const { return (v-min())/diameter(); }
+	
+	template <class U>
+	bool operator == (const Interval<U>& v){ return min()==v.min() && max()==v.max(); }
+
+	template <class U>
+	bool operator != (const Interval<U>& v){ return !(*this == v); }
+	
+	template <class U>
+	Interval& operator +=(const Interval<U>& v){ endpoints(min()+v.min(), max()+v.max()); return *this; }
+
+	template <class U>
+	Interval& operator -=(const Interval<U>& v){ endpoints(min()-v.max(), max()-v.min()); return *this; }
+	
+	template <class U>
+	Interval& operator *=(const Interval<U>& v){
+		T a=min()*v.min(), b=min()*v.max(), c=max()*v.min(), d=max()*v.max();
+		mMin = min(min(a,b),min(c,d));
+		mMax = max(max(a,b),max(c,d));
+		return *this;
+	}
+
+	template <class U>
+	Interval& operator /=(const Interval<U>& v){
+		T a=min()/v.min(), b=min()/v.max(), c=max()/v.min(), d=max()/v.max();
+		mMin = min(min(a,b),min(c,d));
+		mMax = max(max(a,b),max(c,d));
+		return *this;
+	}
+
+	/// Set center point preserving diameter
+	Interval& center(const T& v){ return centerDiameter(v, diameter()); }
+
+	/// Set diameter (width) preserving center
+	Interval& diameter(const T& v){ return centerDiameter(center(), v); }
+
+	/// Set center and diameter
+	Interval& centerDiameter(const T& c, const T& d){
+		mMin = c - d*T(0.5);
+		mMax = mMin + d;
+		return *this;
+	}
+
+	/// Set the endpoints
+	Interval& endpoints(const T& min, const T& max){
+		mMax=max; mMin=min;
+		if(mMin > mMax){ T t=mMin; mMin=mMax; mMax=t; }
+		return *this;
+	}
+
+	/// Translate interval by fixed amount
+	Interval& translate(const T& v){ mMin+=v; mMax+=v; return *this; }
+
+	/// Set maximum endpoint
+	Interval& max(const T& v){ return endpoints(min(), v); }
+	
+	/// Set minimum endpoint
+	Interval& min(const T& v){ return endpoints(v, max()); }
+
+private:
+	T mMin, mMax;
+
+	const T& min(const T& a, const T& b){ return a<b?a:b; }
+	const T& max(const T& a, const T& b){ return a>b?a:b; }
+};
 
 
 
@@ -214,6 +356,33 @@ bool SmartObject<T>::withinFootPrint(void * m){
 	return (t >= b) && (t < (b + sizeof(T)));
 }
 
+
+
+///// One or more static values
+//template <class T, int Nx=1, int Ny=1>
+//class Values{
+//public:
+//
+//	// interface methods
+//	T& operator[](int i){ return mVal[i]; }
+//	const T& operator[](int i) const { return mVal[i]; }
+//	
+//	Values& operator= (const T& v){ for(int i=0; i<size(); ++i) (*this)[i]=v; return *this; }
+//	
+//	Values& data(){ return *this; }
+//	const Values& data() const { return *this; }
+//	
+//	void resize(int nx, int ny){}
+//	
+//	int size()  const { return sizeX()*sizeY(); }
+//	int sizeX() const { return Nx; }
+//	int sizeY() const { return Ny; }
+//	
+//	void zero(){ memset(mVal, 0, size()*sizeof(T)); }
+//
+//protected:
+//	T mVal[Nx*Ny];
+//};
 
 //
 //// Triply-linked node

@@ -43,7 +43,10 @@ void GLV::broadcastEvent(Event::t e){
 // are ANDed together.
 bool GLV::doEventCallbacks(View& v, Event::t e){
 //	printf("doEventCallbacks: %s %d\n", v.className(), e);
-	if(!v.enabled(Controllable)) return false;
+
+	// TODO: which is better?
+//	if(!v.enabled(Controllable)) return false;	// cancels all events w/o handling
+	if(!v.enabled(Controllable)) return true;	// bubbles all events w/o handling
 
 //	bool bubble = v.onEvent(e, *this);					// Execute virtual callback
 //	
@@ -100,9 +103,9 @@ void GLV::doFocusCallback(bool get){
 	}
 }
 
-void GLV::drawGLV(unsigned int w, unsigned int h){
+void GLV::drawGLV(unsigned int w, unsigned int h, double dsec){
 	preamble(w, h);
-	drawWidgets(w, h);
+	drawWidgets(w, h, dsec);
 }
 
 
@@ -134,7 +137,7 @@ static void computeCrop(std::vector<Rect>& cr, int lvl, space_t ax, space_t ay, 
 }
 
 // Views are drawn depth-first from leftmost to rightmost sibling
-void GLV::drawWidgets(unsigned int w, unsigned int h){
+void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 	using namespace draw;
 
 	float cx = 0, cy = 0; // drawing context absolute position
@@ -151,8 +154,9 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 	//glEnableClientState(GL_COLOR_ARRAY);
 	//glColorPointer(4, GL_FLOAT, 0, 0);
 	
+	onAnimate(dsec, *this);
 	push2D(w, h);	// initialise the OpenGL renderer for our 2D GUI world
-	onDraw();		// draw myself
+	onDraw(*this);		// draw myself
 	push();			// push model matrix because of transformations in drawContext()
 	
 	draw::enable(ScissorTest);
@@ -201,8 +205,9 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 			//scissor(r.l, h - r.bottom() - 1, r.w+2, r.h+1);
 			scissor(pix(r.l), pix(h - r.bottom() - 1.499), pix(r.w+1), pix(r.h+1.499));
 
+			cv->onAnimate(dsec, *this);
 			cv->drawPre();
-			push(); cv->onDraw(); pop();		// push/pop model cuz user might forget to...
+			push(); cv->onDraw(*this); pop();		// push/pop model cuz user might forget to...
 			cv->drawPost();
 		}
 	}
@@ -238,6 +243,20 @@ bool GLV::propagateEvent(){ //printf("GLV::propagateEvent(): %s\n", Event::getNa
 	Event::t e = eventType();
 	while(v && doEventCallbacks(*v, e)) v = v->parent;
 	return v != 0;
+}
+
+void GLV::refreshModels(){
+	struct Add : TraversalAction{
+		Add(ModelManager& v): m(v){}
+		bool operator()(View * v, int depth){
+			if(v->hasName()) m.add(v->name(), *v);
+			return true;
+		}
+		ModelManager& m;	
+	} add(mMM);
+
+	mMM.clearModels();
+	traverseDepth(add);
 }
 
 void GLV::setFocus(View * v){

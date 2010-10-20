@@ -15,10 +15,18 @@ namespace glv {
 template <class T>
 class TRect {
 public:
-	T l;							///< Left edge position
-	T t;							///< Top edge position
-	T w;							///< Width
-	T h;							///< Height 
+	union{
+		struct{
+			T l;					///< Left edge position
+			T t;					///< Top edge position
+			T w;					///< Width
+			T h;					///< Height
+		};
+		struct{
+			T positionVector[2];	///< Top-left position vector
+			T extentVector[2];		///< Width-height extent vector
+		};
+	};
 
 	TRect();
 

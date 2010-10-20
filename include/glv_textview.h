@@ -70,7 +70,7 @@ public:
 	const std::string& getValue() const { return model().elems<std::string>()[0]; }
 
 	virtual const char * className() const { return "Label"; }
-	virtual void onDraw();
+	virtual void onDraw(GLV& g);
 
 protected:
 	Font mFont;
@@ -137,7 +137,7 @@ public:
 	NumberDialer& setValue(double v);
 
 	virtual const char * className() const { return "NumberDialer"; }
-	virtual void onDraw();
+	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
@@ -197,7 +197,7 @@ public:
 	void deselect(){ mSel=0; }
 
 	virtual const char * className() const { return "TextView"; }
-	virtual void onDraw();	
+	virtual void onDraw(GLV& g);	
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
@@ -239,7 +239,7 @@ public:
 
 	virtual const char * className() const { return "ListSelect"; }
 
-	virtual void onDraw(){
+	virtual void onDraw(GLV& g){
 		using namespace glv::draw;
 		if(mItems.size() < 1) return;
 		mFont.size(height() - 2*mPad);
@@ -261,8 +261,12 @@ public:
 			case Key::Down:	select(selected()+1); return false;
 			default:;
 			}
+			break;
 		case Event::MouseDown:
 			return false;
+		case Event::KeyUp:
+		case Event::MouseUp: return false;
+
 		case Event::MouseDrag:{
 			int dy = m.y() - m.y(m.button());
 			int inc = ((dy+800000) % 8 == 0) * (dy<0?-1:1);

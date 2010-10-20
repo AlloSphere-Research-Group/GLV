@@ -52,7 +52,7 @@ namespace Property{
 		FocusHighlight	=1<< 6,	/**< Whether to highlight border when focused */
 		FocusToTop		=1<< 7, /**< Whether to bring to top when focused */
 		HitTest			=1<< 8,	/**< Whether View can be clicked */
-		Controllable	=1<< 9,	/**< Whether View can be controlled through events */
+		Controllable	=1<< 9,	/**< Whether View can be controlled through events. Bubbles all events. */
 		AlwaysBubble	=1<<10, /**< Whether to bubble all events to parent */
 		Maximized		=1<<11, /**< Whether geometry is matched to parent's */
 		KeepWithinParent=1<<12, /**< Ensure that View is fully contained within parent */
@@ -127,7 +127,7 @@ namespace Event{
 	};
 
 	/// Returns a string of event type.
-	const char * string(const Event::t e);
+	const char * toString(const Event::t e);
 }
 
 
@@ -353,8 +353,9 @@ public:
 	virtual ~View();
 
 	virtual const char * className() const { return "View"; } ///< Get class name
-	virtual void onDraw();							///< Main drawing callback
-	virtual bool onEvent(Event::t e, GLV& glv);		///< Main event callback to be called after those in callback list
+	virtual void onAnimate(double dsec, GLV& g){}	///< Animation callback
+	virtual void onDraw(GLV& g);					///< Drawing callback
+	virtual bool onEvent(Event::t e, GLV& g);		///< Event callback to be called after those in callback list
 	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
 	virtual void onModelSync(){}					///< Update internal values if different from attached model variables
 
@@ -363,21 +364,24 @@ public:
 	View * parent;				///< My parent view
 	View * child;				///< My first child (next to be drawn)
 	View * sibling;				///< My next sibling view (drawn after all my children)
-	void add(View & child);		///< Add a child view to myself, and update linked lists
-	void add(View * child);		///< Add a child view to myself, and update linked lists
+	void add(View& child);		///< Add a child view to myself, and update linked lists
+	void add(View* child);		///< Add a child view to myself, and update linked lists
 	void makeLastSibling();		///< Put self at end of sibling chain
 	void remove();				///< Remove myself from the parent view, and update linked lists
 
 	/// An action to be called when traversing the node tree
 	struct TraversalAction{
 		virtual ~TraversalAction(){}
-		virtual bool operator()(View * v, int depth){ return false; }
-		virtual bool operator()(const View * v, int depth){ return false; }
+		virtual bool operator()(View * v, int depth) = 0;
+	};
+	struct ConstTraversalAction{
+		virtual ~ConstTraversalAction(){}
+		virtual bool operator()(const View * v, int depth) = 0;
 	};
 
 	/// Traverse tree depth-first applying an action at each node
 	void traverseDepth(TraversalAction& action);
-	void traverseDepth(TraversalAction& action) const;
+	void traverseDepth(ConstTraversalAction& action) const;
 
 	/// Add a child view to myself
 	View& operator << (View& newChild){ add(newChild); return *this; }
@@ -510,16 +514,20 @@ public:
 	/// Get currently focused View
 	View * focusedView() const { return mFocusedView; }
 
+	draw::GraphicBuffers& graphicBuffers(){ return mGraphicBuffers; }
+
 
 	/// Send this event to everyone in tree (including self)
 	void broadcastEvent(Event::t e);
 	
 	/// GLV MAIN RENDER LOOP: draw all Views in the GLV
+
 	/// The assumption is that we are inside an OpenGL context of size [w, h]
-	virtual void drawGLV(unsigned int w, unsigned int h);
+	/// dsec is the time, in seconds, from the last frame
+	virtual void drawGLV(unsigned int w, unsigned int h, double dsec);
 	
 	/// Draws all acive widgest in the GLV
-	void drawWidgets(unsigned int w, unsigned int h);
+	void drawWidgets(unsigned int w, unsigned int h, double dsec);
 	
 	/// Set event type to propagate
 	void eventType(Event::t e){ mEventType = e; }
@@ -579,27 +587,18 @@ public:
 	/// Returns true if there is a valid GLV instance at this address
 	static bool valid(const GLV * g);
 
+	/// Get model manager
 	ModelManager& modelManager(){ return mMM; }
 
-	void refreshModels(){
-		struct Add : TraversalAction{
-			Add(ModelManager& v): m(v){}
-			bool operator()(View * v, int depth){
-				if(v->hasName()) m.add(v->name(), *v);
-				return true;
-			}
-			ModelManager& m;	
-		} add(mMM);
-
-		mMM.clearModels();
-		traverseDepth(add);
-	}
+	/// Add models of named children to model manager
+	void refreshModels();
 
 protected:
 	View * mFocusedView;	// current focused widget
 	Event::t mEventType;	// current event type
 	ModelManager mMM;
-	
+	draw::GraphicBuffers mGraphicBuffers;
+
 	// Returns whether the event should be bubbled to parent
 	bool doEventCallbacks(View& target, Event::t e);
 	

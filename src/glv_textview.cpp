@@ -67,7 +67,7 @@ Label& Label::vertical(bool v){
 	return *this;
 }
 
-void Label::onDraw(){
+void Label::onDraw(GLV& g){
 	using namespace glv::draw;
 	lineWidth(1);
 	color(colors().text);
@@ -187,7 +187,7 @@ NumberDialer& NumberDialer::showSign(bool v){
 
 NumberDialer& NumberDialer::setValue(double v){ valSet(convert(v)); return *this; }
 
-void NumberDialer::onDraw(){ //printf("% g\n", value());
+void NumberDialer::onDraw(GLV& g){ //printf("% g\n", value());
 	using namespace glv::draw;
 	float dx = w/size(); // # pixels per cell
 	lineWidth(1);
@@ -356,7 +356,7 @@ bool TextView::onAssignModel(Data& d, int ind1, int ind2){
 	return false;
 }
 
-void TextView::onDraw(){
+void TextView::onDraw(GLV& g){
 	using namespace draw;
 	
 	if(++mBlink==40) mBlink=0; // update blink interval
@@ -451,7 +451,8 @@ bool TextView::onEvent(Event::t e, GLV& g){
 
 		case Event::MouseDown:
 			setPos(xToPos(mx));
-			break;
+		case Event::MouseUp:
+			return false;
 
 		case Event::MouseDrag:
 			{
@@ -460,7 +461,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 				else select(p-mPos);
 				//printf("%d\n", mSel);
 			}
-			break;
+			return false;
 
 		default:;
 	}

@@ -324,17 +324,25 @@ void Data::free(){
 }
 
 int Data::order() const {
-	int i=maxDim()-1;
-	for(; i>=0; --i){
-		if(size(i) > (i?1:0)) break;
+
+	int r=0;
+	for(int i=0; i<maxDim(); ++i){
+		if(size(i)>0) ++r; 
 	}
-	return i+1;
+	return r;
+	
+// return highest dimension not equal to 1
+//	int i=maxDim()-1;
+//	for(; i>=0; --i){
+//		if(size(i) > (i?1:0)) break;
+//	}
+//	return i+1;
 }
 
 void Data::print() const{
 	printf("%p + %d, (%d", mData, offset(), size(0));
-	for(int i=1;i<order();++i){
-		printf(",%d", size(i));
+	for(int i=1;i<maxDim();++i){
+		if(size(i)) printf(",%d", size(i));
 	}
 	printf("):%+d, %s %s\n", stride(), typeToString(type()).c_str(), toToken().c_str());
 }
@@ -349,7 +357,7 @@ void Data::realloc(Data::Type t, const int * sizes, int n){
 	else{
 		Data old(*this);
 		free();
-		shape(old.mSizes, old.order());
+		shape(old.mSizes, old.maxDim());
 	}	
 
 	if(size()){
@@ -439,7 +447,7 @@ Data Data::slice(int beg, int sz, int st) const {
 
 Data& Data::type(Data::Type ty){
 	if(type()!=ty && size()){
-		resize(ty, mSizes, order());
+		resize(ty, mSizes, maxDim());
 	}
 	else{
 		mType=ty;
@@ -573,7 +581,10 @@ int ModelManager::snapshotsToString(std::string& dst) const {
 	Snapshots::const_iterator it = mSnapshots.begin();
 	if(it == mSnapshots.end()) return 0;
 
-	dst = "{\r\n";
+	if(name().size())	dst = name() + " = ";
+	else				dst = "";
+
+	dst += "{\r\n";
 	while(it != mSnapshots.end()){
 		dst += "[\"" + it->first + "\"] = {\r\n";
 		
@@ -741,7 +752,7 @@ int ModelManager::snapshotFromString(const std::string& src){
 				const Data& dm = it->second->model();
 				
 				// Use main state as prototype
-				ds.resize(dm.type(), dm.sizes(), dm.order());
+				ds.resize(dm.type(), dm.shape(), dm.maxDim());
 				ds.fromToken(val);
 			}
 		}
@@ -757,7 +768,7 @@ int ModelManager::snapshotFromString(const std::string& src){
 int ModelManager::snapshotsFromString(const std::string& src){
 	
 	unsigned r = src.size();
-	unsigned p=0, n=0;
+	unsigned p=0;
 	if(!goToNext(p, '{' , src)) return r;
 	++p;
 	

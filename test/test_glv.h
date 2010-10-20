@@ -22,7 +22,7 @@ struct CharView : public View{
 	int input;
 	float thickness;
 
-	virtual void onDraw(){
+	virtual void onDraw(GLV& g){
 		using namespace glv::draw;
 		scale(w/8, h/11);	// scale characters to extent of view
 		
@@ -61,7 +61,7 @@ struct ColorView : public View{
 	
 	ColorView(const Rect& r=Rect(40)): View(r){}
 	
-	virtual void onDraw(){
+	virtual void onDraw(GLV& g){
 		int divH = 32, divS = 16;
 		float incH = 1./divH, incS = 1./divS;
 		
@@ -104,9 +104,9 @@ public:
 	View& source() const { return *mSource; }
 	CopyCat& source(View& v){ if(&v != this) mSource=&v; return *this; }
 
-	virtual void onDraw(){
+	virtual void onDraw(GLV& g){
 		space_t sw, sh; getDim(sw, sh); setDim(w, h);
-		source().onDraw();
+		source().onDraw(g);
 		setDim(sw, sh);
 	}
 	
@@ -134,7 +134,7 @@ public:
 		deselect(); 
 	}
 
-	virtual void onDraw(){
+	virtual void onDraw(GLV& g){
 		using namespace glv::draw;
 		
 		if(enabled(DrawGrid)){

@@ -18,13 +18,13 @@ typedef void (* iconFunc)(float l, float t, float r, float b);
 class Buttons : public Widget {
 public:
 
-	/// @param[in] r		geometry
-	/// @param[in] nx		number along x
-	/// @param[in] ny		number along y
-	/// @param[in] toggles	whether the button toggles
-	/// @param[in] mutExc	whether multiple buttons can be on
-	/// @param[in] on		the on state icon
-	/// @param[in] off		the off state icon
+	/// @param[in] r			geometry
+	/// @param[in] nx			number along x
+	/// @param[in] ny			number along y
+	/// @param[in] momentary	whether the button state matches button press state
+	/// @param[in] mutExc		whether multiple buttons can be on
+	/// @param[in] on			the on state icon
+	/// @param[in] off			the off state icon
 	Buttons(
 		const Rect& r=Rect(), int nx=1, int ny=1,
 		bool momentary=false, bool mutExc=false,
@@ -38,7 +38,7 @@ public:
 	Buttons& iconOn (const iconFunc& f){ mIconOn =f; return *this; }
 
 	virtual const char * className() const { return "Buttons"; }
-	virtual void onDraw();
+	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
 
 	bool getValue() const { return Widget::getValue<bool>(); }
@@ -55,12 +55,12 @@ protected:
 /// Single button
 class Button : public Buttons {
 public:
-	/// @param[in] r		geometry
-	/// @param[in] toggles	whether the button toggles
-	/// @param[in] on		the on state icon
-	/// @param[in] off		the off state icon
-	Button(const Rect& r=Rect(20), bool toggles=true, iconFunc on=draw::rectangle, iconFunc off=0)
-	:	Buttons(r, 1, 1, toggles, false, on, off)
+	/// @param[in] r			geometry
+	/// @param[in] momentary	whether the button state matches button press state
+	/// @param[in] on			the on state icon
+	/// @param[in] off			the off state icon
+	Button(const Rect& r=Rect(20), bool momentary=false, iconFunc on=draw::rectangle, iconFunc off=0)
+	:	Buttons(r, 1,1, momentary, false, on, off)
 	{}
 	
 	virtual const char * className() const { return "Button"; }

@@ -455,7 +455,7 @@ Window::Dimensions Window::implWinDims() const{
 
 void WindowImpl::draw(){
 	if(mWindow->shouldDraw()){
-		mWindow->mGLV->drawGLV(mWindow->width(), mWindow->height());
+		mWindow->mGLV->drawGLV(mWindow->width(), mWindow->height(), mWindow->fps());
 		glutSwapBuffers();
 	}
 }

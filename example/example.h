@@ -4,5 +4,6 @@
 #include <math.h>
 #include "glv.h"
 #include "glv_binding.h"
+#include "glv_util.h"
 
 using namespace glv;

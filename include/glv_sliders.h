@@ -54,8 +54,8 @@ public:
 	space_t knobSize;	///< Size of slider knob
 	
 	virtual const char * className() const { return "Slider2D"; }
-	virtual void onDraw();
-	virtual bool onEvent(Event::t e, GLV& glv);
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
 	
 	static void drawKnob(const Slider2D& s);	
 };
@@ -73,7 +73,7 @@ public:
 	
 	SliderRange& center(double v);							///< Set center of interval
 	SliderRange& centerRange(double center, double range);	///< Set center and range of interval
-	SliderRange& extrema(double min, double max);				///< Set extrema of interval
+	SliderRange& extrema(double min, double max);			///< Set extrema of interval
 	
 	/// Sets how much the slider should move when an empty region is clicked.
 	
@@ -87,8 +87,8 @@ public:
 	double range() const;			///< Get distance of interval
 	
 	virtual const char * className() const { return "SliderRange"; }
-	virtual void onDraw();
-	virtual bool onEvent(Event::t e, GLV& glv);
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
 	
 private:
 	int mDragMode;	// 0,1,2,3: off, lower, upper, center
@@ -114,8 +114,8 @@ public:
 	space_t knobSize; ///< Knob size
 
 	virtual const char * className() const { return "SliderGrid"; }
-	virtual void onDraw();
-	virtual bool onEvent(Event::t e, GLV& glv);
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
 
 	using SliderVector<Dim>::colors;
 	using SliderVector<Dim>::w;
@@ -151,8 +151,8 @@ public:
 	/// Get value at 2D index
 	double getValue(int i1, int i2) const { return Widget::getValue<double>(i1,i2); }
 
-	virtual void onDraw();
-	virtual bool onEvent(Event::t e, GLV& glv);
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
 	virtual const char * className() const { return "Sliders"; }
 	
 protected:
@@ -208,8 +208,8 @@ public:
 	virtual ~FunctionGraph();
 	
 	virtual const char * className() const { return "FunctionGraph"; }
-	virtual void onDraw();
-	virtual bool onEvent(Event::t e, GLV& glv);
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
 
 	void eval(int n, float *vals);
 	void tension(float v) {mTension = v; calcCurves();}
@@ -303,7 +303,7 @@ TEM SliderGrid<Dim>::SliderGrid(const Rect& r, space_t knobSize)
 	this->disable(CropSelf);
 }
 
-TEM void SliderGrid<Dim>::onDraw(){
+TEM void SliderGrid<Dim>::onDraw(GLV& g){
 	using namespace glv::draw;
 
 	float rDim = 1./Dim;

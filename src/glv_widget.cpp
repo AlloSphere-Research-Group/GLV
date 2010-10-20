@@ -61,7 +61,7 @@ void Widget::drawSelectionBox(){
 	}
 }
 
-void Widget::onDraw(){
+void Widget::onDraw(GLV& g){
 	drawSelectionBox();
 	drawGrid();
 }

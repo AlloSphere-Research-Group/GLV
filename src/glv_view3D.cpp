@@ -8,7 +8,7 @@ View3D::View3D(const Rect& r)
 : View(r), mNear(0.1), mFar(100), mFOVY(45)
 {}
 
-void View3D::onDraw(){
+void View3D::onDraw(GLV& g){
 
 	using namespace glv::draw;
 
@@ -53,7 +53,7 @@ void View3D::onDraw(){
 	glLoadIdentity();
 
 	//Do all 3D drawing
-	onDraw3D();
+	onDraw3D(g);
 
 	//return openGL state
 	glMatrixMode(GL_PROJECTION);

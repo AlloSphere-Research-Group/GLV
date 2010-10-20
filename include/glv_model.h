@@ -243,10 +243,13 @@ public:
 	/// Returns whether type is numerical, i.e., int, float, or double
 	bool isNumerical() const { return type() != Data::STRING; }
 
+	/// Get maximum allowable dimensions
+	static int maxDim(){ return DATA_MAXDIM; }
+
 	/// Get element offset into source array
 	int offset() const { return (mElems-mData)/sizeType(); }
 	
-	/// Get dimensionality of the array
+	/// Get number of dimensions sized larger than 1
 	int order() const;
 	
 	/// Returns reversed slice
@@ -261,7 +264,7 @@ public:
 	int size(int d1, int d2, int d3, int d4) const { return size(d1,d2,d3)*size(d4); }
 	
 	/// Get size array
-	const int * sizes() const { return mSizes; }
+	const int * shape() const { return mSizes; }
 	
 	/// Get size, in bytes, of element type
 	int sizeType() const;
@@ -398,6 +401,7 @@ public:
 //	static int interpretToken(Data::Type& type, int *& sizes, std::string& src);
 
 protected:
+
 	typedef char* pointer;		// pointer to memory address;
 								// char vs. void to simplify pointer arithmetic
 	pointer mData;				// pointer to first element of source data
@@ -405,8 +409,6 @@ protected:
 	int mStride;				// stride factor
 	int mSizes[DATA_MAXDIM];	// sizes of each dimension
 	Type mType;					// data type
-
-	static int maxDim(){ return DATA_MAXDIM; }
 
 	Data& offset(int i){ mElems=mData+i*sizeType(); return *this; }
 	Data& shapeAll(int n);
@@ -423,7 +425,6 @@ protected:
 		if(n){ int r=v[0]; for(int i=1;i<n;++i) r*=v[i]; return r; }
 		return 0;
 	}
-		
 };
 
 
@@ -497,17 +498,17 @@ public:
 
 {
 ["preset 1"] = {
-	author = "Davy Jones",
+	author = "John Doe",
 	time = 10293339107,
-	keywords = {"fuzzy", "buzzy"},
+	keywords = "fuzzy, buzzy",
 	buttons = {0, 1, 0, 1},
 	label = "hello",
 },
 
 ["preset 2"] = {
-	author = "Jane Doe",
+	author = "Don Jo",
 	time = 10293339108,
-	keywords = {"funny", "bunny"},
+	keywords = "funny, bunny",
 	buttons = {0, 0, 0, 1},
 	label = "world",
 },
@@ -520,6 +521,10 @@ public:
 /// then the model data will not be modified when the snapshot is loaded.
 class ModelManager{
 public:
+
+	/*	TODO: support undo/redo
+			incremental snapshots, sequence numbers
+	*/
 
 	template <class Key, class Val>
 	class Map : public std::map<Key, Val>{
@@ -537,11 +542,18 @@ public:
 	typedef Map<std::string, Data>			Snapshot;
 	typedef Map<std::string, Snapshot>		Snapshots;
 	
+	/// Get identifier name
+	const std::string& name() const { return mName; }
+	
 	/// Get snapshots
 	const Snapshots& snapshots() const { return mSnapshots; }
 
 	/// Save all snapshots to a file. Returns number of characters written.
 	int snapshotsToFile(const std::string& path) const;
+
+	std::string snapshotsToString() const {
+		std::string r; snapshotsToString(r); return r;
+	}
 
 	/// Convert all snapshots to a table string. Returns number of characters written.
 	int snapshotsToString(std::string& dst) const;
@@ -567,6 +579,9 @@ public:
 	void clearModels(){ mState.clear(); mConstState.clear(); }
 	void clearSnapshots(){ mSnapshots.clear(); }
 
+	/// Set identifier name
+	void name(const std::string& v){ if(isIdentifier(v)) mName=v; }
+
 	/// Remove model data with given name
 	void remove(const std::string& name);
 
@@ -580,6 +595,7 @@ public:
 	void loadSnapshot(const std::string& name);
 
 protected:
+	std::string mName;				// name identifier
 	NamedModels mState;
 	NamedConstModels mConstState;
 	Snapshots mSnapshots;

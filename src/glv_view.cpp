@@ -413,13 +413,12 @@ void View::on(Event::t e, eventCallback cb){
 }
 
 
-void View::onDraw(){ if(draw) draw(this); }
+void View::onDraw(GLV& g){ if(draw) draw(this); }
 
-bool View::onEvent(Event::t e, GLV& glv){ return true; }
+bool View::onEvent(Event::t e, GLV& g){ return true; }
 
 
 void View::onResize(space_t dx, space_t dy){
-
 	// Move/resize anchored children
 	// This will recursively call onResize's through the entire tree
 	View * v = child;	
@@ -458,7 +457,7 @@ const View * View::posAbs(space_t& al, space_t& at) const{
 
 void View::printDescendents() const {
 
-	struct A : TraversalAction{
+	struct A : ConstTraversalAction{
 		bool operator()(const View * v, int depth){
 			for(int i=0; i<depth; ++i) printf("|\t");
 			printf("%s %p\n", v->className(), v);
@@ -570,10 +569,10 @@ const View * View::toAbs(space_t& x, space_t& y) const {
 }
 
 
-#define TRAVERSE_DEPTH(QUAL)\
-void View::traverseDepth(TraversalAction& action) QUAL {\
-	QUAL View * const root = this;\
-	QUAL View * n = root;\
+#define TRAVERSE_DEPTH(Qual, qual)\
+void View::traverseDepth(Qual##TraversalAction& action) qual {\
+	qual View * const root = this;\
+	qual View * n = root;\
 	int depth = 0;\
 	while(n){\
 		action(n, depth);\
@@ -595,8 +594,8 @@ void View::traverseDepth(TraversalAction& action) QUAL {\
 		}\
 	}\
 }
-TRAVERSE_DEPTH()
-TRAVERSE_DEPTH(const)
+TRAVERSE_DEPTH(,)
+TRAVERSE_DEPTH(Const, const)
 
 //std::string View::valueString() const { std::string r; valueToString(r); return r; }
 

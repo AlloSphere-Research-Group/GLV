@@ -238,7 +238,6 @@ void Plot::plotExtent(float& pw, float& ph){
 }
 
 
-
 void Plot::draw(const PlotData& d, float mulX, float addX, float mulY, float addY, const Color& defaultCol){
 	using namespace glv::draw;
 
@@ -360,7 +359,7 @@ void Plot::draw(const PlotData& d, float mulX, float addX, float mulY, float add
 
 
 
-void Plot::onDraw(){
+void Plot::onDraw(GLV& g){
 	using namespace glv::draw;
 
 	draw::enable(PointSmooth);
@@ -371,10 +370,10 @@ void Plot::onDraw(){
 	
 	float xyAddX=(w-pw)/2;
 	float xyAddY=(h-ph)/2;
-	float mulX = pw / (mMax[0] - mMin[0]);		// pixels/distance along x
+	float mulX = pw / (mMax[0] - mMin[0]);	// pixels/distance along x
 	float addX =-mulX*mMin[0] + xyAddX;		// pixel offset along x
-	float mulY =-ph / (mMax[1] - mMin[1]);		// pixels/distance along y
-	float addY = mulY*-mMax[1] + xyAddY;		// pixel offset along y
+	float mulY =-ph / (mMax[1] - mMin[1]);	// pixels/distance along y
+	float addY = mulY*-mMax[1] + xyAddY;	// pixel offset along y
 											// min and max must be flipped around zero
 
 	// draw axes
@@ -502,8 +501,8 @@ DensityPlot::DensityPlot(const Rect& r)
 	model().type(Data::DOUBLE);
 }
 
-void DensityPlot::onDraw(){
-
+void DensityPlot::onDraw(GLV& g){
+	using namespace glv::draw;
 	if(model().size() == 0) return;
 
 	float xd = dx(1);
@@ -572,10 +571,14 @@ TriangleStrip	4N	6N
 //
 //	glShadeModel(GL_SMOOTH);
 
+#ifdef GLV_USE_OPENGL_ES
+	GraphicBuffers& b = g.graphicBuffers();
+	b.reset();
+
 	for(int j=0; j<N2; ++j){
+		float y = yd*j;
 		for(int i=0; i<N1; ++i){
 			float x = xd*i;
-			float y = yd*j;
 
 			Color c;
 			switch(N0){
@@ -584,11 +587,39 @@ TriangleStrip	4N	6N
 			case 3:	c = Color(val(0,i,j), val(1,i,j), val(2,i,j), 1); break;
 			default:c = Color(val(0,i,j), val(1,i,j), val(2,i,j), val(3,i,j));
 			}
-
-			draw::color(c);
-			draw::rectangle(x,y, x+xd,y+yd);
+			
+			int ind = b.vertices2().size();
+			b.addColor(c,c,c,c);			
+			b.addVertex2(x,y, x+xd,y, x+xd,y+yd, x,y+yd);
+			b.addIndex(ind+0, ind+1, ind+3);
+			b.addIndex(ind+1, ind+2, ind+3);
 		}
 	}
+	
+	paint(Triangles, b);
+#else
+	GraphicBuffers& b = g.graphicBuffers();
+	b.reset();
+
+	for(int j=0; j<N2; ++j){
+		float y = yd*j;
+		for(int i=0; i<N1; ++i){
+			float x = xd*i;
+
+			Color c;
+			switch(N0){
+			case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i,j)); break;
+			case 2: c = HSV(hsv.h, hsv.s*val(1,i,j), hsv.v*val(0,i,j)); break;
+			case 3:	c = Color(val(0,i,j), val(1,i,j), val(2,i,j), 1); break;
+			default:c = Color(val(0,i,j), val(1,i,j), val(2,i,j), val(3,i,j));
+			}
+			
+			b.addColor(c,c,c,c);			
+			b.addVertex2(x,y, x+xd,y, x+xd,y+yd, x,y+yd);
+		}
+	}
+	paint(Quads, b);
+#endif
 }
 
 

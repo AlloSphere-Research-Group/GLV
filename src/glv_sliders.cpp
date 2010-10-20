@@ -14,8 +14,8 @@ Sliders::Sliders(const Rect& r, int nx, int ny, bool dragSelect)
 	property(SelectOnDrag, dragSelect);
 }
 
-void Sliders::onDraw(){
-	Widget::onDraw();
+void Sliders::onDraw(GLV& g){
+	Widget::onDraw(g);
 
 	using namespace glv::draw;
 	float x=padding()*0.5, xd=dx(), yd=dy();
@@ -124,6 +124,10 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 			case 'z': setValue(getValue() - diam()/32.); return false;
 			default:;
 			}
+			break;
+		
+		case Event::KeyUp:
+		case Event::MouseUp: return false;
 		}
 
 		default:;
@@ -171,29 +175,30 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 		case Event::MouseDrag:
 			valueAdd( g.mouse.dx()/w * diam() * g.mouse.sens(), 0);
 			valueAdd(-g.mouse.dy()/h * diam() * g.mouse.sens(), 1);
-			break;
+			return false;
 			
 		case Event::MouseDown:
 			if(g.mouse.left() && !g.mouse.right()){
 				setValue(toInterval(    g.mouse.xRel()/w), 0);
 				setValue(toInterval(1.f-g.mouse.yRel()/h), 1);
 			}
-			break;
+			return false;
 			
-		case Event::MouseUp: clipAccs(); break;
-			
+		case Event::MouseUp: clipAccs();
+		case Event::KeyUp: return false;
+		
 		case Event::KeyDown:
 			switch(g.keyboard.key()){
-				case 'x': valueAdd(-diam()/w, 0); break;
-				case 'c': valueAdd( diam()/w, 0); break;
-				case 'a': valueAdd( diam()/h, 1); break;
-				case 'z': valueAdd(-diam()/h, 1); break;
-				default: return true;
+				case 'x': valueAdd(-diam()/w, 0); return false;
+				case 'c': valueAdd( diam()/w, 0); return false;
+				case 'a': valueAdd( diam()/h, 1); return false;
+				case 'z': valueAdd(-diam()/h, 1); return false;
+				default:;
 			}
 			break;
-		default: break;
+		default:;
 	}
-	return false;
+	return true;
 }
 
 
@@ -228,7 +233,7 @@ static void drawQuad(const Slider2D& s){
 }
 */
 
-void Slider2D::onDraw(){
+void Slider2D::onDraw(GLV& g){
 
 	drawKnob(*this);
 	//drawQuad(*this);
@@ -324,7 +329,7 @@ SliderRange& SliderRange::extrema(double min, double max){
 SliderRange& SliderRange::jump(double v){ mJump=v; return *this; }
 SliderRange& SliderRange::range(double v){ return centerRange(center(), v); }
 
-void SliderRange::onDraw(){
+void SliderRange::onDraw(GLV& g){
 	using namespace glv::draw;
 
 	float v1 = to01(getValue(0));
@@ -539,10 +544,8 @@ void FunctionGraph::eval(int n, float *vals)
 	vals[idx] = mKnots[k].y;
 }
 
-void FunctionGraph::onDraw()
-{
+void FunctionGraph::onDraw(GLV& g){
 	using namespace glv::draw;
-
 	
 	std::vector<Curve *>::iterator it = mCurves.begin();
 	std::vector<Curve *>::iterator it_e = mCurves.end();
