@@ -12,21 +12,31 @@ class View3D : public View {
 public:
 	View3D(const Rect& r=Rect(0));
 	virtual ~View3D(){}
+
+	/// 2D drawing callback called after 3D
+	virtual void onDraw2D(GLV& g){}
 	
 	/// 3D drawing callback
-	virtual void onDraw3D(GLV& g) = 0;
-
-	void far(double v){ mFar=v; }				///< Set far clip distance
-	void near(double v){ mNear=v; }				///< Set near clip distance
-	void fovy(double v){ mFOVY=v; }				///< Set field of view angle, in degrees, in the y direction
+	virtual void onDraw3D(GLV& g){}
 
 	double far() const { return mFar; }			///< Get far clip distance
 	double near() const { return mNear; }		///< Get near clip distance
 	double fovy() const { return mFOVY; }		///< Get field of view angle, in degrees, in the y direction
 
+	void far(double v){ mFar=v; }				///< Set far clip distance
+	void near(double v){ mNear=v; }				///< Set near clip distance
+	void fovy(double v){ mFOVY=v; }				///< Set field of view angle, in degrees, in the y direction
+
+	/// Set 4x4 transform matrix (column-major)
+	template <class T>
+	void matrix(T * mat4x4){
+		for(int i=0; i<16; ++i) mMatrix[i]=mat4x4[i];
+	}
+
 protected:
 	virtual void onDraw(GLV& g);
 	double mNear, mFar, mFOVY;
+	double mMatrix[16];
 	
 //	struct ViewModel : public Model{
 //		ViewModel(View3D& self): v(self){}

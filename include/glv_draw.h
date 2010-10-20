@@ -260,6 +260,10 @@ public:
 	void addVertex2(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4){
 		addVertex2(x1,y1,x2,y2,x3,y3); addVertex2(x4,y4); }
 
+	template <class VEC2>
+	void addVertex2(const VEC2& v){
+		addVertex2(v[0], v[1]); }
+
 	void addVertex3(double x, double y, double z){
 		vertices3().append(Point3(x,y,z)); }
 

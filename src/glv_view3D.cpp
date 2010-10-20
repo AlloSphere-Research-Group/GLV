@@ -6,7 +6,22 @@ namespace glv{
 
 View3D::View3D(const Rect& r)
 : View(r), mNear(0.1), mFar(100), mFOVY(45)
-{}
+{
+	for(int j=0; j<4; ++j){
+	for(int i=0; i<4; ++i){
+		int k = i + j*4; 
+		mMatrix[k] = i==j;
+	}}
+	
+//	double rxy = 0.1; // rotates opposite direction because its modelview?
+//	mMatrix[0] = cos(rxy);
+//	mMatrix[1] =-sin(rxy);
+//	mMatrix[4] =-mMatrix[1];
+//	mMatrix[5] = mMatrix[0];	
+//	mMatrix[12] = 1;
+//	mMatrix[13] = 1;
+//	mMatrix[14] = 1;
+}
 
 void View3D::onDraw(GLV& g){
 
@@ -51,8 +66,9 @@ void View3D::onDraw(GLV& g){
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	glMultMatrixd(mMatrix);
 
-	//Do all 3D drawing
+	// Do all 3D drawing
 	onDraw3D(g);
 
 	//return openGL state
@@ -65,6 +81,9 @@ void View3D::onDraw(GLV& g){
 	
 	//return viewport to being entire top-level rect
 	glViewport(0, 0, (int)top->w, (int)top->h);
+	
+	// do 2D drawing
+	onDraw2D(g);
 }
 
 } // glv::
