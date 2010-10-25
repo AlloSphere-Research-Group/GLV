@@ -75,17 +75,17 @@ CPPFLAGS += $(EXT_CPPFLAGS) \r\n\
 LDFLAGS += $(EXT_LDFLAGS) \
 '> Makefile.external
 
-# Install library into path specified by INSTALL_DIR
-# Include files are copied into INSTALL_DIR/include/LIB_NAME and
-# library files are copied to INSTALL_DIR/lib
+# Install library into path specified by DESTDIR
+# Include files are copied into DESTDIR/include/LIB_NAME and
+# library files are copied to DESTDIR/lib
 install: $(SLIB_PATH)
-#	@echo 'INSTALL $(INSTALL_DIR)'
-	@$(INSTALL) -d $(INSTALL_DIR)
-	@$(INSTALL) -d $(INSTALL_DIR)lib
-	@$(INSTALL) -d $(INSTALL_DIR)include/$(LIB_NAME)
-	@$(INSTALL) -c -m 644 $(SLIB_PATH) $(INSTALL_DIR)lib
-	@$(INSTALL) -c -m 644 $(INC_DIR)/*.h $(INSTALL_DIR)include/$(LIB_NAME)
-	@$(RANLIB) $(INSTALL_DIR)lib/$(SLIB_FILE)
+#	@echo 'INSTALL $(DESTDIR)'
+	@$(INSTALL) -d $(DESTDIR)
+	@$(INSTALL) -d $(DESTDIR)lib
+	@$(INSTALL) -d $(DESTDIR)include/$(LIB_NAME)
+	@$(INSTALL) -c -m 644 $(SLIB_PATH) $(DESTDIR)lib
+	@$(INSTALL) -c -m 644 $(INC_DIR)/*.h $(DESTDIR)include/$(LIB_NAME)
+	@$(RANLIB) $(DESTDIR)lib/$(SLIB_FILE)
 
 test: $(SLIB_PATH)
 	@$(MAKE) -C $(TEST_DIR)
