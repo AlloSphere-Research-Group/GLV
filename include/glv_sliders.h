@@ -525,8 +525,8 @@ TEMV bool Slider1DBase<V>::onEvent(Event::t e, GLV& g){
 
 			switch(g.keyboard.key()){
 			case 'x':
-			case 'a': setValueNotify(Base::values()[i] + diam()/32.); return false;
-			case 'z': setValueNotify(Base::values()[i] - diam()/32.); return false;
+			case 'a': ValueWidget<V, float>::setValueNotify(Base::values()[i] + diam()/32.); return false;
+			case 'z': ValueWidget<V, float>::setValueNotify(Base::values()[i] - diam()/32.); return false;
 			default:;
 			}
 		}
