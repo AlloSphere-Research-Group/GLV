@@ -9,7 +9,7 @@ namespace glv{
 
 #define CTOR_LIST mAlignX(0), mAlignY(0), mVertical(false)
 #define CTOR_BODY\
-	model().resize(Data::STRING);\
+	data().resize(Data::STRING);\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
 	setValue(str);\
 	vertical(vert);
@@ -17,7 +17,7 @@ namespace glv{
 Label::Label(const std::string& str, const Spec& s)
 :	Widget(Rect(0)), mAlignX(0), mAlignY(0)
 {
-	model().resize(Data::STRING);
+	data().resize(Data::STRING);
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);
 	setValue(str);
 	vertical(s.vert);
@@ -73,7 +73,7 @@ void Label::onDraw(GLV& g){
 	color(colors().text);
 	if(mVertical){ translate(0,h); rotate(0,0,-90); }
 	//mFont.render(value().c_str());
-	mFont.render(model().toString().c_str());
+	mFont.render(data().toString().c_str());
 	//scale(mSize, mSize);
 	//text(value().c_str());
 }
@@ -83,7 +83,7 @@ void Label::fitExtent(){
 	space_t dx = 8;
 	space_t tw = 0, th = 8, mw = 0;
 	//const char * c = value().c_str();
-	const char * c = model().toString().c_str();
+	const char * c = data().toString().c_str();
 	if(!c) return;
 	while(*c){
 		switch(*c++){
@@ -109,7 +109,7 @@ void Label::rotateRect(){ t += w - h; transpose(); }
 
 #define CTOR_LIST mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0), mShowSign(true)
 #define CTOR_BODY\
-	model().resize(Data::DOUBLE);\
+	data().resize(Data::DOUBLE);\
 	resize(numInt, numFrac);\
 	dig(mNI);
 
@@ -146,7 +146,7 @@ NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
 NumberDialer::NumberDialer(const NumberDialer& v)
 :	Widget(v,0, false,false), CTOR_LIST
 {
-	model() = Data(Data::DOUBLE);
+	data() = Data(Data::DOUBLE);
 	dig(v.sizeInteger());
 	resize(v.sizeInteger(), v.sizeFraction());
 	interval(v.max(), v.min());
@@ -328,7 +328,7 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 TextView::TextView(const Rect& r, float textSize)
 :	Widget(r), mSpacing(1), mPadX(4), mSel(0), mBlink(0)
 {
-	model().resize(Data::STRING);
+	data().resize(Data::STRING);
 	setPos(0);
 	size(textSize);
 }

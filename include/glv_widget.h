@@ -31,11 +31,11 @@ public:
 	
 	/// Get element value at 1D index type-casted to template parameter
 	template <class T>
-	T getValue(int i) const { return model().Data::at<T>(i); }
+	T getValue(int i) const { return data().Data::at<T>(i); }
 	
 	/// Get element value at 2D index type-casted to template parameter
 	template <class T>
-	T getValue(int i1, int i2) const { return model().Data::at<T>(i1, i2); }
+	T getValue(int i1, int i2) const { return data().Data::at<T>(i1, i2); }
 
 	/// Returns whether this element coordinate is selected
 	bool isSelected(int x, int y) const { return x == selectedX() && y == selectedY(); }
@@ -46,12 +46,12 @@ public:
 
 	space_t padding() const { return mPadding; }	///< Get element padding amount
 
-	int selected() const { return model().indexFlat(sx, sy); }	///< Get selected element index
+	int selected() const { return data().indexFlat(sx, sy); }	///< Get selected element index
 	int selectedX() const { return sx; }			///< Get selected element x coordinate
 	int selectedY() const { return sy; }			///< Get selected element y coordinate
-	int size () const { return model().size(); }	///< Get total number of elements
-	int sizeX() const { return model().size(0); }	///< Get number of elements along x
-	int sizeY() const { return model().size(1); }	///< Get number of elements along y
+	int size () const { return data().size(); }	///< Get total number of elements
+	int sizeX() const { return data().size(0); }	///< Get number of elements along x
+	int sizeY() const { return data().size(1); }	///< Get number of elements along y
 	bool useInterval() const { return mUseInterval; }
 
 
@@ -70,7 +70,7 @@ public:
 	Widget& padding(space_t v){ mPadding=v; return *this; }
 
 	/// Select element at 1D index
-	Widget& select(int i){ int i1,i2; model().indexDim(i1,i2,i); return select(i1,i2); }
+	Widget& select(int i){ int i1,i2; data().indexDim(i1,i2,i); return select(i1,i2); }
 
 	/// Select element at 2D index
 	Widget& select(int ix, int iy);
@@ -114,8 +114,8 @@ protected:
 	IndexDataMap& variables(){ return mVariables; }
 	const IndexDataMap& variables() const { return mVariables; }
 
-	float dx(int dim=0) const { return w/model().size(dim); } // width, in pixels, per element
-	float dy(int dim=1) const { return h/model().size(dim); } // height, in pixels, per element
+	float dx(int dim=0) const { return w/data().size(dim); } // width, in pixels, per element
+	float dy(int dim=1) const { return h/data().size(dim); } // height, in pixels, per element
 	int index(int ix, int iy) const { return ix + iy*sizeX(); }
 
 	static void clip(int& i, int max){ i<0 ? i=0 : i>=max ? i=max-1 : 0; }

@@ -10,7 +10,7 @@ Buttons::Buttons(
 )
 :	Widget(r, 3, toggles, mutExc, true), mIconOff(off), mIconOn(on)
 {	
-	model().resize(Data::BOOL, nx,ny);
+	data().resize(Data::BOOL, nx,ny);
 	useInterval(false);
 }
 

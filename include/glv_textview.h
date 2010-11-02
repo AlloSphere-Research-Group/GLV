@@ -67,7 +67,7 @@ public:
 	Label& vertical(bool v);				///< Set whether label is displayed vertically
 
 	/// Get value
-	const std::string& getValue() const { return model().elems<std::string>()[0]; }
+	const std::string& getValue() const { return data().elems<std::string>()[0]; }
 
 	virtual const char * className() const { return "Label"; }
 	virtual void onDraw(GLV& g);
@@ -188,7 +188,7 @@ public:
 	TextView(const Rect& r=glv::Rect(200,16), float textSize=8);
 
 	/// Get value
-	const std::string& getValue() const { return model().elems<std::string>()[0]; }
+	const std::string& getValue() const { return data().elems<std::string>()[0]; }
 
 	/// Set size of font in pixels
 	TextView& size(float pixels);

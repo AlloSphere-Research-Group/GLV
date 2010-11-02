@@ -246,7 +246,7 @@ public:
 
 protected:
 	Color mColor1;
-	float val(int i, int j, int k){ return to01(model().at<float>(i,j,k)); }
+	float val(int i, int j, int k){ return to01(data().at<float>(i,j,k)); }
 };
 
 
@@ -388,17 +388,17 @@ public:
 
 		Grid::onDraw(g);
 
-		if(!model().hasData()) return;
+		if(!data().hasData()) return;
 	
 		draw::GraphicBuffers& gb = g.graphicBuffers();
 		gb.reset();
 
-		Indexer ind(model().shape()+1);
+		Indexer ind(data().shape()+1);
 
 		draw::color(colors().fore);
 
 		pushGrid();
-			onDrawElements(gb, model(), ind);
+			onDrawElements(gb, data(), ind);
 			paint(this->prim(), gb);
 		popGrid();
 	}

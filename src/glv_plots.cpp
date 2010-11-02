@@ -498,18 +498,18 @@ bool Plot::onEvent(Event::t e, GLV& g){
 DensityPlot::DensityPlot(const Rect& r)
 :	Widget(r)
 {
-	model().type(Data::DOUBLE);
+	data().type(Data::DOUBLE);
 }
 
 void DensityPlot::onDraw(GLV& g){
 	using namespace glv::draw;
-	if(model().size() == 0) return;
+	if(data().size() == 0) return;
 
 	float xd = dx(1);
 	float yd = dy(2);
-	int N0 = model().size(0);
-	int N1 = model().size(1);
-	int N2 = model().size(2);
+	int N0 = data().size(0);
+	int N1 = data().size(1);
+	int N2 = data().size(2);
 //	int order = model().order();
 	HSV hsv = mColor1;
 

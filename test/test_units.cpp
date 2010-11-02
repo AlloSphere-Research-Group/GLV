@@ -183,9 +183,9 @@ int main(){
 
 		w.setValue(true);
 
-		assert(w.model().toToken() == "1");
+		assert(w.data().toToken() == "1");
 		w.setValue(false);
-		assert(w.model().toToken() == "0");
+		assert(w.data().toToken() == "0");
 		w.modelFromToken("0");	assert(w.getValue() == false);
 		w.modelFromToken("1");	assert(w.getValue() == true);
 
@@ -200,8 +200,8 @@ int main(){
 		assert(b);
 		assert(w.getValue(0) == true);
 		
-		w.model().resize(2,2);
-		w.model().assignAll(0);
+		w.data().resize(2,2);
+		w.data().assignAll(0);
 
 		bool v1 = false;
 		bool v2 = false;
@@ -217,7 +217,7 @@ int main(){
 		w.setValue(false, 1);
 		w.setValue(false, 2);
 		w.setValue(false, 3);
-		assert(w.model().toToken() == "{0, 0, 0, 0}");
+		assert(w.data().toToken() == "{0, 0, 0, 0}");
 		
 		v1 = v2 = false;
 		w.modelFromToken("{1,1,1,1}");
@@ -249,7 +249,7 @@ int main(){
 
 		std::string s;
 		w.setValue(0.25);
-		assert(w.model().toToken() == "0.25");
+		assert(w.data().toToken() == "0.25");
 		w.modelFromToken("0.5");	assert(w.getValue() == 0.5);
 									assert(v == 0.5);
 
@@ -281,7 +281,7 @@ int main(){
 		w.setValue(0.2f, 1);
 		w.setValue(0.3f, 2);
 		w.setValue(0.4f, 3);
-		assert(w.model().toToken() == "{0.1, 0.2, 0.3, 0.4}");
+		assert(w.data().toToken() == "{0.1, 0.2, 0.3, 0.4}");
 		
 		v1=v2=0;
 		w.modelFromToken("{0.4,0.3,0.2,0.1}");
@@ -344,7 +344,7 @@ int main(){
 	
 		w.setValue(0.2, 0);
 		w.setValue(0.3, 1);
-		assert(w.model().toToken() == "{0.2, 0.3}");
+		assert(w.data().toToken() == "{0.2, 0.3}");
 		
 		v1 = v2 = 0;
 		w.modelFromToken("{0.7, 0.8}");
@@ -376,7 +376,7 @@ int main(){
 		w.setValue(0.2f, 1);
 		w.setValue(0.3f, 2);
 		w.setValue(0.4f, 3);
-		assert(w.model().toToken() == "{0.1, 0.2, 0.3, 0.4}");
+		assert(w.data().toToken() == "{0.1, 0.2, 0.3, 0.4}");
 		
 		v1=v2=0;
 		w.modelFromToken("{0.4,0.3,0.2,0.1}");
@@ -413,7 +413,7 @@ int main(){
 
 		w.setValue(0.2, 0);
 		w.setValue(0.3, 1);
-		assert(w.model().toToken() == "{0.2, 0.3}");
+		assert(w.data().toToken() == "{0.2, 0.3}");
 		
 		v1 = v2 = 0;
 		w.modelFromToken("{0.7, 0.8}");
@@ -429,7 +429,7 @@ int main(){
 		assert(b);
 		assert(w.getValue() == "test");
 		
-		assert(w.model().toToken() == "\"test\"");
+		assert(w.data().toToken() == "\"test\"");
 		
 		w.setValue("");
 		w.modelFromToken("\"test\"");	assert(w.getValue() == "test");
@@ -457,7 +457,7 @@ int main(){
 		assert(w.getValue() == v);
 
 		w.setValue(0.2);
-		assert(w.model().toToken() == "0.2");
+		assert(w.data().toToken() == "0.2");
 		
 		v = 0;
 		w.modelFromToken("0.8");
@@ -472,7 +472,7 @@ int main(){
 		assert(b);
 		assert(w.getValue() == "hello");
 		
-		assert(w.model().toToken() == "\"hello\"");
+		assert(w.data().toToken() == "\"hello\"");
 
 		std::string v = "test";
 		w.attachVariable(v);
@@ -657,7 +657,7 @@ int main(){
 
 		const View * views[] = {&l, &tv, &b, &bs, &s, &ss, &s2D, &nd};
 		for(unsigned i=0; i<sizeof(views)/sizeof(View *); ++i){
-			const Data& d = views[i]->model();
+			const Data& d = views[i]->data();
 			//printf("%p: %s\n", &d, d.toString().c_str());
 			//views[i]->model().print(); printf("\n");
 		}

@@ -10,7 +10,7 @@ Sliders::Sliders(const Rect& r, int nx, int ny, bool dragSelect)
 :	Widget(r, 1, false, false, false),
 	mAcc(0)
 {
-	model().resize(Data::DOUBLE, nx,ny);
+	data().resize(Data::DOUBLE, nx,ny);
 	property(SelectOnDrag, dragSelect);
 }
 

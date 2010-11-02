@@ -428,28 +428,45 @@ protected:
 };
 
 
+
+class Model{
+public:
+
+	virtual ~Model(){}
+
+	virtual std::string modelToToken(){
+		return "";
+	}
+
+	virtual int modelFromToken(const std::string& v){
+		return 0;
+	}
+
+};
+
+
 /// Proxy Data object for signalling state changes
 
 /// This permits a user-defined action to be performed when any of the
 /// data values change.
-class Model{
+class DataModel : public Model{
 public:
 
-	Model(){}
-	Model(Data& d): mData(d){}
+	DataModel(){}
+	DataModel(Data& d): mData(d){}
 
-	virtual ~Model(){}
+	virtual ~DataModel(){}
 
-	const Data& model() const { return mData; }
+	const Data& data() const { return mData; }
 
-	Data& model(){ return mData; }
+	Data& data(){ return mData; }
 
 	virtual std::string modelToToken(){
-		return model().toToken();
+		return data().toToken();
 	}
 
 	virtual int modelFromToken(const std::string& v){
-		Data d = model();
+		Data d = data();
 		d.clone();
 		int r = d.fromToken(v);
 		if(r) assignModel(d);
@@ -457,7 +474,7 @@ public:
 	}
 	
 	void assignModel(const Data& d, const int& ind=0){
-		int i1=0,i2=0; model().indexDim(i1,i2, ind);
+		int i1=0,i2=0; data().indexDim(i1,i2, ind);
 		assignModel(d, i1,i2);
 	}
 
@@ -467,7 +484,7 @@ public:
 	// onAssignModel() can be used to constrain the input data before it is
 	// assigned.
 	void assignModel(const Data& d, int ind1, int ind2){
-		if(model().indexValid(ind1, ind2)){
+		if(data().indexValid(ind1, ind2)){
 			Data t=d; t.clone();
 			if(onAssignModel(t, ind1, ind2)){
 				//model().assign(t, ind1, ind2);

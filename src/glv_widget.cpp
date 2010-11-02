@@ -101,9 +101,9 @@ void Widget::onModelSync(){
 		int idx = it->first;
 
 		if(validIndex(idx)){
-			const Data& data = it->second;
-			if(model().slice(idx, model().size()-idx) != data){
-				assignModel(data, idx);
+			const Data& dat = it->second;
+			if(data().slice(idx, data().size()-idx) != dat){
+				assignModel(dat, idx);
 			}
 		}
 	}
@@ -115,7 +115,7 @@ bool Widget::onAssignModel(Data& d, int ind1, int ind2){
 	if(enabled(MutualExc)){
 		double v = 0;
 		if(useInterval()) v = glv::clip(v, mMax, mMin);
-		model().assignAll(v);
+		data().assignAll(v);
 	}
 
 	if(useInterval()){
@@ -126,7 +126,7 @@ bool Widget::onAssignModel(Data& d, int ind1, int ind2){
 		}
 	}
 
-	int idx = model().indexFlat(ind1,ind2);	// starting index of model
+	int idx = data().indexFlat(ind1,ind2);	// starting index of model
 
 	// Update any attached variables containing this index
 	IndexDataMap::iterator it = variables().begin();
@@ -158,11 +158,11 @@ bool Widget::onAssignModel(Data& d, int ind1, int ind2){
 //		printf("2: %s %s\n", v.toToken().c_str(), d.toToken().c_str());
 //	}
 
-	Data modelOffset = model().slice(idx, model().size()-idx);
+	Data modelOffset = data().slice(idx, data().size()-idx);
 
 	if(d != modelOffset){
-		model().assign(d, ind1, ind2);
-		ModelChange modelChange(model(), idx);
+		data().assign(d, ind1, ind2);
+		ModelChange modelChange(data(), idx);
 		notify(this, Update::Value, &modelChange);
 	}
 
@@ -179,11 +179,11 @@ void Widget::selectFromMousePos(GLV& g){
 Widget& Widget::select(int ix, int iy){
 	clipIndices(ix,iy);
 	int iold = selected();
-	int inew = model().indexFlat(ix,iy);
+	int inew = data().indexFlat(ix,iy);
 	if(iold != inew){
 		onCellChange(iold, inew);
 		sx=ix; sy=iy;
-		mPrevVal = model().at<double>(selected());
+		mPrevVal = data().at<double>(selected());
 	}
 	return *this;
 }

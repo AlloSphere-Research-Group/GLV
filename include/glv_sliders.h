@@ -270,13 +270,13 @@ protected:
 TEM SliderVector<Dim>::SliderVector(const Rect& r)
 :	Widget(r, 0, false, false, false)
 {
-	model().resize(Data::DOUBLE, Dim,1);
+	data().resize(Data::DOUBLE, Dim,1);
 	memset(mAcc, 0, sizeof(double) * Dim);
 }
 
 TEM inline bool SliderVector<Dim>::onAssignModel(Data& d, int ind1, int ind2){
 	Data t(mAcc, Dim);
-	int idx = model().indexFlat(ind1,ind2);
+	int idx = data().indexFlat(ind1,ind2);
 	t.slice(idx, t.size()-idx).assign(d);
 	return Widget::onAssignModel(d,ind1,ind2);
 }

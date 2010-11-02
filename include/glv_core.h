@@ -331,7 +331,7 @@ public:
 
 
 /// The base class of all GUI elements.
-class View : public Rect, public Model, public Notifier, public SmartObject<View> {
+class View : public Rect, public DataModel, public Notifier, public SmartObject<View> {
 
 friend class GLV;
 
