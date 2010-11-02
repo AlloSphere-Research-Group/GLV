@@ -36,7 +36,7 @@ protected:
 	SliderVector& valueAdd(double val, int idx, double min, double max);
 
 	void clipAccs(){ for(int i=0; i<Dim; ++i) mAcc[i]=glv::clip(mAcc[i],mMax,mMin); }
-	virtual bool onAssignModel(Data& d, int ind1, int ind2);
+	virtual bool onAssignData(Data& d, int ind1, int ind2);
 };
 
 
@@ -274,11 +274,11 @@ TEM SliderVector<Dim>::SliderVector(const Rect& r)
 	memset(mAcc, 0, sizeof(double) * Dim);
 }
 
-TEM inline bool SliderVector<Dim>::onAssignModel(Data& d, int ind1, int ind2){
+TEM inline bool SliderVector<Dim>::onAssignData(Data& d, int ind1, int ind2){
 	Data t(mAcc, Dim);
 	int idx = data().indexFlat(ind1,ind2);
 	t.slice(idx, t.size()-idx).assign(d);
-	return Widget::onAssignModel(d,ind1,ind2);
+	return Widget::onAssignData(d,ind1,ind2);
 }
 
 TEM inline SliderVector<Dim>& SliderVector<Dim>::valueAdd(double add, int dim){

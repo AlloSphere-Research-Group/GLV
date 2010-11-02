@@ -357,7 +357,7 @@ public:
 	virtual void onDraw(GLV& g);					///< Drawing callback
 	virtual bool onEvent(Event::t e, GLV& g);		///< Event callback to be called after those in callback list
 	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
-	virtual void onModelSync(){}					///< Update internal values if different from attached model variables
+	virtual void onDataModelSync(){}					///< Update internal values if different from attached model variables
 
 	// Doubly linked tree list of views
 	// TODO: move this stuff to a Node sub-class

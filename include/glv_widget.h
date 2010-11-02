@@ -98,7 +98,7 @@ public:
 
 	Widget& useInterval(bool v){ mUseInterval=v; return *this; }
 	
-	virtual void onModelSync();
+	virtual void onDataModelSync();
 	virtual const char * className() const { return "Widget"; }
 
 protected:
@@ -135,7 +135,7 @@ protected:
 		return interval(omx, omn);
 	}
 
-	virtual bool onAssignModel(Data& d, int ind1, int ind2);
+	virtual bool onAssignData(Data& d, int ind1, int ind2);
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
 
@@ -151,7 +151,7 @@ template <class T>
 Widget& Widget::setValue(const T& v){
 	T t = v;
 	Data d(t);
-	assignModel(d, selectedX(), selectedY());
+	assignData(d, selectedX(), selectedY());
 	return *this;
 }
 

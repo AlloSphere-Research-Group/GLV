@@ -216,7 +216,7 @@ protected:
 	bool selected(){ return mSel!=0; }
 	void deleteText(int start, int num);
 
-	virtual bool onAssignModel(Data& d, int ind1, int ind2);
+	virtual bool onAssignData(Data& d, int ind1, int ind2);
 };
 
 

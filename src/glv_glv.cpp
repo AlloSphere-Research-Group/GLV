@@ -163,7 +163,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 
 	while(true){
 
-		cv->onModelSync();		// update state based on attached model variables
+		cv->onDataModelSync();		// update state based on attached model variables
 		cv->rectifyGeometry();
 	
 		// find the next view to draw

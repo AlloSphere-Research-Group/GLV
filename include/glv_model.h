@@ -103,16 +103,6 @@ protected:
 
 
 
-/*
-General array slicing can be implemented (whether or not built into the 
-language) by referencing every array through a dope vector or descriptor — a 
-record that contains the address of the first array element, and then the range 
-of each index and the corresponding coefficient in the indexing formula. This 
-technique also allows immediate array transposition, index reversal, 
-subsampling, etc. For languages like C, where the indices always start at zero,
-the dope vector of an array with d indices has at least 1 + 2d parameters.
-*/
-
 #ifndef DATA_MAXDIM
 #define DATA_MAXDIM 4
 #endif
@@ -123,9 +113,8 @@ the dope vector of an array with d indices has at least 1 + 2d parameters.
 /// For operations between data with different types, standard type conversions
 /// will be used when possible.
 /// For binary operations between arrays, each array is treated as a 
-/// one-dimensional array (or tensor with an order of 1). If the number of 
-/// elements differ, then the maximum possible number of elements are used in
-/// the comparison.
+/// one-dimensional array. If the number of elements differ, then the maximum 
+/// possible number of elements are used in the comparison.
 class Data : public ReferenceCounter {
 public:
 
@@ -401,7 +390,7 @@ public:
 //	static int interpretToken(Data::Type& type, int *& sizes, std::string& src);
 
 protected:
-
+// 4 + 4 + 4 + 4*4 + 4
 	typedef char* pointer;		// pointer to memory address;
 								// char vs. void to simplify pointer arithmetic
 	pointer mData;				// pointer to first element of source data
@@ -434,14 +423,19 @@ public:
 
 	virtual ~Model(){}
 
-	virtual std::string modelToToken(){
+	/// Get data associated with the model, if any
+	virtual const Data& getData() const { static Data d; return d; }
+
+	virtual void setData(const Data& d){}
+
+	virtual std::string modelToString(){
 		return "";
 	}
 
-	virtual int modelFromToken(const std::string& v){
+	///
+	virtual int modelFromString(const std::string& v){
 		return 0;
 	}
-
 };
 
 
@@ -457,36 +451,40 @@ public:
 
 	virtual ~DataModel(){}
 
-	const Data& data() const { return mData; }
+	virtual const Data& getData() const { return data(); }
 
-	Data& data(){ return mData; }
+	virtual void setData(const Data& d){ assignData(d); }
 
-	virtual std::string modelToToken(){
+	virtual std::string modelToString(){
 		return data().toToken();
 	}
 
-	virtual int modelFromToken(const std::string& v){
+	virtual int modelFromString(const std::string& v){
 		Data d = data();
 		d.clone();
 		int r = d.fromToken(v);
-		if(r) assignModel(d);
+		if(r) assignData(d);
 		return r;
 	}
+
+	const Data& data() const { return mData; }
+
+	Data& data(){ return mData; }
 	
-	void assignModel(const Data& d, const int& ind=0){
+	void assignData(const Data& d, const int& ind=0){
 		int i1=0,i2=0; data().indexDim(i1,i2, ind);
-		assignModel(d, i1,i2);
+		assignData(d, i1,i2);
 	}
 
 	// Assigns argument to elements at specified index.
 	
-	// onAssignModel() is called with the input data if the indices are valid.
-	// onAssignModel() can be used to constrain the input data before it is
+	// assignData() is called with the input data if the indices are valid.
+	// assignData() can be used to constrain the input data before it is
 	// assigned.
-	void assignModel(const Data& d, int ind1, int ind2){
+	void assignData(const Data& d, int ind1, int ind2){
 		if(data().indexValid(ind1, ind2)){
 			Data t=d; t.clone();
-			if(onAssignModel(t, ind1, ind2)){
+			if(onAssignData(t, ind1, ind2)){
 				//model().assign(t, ind1, ind2);
 			}
 		}
@@ -495,7 +493,7 @@ public:
 protected:
 	Data mData;
 	
-	virtual bool onAssignModel(Data& d, int ind1, int ind2){ return false; }
+	virtual bool onAssignData(Data& d, int ind1, int ind2){ return false; }
 };
 
 

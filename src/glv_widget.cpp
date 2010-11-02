@@ -94,7 +94,7 @@ bool Widget::onEvent(Event::t e, GLV& g){
 	return true;
 }
 
-void Widget::onModelSync(){
+void Widget::onDataModelSync(){
 	IndexDataMap::iterator it = variables().begin();
 
 	for(; it!=variables().end(); ++it){
@@ -103,14 +103,14 @@ void Widget::onModelSync(){
 		if(validIndex(idx)){
 			const Data& dat = it->second;
 			if(data().slice(idx, data().size()-idx) != dat){
-				assignModel(dat, idx);
+				assignData(dat, idx);
 			}
 		}
 	}
 }
 
 // note: indices passed in are always valid
-bool Widget::onAssignModel(Data& d, int ind1, int ind2){
+bool Widget::onAssignData(Data& d, int ind1, int ind2){
 
 	if(enabled(MutualExc)){
 		double v = 0;

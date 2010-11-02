@@ -52,7 +52,7 @@ protected:
 //			return s;
 //		}
 //
-//		virtual int modelFromToken(const std::string& s){
+//		virtual int modelFromString(const std::string& s){
 //			getValue(s, "near", v.mNear);
 //			getValue(s, "far", v.mFar);
 //			getValue(s, "fovy", v.mFOVY);

@@ -324,25 +324,26 @@ void Data::free(){
 }
 
 int Data::order() const {
-
 	int r=0;
 	for(int i=0; i<maxDim(); ++i){
 		if(size(i)>0) ++r; 
 	}
 	return r;
-	
+}
+
 // return highest dimension not equal to 1
-//	int i=maxDim()-1;
-//	for(; i>=0; --i){
-//		if(size(i) > (i?1:0)) break;
-//	}
-//	return i+1;
+static int highestDim(const Data& d){
+	int i=d.maxDim()-1;
+	for(; i>=0; --i){
+		if(d.size(i) > (i?1:0)) break;
+	}
+	return i+1;
 }
 
 void Data::print() const{
 	printf("%p + %d, (%d", mData, offset(), size(0));
-	for(int i=1;i<maxDim();++i){
-		if(size(i)) printf(",%d", size(i));
+	for(int i=1;i<highestDim(*this);++i){
+		printf(",%d", size(i));
 	}
 	printf("):%+d, %s %s\n", stride(), typeToString(type()).c_str(), toToken().c_str());
 }
@@ -563,13 +564,13 @@ bool ModelManager::stateToToken(std::string& dst, const std::string& modelName) 
 	{
 		NamedModels::const_iterator i = mState.begin();
 		for(; i!=mState.end(); ++i){
-			dst += "\t" + namedDataToString(i->first, i->second->model());
+			dst += "\t" + namedDataToString(i->first, i->second->getData());
 		}
 	}
 	{
 		NamedConstModels::const_iterator i = mConstState.begin();
 		for(; i!=mConstState.end(); ++i){
-			dst += "\t" + namedDataToString(i->first, i->second->model());
+			dst += "\t" + namedDataToString(i->first, i->second->getData());
 		}
 	}
 	dst += "}"NEWLINE;
@@ -664,7 +665,7 @@ int ModelManager::stateFromToken(const std::string& src){
 		void onKeyValue(const std::string& key, const std::string& val){
 			if(m.count(key)){
 				//printf("%s = %s\n", key.c_str(), val.c_str());
-				m[key]->modelFromToken(val);
+				m[key]->modelFromString(val);
 			}
 		}
 		NamedModels& m;
@@ -749,7 +750,7 @@ int ModelManager::snapshotFromString(const std::string& src){
 			NamedModels::const_iterator it = m.find(key);
 			if(it != m.end()){
 				Data& ds = s[key];
-				const Data& dm = it->second->model();
+				const Data& dm = it->second->getData();
 				
 				// Use main state as prototype
 				ds.resize(dm.type(), dm.shape(), dm.maxDim());
@@ -789,7 +790,7 @@ void ModelManager::saveSnapshot(const std::string& name){
 
 	NamedModels::iterator it = mState.begin();
 	while(it != mState.end()){
-		(snapshot[it->first] = it->second->model()).clone();
+		(snapshot[it->first] = it->second->getData()).clone();
 		++it;
 	}
 }
@@ -802,7 +803,7 @@ void ModelManager::loadSnapshot(const std::string& name){
 		NamedModels::iterator it = mState.begin();
 		while(it != mState.end()){
 			if(snapshot.count(it->first)){
-				it->second->assignModel(snapshot[it->first]);
+				it->second->setData(snapshot[it->first]);
 			}
 			++it;
 		}

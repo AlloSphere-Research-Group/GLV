@@ -348,8 +348,8 @@ TextView& TextView::size(float pixels){
 //	return *this;
 //}
 
-bool TextView::onAssignModel(Data& d, int ind1, int ind2){
-	if(Widget::onAssignModel(d, ind1, ind2)){
+bool TextView::onAssignData(Data& d, int ind1, int ind2){
+	if(Widget::onAssignData(d, ind1, ind2)){
 		mText = getValue();
 		return true;
 	}
