@@ -37,7 +37,7 @@ struct Scene : View3D{
 		return r;
 	}
 
-	virtual void onDraw3D(){
+	virtual void onDraw3D(GLV& g){
 		using namespace glv::draw;
 
 		float itof = 2./N;

@@ -14,7 +14,7 @@ struct Scene : View3D{
 		freqY(20,0,0, 4,0, N/2,-N/2),
 		freqZ(20,0,0, 4,0, N/2,-N/2)
 	{
-		freqX.value(1); freqY.value(2); freqZ.value(3);
+		freqX.setValue(1); freqY.setValue(2); freqZ.setValue(3);
 		stretch(1,1);
 		disable(DrawBorder);
 		gui << freqX << freqY << freqZ;
@@ -30,12 +30,12 @@ struct Scene : View3D{
 		(*this) << gui;
 	}
 
-	virtual void onDraw3D(){
+	virtual void onDraw3D(GLV& g){
 		using namespace glv::draw;
 		
-		float fx = freqX.value();
-		float fy = freqY.value();
-		float fz = freqZ.value();
+		float fx = freqX.getValue();
+		float fy = freqY.getValue();
+		float fz = freqZ.getValue();
 		
 		for(int i=0; i<N; ++i){
 			float f = float(i)/N;
@@ -51,7 +51,7 @@ struct Scene : View3D{
 
 		if((spin+=0.5) > 360) spin -= 360;
 
-		translateZ(tz.value()*4-4);
+		translateZ(tz.getValue()*4-4);
 		rotateY(spin);
 		stroke(2);
 		

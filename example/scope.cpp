@@ -43,7 +43,7 @@ struct DRFunction2D : public DataRenderer{
 struct MyGLV : GLV {
 
 	MyGLV(): phase1(0), phase2(0){
-		model().resize(Data::DOUBLE, 3, 16);
+		data().resize(Data::DOUBLE, 3, 16);
 	}
 
 	void onAnimate(double dt, GLV& g){
@@ -52,7 +52,7 @@ struct MyGLV : GLV {
 		phase1 += 0.0037; while(phase1 > 2*pi){ phase1 -= 2*pi; }
 		phase2 += 0.0031; while(phase2 > 2*pi){ phase2 -= 2*pi; }
 		
-		Data& d = model();
+		Data& d = data();
 		Indexer i(d.size(1));
 		
 		while(i()){
@@ -91,15 +91,15 @@ int main(){
 	DataPlot<DRFunction2D> v_11(Rect(1*d/3,3*d/8, d/3,d/3));
 	DataPlot<DRFunction2D> v1_1(Rect(2*d/3,3*d/8, d/3,d/3));
 
-	Data& data = top.model();
-	v1__.model() = data.slice(0).stride(data.size(0)).shape(1, data.size(1,2));
-	v_1_.model() = data.slice(1).stride(data.size(0)).shape(1, data.size(1,2));
-	v__1.model() = data.slice(2).stride(data.size(0)).shape(1, data.size(1,2));
-	v11_.model() = data.slice(0).shape(data.shape(), 3);
-	v_11.model() = data.slice(1).shape(data.shape(), 3);
-	v1_1.model() = data.slice(1).shape(data.shape(), 3);
+	Data& data = top.data();
+	v1__.data() = data.slice(0).stride(data.size(0)).shape(1, data.size(1,2));
+	v_1_.data() = data.slice(1).stride(data.size(0)).shape(1, data.size(1,2));
+	v__1.data() = data.slice(2).stride(data.size(0)).shape(1, data.size(1,2));
+	v11_.data() = data.slice(0).shape(data.shape(), 3);
+	v_11.data() = data.slice(1).shape(data.shape(), 3);
+	v1_1.data() = data.slice(1).shape(data.shape(), 3);
 
-	//v11_.model().print();
+	//v11_.data().print();
 
 	v1__.preserveAspect(false);
 	v_1_.preserveAspect(false);

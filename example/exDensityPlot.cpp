@@ -32,8 +32,8 @@ int main(){
 	DensityPlot plots[N];
 	for(int i=0; i<N; ++i){
 		plots[i] = Rect(w*i,0, w,w);
-		plots[i].model() = cols.slice(cols.size(0,1,2)*i).shape(4,N,N);
-		//plots[i].model() = cols.slice(cols.size(0,1,2)*i + 2).shape(1,N,N).stride(4);
+		plots[i].data() = cols.slice(cols.size(0,1,2)*i).shape(4,N,N);
+		//plots[i].data() = cols.slice(cols.size(0,1,2)*i + 2).shape(1,N,N).stride(4);
 		glv << plots[i];
 	}
 
@@ -45,10 +45,10 @@ int main(){
 	DensityPlot plotG(Rect(0,w+40*2, w*N,40)); plotG.color(Color(0,1,0));
 	DensityPlot plotB(Rect(0,w+40*3, w*N,40)); plotB.color(Color(0,0,1));
 
-	plot1.model() = cols.slice(0).shape(4, cols.size(1,2,3));
-	plotR.model() = cols.slice(0).shape(1, cols.size(1,2,3)).stride(4);
-	plotG.model() = cols.slice(1).shape(1, cols.size(1,2,3)).stride(4);
-	plotB.model() = cols.slice(2).shape(1, cols.size(1,2,3)).stride(4);
+	plot1.data() = cols.slice(0).shape(4, cols.size(1,2,3));
+	plotR.data() = cols.slice(0).shape(1, cols.size(1,2,3)).stride(4);
+	plotG.data() = cols.slice(1).shape(1, cols.size(1,2,3)).stride(4);
+	plotB.data() = cols.slice(2).shape(1, cols.size(1,2,3)).stride(4);
 
 	glv << plot1 << plotR << plotG << plotB;
 			

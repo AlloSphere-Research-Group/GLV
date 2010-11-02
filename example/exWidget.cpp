@@ -57,11 +57,11 @@ public:
 	Buttons2(const Rect& r): Widget2(r){}
 	
 	bool getValue(){ return getValue(selectedX(), selectedY()); }
-	bool getValue(int ix){ return model().at<bool>(ix); }
-	bool getValue(int ix, int iy){ return model().at<bool>(ix, iy); }
+	bool getValue(int ix){ return data().at<bool>(ix); }
+	bool getValue(int ix, int iy){ return data().at<bool>(ix, iy); }
 	
-	virtual void onDraw(){
-		Widget::onDraw();
+	virtual void onDraw(glv::GLV& g){
+		Widget::onDraw(g);
 		
 		draw::color(colors().fore);
 		const float p = padding();
@@ -103,7 +103,7 @@ int main(){
 	GLV glv;
 	Buttons2 widget(Rect(400,400));
 
-	widget.model().resize(Data::BOOL, 4,4);
+	widget.data().resize(Data::BOOL, 4,4);
 
 	widget.disable(DrawGrid);
 	widget.enable(DrawSelectionBox);

@@ -13,7 +13,7 @@ A Notification is used to set a label to a slider's value.
 void ntSetLabel(const Notification& n){
 	Label& l = *n.receiver<Label>();
 	Slider& s = *n.sender<Slider>();
-	l.setValue(s.model().toString());
+	l.setValue(s.data().toString());
 }
 
 int main(int argc, char ** argv){

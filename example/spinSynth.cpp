@@ -7,7 +7,7 @@ struct Scene : View3D{
 
 	Scene(const Rect& r): View3D(r){}
 
-	virtual void onDraw3D(){
+	virtual void onDraw3D(GLV& g){
 		using namespace glv::draw;
 
 		if((ax+=vx) >= 360) ax-=360;
@@ -37,7 +37,7 @@ Scene scene(Rect(0,toolBar.h, 0,-(toolBar.h+statusBar.h)));
 
 void ntStatusString(const Notification& n){
 	View& v = *n.sender<View>();
-	statusString.setValue(v.className() + std::string(": ") + v.descriptor() + " = " + v.model().toString());
+	statusString.setValue(v.className() + std::string(": ") + v.descriptor() + " = " + v.data().toString());
 }
 
 int main (int argc, char ** argv){

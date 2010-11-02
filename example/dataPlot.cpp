@@ -93,12 +93,12 @@ struct DRDensity : public DataRenderer{
 struct MyGLV : GLV {
 
 	MyGLV(): phase(0){
-		model().resize(Data::DOUBLE, 2,16,16);
+		data().resize(Data::DOUBLE, 2,16,16);
 	}
 
 	void onAnimate(double dt, GLV& g){
 		phase += 0.013;
-		Data& d = model();
+		Data& d = data();
 		
 		Indexer i(d.size(1), d.size(2));
 
@@ -128,9 +128,9 @@ int main(){
 //	v1.disable(CropSelf | DrawBack);
 //	v2.disable(CropSelf | DrawBack);
 //	v3.disable(CropSelf | DrawBack);
-	v1.model() = top.model();
-	v2.model() = top.model();
-	v3.model() = top.model();
+	v1.data() = top.data();
+	v2.data() = top.data();
+	v3.data() = top.data();
 	
 	top << v1 << v2 << v3;
 
