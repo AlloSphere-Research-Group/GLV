@@ -15,7 +15,7 @@ public:
 		ICON
 	};
 
-	PresetView(const ModelManager& m, const Rect& r=Rect())
+	PresetView(ModelManager& m, const Rect& r=Rect())
 	:	View(r), mMM(&m)
 	{}
 
@@ -24,6 +24,7 @@ public:
 	}
 
 	virtual bool onEvent(Event::t e, GLV& g){
+		return true;
 	}
 
 protected:

@@ -98,6 +98,7 @@ void drawCB(View * v){
 int main(int argc, char ** argv){
 	
 	GLV top(drawCB);
+	
 	Window win(600, 400, "GLV Examples", &top);
 
 	sl1HS.interval(1,-1);
@@ -145,8 +146,8 @@ int main(int argc, char ** argv){
 
 	// Produce matrix of values
 	{
-		dplot.model().resize(1,32,32);
-		Data& data = dplot.model();
+		dplot.data().resize(1,32,32);
+		Data& data = dplot.data();
 		for(int j=0; j<data.size(2); ++j){
 			for(int i=0; i<data.size(1); ++i){
 				double y = double(j)/data.size(2)*2-1;
