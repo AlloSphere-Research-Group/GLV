@@ -495,132 +495,157 @@ bool Plot::onEvent(Event::t e, GLV& g){
 }
 
 
-DensityPlot::DensityPlot(const Rect& r)
-:	Widget(r)
-{
-	data().type(Data::DOUBLE);
+void PlotDensity::onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& i){
+	double dx = 2./d.size(1);
+	double dy = 2./d.size(2);
+	while(i()){
+		double x = i.frac(0)*2 - 1;
+		double y = i.frac(1)*2 - 1;
+		double w0 = d.at<double>(0,i[0],i[1],i[2]);
+		double w1 = d.at<double>(1,i[0],i[1],i[2]);
+
+		//Color c = HSV(0.1, fabs(w1), fabs(w0));
+		//Color c = HSV(0.1, atan2(w1,w0)/(2*M_PI)+0.5, hypot(w0,w1));
+		
+		double m = hypot(w0,w1);
+		double a = atan2(w1,w0)/(-2*M_PI); if(a<0) a=1+a;
+		Color c = HSV(a, 1, m);
+		int idx = b.vertices2().size();
+
+		b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
+		b.addColor(c,c,c,c);
+		b.addIndex(idx+0, idx+1, idx+3);
+		b.addIndex(idx+1, idx+2, idx+3);
+	}
 }
 
-void DensityPlot::onDraw(GLV& g){
-	using namespace glv::draw;
-	if(data().size() == 0) return;
 
-	float xd = dx(1);
-	float yd = dy(2);
-	int N0 = data().size(0);
-	int N1 = data().size(1);
-	int N2 = data().size(2);
-//	int order = model().order();
-	HSV hsv = mColor1;
-
-/*
-  .   .   .
-1        
-  .   .   .
-0        
-  .   .   .
-    0   1
-
-prim			Nv	Ni
-Quads			4N	4N
-Triangles		4N	6N
-TriangleStrip	4N	6N
-*/
-
-//	int Np = (N1+1)*(N2+1);
-//	Color cols[Np];
-//	Point2 pts[Np];
-//	unsigned inds[N1*2*N2 + 2*N2];
-//	int ii=-1;
-//	int iv=0;
+//DensityPlot::DensityPlot(const Rect& r)
+//:	DataPlot(r)
+//{
+//	data().type(Data::DOUBLE);
+//}
 //
-//	glShadeModel(GL_FLAT);
+//void DensityPlot::onDraw(GLV& g){
+//	using namespace glv::draw;
+//	if(data().size() == 0) return;
 //
-//	for(int j=0; j<N2+1; ++j){
-//		for(int i=0; i<N1+1; ++i){
+//	float xd = dx(1);
+//	float yd = dy(2);
+//	int N0 = data().size(0);
+//	int N1 = data().size(1);
+//	int N2 = data().size(2);
+////	int order = model().order();
+//	HSV hsv = mColor1;
+//
+///*
+//  .   .   .
+//1        
+//  .   .   .
+//0        
+//  .   .   .
+//    0   1
+//
+//prim			Nv	Ni
+//Quads			4N	4N
+//Triangles		4N	6N
+//TriangleStrip	4N	6N
+//*/
+//
+////	int Np = (N1+1)*(N2+1);
+////	Color cols[Np];
+////	Point2 pts[Np];
+////	unsigned inds[N1*2*N2 + 2*N2];
+////	int ii=-1;
+////	int iv=0;
+////
+////	glShadeModel(GL_FLAT);
+////
+////	for(int j=0; j<N2+1; ++j){
+////		for(int i=0; i<N1+1; ++i){
+////			float x = xd*i;
+////			float y = yd*j;
+////			int i1 = i!=N1 ? i : i-1;
+////			int i2 = j!=N2 ? j : j-1;
+////
+////			Color c;
+////			switch(N0){
+////			case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i1,i2)); break;
+////			case 2: c = HSV(hsv.h, hsv.s*val(1,i1,i2), hsv.v*val(0,i1,i2)); break;
+////			case 3:	c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), 1); break;
+////			default:c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), val(3,i1,i2));
+////			}
+////			
+////			cols[iv] = c;
+////			pts[iv](x,y);
+////			++iv;
+////			
+////			if(j < N2){
+////				inds[++ii] = (j  )*(N1+1) + i;
+////				inds[++ii] = (j+1)*(N1+1) + i;
+////				
+////				if(i == N1){
+////					inds[ii+1] = inds[ii]; ++ii;
+////					inds[++ii] = (j+1)*(N1+1);
+////				}
+////			}
+////		}
+////	}
+////
+////	draw::paint(draw::TriangleStrip, pts, cols, inds, ii);
+////
+////	glShadeModel(GL_SMOOTH);
+//
+//#ifdef GLV_USE_OPENGL_ES
+//	GraphicsData& b = g.graphicBuffers();
+//	b.reset();
+//
+//	for(int j=0; j<N2; ++j){
+//		float y = yd*j;
+//		for(int i=0; i<N1; ++i){
 //			float x = xd*i;
-//			float y = yd*j;
-//			int i1 = i!=N1 ? i : i-1;
-//			int i2 = j!=N2 ? j : j-1;
 //
 //			Color c;
 //			switch(N0){
-//			case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i1,i2)); break;
-//			case 2: c = HSV(hsv.h, hsv.s*val(1,i1,i2), hsv.v*val(0,i1,i2)); break;
-//			case 3:	c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), 1); break;
-//			default:c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), val(3,i1,i2));
+//			case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i,j)); break;
+//			case 2: c = HSV(hsv.h, hsv.s*val(1,i,j), hsv.v*val(0,i,j)); break;
+//			case 3:	c = Color(val(0,i,j), val(1,i,j), val(2,i,j), 1); break;
+//			default:c = Color(val(0,i,j), val(1,i,j), val(2,i,j), val(3,i,j));
 //			}
 //			
-//			cols[iv] = c;
-//			pts[iv](x,y);
-//			++iv;
-//			
-//			if(j < N2){
-//				inds[++ii] = (j  )*(N1+1) + i;
-//				inds[++ii] = (j+1)*(N1+1) + i;
-//				
-//				if(i == N1){
-//					inds[ii+1] = inds[ii]; ++ii;
-//					inds[++ii] = (j+1)*(N1+1);
-//				}
-//			}
+//			int ind = b.vertices2().size();
+//			b.addColor(c,c,c,c);			
+//			b.addVertex2(x,y, x+xd,y, x+xd,y+yd, x,y+yd);
+//			b.addIndex(ind+0, ind+1, ind+3);
+//			b.addIndex(ind+1, ind+2, ind+3);
 //		}
 //	}
+//	
+//	paint(Triangles, b);
+//#else
+//	GraphicsData& b = g.graphicsData();
+//	b.reset();
 //
-//	draw::paint(draw::TriangleStrip, pts, cols, inds, ii);
+//	for(int j=0; j<N2; ++j){
+//		float y = yd*j;
+//		for(int i=0; i<N1; ++i){
+//			float x = xd*i;
 //
-//	glShadeModel(GL_SMOOTH);
-
-#ifdef GLV_USE_OPENGL_ES
-	GraphicBuffers& b = g.graphicBuffers();
-	b.reset();
-
-	for(int j=0; j<N2; ++j){
-		float y = yd*j;
-		for(int i=0; i<N1; ++i){
-			float x = xd*i;
-
-			Color c;
-			switch(N0){
-			case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i,j)); break;
-			case 2: c = HSV(hsv.h, hsv.s*val(1,i,j), hsv.v*val(0,i,j)); break;
-			case 3:	c = Color(val(0,i,j), val(1,i,j), val(2,i,j), 1); break;
-			default:c = Color(val(0,i,j), val(1,i,j), val(2,i,j), val(3,i,j));
-			}
-			
-			int ind = b.vertices2().size();
-			b.addColor(c,c,c,c);			
-			b.addVertex2(x,y, x+xd,y, x+xd,y+yd, x,y+yd);
-			b.addIndex(ind+0, ind+1, ind+3);
-			b.addIndex(ind+1, ind+2, ind+3);
-		}
-	}
-	
-	paint(Triangles, b);
-#else
-	GraphicBuffers& b = g.graphicBuffers();
-	b.reset();
-
-	for(int j=0; j<N2; ++j){
-		float y = yd*j;
-		for(int i=0; i<N1; ++i){
-			float x = xd*i;
-
-			Color c;
-			switch(N0){
-			case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i,j)); break;
-			case 2: c = HSV(hsv.h, hsv.s*val(1,i,j), hsv.v*val(0,i,j)); break;
-			case 3:	c = Color(val(0,i,j), val(1,i,j), val(2,i,j), 1); break;
-			default:c = Color(val(0,i,j), val(1,i,j), val(2,i,j), val(3,i,j));
-			}
-			
-			b.addColor(c,c,c,c);			
-			b.addVertex2(x,y, x+xd,y, x+xd,y+yd, x,y+yd);
-		}
-	}
-	paint(Quads, b);
-#endif
-}
+//			Color c;
+//			switch(N0){
+//			case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i,j)); break;
+//			case 2: c = HSV(hsv.h, hsv.s*val(1,i,j), hsv.v*val(0,i,j)); break;
+//			case 3:	c = Color(val(0,i,j), val(1,i,j), val(2,i,j), 1); break;
+//			default:c = Color(val(0,i,j), val(1,i,j), val(2,i,j), val(3,i,j));
+//			}
+//			
+//			b.addColor(c,c,c,c);			
+//			b.addVertex2(x,y, x+xd,y, x+xd,y+yd, x,y+yd);
+//		}
+//	}
+//	paint(Quads, b);
+//#endif
+//}
 
 
 } // glv::

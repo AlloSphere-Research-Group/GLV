@@ -15,7 +15,7 @@ Grid::Grid(const Rect& r, double rangeMin, double rangeMax, double majorDist, in
 }
 
 // add grid lines to vertex buffer, returns number of lines added
-int Grid::addGridLines(int i, double dist, draw::GraphicBuffers& gb){
+int Grid::addGridLines(int i, double dist, draw::GraphicsData& gb){
 
 	float  p = gridToPix(i, floor(interval(i).min(), dist));				
 	float dp = gridToPix(i, dist) - gridToPix(i, 0);
@@ -45,7 +45,7 @@ void Grid::onAnimate(double dt, GLV& g){
 
 void Grid::onDraw(GLV& g){
 	using namespace glv::draw;
-	GraphicBuffers& gb = g.graphicBuffers();
+	GraphicsData& gb = g.graphicsData();
 
 	lineWidth(1);
 

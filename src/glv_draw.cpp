@@ -127,7 +127,7 @@ void linePattern(float l, float t, float w, float h, int n, const char * pat){
 }
 
 
-void paint(int prim, const GraphicBuffers& b){
+void paint(int prim, const GraphicsData& b){
 	int Nc = b.colors().size();
 	int Nv2= b.vertices2().size();
 	int Nv3= b.vertices3().size();
@@ -165,6 +165,9 @@ void push2D(float w, float h){
 		ortho(0, w, h, 0);		// flat 2D world dimension L,R,B,T
 	
 	push(ModelView); identity();
+	
+	// render all primitives at integer positions, ref: OpenGL Redbook
+	//translate(0.375, 0.375);
 }
 
 

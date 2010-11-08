@@ -514,7 +514,7 @@ public:
 	/// Get currently focused View
 	View * focusedView() const { return mFocusedView; }
 
-	draw::GraphicBuffers& graphicBuffers(){ return mGraphicBuffers; }
+	draw::GraphicsData& graphicsData(){ return mGraphicsData; }
 
 
 	/// Send this event to everyone in tree (including self)
@@ -597,7 +597,7 @@ protected:
 	View * mFocusedView;	// current focused widget
 	Event::t mEventType;	// current event type
 	ModelManager mMM;
-	draw::GraphicBuffers mGraphicBuffers;
+	draw::GraphicsData mGraphicsData;
 
 	// Returns whether the event should be bubbled to parent
 	bool doEventCallbacks(View& target, Event::t e);

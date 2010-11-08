@@ -160,6 +160,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 
 	push2D(w, h);	// initialise the OpenGL renderer for our 2D GUI world
 
+	graphicsData().reset();
 	onAnimate(dsec, *this);
 	drawPre();
 	onDraw(*this);
@@ -213,6 +214,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 			//scissor(r.l, h - r.bottom() - 1, r.w+2, r.h+1);
 			scissor(pix(r.l), pix(h - r.bottom() - 1.499), pix(r.w+1), pix(r.h+1.499));
 
+			graphicsData().reset();
 			cv->onAnimate(dsec, *this);
 			cv->drawPre();
 			push(); cv->onDraw(*this); pop();		// push/pop model cuz user might forget to...

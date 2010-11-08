@@ -8,11 +8,11 @@ Example:
 
 namespace glv{
 
-struct DRScatter : public DataRenderer{
+struct PlotScatter : public Plottable{
 
-	void onDrawElements(draw::GraphicBuffers& b, const Data& d, const Indexer& i){
-		prim(draw::Points);
-		draw::pointSize(2);
+	PlotScatter(): Plottable(draw::Points, 2){}
+
+	void onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& i){
 		while(i()){
 			double x = d.at<double>(0,i[0],i[1]);
 			double y = d.at<double>(1,i[0],i[1]);
@@ -24,12 +24,11 @@ struct DRScatter : public DataRenderer{
 	}
 };
 
-struct DRVector : public DataRenderer{
+struct PlotVector : public Plottable{
 
-	void onDrawElements(draw::GraphicBuffers& b, const Data& d, const Indexer& i){
-		//prim(draw::Lines);
-		prim(draw::Triangles);
-		draw::lineWidth(1);
+	PlotVector(): Plottable(draw::Triangles){}
+
+	void onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& i){
 		double dx = 2./d.size(1);
 		double dy = 2./d.size(2);
 		while(i()){
@@ -62,33 +61,6 @@ struct DRVector : public DataRenderer{
 	}
 };
 
-struct DRDensity : public DataRenderer{
-
-	void onDrawElements(draw::GraphicBuffers& b, const Data& d, const Indexer& i){
-		prim(draw::Triangles);
-		double dx = 2./d.size(1);
-		double dy = 2./d.size(2);
-		while(i()){
-			double x = i.frac(0)*2 - 1;
-			double y = i.frac(1)*2 - 1;
-			double w0 = d.at<double>(0,i[0],i[1],i[2]);
-			double w1 = d.at<double>(1,i[0],i[1],i[2]);
-
-			//Color c = HSV(0.1, fabs(w1), fabs(w0));
-			//Color c = HSV(0.1, atan2(w1,w0)/(2*M_PI)+0.5, hypot(w0,w1));
-			
-			double m = hypot(w0,w1);
-			double a = atan2(w1,w0)/(-2*M_PI); if(a<0) a=1+a;
-			Color c = HSV(a, 1, m);
-			int idx = b.vertices2().size();
-
-			b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
-			b.addColor(c,c,c,c);
-			b.addIndex(idx+0, idx+1, idx+3);
-			b.addIndex(idx+1, idx+2, idx+3);
-		}
-	}
-};
 
 struct MyGLV : GLV {
 
@@ -121,9 +93,9 @@ int main(){
 
 	// Create the Views
 	MyGLV top;
-	DataPlot<DRDensity> v1(Rect(000,0, 400,400));
-	DataPlot<DRVector>  v2(Rect(400,0, 400,400));
-	DataPlot<DRScatter> v3(Rect(800,0, 400,400));
+	DataPlot v1(Rect(000,0, 400,400), *new PlotDensity);
+	DataPlot v2(Rect(400,0, 400,400), *new PlotVector);
+	DataPlot v3(Rect(800,0, 400,400), *new PlotScatter);
 
 //	v1.disable(CropSelf | DrawBack);
 //	v2.disable(CropSelf | DrawBack);

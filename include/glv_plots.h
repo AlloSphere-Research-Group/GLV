@@ -229,25 +229,25 @@ protected:
 	void draw(const PlotData& d, float mulX, float addX, float mulY, float addY, const Color& defaultCol);
 };
 
-
-/// Density plot
-
-/// Model data should have a shape of (nc, nx, ny) where 'nc' si the number of
-/// components of the value (e.g., a scalar is 1) and 'nx' and 'ny' are the size
-/// of the x and y dimensions, respectively.
-class DensityPlot : public Widget {
-public:
-	DensityPlot(const Rect& r=Rect());
-
-	DensityPlot& color(const Color& v){ mColor1=v; return *this; }
-
-	virtual const char * className() const { return "DensityPlot"; }
-	virtual void onDraw(GLV& g);
-
-protected:
-	Color mColor1;
-	float val(int i, int j, int k){ return to01(data().at<float>(i,j,k)); }
-};
+//
+///// Density plot
+//
+///// Model data should have a shape of (nc, nx, ny) where 'nc' si the number of
+///// components of the value (e.g., a scalar is 1) and 'nx' and 'ny' are the size
+///// of the x and y dimensions, respectively.
+//class DensityPlot : public Widget {
+//public:
+//	DensityPlot(const Rect& r=Rect());
+//
+//	DensityPlot& color(const Color& v){ mColor1=v; return *this; }
+//
+//	virtual const char * className() const { return "DensityPlot"; }
+//	virtual void onDraw(GLV& g);
+//
+//protected:
+//	Color mColor1;
+//	float val(int i, int j, int k){ return to01(data().at<float>(i,j,k)); }
+//};
 
 
 /*
@@ -347,29 +347,69 @@ protected:
 	void setSizes(const int* v, int n=N){ for(int i=0; i<n; ++i) mSizes[i]=v[i]; }
 };
 
+class DataPlot;
 
-class DataRenderer{
+
+//class DataMap{
+//public:
+//	templ
+//	void
+//};
+
+
+class Plottable{
 public:
 
-	DataRenderer(int prim=draw::Points): mPrim(prim){}
+	Plottable(int prim=draw::Points, float stroke=1): mPrim(prim), mStroke(stroke){}
 
-	virtual ~DataRenderer(){}
-	
-	int prim() const { return mPrim; }
-	
-	DataRenderer& prim(int v){ mPrim=v; return *this; }
+	virtual ~Plottable(){}
 
-	virtual void onDrawElements(draw::GraphicBuffers& b, const Data& d, const Indexer& ind){}
+	const Data& data() const { return mData; }
+	Data& data(){ return mData; }
+	
+	int prim() const { return mPrim; }	
+	Plottable& prim(int v){ mPrim=v; return *this; }
+
+	int stroke() const { return mStroke; }	
+	Plottable& stroke(int v){ mStroke=v; return *this; }
+
+	virtual void onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& ind){}
 
 protected:
+	friend class DataPlot;
+
 	int mPrim;
+	float mStroke;
+	Color mColor;
+	Data mData;
+	
+	void doDrawElements(draw::GraphicsData& gd, const Data& d){
+		if(!d.hasData()) return;
+		//draw::color();
+		draw::stroke(stroke());
+		
+		Indexer ind(d.shape()+1);
+		onDrawElements(gd, d, ind);
+		draw::paint(prim(), gd);
+	}
+};
+
+
+struct PlotDensity : public Plottable{
+
+	PlotDensity(): Plottable(draw::Triangles){}
+
+	void onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& i);
 };
 
 
 
+//class CoordinateMap{
+//
+//};
 
-template <class DataRend = DataRenderer>
-class DataPlot : public Grid, public DataRend {
+
+class DataPlot : public Grid {
 public:
 
 	DataPlot(const Rect& r=Rect(0))
@@ -378,38 +418,71 @@ public:
 		resetValInd();
 	}
 
+	DataPlot(const Rect& r, Plottable& p)
+	:	Grid(r)
+	{
+		resetValInd();
+		add(p);
+	}
+
 	int valueIndex(int i) const { return mValInd[i]; }
+
+	DataPlot& add(Plottable& v){ mPlottables.push_back(&v); return *this; }
 
 	DataPlot& valueIndex(int from, int to){
 		mValInd[from] = to; return *this;
 	}
 
+	virtual const char * className() const { return "DataPlot"; }
+
 	virtual void onDraw(GLV& g){
-
 		Grid::onDraw(g);
-
-		if(!data().hasData()) return;
-	
-		draw::GraphicBuffers& gb = g.graphicBuffers();
-		gb.reset();
-
-		Indexer ind(data().shape()+1);
-
+		draw::GraphicsData& gd = g.graphicsData();
 		draw::color(colors().fore);
 
 		pushGrid();
-			onDrawElements(gb, data(), ind);
-			paint(this->prim(), gb);
+			Plottables::iterator i = mPlottables.begin();
+			while(i != mPlottables.end()){
+				gd.reset();
+				Plottable& p = **i;
+				p.doDrawElements(gd, p.data().hasData() ? p.data() : data());
+				++i;
+			}		
 		popGrid();
 	}
 
 protected:
+	typedef std::vector<Plottable *> Plottables;
+	
+	Plottables mPlottables;
 	int mValInd[4];
 	
 	void resetValInd(){
 		for(int i=0; i<4; ++i) mValInd[i]=i;
 	}
 };
+
+
+//
+///// Density plot
+//
+///// Model data should have a shape of (nc, nx, ny) where 'nc' si the number of
+///// components of the value (e.g., a scalar is 1) and 'nx' and 'ny' are the size
+///// of the x and y dimensions, respectively.
+//class DensityPlot : public DataPlot {
+//public:
+//	DensityPlot(const Rect& r=Rect());
+//
+//	DensityPlot& color(const Color& v){ mColor1=v; return *this; }
+//
+//	virtual const char * className() const { return "DensityPlot"; }
+//	virtual void onDraw(GLV& g);
+//
+//protected:
+//	Color mColor1;
+////	float val(int i, int j, int k){ return to01(data().at<float>(i,j,k)); }
+//	float val(int i, int j, int k){ return (data().at<float>(i,j,k)); }
+//};
 
 
 

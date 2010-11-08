@@ -212,7 +212,7 @@ void text(const char * s, float l=0, float t=0, unsigned fontSize=8, float lineS
 
 
 /// Buffers of vertices, colors, and indices
-class GraphicBuffers{
+class GraphicsData{
 public:
 	const Buffer<Color>& colors() const { return mColors; }
 	const Buffer<unsigned>& indices() const { return mIndices; }
@@ -247,6 +247,9 @@ public:
 
 	void addIndex(unsigned i1, unsigned i2, unsigned i3, unsigned i4){
 		addIndex(i1,i2,i3); addIndex(i4); }
+
+	void addVertex(double x, double y){ addVertex2(x,y); }
+	void addVertex(double x, double y, double z){ addVertex3(x,y,z); }
 
 	void addVertex2(double x, double y){
 		vertices2().append(Point2(x,y)); }
@@ -284,7 +287,7 @@ protected:
 };
 
 
-void paint(int prim, const GraphicBuffers& gb);
+void paint(int prim, const GraphicsData& gb);
 
 
 /// Disables rendering capabilities

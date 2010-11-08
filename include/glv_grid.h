@@ -66,7 +66,7 @@ protected:
 	float mVel[DIM], mVelW;
 	bool mShowAxes, mShowGrid, mPreserveAspect;
 
-	int addGridLines(int i, double dist, draw::GraphicBuffers& gb);
+	int addGridLines(int i, double dist, draw::GraphicsData& gb);
 
 	// map grid coordinate to pixel coordinate
 	double gridToPix(int i, double v){

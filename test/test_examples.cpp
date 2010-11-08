@@ -21,7 +21,7 @@ const int plotSize=64;
 Plot	plotXY(Rect(150), plotSize, PlotDim::XY, Color(0,0,0.5)),
 		plotX(Rect(150,60), Color(0.5,0,0)),
 		plotY(Rect(60,150), Color(0,0.5,0));
-DensityPlot dplot(Rect(150));
+DensityPlot dplot(Rect(200));
 
 NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,8, 8,0);
 Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100)), sl1HS(sl1H,0), sl1VS(sl1V,0);
@@ -58,30 +58,26 @@ struct SubView3D : View3D{
 		enable(KeepWithinParent);
 	}
 	
-	virtual void onDraw3D(){
+	virtual void onDraw3D(GLV& g){
 		using namespace glv::draw;
 		translateZ(-3);
 		rotateY(angle+=1);
 		const int n=12;
 
-		Point3 pts[n*2];
-
-		color(0.4);
+		GraphicsData& buf = g.graphicsData();
 
 		for(int i=0; i<n; ++i){
 			float p = float(i)/n;
 			float x = cos(p*6.283)*1.2;
 			float z = sin(p*6.283)*1.2;
 			
-			pts[2*i+0](x, -0.7, z);
-			pts[2*i+1](x, +0.7, z);
-			
-			
-//			color(HSV(p,1,1));
-//			color(0);
+			buf.addVertex(x, -0.7, z);
+			buf.addVertex(x, +0.7, z);
+			buf.addColor(HSV(p,1,1));
+			buf.addColor(0);
 		}
 
-		paint(Triangles, pts, n*2);	
+		paint(Triangles, buf);
 	}
 
 	unsigned angle;
@@ -190,7 +186,7 @@ int main(int argc, char ** argv){
 	groups[++i]<< plotXY.pos(Place::BL).anchor(Place::CC);
 	groups[  i]<< plotX.pos(Place::TL, 0,4).anchor(Place::CC);
 	groups[  i]<< plotY.pos(Place::BR,-4,0).anchor(Place::CC);
-	groups[++i]<< dplot.pos(Place::BL).anchor(Place::CC);
+	groups[++i]<< dplot.pos(Place::CC).anchor(Place::CC);
 	groups[++i]<< tv1.pos(Place::CC, 0,0).anchor(Place::CC);
 	groups[++i]<< v3D.pos(Place::CC, 0,0).anchor(Place::CC);
 
