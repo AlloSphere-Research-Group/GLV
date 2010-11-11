@@ -8,38 +8,6 @@ Example:
 
 namespace glv{
 
-struct DRFunction1D : public DataRenderer{
-	void onDrawElements(draw::GraphicBuffers& b, const Data& d, const Indexer& i){
-
-		prim(draw::LineStrip);
-		draw::stroke(2);
-
-		Indexer j(i.size());
-
-		while(j()){
-			double x = j[0];
-			double y = d.at<double>(0, j[0]);
-
-			b.addVertex2(x, y);
-		}
-	}
-};
-
-struct DRFunction2D : public DataRenderer{
-	void onDrawElements(draw::GraphicBuffers& b, const Data& d, const Indexer& i){
-		if(d.size(0) < 2) return;
-
-		prim(draw::LineStrip);
-		draw::stroke(2);
-		while(i()){
-			double x = d.at<double>(0, i[0], i[1]);
-			double y = d.at<double>(1, i[0], i[1]);
-
-			b.addVertex2(x, y);
-		}
-	}
-};
-
 struct MyGLV : GLV {
 
 	MyGLV(): phase1(0), phase2(0){
@@ -84,12 +52,19 @@ int main(){
 	// Create the Views
 	MyGLV top;
 	double d = 800;
-	DataPlot<DRFunction1D> v1__(Rect(    0,0*d/8, d,d/8));
-	DataPlot<DRFunction1D> v_1_(Rect(    0,1*d/8, d,d/8));
-	DataPlot<DRFunction1D> v__1(Rect(    0,2*d/8, d,d/8));
-	DataPlot<DRFunction2D> v11_(Rect(0*d/3,3*d/8, d/3,d/3));
-	DataPlot<DRFunction2D> v_11(Rect(1*d/3,3*d/8, d/3,d/3));
-	DataPlot<DRFunction2D> v1_1(Rect(2*d/3,3*d/8, d/3,d/3));
+//	DataPlot<DRFunction1D> v1__(Rect(    0,0*d/8, d,d/8));
+//	DataPlot<DRFunction1D> v_1_(Rect(    0,1*d/8, d,d/8));
+//	DataPlot<DRFunction1D> v__1(Rect(    0,2*d/8, d,d/8));
+//	DataPlot<DRFunction2D> v11_(Rect(0*d/3,3*d/8, d/3,d/3));
+//	DataPlot<DRFunction2D> v_11(Rect(1*d/3,3*d/8, d/3,d/3));
+//	DataPlot<DRFunction2D> v1_1(Rect(2*d/3,3*d/8, d/3,d/3));
+
+	DataPlot v1__(Rect(    0,0*d/8, d,  d/8), *new PlotFunction1D);
+	DataPlot v_1_(Rect(    0,1*d/8, d,  d/8), *new PlotFunction1D);
+	DataPlot v__1(Rect(    0,2*d/8, d,  d/8), *new PlotFunction1D);
+	DataPlot v11_(Rect(0*d/3,3*d/8, d/3,d/3), *new PlotFunction2D);
+	DataPlot v_11(Rect(1*d/3,3*d/8, d/3,d/3), *new PlotFunction2D);
+	DataPlot v1_1(Rect(2*d/3,3*d/8, d/3,d/3), *new PlotFunction2D);
 
 	Data& data = top.data();
 	v1__.data() = data.slice(0).stride(data.size(0)).shape(1, data.size(1,2));

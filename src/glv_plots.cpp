@@ -498,6 +498,9 @@ bool Plot::onEvent(Event::t e, GLV& g){
 void PlotDensity::onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& i){
 	double dx = 2./d.size(1);
 	double dy = 2./d.size(2);
+	
+	int N0 = d.size(0);
+	
 	while(i()){
 		double x = i.frac(0)*2 - 1;
 		double y = i.frac(1)*2 - 1;

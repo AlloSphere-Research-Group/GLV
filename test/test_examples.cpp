@@ -21,7 +21,8 @@ const int plotSize=64;
 Plot	plotXY(Rect(150), plotSize, PlotDim::XY, Color(0,0,0.5)),
 		plotX(Rect(150,60), Color(0.5,0,0)),
 		plotY(Rect(60,150), Color(0,0.5,0));
-DensityPlot dplot(Rect(200));
+//DensityPlot dplot(Rect(200));
+DataPlot dplot(Rect(200));
 
 NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,8, 8,0);
 Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100)), sl1HS(sl1H,0), sl1VS(sl1V,0);
@@ -139,6 +140,8 @@ int main(int argc, char ** argv){
 	plotY.data().reference(0, plotXY.data().points(1), plotSize);
 	plotX.tickMajorX(8).rangeFit();
 	plotY.tickMajorY(8).rangeFit();
+
+	dplot.add(*new PlotDensity);
 
 	// Produce matrix of values
 	{

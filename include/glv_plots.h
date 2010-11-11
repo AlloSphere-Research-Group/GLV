@@ -396,12 +396,34 @@ protected:
 
 
 struct PlotDensity : public Plottable{
-
 	PlotDensity(): Plottable(draw::Triangles){}
-
 	void onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& i);
 };
 
+
+struct PlotFunction1D : public Plottable{
+	PlotFunction1D(): Plottable(draw::LineStrip){}
+	void onDrawElements(draw::GraphicsData& g, const Data& d, const Indexer& i){
+		Indexer j(i.size());
+		while(j()){
+			double x = j[0];
+			double y = d.at<double>(0, j[0]);
+			g.addVertex(x, y);
+		}
+	}
+};
+
+struct PlotFunction2D : public Plottable{
+	PlotFunction2D(): Plottable(draw::LineStrip){}
+	void onDrawElements(draw::GraphicsData& g, const Data& d, const Indexer& i){
+		if(d.size(0) < 2) return;
+		while(i()){
+			double x = d.at<double>(0, i[0], i[1]);
+			double y = d.at<double>(1, i[0], i[1]);
+			g.addVertex(x, y);
+		}
+	}
+};
 
 
 //class CoordinateMap{
