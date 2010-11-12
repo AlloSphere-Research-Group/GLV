@@ -23,7 +23,7 @@ void ntFocus(const Notification& n){
 
 
 
-int main(int argc, char ** argv){
+int main(){
 
 	#define SET4(x, a,b,c,d) x[0]=a; x[1]=b; x[2]=c; x[3]=d
 	#define EQ4(x, a,b,c,d) (x[0]==a && x[1]==b && x[2]==c && x[3]==d)
@@ -180,13 +180,13 @@ int main(int argc, char ** argv){
 
 		std::string s;
 		w.value(true);
-		w.toString(s);			assert(s == "1");
+		w.valueToString(s);			assert(s == "1");
 		w.value(false);
-		w.toString(s);			assert(s == "0");
-		w.fromString("0");		assert(w.value() == false);
-		w.fromString("1");		assert(w.value() == true);
+		w.valueToString(s);			assert(s == "0");
+		w.valueFromString("0");		assert(w.value() == false);
+		w.valueFromString("1");		assert(w.value() == true);
 
-		assert(!w.fromString("invalid"));
+		assert(!w.valueFromString("invalid"));
 	}
 
 	{
@@ -213,10 +213,10 @@ int main(int argc, char ** argv){
 		w.value(false, 1);
 		w.value(false, 2);
 		w.value(false, 3);
-		w.toString(s);		assert(s == "{0, 0, 0, 0}");
+		w.valueToString(s);		assert(s == "{0, 0, 0, 0}");
 		
 		v1 = v2 = false;
-		w.fromString("{1,1,1,1}");
+		w.valueFromString("{1,1,1,1}");
 		assert(w.value(0) && w.value(1) && w.value(2) && w.value(3));
 		assert(v1 && v2);
 	}
@@ -245,11 +245,11 @@ int main(int argc, char ** argv){
 
 		std::string s;
 		w.value(0.25);
-		w.toString(s);			assert(s == "0.25");
-		w.fromString("0.5");	assert(w.value() == 0.5);
+		w.valueToString(s);			assert(s == "0.25");
+		w.valueFromString("0.5");	assert(w.value() == 0.5);
 									assert(v == 0.5);
 
-		assert(!w.fromString("invalid"));
+		assert(!w.valueFromString("invalid"));
 		assert(w.value() == 0.5);
 	}
 
@@ -278,10 +278,10 @@ int main(int argc, char ** argv){
 		w.value(0.2f, 1);
 		w.value(0.3f, 2);
 		w.value(0.4f, 3);
-		w.toString(s);	assert(s == "{0.1, 0.2, 0.3, 0.4}");
+		w.valueToString(s);	assert(s == "{0.1, 0.2, 0.3, 0.4}");
 		
 		v1=v2=0;
-		w.fromString("{0.4,0.3,0.2,0.1}");
+		w.valueFromString("{0.4,0.3,0.2,0.1}");
 		assert(w.value(0) == 0.4f);
 		assert(w.value(1) == 0.3f);
 		assert(w.value(2) == 0.2f);
@@ -349,10 +349,10 @@ int main(int argc, char ** argv){
 		std::string s;
 		w.value(0.2, 0);
 		w.value(0.3, 1);
-		w.toString(s);		assert(s == "{0.2, 0.3}");
+		w.valueToString(s);		assert(s == "{0.2, 0.3}");
 		
 		v1 = v2 = 0;
-		w.fromString("{0.7, 0.8}");
+		w.valueFromString("{0.7, 0.8}");
 		assert(w.value(0)==0.7f && w.value(1)==0.8f);
 		assert(v1==w.value(0) && v2==w.value(1));
 	}
@@ -382,10 +382,10 @@ int main(int argc, char ** argv){
 		w.value(0.2f, 1);
 		w.value(0.3f, 2);
 		w.value(0.4f, 3);
-		w.toString(s);	assert(s == "{0.1, 0.2, 0.3, 0.4}");
+		w.valueToString(s);	assert(s == "{0.1, 0.2, 0.3, 0.4}");
 		
 		v1=v2=0;
-		w.fromString("{0.4,0.3,0.2,0.1}");
+		w.valueFromString("{0.4,0.3,0.2,0.1}");
 		assert(w.value(0) == 0.4f);
 		assert(w.value(1) == 0.3f);
 		assert(w.value(2) == 0.2f);
@@ -420,10 +420,10 @@ int main(int argc, char ** argv){
 		std::string s;
 		w.value(0.2, 0);
 		w.value(0.3, 1);
-		w.toString(s);		assert(s == "{0.2, 0.3}");
+		w.valueToString(s);		assert(s == "{0.2, 0.3}");
 		
 		v1 = v2 = 0;
-		w.fromString("{0.7, 0.8}");
+		w.valueFromString("{0.7, 0.8}");
 		assert(w.value(0)==0.7f && w.value(1)==0.8f);
 		assert(v1==w.value(0) && v2==w.value(1));
 	}
@@ -437,10 +437,10 @@ int main(int argc, char ** argv){
 		assert(w.value() == "test");
 		
 		std::string s;
-		w.toString(s);		assert(s == "\"test\"");
+		w.valueToString(s);		assert(s == "\"test\"");
 		
 		w.value("");
-		w.fromString("\"test\"");	assert(w.value() == "test");
+		w.valueFromString("\"test\"");	assert(w.value() == "test");
 	}
 
 	{
@@ -466,10 +466,10 @@ int main(int argc, char ** argv){
 
 		std::string s;
 		w.value(0.2);
-		w.toString(s);		assert(s == "0.2");
+		w.valueToString(s);		assert(s == "0.2");
 		
 		v = 0;
-		w.fromString("0.8");
+		w.valueFromString("0.8");
 		assert(w.value()==0.8 && w.value()==v);
 	}
 
@@ -522,7 +522,7 @@ int main(int argc, char ** argv){
 		Sliders ss(Rect(), 1, 4);
 		Slider2D s2D;
 		NumberDialer nd(1,4,1,-1);
-		std::string strings[] = {"test1", "test2", "test3"};
+//		std::string strings[] = {"test1", "test2", "test3"};
 		
 		// Method #1: implicit
 		// Advantage:		simplicity- just name Views to be part of model
@@ -540,7 +540,7 @@ int main(int argc, char ** argv){
 		View top;
 	
 		top << l << tv << b << bs << s << ss << s2D << nd;
-		
+/*		
 		std::string str1, str2;
 		top.modelToString(str1, "test model");		
 		printf("%s\n", str1.c_str());
@@ -549,7 +549,7 @@ int main(int argc, char ** argv){
 		top.modelToString(str2);
 		printf("%s\n", str2.c_str());
 		//assert(str1 == str2);
-
+*/
 
 //		// Method #2: explicit
 //		// Advantage: can add arbitrary data to model
