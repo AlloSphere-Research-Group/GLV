@@ -11,6 +11,7 @@
 #include "glv_observer_pattern.h"
 #include "glv_color.h"
 #include "glv_draw.h"
+#include "glv_font.h"
 #include "glv_model.h"
 #include "glv_util.h"
 
@@ -313,7 +314,7 @@ public:
 /// Overall appearance scheme.
 class Style : public SmartPointer{
 public:
-	Style(bool deletable=false): SmartPointer(deletable){}
+	Style(bool deletable=false);
 	
 	StyleColor color;	///< Color style
 
@@ -395,9 +396,10 @@ public:
 	
 	
 	bool absToRel(View * target, space_t& x, space_t& y) const;
-	StyleColor& colors() const;					///< Returns my style colors
+	StyleColor& colors() const;					///< Get style colors
 	const std::string& descriptor() const;		///< Get descriptor
 	int enabled(Property::t v) const;			///< Returns whether a property is set
+	Font& font();								///< Get font
 	bool hasCallback(Event::t e, eventCallback cb) const; ///< Returns whether a particular callback has been registered
 	bool hasCallbacks(Event::t e) const;		///< Returns whether there are callback(s) registered for a particular event
 	const std::string& name() const;			///< Get name
@@ -482,6 +484,7 @@ protected:
 	Rect mRestore;					// Restoration geometry
 	std::string mName;				// Settable name identifier
 	std::string mDescriptor;		// String describing view
+	Font * mFont;					// constructed on first use
 
 	void drawPre();					// Drawing routine called before calling user draw
 	void drawPost();				// Drawing routine called after calling user draw

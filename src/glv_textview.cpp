@@ -12,7 +12,7 @@ namespace glv{
 	data().resize(Data::STRING);\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
 	setValue(str);\
-	vertical(vert);
+	vertical(vert)
 
 Label::Label(const std::string& str, const Spec& s)
 :	Widget(Rect(0)), mAlignX(0), mAlignY(0)
@@ -27,15 +27,15 @@ Label::Label(const std::string& str, const Spec& s)
 
 Label::Label(const std::string& str, bool vert)
 :	Widget(Rect(0)), CTOR_LIST
-{	CTOR_BODY }
+{	CTOR_BODY; }
 
 Label::Label(const std::string& str, space_t l, space_t t, bool vert)
 :	Widget(Rect(l,t,0,0)), CTOR_LIST
-{	CTOR_BODY }
+{	CTOR_BODY; }
 
 Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool vert)
 :	Widget(Rect(0)), CTOR_LIST
-{	CTOR_BODY 
+{	CTOR_BODY;
 	pos(p, px, py).anchor(p);
 }
 
@@ -45,7 +45,7 @@ Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool ve
 Label& Label::align(float vx, float vy){ mAlignX=vx; mAlignY=vy; return *this; }
 
 Label& Label::size(float pixels){
-	mFont.size(pixels);
+	font().size(pixels);
 	fitExtent();
 	return *this;
 }
@@ -72,8 +72,8 @@ void Label::onDraw(GLV& g){
 	lineWidth(1);
 	color(colors().text);
 	if(mVertical){ translate(0,h); rotate(0,0,-90); }
-	//mFont.render(value().c_str());
-	mFont.render(data().toString().c_str());
+	//font().render(value().c_str());
+	font().render(data().toString().c_str());
 	//scale(mSize, mSize);
 	//text(value().c_str());
 }
@@ -94,7 +94,7 @@ void Label::fitExtent(){
 		}
 	}
 	
-	float mul = mFont.scaleX();
+	float mul = font().scaleX();
 	
 	space_t dw = mw*mul - w;
 	space_t dh = th*mul - h;
@@ -239,8 +239,8 @@ void NumberDialer::onDraw(GLV& g){ //printf("% g\n", value());
 //		}
 //	draw::pop();
 
-	mFont.size(dx - mPad);
-	mFont.letterSpacing(mPad/mFont.size());
+	font().size(dx - mPad);
+	font().letterSpacing(mPad/font().size());
 	float x = mPad;
 	float y = mPad;
 
@@ -264,8 +264,8 @@ void NumberDialer::onDraw(GLV& g){ //printf("% g\n", value());
 	}
 
 //	printf("%s\n", str);
-	mFont.render(str, x, y);
-	if(mNF>0) mFont.render(".", dx*(mNI+sizeSign()-0.5) + x, y);
+	font().render(str, x, y);
+	if(mNF>0) font().render(".", dx*(mNI+sizeSign()-0.5) + x, y);
 }
 
 
@@ -336,7 +336,7 @@ TextView::TextView(const Rect& r, float textSize)
 //void TextView::callNotify(){ notify(Update::Value, TextViewChange(&mText)); }
 
 TextView& TextView::size(float pixels){
-	mFont.size(pixels);
+	font().size(pixels);
 	return *this;
 }
 
@@ -365,10 +365,10 @@ void TextView::onDraw(GLV& g){
 	float padY = 4;
 	float addY =-2;		// subtraction from top since some letters go above cap
 
-	float tl = mPos * mFont.advance('M') + padX;
-//	float tr = tl + mFont.advance('M');
+	float tl = mPos * font().advance('M') + padX;
+//	float tr = tl + font().advance('M');
 	float tt = addY + padY;
-	float tb = tt + mFont.descent() - addY;
+	float tb = tt + font().descent() - addY;
 	float strokeWidth = 1;
 	
 	// draw selection
@@ -376,11 +376,11 @@ void TextView::onDraw(GLV& g){
 		float sl, sr;
 		if(mSel>0){
 			sl = tl;
-			sr = sl + mSel*mFont.advance('M');
+			sr = sl + mSel*font().advance('M');
 		}
 		else{
 			sr = tl;
-			sl = sr + mSel*mFont.advance('M');
+			sl = sr + mSel*font().advance('M');
 		}
 		color(colors().selection);
 		rectangle(sl, tt, sr, tb);
@@ -394,7 +394,7 @@ void TextView::onDraw(GLV& g){
 
 	draw::lineWidth(strokeWidth);
 	color(colors().text);
-	mFont.render(mText.c_str(), padX, padY);
+	font().render(mText.c_str(), padX, padY);
 }
 
 bool TextView::onEvent(Event::t e, GLV& g){
@@ -504,7 +504,7 @@ void TextView::setPos(int v){
 }
 
 int TextView::xToPos(float x){
-	float charw = mFont.advance('M');
+	float charw = font().advance('M');
 	if(x<0) x=0;
 	int p = (x-mPadX*1)/charw;
 	if(p > (int)mText.size()) p = mText.size();

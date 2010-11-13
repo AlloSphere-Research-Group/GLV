@@ -78,7 +78,7 @@ void Grid::onDraw(GLV& g){
 					if(fabs(gp) < 1e-5) gp=0;
 					char buf[16];
 					snprintf(buf, sizeof buf, "%.3g", gp);
-					mFont.render(buf, v[i], v[(i+1)%DIM]);
+					font().render(buf, v[i], v[(i+1)%DIM]);
 				}
 			}
 			paint(Lines, &gb.vertices2()[0], gb.vertices2().size());

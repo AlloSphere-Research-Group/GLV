@@ -7,6 +7,13 @@
 #include "glv_core.h"
 #include "glv_font.h"
 
+#ifdef minor
+#undef minor
+#endif
+#ifdef major
+#undef major
+#endif
+
 namespace glv{
 
 class Grid : public View{
@@ -62,7 +69,6 @@ protected:
 	interval_t mInterval[DIM];
 	double mMajor[DIM];
 	int mMinor[DIM];
-	Font mFont;
 	float mVel[DIM], mVelW;
 	bool mShowAxes, mShowGrid, mPreserveAspect;
 

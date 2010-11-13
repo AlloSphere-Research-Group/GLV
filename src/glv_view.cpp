@@ -12,7 +12,8 @@ namespace glv{
 	parent(0), child(0), sibling(0), \
 	draw(cb),\
 	mFlags(Visible | DrawBack | DrawBorder | CropSelf | FocusHighlight | FocusToTop | HitTest | Controllable), \
-	mStyle(&(Style::standard())), mAnchorX(0), mAnchorY(0), mStretchX(0), mStretchY(0)
+	mStyle(&(Style::standard())), mAnchorX(0), mAnchorY(0), mStretchX(0), mStretchY(0), \
+	mFont(0)
 
 View::View(space_t left, space_t top, space_t width, space_t height, drawCallback cb)
 :	Rect(left, top, width, height), VIEW_INIT
@@ -56,6 +57,7 @@ View::~View(){
 		else child->remove();
 	}
 
+	delete mFont;
 }
 
 
@@ -317,6 +319,12 @@ void View::focused(bool b){
 	property(Focused, b);
 	if(b && enabled(FocusToTop)) makeLastSibling(); // move to end of chain, so drawn last
 	notify(this, Update::Focus);
+}
+
+
+Font& View::font(){
+	if(!mFont){	mFont = new Font; }
+	return *mFont;
 }
 
 

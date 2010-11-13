@@ -424,6 +424,7 @@ int main(){
 	{
 		bool b=false;
 		Label w;
+
 		w.attach(ntValue, Update::Value, &b);
 		w.setValue("test");
 		assert(b);
@@ -664,7 +665,7 @@ int main(){
 
 		View top;
 		top << l << tv << b << bs << s << ss << s2D << nd;
-		
+	
 		std::string str1, str2;
 //		top.modelToString(str1, "test model");		
 //		printf("%s\n", str1.c_str());

@@ -24,6 +24,10 @@ namespace Event{
 }
 
 
+Style::Style(bool deletable)
+:	SmartPointer(deletable)
+{}
+
 
 StyleColor::StyleColor(){
 	set(BlackOnWhite);

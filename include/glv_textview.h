@@ -73,7 +73,6 @@ public:
 	virtual void onDraw(GLV& g);
 
 protected:
-	Font mFont;
 	float mAlignX, mAlignY;
 	bool mVertical;
 	
@@ -141,7 +140,6 @@ public:
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
-	Font mFont;
 	int mNI, mNF, mPos;		// # digits in integer, # digits in fraction, selected digit position
 	int mVal;				// current value
 	space_t mPad;
@@ -201,7 +199,6 @@ public:
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
-	Font mFont;
 	std::string mText;		// The text string
 
 	float mSpacing;
@@ -242,11 +239,11 @@ public:
 	virtual void onDraw(GLV& g){
 		using namespace glv::draw;
 		if(mItems.size() < 1) return;
-		mFont.size(height() - 2*mPad);
+		font().size(height() - 2*mPad);
 		
 		color(colors().text);
 		stroke(1);
-		mFont.render(mItems[selected()].c_str(), mPad, mPad);
+		font().render(mItems[selected()].c_str(), mPad, mPad);
 	}
 
 	virtual bool onEvent(Event::t e, GLV& g){
@@ -280,7 +277,6 @@ public:
 	}
 
 private:
-	Font mFont;
 	int mSelected;
 	space_t mPad;
 	std::vector<std::string> mItems;

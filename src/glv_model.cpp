@@ -150,6 +150,7 @@ static inline int count(const Data& a, const Data& b){
 Data::Data()
 :	mData(0), mElems(0), mStride(1), mType(Data::VOID)
 {
+printf("\nData::Data %p\n", this);
 	shapeAll(0);
 }
 
@@ -166,6 +167,7 @@ Data::Data(Data::Type type, int n1, int n2, int n3, int n4)
 }
 
 Data::~Data(){
+printf("\nData::~Data %p\n", this);
 	free();
 }
 
@@ -303,7 +305,7 @@ void Data::clone(){
 }
 
 void Data::free(){
-
+printf("\nData::free %p:\n", this); printf("\t"); print(); printf("\n");
 	if(release(mData)){
 		//printf("(%p) Data::free %p\n", this, mData);
 		switch(type()){
@@ -321,6 +323,7 @@ void Data::free(){
 	mStride=1;
 	shapeAll(0);
 	mType=Data::VOID;
+	printf("\t"); print(); printf("\n");
 }
 
 int Data::order() const {
