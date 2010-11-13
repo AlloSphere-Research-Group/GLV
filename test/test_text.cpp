@@ -17,6 +17,7 @@ int main(){
 
 	// Create the Views
 	GLV glv;
+
 	Label v1("\
 		zero	one		two		three\n\
 zero	0		0		0		0\n\
@@ -26,9 +27,10 @@ three	0		3		6		9"
 	);
 
 	Label v2("letter spacing");
-/*
-	v1.size(12);
+
+	v1.size(16);
 	v2.font().letterSpacing(2);
+	v2.size(16);
 
 	View* views[] = {&v1, &v2};
 	for(unsigned i=0; i<sizeof(views)/sizeof(views[0]); ++i){
@@ -36,7 +38,7 @@ three	0		3		6		9"
 		views[i]->enable(KeepWithinParent);
 		views[i]->enable(DrawBack);
 		glv << views[i];
-		if(i>0) views[i]->posUnder(*views[i-1]);
+		if(i>0) views[i]->posUnder(*views[i-1], 2);
 	}
 	
 	// Set color styles
@@ -45,9 +47,9 @@ three	0		3		6		9"
 
 	Window win(800,600, "Views", &glv);
 
-	win.fit();
+	//win.fit();
 
 	Application::run();
-*/
+
 }
 

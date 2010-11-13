@@ -106,7 +106,7 @@ int main(){
 	
 	top << v1 << v2 << v3;
 
-	Window win(0,0, "DataPlots", &top);
+	Window win(80,80, "DataPlots", &top);
 	win.fit();
 	Application::run();
 }

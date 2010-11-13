@@ -209,54 +209,49 @@ static bool character(int c, float dx, float dy, float ps){
 
 struct TextIterator{
 
-	TextIterator(Font& f_, const char *& s_): x(0),y(0),l(0),t(0),w(0),h(0), s(s_), f(f_){}
+	TextIterator(const Font& f_, const char *& s_): x(0),y(0),l(0),t(0),w(0),h(0), s(s_), f(f_){}
 
 	virtual ~TextIterator(){}
 
-	void operator()(){
-		while(step()){}
+	void run(){
+		while((*this)()){}
 	}
 
-	bool step(){
+	bool operator()(){
 		if(*s){
 			char c = *s++;
 			l = x; t = y;
 //			w = f.advance(c) * (1+f.letterSpacing()); // varies per character if proportional
 //			h = 1 * f.cap() * f.lineSpacing();
 //			float tabUnits = f.advance('M') * f.tabSpaces() * (1+f.letterSpacing());
-			w = Glyph::width() * (1+f.letterSpacing()); // varies per character if proportional
-			h = 1 * (Glyph::descent() - Glyph::cap()) * f.lineSpacing();
+			w = Glyph::width(); // varies per character if proportional
+			h = (Glyph::descent() - Glyph::cap());
 			float tabUnits = Glyph::width() * f.tabSpaces() * (1+f.letterSpacing());
-/*
-c	t	
-0	4
-1	4
-2	4
-3	4
-4	8
-*/
+			float dx = w * (1+f.letterSpacing());
+			float dy = h * f.lineSpacing();
+
 			switch(c){
 				case '\t': x = (int(x/tabUnits) + 1) * tabUnits; w = x-l; break;
 				case '\r':
-				case '\n': x = 0; y += h; break;
+				case '\n': x = 0; y += dy; break;
 				case '\b': x -= w; break;
-				default:   if(onPrintable(c)) x += w;
+				default:   if(onPrintable(c)) x += dx;
 			}
 			return true;
 		}
 		return false;
 	}	
 
-	virtual bool onPrintable(char c){ return false; }
+	virtual bool onPrintable(char c){ return true; }
 
 	float x,y;			// raster position
 	float l,t,w,h;		// bounding box of current character
 	const char *& s;
-	Font& f;
+	const Font& f;
 };
 
 
-
+/*
 static void text(
 	const char * s,
 	float l, float t,
@@ -273,11 +268,11 @@ static void text(
 			case '\b':	x -= dx; break;
 			default:	if(character(*s, x, y, pixelSize)) x+=dx;
 		}
-		++s;
+		++s;* (1+f.letterSpacing())
 	}
 	//end();
 }
-
+*/
 
 
 Font::Font(unsigned size_)
@@ -302,7 +297,7 @@ void Font::render(const char * v, float x, float y, float z){
 	//float sh = -0.5*sy; // TODO: shear needs to be done an a per-line basis
 	float sh = 0;
 	
-	tx=ty=tz=0;
+	//tx=ty=tz=0;
 
 	float m[16] = {
 		sx, 0, 0, 0,
@@ -321,14 +316,14 @@ void Font::render(const char * v, float x, float y, float z){
 */
 
 	struct RenderText : public TextIterator{
-		RenderText(Font& f_, const char *& s_, float muly_): TextIterator(f_,s_), muly(muly_){}
+		RenderText(const Font& f_, const char *& s_, float muly_): TextIterator(f_,s_), muly(muly_){}
 		bool onPrintable(char c){
 			return character(c, x, y, muly);
 		}
 		float muly;
 	} renderText(*this, v, 1./mScaleY);
 
-	renderText();
+	renderText.run();
 
 //	glv::text(v, 0,0, lineSpacing(), tabSpaces(), mScaleY);
 	draw::pop(ModelView);
@@ -358,6 +353,16 @@ void Font::getBounds(float& w, float& h, const char * text) const {
 	w=h=0;
 	if(!text) return;
 
+	TextIterator ti(*this, text);
+	while(ti()){
+		if(ti.x > w) w = ti.x;
+	}
+
+	h = (ti.y + ti.h) * mScaleY;
+	//h = ti.y*mScaleY + cap();
+
+	w *= mScaleX;
+/*
 	float lw = 0;							// current line's width
 	float dx = Glyph::width() * mScaleX; 	// monospaced typefaces all have same width
 	float dy = 2 * cap();
@@ -372,6 +377,7 @@ void Font::getBounds(float& w, float& h, const char * text) const {
 		default: lw += dx; if(lw > w) w=lw;
 		}
 	}
+*/
 }
 
 float Font::cap() const { return (Glyph::baseline() - Glyph::cap()) * mScaleY; }

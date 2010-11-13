@@ -337,7 +337,7 @@ PDEBUG;
 	mStride=1;
 	shapeAll(0);
 	mType=Data::VOID;
-printf("\t"); PDEBUG;
+PDEBUG;
 }
 
 int Data::order() const {

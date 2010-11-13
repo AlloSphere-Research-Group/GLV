@@ -7,9 +7,9 @@ using namespace glv;
 
 Slider sl11(Rect(100, 20));
 Slider2D sl21(Rect(100, 100), 0.5, 0.5);
-Button btn1(Rect(20, 20), false);
-Button btn2(Rect(20, 20), true);
-Button btn3(Rect(20, 20), true, draw::check);
+Button btn1(Rect(20, 20), true);
+Button btn2(Rect(20, 20), false);
+Button btn3(Rect(20, 20), false, draw::check);
 SliderGrid<3> sg31(Rect(100)), sg32(Rect(100)), sg33(Rect(100));
 SliderGrid<2> sg21(Rect(100));
 
@@ -20,12 +20,12 @@ void drawCB(View * v){
 	push3D(v->w, v->h);
 
 	Color c;
-	c.setHSV(sg31.value(0), sg31.value(1), sg31.value(2)*sg31.value(2));
+	c.setHSV(sg31.getValue(0), sg31.getValue(1), sg31.getValue(2)*sg31.getValue(2));
 	color(c);
 
-	translate(sg32.value(0)*2-1, sg32.value(1)*2-1, -sg32.value(2)*2);
-	rotate(sg33.value(0)*360, sg33.value(1)*360, sg33.value(2)*360);
-	scale(sg21.value(0), sg21.value(1));
+	translate(sg32.getValue(0)*2-1, sg32.getValue(1)*2-1, -sg32.getValue(2)*2);
+	rotate(sg33.getValue(0)*360, sg33.getValue(1)*360, sg33.getValue(2)*360);
+	scale(sg21.getValue(0), sg21.getValue(1));
 	
 	rectangle(-1, -1, 1, 1);
 

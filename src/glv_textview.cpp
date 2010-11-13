@@ -1,6 +1,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include <math.h>
 #include <string>
 #include <string.h>
 #include "glv_textview.h"
@@ -10,6 +11,7 @@ namespace glv{
 #define CTOR_LIST mAlignX(0), mAlignY(0), mVertical(false)
 #define CTOR_BODY\
 	data().resize(Data::STRING);\
+	useInterval(false);\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
 	setValue(str);\
 	vertical(vert)
@@ -18,6 +20,7 @@ Label::Label(const std::string& str, const Spec& s)
 :	Widget(Rect(0)), mAlignX(0), mAlignY(0)
 {
 	data().resize(Data::STRING);
+	useInterval(false);
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);
 	setValue(str);
 	vertical(s.vert);
@@ -80,6 +83,18 @@ void Label::onDraw(GLV& g){
 
 
 void Label::fitExtent(){
+
+	float tw, th;
+	font().getBounds(tw,th, data().toString().c_str());
+	th -= font().descent();
+
+	space_t dw = tw - w;
+	space_t dh = th - h;
+	posAdd(-dw*mAlignX, -dh*mAlignY);
+	extent(tw, th);
+	if(mVertical) rotateRect();
+
+/*
 	space_t dx = 8;
 	space_t tw = 0, th = 8, mw = 0;
 	//const char * c = value().c_str();
@@ -102,6 +117,7 @@ void Label::fitExtent(){
 	
 	extent(mw*mul, th*mul);
 	if(mVertical) rotateRect();
+*/
 }
 
 void Label::rotateRect(){ t += w - h; transpose(); }
@@ -310,7 +326,7 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 			case '-': flipSign(); return false;
 			case 'c': setValue(0); return false;
 			case '.': dig(size()-mNF); return false; // go to first fraction digit (if any)
-			case Key::Right: dig(dig()+1); return false;
+			case Key::Right:	enable(DrawBorder); dig(dig()+1); return false;
 			case Key::Left:  dig(dig()-1); return false;
 			}
 		}
@@ -363,12 +379,12 @@ void TextView::onDraw(GLV& g){
 
 	float padX = mPadX;
 	float padY = 4;
-	float addY =-2;		// subtraction from top since some letters go above cap
+	float addY =-4;//was -2		// subtraction from top since some letters go above cap
 
 	float tl = mPos * font().advance('M') + padX;
 //	float tr = tl + font().advance('M');
 	float tt = addY + padY;
-	float tb = tt + font().descent() - addY;
+	float tb = tt + fabs(font().descent()+font().cap()) - addY;
 	float strokeWidth = 1;
 	
 	// draw selection

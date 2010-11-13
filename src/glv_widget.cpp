@@ -112,17 +112,19 @@ void Widget::onDataModelSync(){
 // note: indices passed in are always valid
 bool Widget::onAssignData(Data& d, int ind1, int ind2){
 
-	if(enabled(MutualExc)){
-		double v = 0;
-		if(useInterval()) v = glv::clip(v, mMax, mMin);
-		data().assignAll(v);
-	}
+	if(data().isNumerical()){
+		if(enabled(MutualExc)){
+			double v = 0;
+			if(useInterval()) v = glv::clip(v, mMax, mMin);
+			data().assignAll(v);
+		}
 
-	if(useInterval()){
-		for(int i=0; i<d.size(); ++i){
-			double v = d.at<double>(i);
-			v = glv::clip(v, max(), min());
-			d.assign(v, i);
+		if(useInterval()){
+			for(int i=0; i<d.size(); ++i){
+				double v = d.at<double>(i);
+				v = glv::clip(v, max(), min());
+				d.assign(v, i);
+			}
 		}
 	}
 
