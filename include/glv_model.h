@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <stdio.h>
 
 namespace glv {
 
@@ -143,11 +144,11 @@ public:
 
 	/// @param[in] value	external value to reference
 	template <class T>
-	explicit Data(T& value){ set(&value, 1); }
+	explicit Data(T& value){ init(); set(&value, 1); }
 
 	/// @param[in] value	value to make clone of
 	template <class T>
-	explicit Data(const T& value){ set(&value, 1); }
+	explicit Data(const T& value){ init(); set(&value, 1); }
 
 	/// @param[in] data		pointer to external data to reference
 	/// @param[in] size1	size of dimension 1 of external data
@@ -156,6 +157,7 @@ public:
 	/// @param[in] size4	size of dimension 4 of external data
 	template <class T>
 	Data(T * data, int size1, int size2=1, int size3=1, int size4=1){
+		init();
 		int sizes[] = {size1,size2,size3,size4};
 		set(data, sizes, 4);
 	}
@@ -390,7 +392,6 @@ public:
 //	static int interpretToken(Data::Type& type, int *& sizes, std::string& src);
 
 protected:
-// 4 + 4 + 4 + 4*4 + 4
 	typedef char* pointer;		// pointer to memory address;
 								// char vs. void to simplify pointer arithmetic
 	pointer mData;				// pointer to first element of source data
@@ -406,6 +407,10 @@ protected:
 	const T * data() const { return (const T *)mData; }
 
 	void free();
+	void init(){ // zeros all attributes (used in c'tor)
+		mData=0; mElems=0; mStride=1; mType=VOID;
+		shapeAll(0);
+	}
 	void realloc(Data::Type type, const int * sizes=0, int n=0);
 	void setRaw(void * data, int offset, int stride, Type type);
 	int sizeBytes() const { return size()*sizeType(); }

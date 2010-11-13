@@ -147,15 +147,30 @@ static inline int count(const Data& a, const Data& b){
 	return a.size()<b.size() ? a.size() : b.size();
 }
 
+//#define PDEBUG printf("%p %s\t", this, __func__); print(); printf("\n")
+#define PDEBUG
+/*
+	pointer mData;				// pointer to first element of source data
+	pointer mElems;				// pointer to first element in this slice
+	int mStride;				// stride factor
+	int mSizes[DATA_MAXDIM];	// sizes of each dimension
+	Type mType;	
+*/
+
 Data::Data()
 :	mData(0), mElems(0), mStride(1), mType(Data::VOID)
 {
-printf("\nData::Data %p\n", this);
 	shapeAll(0);
+	PDEBUG;
 }
 
-Data::Data(Data& v){ *this = v; }
-Data::Data(const Data& v){ *this = v; }
+Data::Data(Data& v)
+:	mData(0), mElems(0), mStride(1), mType(Data::VOID)
+{ shapeAll(0); *this = v; PDEBUG; }
+
+Data::Data(const Data& v)
+:	mData(0), mElems(0), mStride(1), mType(Data::VOID)
+{ shapeAll(0); *this = v; PDEBUG; }
 
 Data::Data(Data::Type type, int n1, int n2, int n3, int n4)
 :	mData(0), mElems(0), mStride(1), mType(type)
@@ -164,10 +179,10 @@ Data::Data(Data::Type type, int n1, int n2, int n3, int n4)
 	shape(s,4);
 	clone();
 	if(isNumerical()) assignAll(0);
+	PDEBUG;
 }
 
 Data::~Data(){
-printf("\nData::~Data %p\n", this);
 	free();
 }
 
@@ -305,9 +320,8 @@ void Data::clone(){
 }
 
 void Data::free(){
-printf("\nData::free %p:\n", this); printf("\t"); print(); printf("\n");
+PDEBUG;
 	if(release(mData)){
-		//printf("(%p) Data::free %p\n", this, mData);
 		switch(type()){
 		case Data::BOOL:	delete[] data<bool>(); break;
 		case Data::INT:		delete[] data<int>(); break;
@@ -323,7 +337,7 @@ printf("\nData::free %p:\n", this); printf("\t"); print(); printf("\n");
 	mStride=1;
 	shapeAll(0);
 	mType=Data::VOID;
-	printf("\t"); print(); printf("\n");
+printf("\t"); PDEBUG;
 }
 
 int Data::order() const {
@@ -367,7 +381,6 @@ void Data::realloc(Data::Type t, const int * sizes, int n){
 	if(size()){
 		mType  = t;
 		mStride= 1;
-
 		switch(type()){
 		case Data::BOOL:	mData = pointer(new bool[size()]); break;
 		case Data::INT:		mData = pointer(new int[size()]); break;
@@ -378,7 +391,7 @@ void Data::realloc(Data::Type t, const int * sizes, int n){
 		}
 		acquire(mData);
 		offset(0);
-		if(hasData()) assignAll(0);
+		if(hasData() && isNumerical()) assignAll(0);
 	}
 }
 
@@ -387,9 +400,11 @@ Data& Data::resize(const int * sizes, int n){
 }
 
 Data& Data::resize(Data::Type t, const int * sizes, int n){
+PDEBUG;
 	if(t!=VOID && (type()!=t || size()!=product(sizes,n))){
 		realloc(t, sizes,n);
 	}
+PDEBUG;
 	return *this;
 }
 
