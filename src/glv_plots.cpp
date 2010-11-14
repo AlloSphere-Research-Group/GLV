@@ -57,118 +57,104 @@ Surface x	(1, 1, n, m)	((v11, v21, v31), (v12, v22, v32))
 */
 
 
-void PlotDensity::onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i){
-	double dx = 2./d.size(1);
-	double dy = 2./d.size(2);
-	
-	int N0 = d.size(0);	// number of "internal" dimensions
-	HSV hsv = mColor;
-	
-	switch(N0){
-	case 1:
-		while(i()){
-			double x = i.frac(0)*2 - 1;
-			double y = i.frac(1)*2 - 1;
-			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+PlotDensity::PlotDensity(const Color& c)
+:	Plottable(draw::Triangles, 1, c), mTex(0,0, GL_RGB, GL_FLOAT), mIpol(0)
+{
+}
 
-			Color c = HSV(hsv.h, hsv.s, hsv.v*w0);
+void PlotDensity::onContextCreate(){
+	// note: texture created in onPlot since we don't know the size
+	//mTex.create();
+}
 
-			int idx = b.vertices2().size();
+void PlotDensity::onContextDestroy(){
+	mTex.destroy();
+	mTex.dealloc();
+}
 
-			b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
-			b.addColor(c,c,c,c);
-			b.addIndex(idx+0, idx+1, idx+3);
-			b.addIndex(idx+1, idx+2, idx+3);
-		}
-		break;
-
-	case 2:
-		while(i()){
-			double x = i.frac(0)*2 - 1;
-			double y = i.frac(1)*2 - 1;
-			float w0 = d.at<float>(0,i[0],i[1],i[2]);
-			float w1 = d.at<float>(1,i[0],i[1],i[2]);
-
-			Color c = HSV(hsv.h, hsv.s*w1, hsv.v*w0);
-
-			int idx = b.vertices2().size();
-
-			b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
-			b.addColor(c,c,c,c);
-			b.addIndex(idx+0, idx+1, idx+3);
-			b.addIndex(idx+1, idx+2, idx+3);
-		}
-//		while(i()){
-//			double x = i.frac(0)*2 - 1;
-//			double y = i.frac(1)*2 - 1;
+// polar coloring
 //			float w0 = d.at<float>(0,i[0],i[1],i[2]);
 //			float w1 = d.at<float>(1,i[0],i[1],i[2]);
 //			
 //			double m = hypot(w0,w1);
 //			double a = atan2(w1,w0)/(-2*M_PI); if(a<0) a=1+a;
 //			Color c = HSV(a, 1, m);
-//
+
+void PlotDensity::onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i){
+//	double dx = 2./d.size(1);
+//	double dy = 2./d.size(2);
+	
+	int N0 = d.size(0);	// number of "internal" dimensions
+	HSV hsv = mColor;
+
+	int Nbytes = mTex.alloc(d.size(1), d.size(2));
+	if(Nbytes){
+		mTex.create(); //printf("tex %d: %d bytes\n", mTex.id(), Nbytes);
+	}
+
+	switch(N0){
+	case 1:
+		while(i()){
+			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+			Color c = mColor * w0;
+			float * tbuf = mTex.buffer<float>();
+			int ind = i.indexFlat(0,1);
+			tbuf[ind*3+0] = c.r;
+			tbuf[ind*3+1] = c.g;
+			tbuf[ind*3+2] = c.b;
+
+//			the non-texture approach...
+//			double x = i.frac(0)*2 - 1;
+//			double y = i.frac(1)*2 - 1;
+//			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+//			Color c = mColor * w0;
 //			int idx = b.vertices2().size();
-//
 //			b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
 //			b.addColor(c,c,c,c);
 //			b.addIndex(idx+0, idx+1, idx+3);
 //			b.addIndex(idx+1, idx+2, idx+3);
-//		}
+		}
+		break;
+
+	case 2:
+		while(i()){
+			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+			float w1 = d.at<float>(1,i[0],i[1],i[2]);
+			Color c = HSV(hsv.h, hsv.s*w1, hsv.v*w0);
+			float * tbuf = mTex.buffer<float>();
+			int ind = i.indexFlat(0,1);
+			tbuf[ind*3+0] = c.r;
+			tbuf[ind*3+1] = c.g;
+			tbuf[ind*3+2] = c.b;
+		}
 		break;
 
 	case 3:
 	case 4:
 		while(i()){
-			double x = i.frac(0)*2 - 1;
-			double y = i.frac(1)*2 - 1;
 			float w0 = d.at<float>(0,i[0],i[1],i[2]);
 			float w1 = d.at<float>(1,i[0],i[1],i[2]);
 			float w2 = d.at<float>(2,i[0],i[1],i[2]);
-
 			Color c = Color(w0, w1, w2);
-
-			int idx = b.vertices2().size();
-
-			b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
-			b.addColor(c,c,c,c);
-			b.addIndex(idx+0, idx+1, idx+3);
-			b.addIndex(idx+1, idx+2, idx+3);
+			float * tbuf = mTex.buffer<float>();
+			int ind = i.indexFlat(0,1);
+			tbuf[ind*3+0] = c.r;
+			tbuf[ind*3+1] = c.g;
+			tbuf[ind*3+2] = c.b;
 		}
 		break;
 
 	default:;
 	}
 
-//
-//	while(i()){
-//		double x = i.frac(0)*2 - 1;
-//		double y = i.frac(1)*2 - 1;
-//		float w0 = d.at<float>(0,i[0],i[1],i[2]);
-//		float w1 = d.at<float>(1,i[0],i[1],i[2]);
-//
-//		//Color c = HSV(0.1, fabs(w1), fabs(w0));
-//		//Color c = HSV(0.1, atan2(w1,w0)/(2*M_PI)+0.5, hypot(w0,w1));
-//		
-//		double m = hypot(w0,w1);
-//		double a = atan2(w1,w0)/(-2*M_PI); if(a<0) a=1+a;
-//		//Color c = HSV(a, 1, m);
-//
-//		Color c;
-//		switch(N0){
-//		case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i1,i2)); break;
-//		case 2: c = HSV(hsv.h, hsv.s*val(1,i1,i2), hsv.v*val(0,i1,i2)); break;
-//		case 3:	c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), 1); break;
-//		default:c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), val(3,i1,i2));
-//		}
-//
-//		int idx = b.vertices2().size();
-//
-//		b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
-//		b.addColor(c,c,c,c);
-//		b.addIndex(idx+0, idx+1, idx+3);
-//		b.addIndex(idx+1, idx+2, idx+3);
-//	}
+	mTex.magFilter(mIpol ? GL_LINEAR : GL_NEAREST);
+	draw::enable(draw::Texture2D);
+	draw::color(1,1,1,1);
+	mTex.begin();
+	mTex.send();
+	mTex.draw(-1,1,1,-1);
+	mTex.end();
+	draw::disable(draw::Texture2D);
 }
 
 

@@ -28,7 +28,7 @@ Slider2D sl2(Rect(100));
 SliderGrid<3> sg3(Rect(100));
 SliderGrid<4> sg4(Rect(100));
 SliderRange slRH(Rect(100,20)), slRV(Rect(20,100));
-Sliders sliders1(Rect(100), 10, 1, true), sliders2(sliders1, 4, 10, true);
+Sliders sliders1(Rect(100), 10, 1, true), sliders2(sliders1, 1, 10, true);
 Table table(	". v - -,"
 				"> p ^ q,"
 				"| < x >,"
@@ -135,6 +135,8 @@ int main(int argc, char ** argv){
 	plotX.data() = plotXY.data().slice(1).shape(1,64,1).stride(2);
 	plotY.major(8,1).range(0, plotXY.data().size(1), 1);
 	plotX.major(8,0).range(0, plotXY.data().size(1), 0);
+
+	plotX.disable(glv::Controllable);
 
 	// Produce matrix of values
 	{

@@ -9,9 +9,13 @@
 #include "glv_core.h"
 #include "glv_draw.h"
 #include "glv_grid.h"
+#include "glv_texture.h"
 #include "glv_widget.h"
 
-namespace glv {
+namespace glv{
+
+class Plot;
+class Plottable;
 
 /// Iterates through multidmensional arrays
 class Indexer{
@@ -48,11 +52,17 @@ public:
 	/// Get current index within a dimension
 	int operator[](int dim) const { return mIndex[dim]; }
 
+	/// Get one-dimensional index into plane
+	int indexFlat(int dim1, int dim2) const { return mIndex[dim2]*size(dim1) + mIndex[dim1]; }
+
 	/// Get current fractional position within a dimension
 	double frac(int dim) const { return double(mIndex[dim])/mSizes[dim]; }
 
 	/// Get size of a dimension
 	int size(int dim) const { return mSizes[dim]; }
+
+	/// Get product of sizes of two dimensions
+	int size(int dim1, int dim2) const { return mSizes[dim1]*mSizes[dim2]; }
 	
 	/// Get product of sizes of all dimensions
 	int size() const { int r=1; for(int i=0; i<N; ++i) r*=size(i); return r; }
@@ -76,7 +86,6 @@ protected:
 	void setSizes(const int* v, int n=N){ for(int i=0;i<n;++i) mSizes[i]=v[i]; }
 };
 
-class Plot;
 
 
 /// Defines a routine for generating plot graphics from model data
@@ -137,9 +146,19 @@ protected:
 
 
 /// Density plotter
-struct PlotDensity : public Plottable{
-	PlotDensity(const Color& c=Color(1,0,0)): Plottable(draw::Triangles, 1, c){}
+class PlotDensity : public Plottable{
+public:
+	PlotDensity(const Color& c=Color(1,0,0));
+
+	PlotDensity& interpolate(int v){ mIpol=v; return *this; }
+
 	void onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i);
+
+protected:
+	virtual void onContextCreate();
+	virtual void onContextDestroy();
+	Texture2 mTex;
+	int mIpol;
 };
 
 
