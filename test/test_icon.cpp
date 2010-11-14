@@ -66,15 +66,15 @@ void drawCB(View * v){
 //		character(i + '!', x + dx, y + dy);
 //	}
 
-	{	Icon icon = Rectangle();
-		icon.draw(0,0,100,100);
-	}
-	{	Icon& icon = *new Rectangle();
-		icon.draw(100,0,200,100);
-	}
-	{	Icon * icon = new Rectangle;
-		icon->draw(200,0,300,100);
-	}
+//	{	Icon icon = Rectangle();
+//		icon.draw(0,0,100,100);
+//	}
+//	{	Icon& icon = *new Rectangle();
+//		icon.draw(100,0,200,100);
+//	}
+//	{	Icon * icon = new Rectangle;
+//		icon->draw(200,0,300,100);
+//	}
 }
 
 
