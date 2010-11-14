@@ -25,7 +25,10 @@ public:
 
 	virtual ~Texture2();
 
-	GLvoid * buffer() const { return mBuffer; }
+	/// Get pointer to local texture memory
+	template <class T>
+	T * buffer() const { return static_cast<T*>(mBuffer); }
+
 	GLuint  id() const { return mID; }
 	GLsizei width() const { return w; }		///< Get width
 	GLsizei height() const { return h; }	///< Get height
@@ -33,18 +36,31 @@ public:
 	void begin() const;										///< Bind self to current context
 	void end() const;										///< Binds default texture
 
+	/// Allocate local texture memory. 
+	
+	/// Returns total number of bytes allocated.
+	///
+	int alloc(int w, int h);
+	
+	/// Free local texture memory
+	void dealloc();
+
 	Texture2& bind();										///< Bind self to current context
 	Texture2& draw(											///< Draw texture to rectangular quad
 		float ql, float qt, float qr, float qb,
 		float tl=0, float tt=1, float tr=1, float tb=0
 	);
-	Texture2& load(GLsizei w, GLsizei h, GLvoid * pixels = 0);	///< Resizes texture on graphics card
-	Texture2& reload();										///< Reload texture onto GPU
+	
+	void destroy();
+	
+	Texture2& create(GLsizei w, GLsizei h, GLvoid * pixels = 0);	///< Create new texture on graphics card
+	Texture2& create();										///< Reload texture onto GPU
 	Texture2& send();										///< Send pointed to pixels to GPU
 
 	Texture2& format(GLenum v);								///< Set the color format
 	Texture2& type(GLenum v);								///< Set the color data type
-	
+	Texture2& magFilter(GLenum v);
+
 private:
 	GLuint mID;
 	GLsizei w, h;
@@ -56,9 +72,10 @@ private:
 					
 	GLenum mType;		// type of the pixel data:
 						//   GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_FLOAT
-						
-	void freeMem();
-	void allocMem();
+
+	GLenum mMagFilter;	// GL_LINEAR, GL_NEAREST
+
+	void sendParams();
 };
 
 
