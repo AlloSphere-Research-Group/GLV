@@ -61,6 +61,10 @@
 		16258B331017D74A0037164D /* glv_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7540BA2434200E819AF /* glv_color.cpp */; };
 		16258B351017D74E0037164D /* glv_inputdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7560BA2434200E819AF /* glv_inputdevice.cpp */; };
 		16258B361017D7500037164D /* glv_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5E7610D91F43B001153DA /* glv_layout.cpp */; };
+		162BF80C129066D000B41BC0 /* glv_color_controls.h in Headers */ = {isa = PBXBuildFile; fileRef = 162BF80B129066B100B41BC0 /* glv_color_controls.h */; };
+		162BF80D129066D000B41BC0 /* glv_view3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 16BC401D114AFAFD001246DB /* glv_view3D.h */; };
+		162BF80E129066EF00B41BC0 /* glv_color_controls.h in Headers */ = {isa = PBXBuildFile; fileRef = 162BF80B129066B100B41BC0 /* glv_color_controls.h */; };
+		162BF80F129066EF00B41BC0 /* glv_view3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 16BC401D114AFAFD001246DB /* glv_view3D.h */; };
 		162CD4AB0FF4AC8600A58570 /* glv_plots.h in Headers */ = {isa = PBXBuildFile; fileRef = 16DEEE260FC28359006B373C /* glv_plots.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		162CD4AC0FF4ACA000A58570 /* glv.h in Headers */ = {isa = PBXBuildFile; fileRef = B9183C950B9E36B100D8DA81 /* glv.h */; };
 		162CD4AD0FF4ACA000A58570 /* glv_behavior.h in Headers */ = {isa = PBXBuildFile; fileRef = 16E051290D7E990F00C521D0 /* glv_behavior.h */; };
@@ -285,6 +289,7 @@
 		160969BC0D8DDE98003B36BD /* glv_core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_core.cpp; sourceTree = "<group>"; };
 		16096BF00D8E1FFB003B36BD /* glv_textview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_textview.h; sourceTree = "<group>"; };
 		161B38830DE359DD00936BA0 /* glv_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_widget.h; sourceTree = "<group>"; };
+		162BF80B129066B100B41BC0 /* glv_color_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_color_controls.h; sourceTree = "<group>"; };
 		167F30B5120E05C80023A08C /* glv_font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_font.h; sourceTree = "<group>"; };
 		167F30F2120E1F1A0023A08C /* glv_font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_font.cpp; sourceTree = "<group>"; };
 		16A93E5F1002BA4400F5404E /* TestWindowGLUT */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestWindowGLUT; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -550,6 +555,7 @@
 				7E0A10ED0E47935300E2E2ED /* glv_binding.h */,
 				DFE898080DD4EE1B00D266E2 /* glv_buttons.h */,
 				B9183C970B9E36B100D8DA81 /* glv_color.h */,
+				162BF80B129066B100B41BC0 /* glv_color_controls.h */,
 				16D5B30D0D95925C005092B6 /* glv_conf.h */,
 				B9183C980B9E36B100D8DA81 /* glv_core.h */,
 				7E55D1DE0CCE5A4400196525 /* glv_draw.h */,
@@ -598,9 +604,11 @@
 				7E4B54EB0EA13E7A00701931 /* glv_binding.h in Headers */,
 				DFE898090DD4EE1B00D266E2 /* glv_buttons.h in Headers */,
 				366442C90BDD734A00ACBACF /* glv_color.h in Headers */,
+				162BF80C129066D000B41BC0 /* glv_color_controls.h in Headers */,
 				363FE84C0DA94DC1007C4567 /* glv_conf.h in Headers */,
 				366442CA0BDD734A00ACBACF /* glv_core.h in Headers */,
 				7E55D1DF0CCE5A4400196525 /* glv_draw.h in Headers */,
+				167F30B6120E05C80023A08C /* glv_font.h in Headers */,
 				363FE84D0DA94DC1007C4567 /* glv_layout.h in Headers */,
 				366442CC0BDD734A00ACBACF /* glv_observer_pattern.h in Headers */,
 				162CD4AB0FF4AC8600A58570 /* glv_plots.h in Headers */,
@@ -609,8 +617,8 @@
 				16096BF20D8E1FFB003B36BD /* glv_textview.h in Headers */,
 				7E4B54EC0EA13E9800701931 /* glv_texture.h in Headers */,
 				366442D00BDD734A00ACBACF /* glv_util.h in Headers */,
+				162BF80D129066D000B41BC0 /* glv_view3D.h in Headers */,
 				7E4B54ED0EA13E9A00701931 /* glv_widget.h in Headers */,
-				167F30B6120E05C80023A08C /* glv_font.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -623,9 +631,11 @@
 				162CD4AE0FF4ACA000A58570 /* glv_binding.h in Headers */,
 				DFE8980A0DD4EE1B00D266E2 /* glv_buttons.h in Headers */,
 				162CD4AF0FF4ACA000A58570 /* glv_color.h in Headers */,
+				162BF80E129066EF00B41BC0 /* glv_color_controls.h in Headers */,
 				162CD4B00FF4ACA000A58570 /* glv_conf.h in Headers */,
 				162CD4B10FF4ACA000A58570 /* glv_core.h in Headers */,
 				7E55D1E00CCE5A4400196525 /* glv_draw.h in Headers */,
+				167F30B7120E05C80023A08C /* glv_font.h in Headers */,
 				162CD4B20FF4ACA000A58570 /* glv_layout.h in Headers */,
 				162CD4B30FF4ACA000A58570 /* glv_observer_pattern.h in Headers */,
 				162CD4B40FF4ACA000A58570 /* glv_plots.h in Headers */,
@@ -634,8 +644,8 @@
 				16096BF10D8E1FFB003B36BD /* glv_textview.h in Headers */,
 				7E4DABDA0DAAEF44009D2272 /* glv_texture.h in Headers */,
 				162CD4B70FF4ACA000A58570 /* glv_util.h in Headers */,
+				162BF80F129066EF00B41BC0 /* glv_view3D.h in Headers */,
 				162CD4B80FF4ACA000A58570 /* glv_widget.h in Headers */,
-				167F30B7120E05C80023A08C /* glv_font.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
