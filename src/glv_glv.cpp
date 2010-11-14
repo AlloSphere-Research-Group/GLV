@@ -151,12 +151,8 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_INDEX_ARRAY);
-	//glEnableClientState(GL_COLOR_ARRAY);
+	//glEnableClientState(GL_COLOR_ARRAY); // note: enabling this messes up glColor, so leave it off
 	//glColorPointer(4, GL_FLOAT, 0, 0);
-	
-//	onAnimate(dsec, *this);
-//	push2D(w, h);	// initialise the OpenGL renderer for our 2D GUI world
-//	onDraw(*this);	// draw myself
 
 	push2D(w, h);	// initialise the OpenGL renderer for our 2D GUI world
 
@@ -166,7 +162,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 	onDraw(*this);
 	drawPost();
 
-	push();			// push model matrix because of transformations in drawContext()
+	push(ModelView);			// push model matrix because of transformations in drawContext()
 	
 	draw::enable(ScissorTest);
 
@@ -226,7 +222,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 	glDisableClientState(GL_VERTEX_ARRAY);
 	//glDisableClientState(GL_COLOR_ARRAY);
 	
-	pop();
+	pop(ModelView);
 	
 	// this weird call is necessary so that raster calls get scissored properly
 	// not entirely sure why this works, but it does.
