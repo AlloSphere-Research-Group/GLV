@@ -80,9 +80,13 @@ namespace glv {
 //	}
 //};
 
+/// A set of sliders for modifying a color
 class ColorSliders : public View{
 public:
 
+	/// @param[in] r				geometry
+	/// @param[in] isHSV			whether the sliders control HSV versus RGB components
+	/// @param[in] controlsAlpha	whether to have a slider for alpha control
 	ColorSliders(const Rect& r=Rect(100, 30), bool isHSV=true, bool controlsAlpha=false)
 	: View(r), mSliderStyle(false), mIsHSV(isHSV), mControlsAlpha(controlsAlpha)
 	{
@@ -100,9 +104,16 @@ public:
 		mCompA.property(Visible, mControlsAlpha);
 	}
 
+	/// Returns whether components are HSV versus RGB
 	bool isHSV() const { return mIsHSV; }
+	
+	/// Get color
 	const Color& value() const { return mColor; }
+	
+	/// Set color
 	ColorSliders& value(const Color& v){ setColor(v); return *this; }
+	
+	/// Set color
 	ColorSliders& value(const HSV& v){ setColor(v); return *this; }
 
 	virtual const char * className() const { return "ColorSliders"; }
