@@ -8,27 +8,11 @@ Example:
 
 namespace glv{
 
-struct PlotScatter : public Plottable{
-
-	PlotScatter(): Plottable(draw::Points, 2){}
-
-	void onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& i){
-		while(i()){
-			double x = d.at<double>(0,i[0],i[1]);
-			double y = d.at<double>(1,i[0],i[1]);
-//			double x = d.at<double>(0,i[0],i[1],i[2]);
-//			double y = d.at<double>(1,i[0],i[1],i[2]);
-
-			b.addVertex2(x, y);
-		}
-	}
-};
-
 struct PlotVector : public Plottable{
 
 	PlotVector(): Plottable(draw::Triangles){}
 
-	void onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& i){
+	void onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i){
 		double dx = 2./d.size(1);
 		double dy = 2./d.size(2);
 		while(i()){
@@ -86,7 +70,6 @@ struct MyGLV : GLV {
 
 	double phase;
 };
-
 }
 
 int main(){
@@ -95,11 +78,8 @@ int main(){
 	MyGLV top;
 	DataPlot v1(Rect(000,0, 400,400), *new PlotDensity);
 	DataPlot v2(Rect(400,0, 400,400), *new PlotVector);
-	DataPlot v3(Rect(800,0, 400,400), *new PlotScatter);
+	DataPlot v3(Rect(800,0, 400,400), (new PlotFunction2D)->prim(draw::Points).stroke(2));
 
-//	v1.disable(CropSelf | DrawBack);
-//	v2.disable(CropSelf | DrawBack);
-//	v3.disable(CropSelf | DrawBack);
 	v1.data() = top.data();
 	v2.data() = top.data();
 	v3.data() = top.data();
@@ -109,5 +89,6 @@ int main(){
 	Window win(80,80, "DataPlots", &top);
 	win.fit();
 	Application::run();
+	return 0;
 }
 

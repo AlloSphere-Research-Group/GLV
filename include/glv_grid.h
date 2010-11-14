@@ -32,12 +32,15 @@ public:
 
 	bool showAxes() const { return mShowAxes; }
 	bool showGrid() const { return mShowGrid; }
+	bool showNumbering() const { return mShowNumbering; }
 
 	#define LOOP for(int i=0;i<DIM;++i)
+	Grid& numbering(bool v){ LOOP{ numbering(v,i); } return *this; }
+	Grid& numbering(bool v, int dim){ mNumbering[dim]=v; return *this; }
 	Grid& minor(int v){ LOOP{ minor(v,i); } return *this; }
-	Grid& minor(int v, int i){ mMinor[i]=v; return *this; }
+	Grid& minor(int v, int dim){ mMinor[dim]=v; return *this; }
 	Grid& major(double v){ LOOP{ major(v,i); } return *this; }
-	Grid& major(double v, int i){ mMajor[i]=v; return *this; }
+	Grid& major(double v, int dim){ mMajor[dim]=v; return *this; }
 
 	Grid& origin(){ LOOP{ interval(i).center(0); } return *this; }
 
@@ -47,13 +50,14 @@ public:
 	Grid& range(double v){ return range(-v,v); }
 
 	/// Set all dimension intervals to [min, max]
-	Grid& range(double min, double max){ LOOP{ range(i, min,max); } return *this; }
+	Grid& range(double min, double max){ LOOP{ range(min,max, i); } return *this; }
 	
 	/// Set a dimension's interval to [min, max]
-	Grid& range(int i, double min, double max){ interval(i).endpoints(min,max); return *this; }
+	Grid& range(double min, double max, int i){ interval(i).endpoints(min,max); return *this; }
 
 	Grid& showAxes(bool v){ mShowAxes=v; return *this; }
 	Grid& showGrid(bool v){ mShowGrid=v; return *this; }
+	Grid& showNumbering(bool v){ mShowNumbering=v; return *this; }
 
 	Grid& zoom(double amt, double x, double y);
 
@@ -70,7 +74,8 @@ protected:
 	double mMajor[DIM];
 	int mMinor[DIM];
 	float mVel[DIM], mVelW;
-	bool mShowAxes, mShowGrid, mPreserveAspect;
+	bool mNumbering[DIM];
+	bool mShowAxes, mShowGrid, mShowNumbering, mPreserveAspect;
 
 	int addGridLines(int i, double dist, draw::GraphicsData& gb);
 

@@ -56,7 +56,7 @@ void genEllipse(
 void grid(float l, float t, float w, float h, float divx, float divy, bool incEnds){
 	double inc, r=l+w, b=t+h;
 
-	if(divy > 0){
+	if(divy > 0 && h>0){
 		inc = (double)h/(double)divy;
 		double i = incEnds ? t-0.0001 : t-0.0001+inc;
 		double e = incEnds ? b : b-inc;
@@ -68,7 +68,7 @@ void grid(float l, float t, float w, float h, float divx, float divy, bool incEn
 		paint(Lines, xy, ind+1);
 	}
 
-	if(divx > 0){
+	if(divx > 0 && w>0){
 		inc = (double)w/(double)divx;
 		double i = incEnds ? l-0.0001 : l-0.0001+inc;
 		double e = incEnds ? r : r-inc;

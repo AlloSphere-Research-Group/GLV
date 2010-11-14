@@ -495,32 +495,219 @@ bool Plot::onEvent(Event::t e, GLV& g){
 }
 
 
-void PlotDensity::onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& i){
+void PlotDensity::onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i){
 	double dx = 2./d.size(1);
 	double dy = 2./d.size(2);
 	
-	int N0 = d.size(0);
+	int N0 = d.size(0);	// number of "internal" dimensions
+	HSV hsv = mColor;
 	
-	while(i()){
-		double x = i.frac(0)*2 - 1;
-		double y = i.frac(1)*2 - 1;
-		double w0 = d.at<double>(0,i[0],i[1],i[2]);
-		double w1 = d.at<double>(1,i[0],i[1],i[2]);
+	switch(N0){
+	case 1:
+		while(i()){
+			double x = i.frac(0)*2 - 1;
+			double y = i.frac(1)*2 - 1;
+			float w0 = d.at<float>(0,i[0],i[1],i[2]);
 
-		//Color c = HSV(0.1, fabs(w1), fabs(w0));
-		//Color c = HSV(0.1, atan2(w1,w0)/(2*M_PI)+0.5, hypot(w0,w1));
-		
-		double m = hypot(w0,w1);
-		double a = atan2(w1,w0)/(-2*M_PI); if(a<0) a=1+a;
-		Color c = HSV(a, 1, m);
-		int idx = b.vertices2().size();
+			Color c = HSV(hsv.h, hsv.s, hsv.v*w0);
 
-		b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
-		b.addColor(c,c,c,c);
-		b.addIndex(idx+0, idx+1, idx+3);
-		b.addIndex(idx+1, idx+2, idx+3);
+			int idx = b.vertices2().size();
+
+			b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
+			b.addColor(c,c,c,c);
+			b.addIndex(idx+0, idx+1, idx+3);
+			b.addIndex(idx+1, idx+2, idx+3);
+		}
+		break;
+	case 2:
+		while(i()){
+			double x = i.frac(0)*2 - 1;
+			double y = i.frac(1)*2 - 1;
+			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+			float w1 = d.at<float>(1,i[0],i[1],i[2]);
+
+			Color c = HSV(hsv.h, hsv.s*w1, hsv.v*w0);
+
+			int idx = b.vertices2().size();
+
+			b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
+			b.addColor(c,c,c,c);
+			b.addIndex(idx+0, idx+1, idx+3);
+			b.addIndex(idx+1, idx+2, idx+3);
+		}
+//		while(i()){
+//			double x = i.frac(0)*2 - 1;
+//			double y = i.frac(1)*2 - 1;
+//			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+//			float w1 = d.at<float>(1,i[0],i[1],i[2]);
+//			
+//			double m = hypot(w0,w1);
+//			double a = atan2(w1,w0)/(-2*M_PI); if(a<0) a=1+a;
+//			Color c = HSV(a, 1, m);
+//
+//			int idx = b.vertices2().size();
+//
+//			b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
+//			b.addColor(c,c,c,c);
+//			b.addIndex(idx+0, idx+1, idx+3);
+//			b.addIndex(idx+1, idx+2, idx+3);
+//		}
+
+		break;
+	default:;
+	}
+
+//
+//	while(i()){
+//		double x = i.frac(0)*2 - 1;
+//		double y = i.frac(1)*2 - 1;
+//		float w0 = d.at<float>(0,i[0],i[1],i[2]);
+//		float w1 = d.at<float>(1,i[0],i[1],i[2]);
+//
+//		//Color c = HSV(0.1, fabs(w1), fabs(w0));
+//		//Color c = HSV(0.1, atan2(w1,w0)/(2*M_PI)+0.5, hypot(w0,w1));
+//		
+//		double m = hypot(w0,w1);
+//		double a = atan2(w1,w0)/(-2*M_PI); if(a<0) a=1+a;
+//		//Color c = HSV(a, 1, m);
+//
+//		Color c;
+//		switch(N0){
+//		case 1: c = HSV(hsv.h, hsv.s, hsv.v*val(0,i1,i2)); break;
+//		case 2: c = HSV(hsv.h, hsv.s*val(1,i1,i2), hsv.v*val(0,i1,i2)); break;
+//		case 3:	c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), 1); break;
+//		default:c = Color(val(0,i1,i2), val(1,i1,i2), val(2,i1,i2), val(3,i1,i2));
+//		}
+//
+//		int idx = b.vertices2().size();
+//
+//		b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
+//		b.addColor(c,c,c,c);
+//		b.addIndex(idx+0, idx+1, idx+3);
+//		b.addIndex(idx+1, idx+2, idx+3);
+//	}
+}
+
+
+void PlotFunction1D::onPlot(draw::GraphicsData& g, const Data& d, const Indexer& i){
+//	Indexer j(i.size());
+//	while(j()){
+//		double x = j[0];
+//		double y = d.at<double>(0, j[0]);
+//		g.addVertex(x, y);
+//	}
+
+	/*
+	dim		mapping
+	0		position
+	1		number of points along x
+	2		number of points along y
+	*/
+
+	//int N0 = d.size(0);
+	int N1 = d.size(1);
+	int N2 = d.size(2);
+
+	if(N2==1){
+		while(i()){
+			double x = i[0];
+			double y = d.at<double>(0, i[0]);
+			g.addVertex(x, y);
+		}
+	}
+	else if(N1==1){
+		while(i()){
+			double x = d.at<double>(0, 0, i[1]);
+			double y = i[1];
+			g.addVertex(x, y);
+		}	
 	}
 }
+
+
+void PlotFunction2D::onPlot(draw::GraphicsData& g, const Data& d, const Indexer& i){
+	if(d.size(0) < 2) return;
+	while(i()){
+		double x = d.at<double>(0, i[0], i[1]);
+		double y = d.at<double>(1, i[0], i[1]);
+		g.addVertex(x, y);
+	}
+}
+
+
+
+DataPlot::DataPlot(const Rect& r)
+:	Grid(r)
+{	resetValInd();
+}
+
+DataPlot::DataPlot(const Rect& r, Plottable& p)
+:	Grid(r)
+{	resetValInd();
+	add(p);
+}
+
+void DataPlot::onDraw(GLV& g){
+	Grid::onDraw(g);
+	draw::GraphicsData& gd = g.graphicsData();
+	draw::color(colors().fore);
+
+	// push into grid space and call attached plottables
+	pushGrid();
+		Plottables::iterator i = mPlottables.begin();
+		while(i != mPlottables.end()){
+			gd.reset();
+			Plottable& p = **i;
+			p.doPlot(gd, p.data().hasData() ? p.data() : data());
+			++i;
+		}
+	popGrid();
+}
+
+bool DataPlot::onEvent(Event::t e, GLV& g){
+	Grid::onEvent(e,g);
+	switch(e){
+	case Event::WindowCreate:
+	{	Plottables::iterator i = mPlottables.begin();
+		while(i != mPlottables.end()){ (**i).onContextCreate(); ++i; } }
+		break;
+	case Event::Quit:
+	case Event::WindowDestroy:
+	{	Plottables::iterator i = mPlottables.begin();
+		while(i != mPlottables.end()){ (**i).onContextDestroy(); ++i; } }
+		break;
+	default:;
+	}
+	return true;
+}
+
+DataPlot& DataPlot::add(Plottable& v){ mPlottables.push_back(&v); return *this; }
+
+DataPlot& DataPlot::remove(Plottable& v){
+	std::remove(mPlottables.begin(), mPlottables.end(), &v);
+	return *this;
+}
+
+//
+///// Density plot
+//
+///// Model data should have a shape of (nc, nx, ny) where 'nc' si the number of
+///// components of the value (e.g., a scalar is 1) and 'nx' and 'ny' are the size
+///// of the x and y dimensions, respectively.
+//class DensityPlot : public DataPlot {
+//public:
+//	DensityPlot(const Rect& r=Rect());
+//
+//	DensityPlot& color(const Color& v){ mColor1=v; return *this; }
+//
+//	virtual const char * className() const { return "DensityPlot"; }
+//	virtual void onDraw(GLV& g);
+//
+//protected:
+//	Color mColor1;
+////	float val(int i, int j, int k){ return to01(data().at<float>(i,j,k)); }
+//	float val(int i, int j, int k){ return (data().at<float>(i,j,k)); }
+//};
 
 
 //DensityPlot::DensityPlot(const Rect& r)

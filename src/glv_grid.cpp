@@ -6,10 +6,11 @@
 namespace glv{
 
 Grid::Grid(const Rect& r, double rangeMin, double rangeMax, double majorDist, int minorDiv)
-:	View(r), mShowAxes(true), mShowGrid(true), mPreserveAspect(true)
+:	View(r), mShowAxes(true), mShowGrid(true), mShowNumbering(true), mPreserveAspect(true)
 {
 	range(rangeMin, rangeMax);
 	major(majorDist); minor(minorDiv);
+	numbering(false);
 	for(int i=0; i<DIM; ++i) mVel[i]=0;
 	mVelW=0;
 }
@@ -50,43 +51,43 @@ void Grid::onDraw(GLV& g){
 	lineWidth(1);
 
 	// draw minor lines
-	if(mShowGrid){
-		{
-			gb.reset();
-			color(colors().border.mix(colors().back, 14./16));
-			
-			for(int i=0; i<DIM; ++i){
-				if(mMinor[i] < 2) continue;
-				addGridLines(i, mMajor[i]/mMinor[i], gb);
-			}
-			paint(Lines, &gb.vertices2()[0], gb.vertices2().size());
+	if(showGrid()){
+		gb.reset();
+		color(colors().border.mix(colors().back, 14./16));
+		
+		for(int i=0; i<DIM; ++i){
+			if(mMinor[i] < 2) continue;
+			addGridLines(i, mMajor[i]/mMinor[i], gb);
 		}
+		paint(Lines, &gb.vertices2()[0], gb.vertices2().size());
+	}
 
-		// draw major lines
-		{
-			gb.reset();
-			color(colors().border.mix(colors().back, 10./16));
-			
-			for(int i=0; i<DIM; ++i){
-				int b = gb.vertices2().size();
-				int n = addGridLines(i, mMajor[i], gb);
+	// draw major lines / numbering
+	if(showGrid() || showNumbering()){
+		gb.reset();
+		color(colors().border.mix(colors().back, 10./16));
+		
+		for(int i=0; i<DIM; ++i){
+			int b = gb.vertices2().size();
+			int n = addGridLines(i, mMajor[i], gb);
 
+			if(showNumbering() && mNumbering[i]){
 				for(int j=b; j<b+n*2; j+=2){
 					double p = gb.vertices2()[j].elems[i];
 					double v[] = { p+4, 4 };
 					double gp = pixToGrid(i, p);
 					if(fabs(gp) < 1e-5) gp=0;
 					char buf[16];
-					snprintf(buf, sizeof buf, "%.3g", gp);
+					snprintf(buf, sizeof(buf), "%.3g", gp);
 					font().render(buf, v[i], v[(i+1)%DIM]);
 				}
 			}
-			paint(Lines, &gb.vertices2()[0], gb.vertices2().size());
 		}
+		if(showGrid()) paint(Lines, &gb.vertices2()[0], gb.vertices2().size());
 	}
 
 	// draw axes
-	if(mShowAxes){
+	if(showAxes()){
 		color(colors().border.mix(colors().back, 0./4));
 		if(interval(0).contains(0)){
 			float p = gridToPix(0, 0);
@@ -135,6 +136,7 @@ bool Grid::onEvent(Event::t e, GLV& g){
 				case 'o': origin(); break;
 				case 'g': mShowGrid ^= 1; break;
 				case 'b': mShowAxes ^= 1; break;
+				case 'n': mShowNumbering ^= 1; break;
 				default: return true;
 			}
 			return false;

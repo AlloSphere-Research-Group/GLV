@@ -229,26 +229,6 @@ protected:
 	void draw(const PlotData& d, float mulX, float addX, float mulY, float addY, const Color& defaultCol);
 };
 
-//
-///// Density plot
-//
-///// Model data should have a shape of (nc, nx, ny) where 'nc' si the number of
-///// components of the value (e.g., a scalar is 1) and 'nx' and 'ny' are the size
-///// of the x and y dimensions, respectively.
-//class DensityPlot : public Widget {
-//public:
-//	DensityPlot(const Rect& r=Rect());
-//
-//	DensityPlot& color(const Color& v){ mColor1=v; return *this; }
-//
-//	virtual const char * className() const { return "DensityPlot"; }
-//	virtual void onDraw(GLV& g);
-//
-//protected:
-//	Color mColor1;
-//	float val(int i, int j, int k){ return to01(data().at<float>(i,j,k)); }
-//};
-
 
 /*
 Requirements:
@@ -299,19 +279,26 @@ Surface x	(1, 1, n, m)	((v11, v21, v31), (v12, v22, v32))
 
 */
 
+
+/// Iterates through multidmensional arrays
 class Indexer{
 public:
 
+	/// @param[in] size1	size of dimension 1
+	/// @param[in] size2	size of dimension 2
+	/// @param[in] size3	size of dimension 3
 	Indexer(int size1=1, int size2=1, int size3=1){
-		resetIndex();
+		reset();
 		int sizes[] = {size1,size2,size3};
 		setSizes(sizes);
 	}
 
+	/// @param[in] sizes	array of dimension sizes
 	Indexer(const int * sizes){
-		resetIndex(); setSizes(sizes);
+		reset(); setSizes(sizes);
 	}
 
+	/// Perform one iteration returning whether more elements exist
 	bool operator()() const {
 		if(++mIndex[0] == mSizes[0]){
 			if(++mIndex[1] == mSizes[1]){
@@ -325,44 +312,64 @@ public:
 		return true;
 	}
 
-	int operator[](int i) const { return mIndex[i]; }
+	/// Get current index within a dimension
+	int operator[](int dim) const { return mIndex[dim]; }
 
-	double frac(int i) const { return double(mIndex[i])/mSizes[i]; }
+	/// Get current fractional position within a dimension
+	double frac(int dim) const { return double(mIndex[dim])/mSizes[dim]; }
 
+	/// Get size of a dimension
 	int size(int dim) const { return mSizes[dim]; }
+	
+	/// Get product of sizes of all dimensions
 	int size() const { int r=1; for(int i=0; i<N; ++i) r*=size(i); return r; }
 
-	Indexer& reshape(const int * sizes, int n){ setSizes(sizes,n); return *this; }
+	/// Reset position indices
+	Indexer& reset(){ mIndex[0]=-1; for(int i=1; i<N; ++i){mIndex[i]=0;} return *this; }
 
-	Indexer& reshape(int size1, int size2=1, int size3=1){
+	/// Set dimensions
+	Indexer& shape(const int * sizes, int n){ setSizes(sizes,n); return *this; }
+
+	/// Set dimensions
+	Indexer& shape(int size1, int size2=1, int size3=1){
 		int sizes[] = {size1, size2, size3};
-		return reshape(sizes, 3);
+		return shape(sizes, 3);
 	}
 
 protected:
-	enum{N=3};
-	mutable int mIndex[N];
-	int mSizes[N];
-	void resetIndex(){ mIndex[0]=-1; for(int i=1; i<N; ++i) mIndex[i]=0; }
-	void setSizes(const int* v, int n=N){ for(int i=0; i<n; ++i) mSizes[i]=v[i]; }
+	enum{N=3};				// max number of dimensions
+	mutable int mIndex[N];	// indices of current position in array
+	int mSizes[N];			// dimensions of array
+	void setSizes(const int* v, int n=N){ for(int i=0;i<n;++i) mSizes[i]=v[i]; }
 };
 
 class DataPlot;
 
 
-//class DataMap{
-//public:
-//	templ
-//	void
-//};
-
-
+/// Defines a routine for generating plot graphics from model data
 class Plottable{
 public:
 
-	Plottable(int prim=draw::Points, float stroke=1): mPrim(prim), mStroke(stroke){}
+	/// @param[in] prim		drawing primitive
+	/// @param[in] stroke	width of lines or points
+	/// @param[in] col		color
+	Plottable(int prim=draw::Points, float stroke=1, const Color& col=Color(1,0,0))
+	:	mPrim(prim), mStroke(stroke), mColor(col){}
 
 	virtual ~Plottable(){}
+
+	/// Plotting callback
+	
+	/// The passed in graphics buffers should be filled with the plot data. It
+	/// is not necessary to explicitly call any drawing commands as this will be
+	/// handled by the Plot.
+	virtual void onPlot(draw::GraphicsData& b, const Data& d, const Indexer& ind) = 0;
+
+	virtual void onContextCreate(){}
+	virtual void onContextDestroy(){}
+
+	const Color& color() const { return mColor; }
+	Plottable& color(const Color& v){ mColor=v; return *this; }
 
 	const Data& data() const { return mData; }
 	Data& data(){ return mData; }
@@ -373,8 +380,6 @@ public:
 	int stroke() const { return mStroke; }	
 	Plottable& stroke(int v){ mStroke=v; return *this; }
 
-	virtual void onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& ind){}
-
 protected:
 	friend class DataPlot;
 
@@ -383,95 +388,65 @@ protected:
 	Color mColor;
 	Data mData;
 	
-	void doDrawElements(draw::GraphicsData& gd, const Data& d){
+	// TODO: coordinate map (linear, polar)
+	// TODO: value map (linear)
+	
+	void doPlot(draw::GraphicsData& gd, const Data& d){
 		if(!d.hasData()) return;
-		//draw::color();
+		draw::color(mColor);
 		draw::stroke(stroke());
 		
 		Indexer ind(d.shape()+1);
-		onDrawElements(gd, d, ind);
+		onPlot(gd, d, ind);
 		draw::paint(prim(), gd);
 	}
 };
 
 
+/// Density plotter
 struct PlotDensity : public Plottable{
-	PlotDensity(): Plottable(draw::Triangles){}
-	void onDrawElements(draw::GraphicsData& b, const Data& d, const Indexer& i);
+	PlotDensity(const Color& c=Color(1,0,0)): Plottable(draw::Triangles, 1, c){}
+	void onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i);
 };
 
 
+/// One-dimensional function plotter
 struct PlotFunction1D : public Plottable{
-	PlotFunction1D(): Plottable(draw::LineStrip){}
-	void onDrawElements(draw::GraphicsData& g, const Data& d, const Indexer& i){
-		Indexer j(i.size());
-		while(j()){
-			double x = j[0];
-			double y = d.at<double>(0, j[0]);
-			g.addVertex(x, y);
-		}
-	}
+	PlotFunction1D(const Color& c=Color(0)): Plottable(draw::LineStrip, 1,c){}
+	void onPlot(draw::GraphicsData& g, const Data& d, const Indexer& i);
 };
 
+
+/// Two-dimensional function plotter
 struct PlotFunction2D : public Plottable{
-	PlotFunction2D(): Plottable(draw::LineStrip){}
-	void onDrawElements(draw::GraphicsData& g, const Data& d, const Indexer& i){
-		if(d.size(0) < 2) return;
-		while(i()){
-			double x = d.at<double>(0, i[0], i[1]);
-			double y = d.at<double>(1, i[0], i[1]);
-			g.addVertex(x, y);
-		}
-	}
+	PlotFunction2D(const Color& c=Color(0)): Plottable(draw::LineStrip, 1,c){}
+	void onPlot(draw::GraphicsData& g, const Data& d, const Indexer& i);
 };
 
 
-//class CoordinateMap{
-//
-//};
 
-
+/// Plots data according to one or more attached Plottables
 class DataPlot : public Grid {
 public:
 
-	DataPlot(const Rect& r=Rect(0))
-	:	Grid(r)
-	{
-		resetValInd();
-	}
+	DataPlot(const Rect& r=Rect(0));
 
-	DataPlot(const Rect& r, Plottable& p)
-	:	Grid(r)
-	{
-		resetValInd();
-		add(p);
-	}
+	DataPlot(const Rect& r, Plottable& p);
 
 	int valueIndex(int i) const { return mValInd[i]; }
 
-	DataPlot& add(Plottable& v){ mPlottables.push_back(&v); return *this; }
+	/// Add new plotting routine
+	DataPlot& add(Plottable& v);
+
+	DataPlot& remove(Plottable& v);
 
 	DataPlot& valueIndex(int from, int to){
 		mValInd[from] = to; return *this;
 	}
 
 	virtual const char * className() const { return "DataPlot"; }
-
-	virtual void onDraw(GLV& g){
-		Grid::onDraw(g);
-		draw::GraphicsData& gd = g.graphicsData();
-		draw::color(colors().fore);
-
-		pushGrid();
-			Plottables::iterator i = mPlottables.begin();
-			while(i != mPlottables.end()){
-				gd.reset();
-				Plottable& p = **i;
-				p.doDrawElements(gd, p.data().hasData() ? p.data() : data());
-				++i;
-			}		
-		popGrid();
-	}
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
 	typedef std::vector<Plottable *> Plottables;
@@ -483,29 +458,6 @@ protected:
 		for(int i=0; i<4; ++i) mValInd[i]=i;
 	}
 };
-
-
-//
-///// Density plot
-//
-///// Model data should have a shape of (nc, nx, ny) where 'nc' si the number of
-///// components of the value (e.g., a scalar is 1) and 'nx' and 'ny' are the size
-///// of the x and y dimensions, respectively.
-//class DensityPlot : public DataPlot {
-//public:
-//	DensityPlot(const Rect& r=Rect());
-//
-//	DensityPlot& color(const Color& v){ mColor1=v; return *this; }
-//
-//	virtual const char * className() const { return "DensityPlot"; }
-//	virtual void onDraw(GLV& g);
-//
-//protected:
-//	Color mColor1;
-////	float val(int i, int j, int k){ return to01(data().at<float>(i,j,k)); }
-//	float val(int i, int j, int k){ return (data().at<float>(i,j,k)); }
-//};
-
 
 
 } // glv::

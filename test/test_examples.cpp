@@ -17,12 +17,10 @@ Buttons bts44(Rect(60), 4, 4);
 Buttons btsLED(Rect(120), 8, 8, false, false, draw::disc<12>, draw::circle<12>);
 Buttons btv(Rect(80), 4, 4);
 FunctionGraph fg(Rect(200, 100), 4, 10);
-const int plotSize=64;
-Plot	plotXY(Rect(150), plotSize, PlotDim::XY, Color(0,0,0.5)),
-		plotX(Rect(150,60), Color(0.5,0,0)),
-		plotY(Rect(60,150), Color(0,0.5,0));
-//DensityPlot dplot(Rect(200));
-DataPlot dplot(Rect(200));
+DataPlot plotXY(Rect(150), *new PlotFunction2D(Color(0,0,0.5)));
+DataPlot plotX(Rect(150,60), *new PlotFunction1D(Color(0,0.5,0)));
+DataPlot plotY(Rect(60,150), *new PlotFunction1D(Color(0.5,0,0)));
+DataPlot dplot(Rect(200), *new PlotDensity);
 
 NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,8, 8,0);
 Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100)), sl1HS(sl1H,0), sl1VS(sl1V,0);
@@ -122,30 +120,25 @@ int main(int argc, char ** argv){
 			<< new Label("bottom-left") << new Label("bottom-center") << new Label("bottom-right");
 	table.arrange();
 	//table.enable(DrawBorder);
-	
-	const float ffreq = 2*M_PI/(plotSize-1);
 
-	plotXY.data().stroke(2);
-	plotXY.preserveAspect(true);
-	plotXY.addCallback(Event::MouseDrag, Behavior::mouseResizeCorner);
-	plotX.addCallback(Event::MouseDrag, Behavior::mouseResizeCorner);
-	for(int i=0; i<plotSize; ++i){
+	plotXY.data().resize(Data::FLOAT, 2, 64);
+	const float ffreq = 2*M_PI/(plotXY.data().size(1)-1);
+	for(int i=0; i<plotXY.data().size(1); ++i){
 		float phs = i*ffreq;
-		float sigX = (cos(phs) + 0.5*cos(2*phs))*0.6;
-		float sigY = (sin(phs) + 0.5*sin(2*phs))*0.6;
-		plotXY.data().points(0)[i] = sigX;
-		plotXY.data().points(1)[i] = sigY;
+		float sigX = (cos(phs) + 0.5*cos(2*phs))/(1+0.5);
+		float sigY = (sin(phs) + 0.5*sin(2*phs))/(1+0.5);
+		plotXY.data().assign(sigX, 0,i);
+		plotXY.data().assign(sigY, 1,i);
 	}
-	plotX.data().reference(1, plotXY.data().points(0), plotSize);
-	plotY.data().reference(0, plotXY.data().points(1), plotSize);
-	plotX.tickMajorX(8).rangeFit();
-	plotY.tickMajorY(8).rangeFit();
-
-	dplot.add(*new PlotDensity);
+	plotXY.numbering(true);
+	plotY.data() = plotXY.data().slice(0).shape(1,1,64).stride(2);
+	plotX.data() = plotXY.data().slice(1).shape(1,64,1).stride(2);
+	plotY.preserveAspect(0).major(8,1).range(0, plotXY.data().size(1), 1);
+	plotX.preserveAspect(0).major(8,0).range(0, plotXY.data().size(1), 0);
 
 	// Produce matrix of values
 	{
-		dplot.data().resize(1,32,32);
+		dplot.data().resize(Data::FLOAT, 1,32,32);
 		Data& data = dplot.data();
 		for(int j=0; j<data.size(2); ++j){
 			for(int i=0; i<data.size(1); ++i){
