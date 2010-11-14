@@ -89,7 +89,7 @@
 
 /* Begin PBXFileReference section */
 		3657E4C40B7AC005005858EE /* LuaGLVApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuaGLVApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		3657E4C70B7AC005005858EE /* LuaGLVApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "LuaGLVApp-Info.plist"; sourceTree = "<group>"; };
+		3657E4C70B7AC005005858EE /* LuaGLVApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LuaGLVApp-Info.plist"; sourceTree = "<group>"; };
 		3657E5D20B7AC4D5005858EE /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		3657E5D30B7AC4D5005858EE /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		3657E6CF0B7ACD06005858EE /* main.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = main.nib; sourceTree = "<group>"; };
@@ -126,7 +126,7 @@
 		B917A8710BA25BA800E819AF /* test_luaglv.lua */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = test_luaglv.lua; sourceTree = "<group>"; };
 		B917A8AC0BA264A800E819AF /* Lua_Udata_Slider.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Lua_Udata_Slider.h; sourceTree = "<group>"; };
 		B917ADF60BA33E3F00E819AF /* glv.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = glv.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		B917ADF70BA33E3F00E819AF /* LuaGLV.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = LuaGLV.plist; sourceTree = "<group>"; };
+		B917ADF70BA33E3F00E819AF /* LuaGLV.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = LuaGLV.plist; sourceTree = "<group>"; };
 		B917AE1B0BA33F2900E819AF /* Lua.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Lua.framework; path = /Library/Frameworks/Lua.framework; sourceTree = "<absolute>"; };
 		B91844020BA14DEF00D8DA81 /* test_luaglv.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = test_luaglv.cpp; sourceTree = "<group>"; };
 		B91844030BA14DEF00D8DA81 /* test_luaglv.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = test_luaglv.h; sourceTree = "<group>"; };
@@ -519,10 +519,12 @@
 		360718720B7ABDBB00D732E8 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 360718730B7ABDBB00D732E8 /* Build configuration list for PBXProject "luaglv" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 0;
 			mainGroup = 360718700B7ABDBB00D732E8;
 			productRefGroup = 3657E4C50B7AC005005858EE /* Products */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				3657E4C30B7AC005005858EE /* LuaGLVApp */,
 				B917ADF50BA33E3F00E819AF /* glv */,
