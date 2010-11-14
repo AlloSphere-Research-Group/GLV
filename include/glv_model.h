@@ -192,6 +192,15 @@ public:
 	/// Returns whether there is valid data that can be accessed
 	bool hasData() const { return mData!=0; }
 
+	/// Returns whether 2D index is within bounds
+	bool inBounds(int i1, int i2) const { return (i1>=0) && (i1<size(0)) && (i2>=0) && (i2<size(1)); }
+	
+	/// Returns whether 3D index is within bounds
+	bool inBounds(int i1, int i2, int i3) const { return inBounds(i1,i2) && (i3>=0) && (i3<size(2)); }
+
+	/// Returns whether 4D index is within bounds
+	bool inBounds(int i1, int i2, int i3, int i4) const { return inBounds(i1,i2,i3) && (i4>=0) && (i4<size(3)); }
+
 	/// Convert 2D index to 1D index
 	int indexFlat(int i1, int i2) const {
 		return i1 + size(0)*i2;
@@ -221,15 +230,6 @@ public:
 	void indexDim(int& i1, int& i2, int& i3, int& i4, const int& i) const {
 		indexDim(i1,i2,i3,i); i3%=size(2); i4=i/(size(0,1,2));
 	}
-
-	/// Returns whether 2D index is within bounds
-	bool indexValid(int i1, int i2) const { return (i1>=0) && (i1<size(0)) && (i2>=0) && (i2<size(1)); }
-	
-	/// Returns whether 3D index is within bounds
-	bool indexValid(int i1, int i2, int i3) const { return indexValid(i1,i2) && (i3>=0) && (i3<size(2)); }
-
-	/// Returns whether 4D index is within bounds
-	bool indexValid(int i1, int i2, int i3, int i4) const { return indexValid(i1,i2,i3) && (i4>=0) && (i4<size(3)); }
 	
 	/// Returns whether type is numerical, i.e., int, float, or double
 	bool isNumerical() const { return type() != Data::STRING; }
@@ -487,7 +487,7 @@ public:
 	// assignData() can be used to constrain the input data before it is
 	// assigned.
 	void assignData(const Data& d, int ind1, int ind2){
-		if(data().indexValid(ind1, ind2)){
+		if(data().inBounds(ind1, ind2)){
 			Data t=d; t.clone();
 			if(onAssignData(t, ind1, ind2)){
 				//model().assign(t, ind1, ind2);
