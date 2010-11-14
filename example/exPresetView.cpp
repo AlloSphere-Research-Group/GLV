@@ -92,8 +92,8 @@ int main(){
 
 	//printf("\n%s\n", top.modelManager().snapshotsToString().c_str());
 	
-	Window win(0,0, "Presets", &top);
-	win.fit();
+	Window win(400,300, "Presets", &top);
+	//win.fit();
 	Application::run();
 }
 

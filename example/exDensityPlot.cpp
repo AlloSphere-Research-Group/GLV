@@ -29,21 +29,23 @@ int main(){
 	GLV glv;
 
 	// These plots will show all the xy slices	
-	DensityPlot plots[N];
+	Plot plots[N];
 	for(int i=0; i<N; ++i){
-		plots[i] = Rect(w*i,0, w,w);
+		plots[i].add(*new PlotDensity);
+		plots[i].set(Rect(w*i,0, w,w));
+		plots[i].showGrid(false);
 		plots[i].data() = cols.slice(cols.size(0,1,2)*i).shape(4,N,N);
 		//plots[i].data() = cols.slice(cols.size(0,1,2)*i + 2).shape(1,N,N).stride(4);
 		glv << plots[i];
 	}
 
 	// This plot will show a flattened 1D color array
-	DensityPlot plot1(Rect(0,w+40*0, w*N,40));
+	Plot plot1(Rect(0,w+40*0, w*N,40), *new PlotDensity);
 	
 	// These plots will show flattened color component arrays
-	DensityPlot plotR(Rect(0,w+40*1, w*N,40)); plotR.color(Color(1,0,0));
-	DensityPlot plotG(Rect(0,w+40*2, w*N,40)); plotG.color(Color(0,1,0));
-	DensityPlot plotB(Rect(0,w+40*3, w*N,40)); plotB.color(Color(0,0,1));
+	Plot plotR(Rect(0,w+40*1, w*N,40), *new PlotDensity(Color(1,0,0)));
+	Plot plotG(Rect(0,w+40*2, w*N,40), *new PlotDensity(Color(0,1,0)));
+	Plot plotB(Rect(0,w+40*3, w*N,40), *new PlotDensity(Color(0,0,1)));
 
 	plot1.data() = cols.slice(0).shape(4, cols.size(1,2,3));
 	plotR.data() = cols.slice(0).shape(1, cols.size(1,2,3)).stride(4);
@@ -62,7 +64,6 @@ int main(){
 //	std::string s;
 //	glv.modelToString(s);
 //	printf("%s\n", s.c_str());
-	
 
 	Application::run();
 }

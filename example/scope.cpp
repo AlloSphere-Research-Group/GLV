@@ -52,19 +52,13 @@ int main(){
 	// Create the Views
 	MyGLV top;
 	double d = 800;
-//	DataPlot<DRFunction1D> v1__(Rect(    0,0*d/8, d,d/8));
-//	DataPlot<DRFunction1D> v_1_(Rect(    0,1*d/8, d,d/8));
-//	DataPlot<DRFunction1D> v__1(Rect(    0,2*d/8, d,d/8));
-//	DataPlot<DRFunction2D> v11_(Rect(0*d/3,3*d/8, d/3,d/3));
-//	DataPlot<DRFunction2D> v_11(Rect(1*d/3,3*d/8, d/3,d/3));
-//	DataPlot<DRFunction2D> v1_1(Rect(2*d/3,3*d/8, d/3,d/3));
 
-	DataPlot v1__(Rect(    0,0*d/8, d,  d/8), *new PlotFunction1D);
-	DataPlot v_1_(Rect(    0,1*d/8, d,  d/8), *new PlotFunction1D);
-	DataPlot v__1(Rect(    0,2*d/8, d,  d/8), *new PlotFunction1D);
-	DataPlot v11_(Rect(0*d/3,3*d/8, d/3,d/3), *new PlotFunction2D);
-	DataPlot v_11(Rect(1*d/3,3*d/8, d/3,d/3), *new PlotFunction2D);
-	DataPlot v1_1(Rect(2*d/3,3*d/8, d/3,d/3), *new PlotFunction2D);
+	Plot v1__(Rect(    0,0*d/8, d,  d/8), *new PlotFunction1D);
+	Plot v_1_(Rect(    0,1*d/8, d,  d/8), *new PlotFunction1D);
+	Plot v__1(Rect(    0,2*d/8, d,  d/8), *new PlotFunction1D);
+	Plot v11_(Rect(0*d/3,3*d/8, d/3,d/3), *new PlotFunction2D);
+	Plot v_11(Rect(1*d/3,3*d/8, d/3,d/3), *new PlotFunction2D);
+	Plot v1_1(Rect(2*d/3,3*d/8, d/3,d/3), *new PlotFunction2D);
 
 	Data& data = top.data();
 	v1__.data() = data.slice(0).stride(data.size(0)).shape(1, data.size(1,2));
@@ -80,9 +74,9 @@ int main(){
 	v_1_.preserveAspect(false);
 	v__1.preserveAspect(false);
 
-	v1__.range(0, 0, data.size(1,2)).range(1, -1.2, 1.2);
-	v_1_.range(0, 0, data.size(1,2)).range(1, -1.2, 1.2);
-	v__1.range(0, 0, data.size(1,2)).range(1, -1.2, 1.2);
+	v1__.range(0, data.size(1,2), 0).range(-1.2, 1.2, 1);
+	v_1_.range(0, data.size(1,2), 0).range(-1.2, 1.2, 1);
+	v__1.range(0, data.size(1,2), 0).range(-1.2, 1.2, 1);
 
 	v11_.range(1.2);
 	v_11.range(1.2);

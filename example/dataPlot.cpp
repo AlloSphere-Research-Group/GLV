@@ -76,9 +76,9 @@ int main(){
 
 	// Create the Views
 	MyGLV top;
-	DataPlot v1(Rect(000,0, 400,400), *new PlotDensity);
-	DataPlot v2(Rect(400,0, 400,400), *new PlotVector);
-	DataPlot v3(Rect(800,0, 400,400), (new PlotFunction2D)->prim(draw::Points).stroke(2));
+	Plot v1(Rect(000,0, 400,400), *new PlotDensity);
+	Plot v2(Rect(400,0, 400,400), *new PlotVector);
+	Plot v3(Rect(800,0, 400,400), (new PlotFunction2D)->prim(draw::Points).stroke(2));
 
 	v1.data() = top.data();
 	v2.data() = top.data();
@@ -86,7 +86,7 @@ int main(){
 	
 	top << v1 << v2 << v3;
 
-	Window win(80,80, "DataPlots", &top);
+	Window win(80,80, "Data Plots", &top);
 	win.fit();
 	Application::run();
 	return 0;

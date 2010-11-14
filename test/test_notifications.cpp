@@ -12,8 +12,8 @@ void updateSlider12(const Notification& n){
 }
 
 void updateSlider21(const Notification& n){
-	Slider2D& s2 = *(Slider2D *)n.sender();
-	Slider& s = *(Slider *)n.receiver();
+//	Slider2D& s2 = *(Slider2D *)n.sender();
+//	Slider& s = *(Slider *)n.receiver();
 //	s.setValue(s2.value(0));
 }
 

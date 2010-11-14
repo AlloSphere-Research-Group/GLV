@@ -6,7 +6,7 @@
 namespace glv{
 
 Grid::Grid(const Rect& r, double rangeMin, double rangeMax, double majorDist, int minorDiv)
-:	View(r), mShowAxes(true), mShowGrid(true), mShowNumbering(true), mPreserveAspect(true)
+:	View(r), mShowAxes(true), mShowGrid(true), mShowNumbering(true), mPreserveAspect(false)
 {
 	range(rangeMin, rangeMax);
 	major(majorDist); minor(minorDiv);

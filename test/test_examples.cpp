@@ -17,10 +17,10 @@ Buttons bts44(Rect(60), 4, 4);
 Buttons btsLED(Rect(120), 8, 8, false, false, draw::disc<12>, draw::circle<12>);
 Buttons btv(Rect(80), 4, 4);
 FunctionGraph fg(Rect(200, 100), 4, 10);
-DataPlot plotXY(Rect(150), *new PlotFunction2D(Color(0,0,0.5)));
-DataPlot plotX(Rect(150,60), *new PlotFunction1D(Color(0,0.5,0)));
-DataPlot plotY(Rect(60,150), *new PlotFunction1D(Color(0.5,0,0)));
-DataPlot dplot(Rect(200), *new PlotDensity);
+Plot plotXY(Rect(150), *new PlotFunction2D(Color(0,0,0.5)));
+Plot plotX(Rect(150,60), *new PlotFunction1D(Color(0,0.5,0)));
+Plot plotY(Rect(60,150), *new PlotFunction1D(Color(0.5,0,0)));
+Plot dplot(Rect(200), *new PlotDensity);
 
 NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,8, 8,0);
 Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100)), sl1HS(sl1H,0), sl1VS(sl1V,0);
@@ -133,8 +133,8 @@ int main(int argc, char ** argv){
 	plotXY.numbering(true);
 	plotY.data() = plotXY.data().slice(0).shape(1,1,64).stride(2);
 	plotX.data() = plotXY.data().slice(1).shape(1,64,1).stride(2);
-	plotY.preserveAspect(0).major(8,1).range(0, plotXY.data().size(1), 1);
-	plotX.preserveAspect(0).major(8,0).range(0, plotXY.data().size(1), 0);
+	plotY.major(8,1).range(0, plotXY.data().size(1), 1);
+	plotX.major(8,0).range(0, plotXY.data().size(1), 0);
 
 	// Produce matrix of values
 	{
