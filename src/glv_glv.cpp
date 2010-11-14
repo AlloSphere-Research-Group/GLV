@@ -152,8 +152,12 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 	//glColorPointer(4, GL_FLOAT, 0, 0);
 
 	push2D(w, h);	// initialise the OpenGL renderer for our 2D GUI world
-	onDraw();		// draw myself
-	push();			// push model matrix because of transformations in drawContext()
+
+	drawPre();
+	onDraw();
+	drawPost();
+
+	push(ModelView);	// drawContext() will be applying transformations
 
 	draw::enable(ScissorTest);
 
@@ -211,7 +215,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h){
 	glDisableClientState(GL_VERTEX_ARRAY);
 	//glDisableClientState(GL_COLOR_ARRAY);
 
-	pop();
+	pop(ModelView);
 
 	// this weird call is necessary so that raster calls get scissored properly
 	// not entirely sure why this works, but it does.
@@ -228,9 +232,10 @@ std::vector<GLV *>& GLV::instances(){
 void GLV::preamble(unsigned int w, unsigned int h){
 	using namespace draw;
 	glDrawBuffer(GL_BACK);
-	//colors().back.print();
-	clearColor(colors().back.r, colors().back.g, colors().back.b, colors().back.a);
-	clear(ColorBufferBit | DepthBufferBit);	// TODO: this needs to be coordinated with the display settings
+
+	// note: this is the responsibility of the window
+	//clearColor(colors().back.r, colors().back.g, colors().back.b, colors().back.a);
+	//clear(ColorBufferBit | DepthBufferBit);	// TODO: this needs to be coordinated with the display settings
 }
 
 bool GLV::propagateEvent(){ //printf("GLV::propagateEvent(): %s\n", Event::getName(eventtype));

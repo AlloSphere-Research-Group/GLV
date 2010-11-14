@@ -454,6 +454,7 @@ Window::Dimensions Window::implWinDims() const{
 }
 
 void WindowImpl::draw(){
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	if(mWindow->shouldDraw()){
 		mWindow->mGLV->drawGLV(mWindow->width(), mWindow->height());
 		glutSwapBuffers();

@@ -64,14 +64,12 @@ all: $(SLIB_FILE) test
 
 
 # Compile and run source files in test/ folder
-test/%.cpp: $(SLIB_FILE)
+test/%.cpp example/%.cpp: $(SLIB_FILE)
 	@$(CC) $(CFLAGS) -o $(BIN_DIR)/$(*F) $@ $(LFLAGS) $(SLIB_FILE)
-	@./$(BIN_DIR)/$(*F) &
-
-# Compile and run source files in example/ folder
-example/%.cpp: $(SLIB_FILE)
-	@$(CC) $(CFLAGS) -o $(BIN_DIR)/$(*F) $@ $(LFLAGS) $(SLIB_FILE)
-	@./$(BIN_DIR)/$(*F) &
+ifneq ($(AUTORUN), 0)
+	@$(BIN_DIR)/$(*F) &
+endif
+	
 
 createFolders:
 	@mkdir -p $(OBJ_DIR)
