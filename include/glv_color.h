@@ -124,7 +124,7 @@ inline Color& Color::operator*=(float v){ set(r*v, g*v, b*v, a*v); return *this;
 //inline Color Color::blackAndWhite() const { return Color((r>0.5||g>0.5||b>0.5)?1:0); }
 inline Color Color::blackAndWhite() const { return Color(luminance()>0.5f?1.f:0.f); }
 inline Color Color::inverse() const { return Color(1.f-r, 1.f-g, 1.f-b, a); }
-inline float Color::luminance() const { return r*0.3f+g*0.59f+b*0.11f; }
+inline float Color::luminance() const { return r*0.299f+g*0.587f+b*0.114f; }
 inline Color Color::mix(const Color& c, float f){ return (c-*this)*f + *this; }
 
 inline void	Color::clamp(){
