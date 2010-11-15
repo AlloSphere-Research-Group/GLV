@@ -104,6 +104,78 @@ protected:
 
 
 
+/// Iterates through multidmensional arrays
+class Indexer{
+public:
+
+	/// @param[in] size1	size of dimension 1
+	/// @param[in] size2	size of dimension 2
+	/// @param[in] size3	size of dimension 3
+	Indexer(int size1=1, int size2=1, int size3=1){
+		reset();
+		int sizes[] = {size1,size2,size3};
+		setSizes(sizes);
+	}
+
+	/// @param[in] sizes	array of dimension sizes
+	Indexer(const int * sizes){
+		reset(); setSizes(sizes);
+	}
+
+	/// Perform one iteration returning whether more elements exist
+	bool operator()() const {
+		if(++mIndex[0] == mSizes[0]){
+			if(++mIndex[1] == mSizes[1]){
+				if(++mIndex[2] == mSizes[2]){
+					return false;
+				}
+				mIndex[1] = 0;
+			}
+			mIndex[0] = 0;
+		}
+		return true;
+	}
+
+	/// Get current index within a dimension
+	int operator[](int dim) const { return mIndex[dim]; }
+
+	/// Get one-dimensional index into plane
+	int indexFlat(int dim1, int dim2) const { return mIndex[dim2]*size(dim1) + mIndex[dim1]; }
+
+	/// Get current fractional position within a dimension
+	double frac(int dim) const { return double(mIndex[dim])/mSizes[dim]; }
+
+	/// Get size of a dimension
+	int size(int dim) const { return mSizes[dim]; }
+
+	/// Get product of sizes of two dimensions
+	int size(int dim1, int dim2) const { return mSizes[dim1]*mSizes[dim2]; }
+	
+	/// Get product of sizes of all dimensions
+	int size() const { int r=1; for(int i=0; i<N; ++i) r*=size(i); return r; }
+
+	/// Reset position indices
+	Indexer& reset(){ mIndex[0]=-1; for(int i=1; i<N; ++i){mIndex[i]=0;} return *this; }
+
+	/// Set dimensions
+	Indexer& shape(const int * sizes, int n){ setSizes(sizes,n); return *this; }
+
+	/// Set dimensions
+	Indexer& shape(int size1, int size2=1, int size3=1){
+		int sizes[] = {size1, size2, size3};
+		return shape(sizes, 3);
+	}
+
+protected:
+	enum{N=3};				// max number of dimensions
+	mutable int mIndex[N];	// indices of current position in array
+	int mSizes[N];			// dimensions of array
+	void setSizes(const int* v, int n=N){ for(int i=0;i<n;++i) mSizes[i]=v[i]; }
+};
+
+
+
+
 #ifndef DATA_MAXDIM
 #define DATA_MAXDIM 4
 #endif
@@ -260,13 +332,13 @@ public:
 	/// Get size, in bytes, of element type
 	int sizeType() const;
 
-	/// Returns maximally sized slice at given offset
+	/// Returns maximally sized 1D slice at given offset
 	Data slice(int offset=0) const { return slice(offset, size()-offset); }
 
-	/// Returns slice with given offset, and size
+	/// Returns 1D slice with given offset, and size
 	Data slice(int offset, int size) const { return slice(offset,size,stride()); }
 
-	/// Returns slice with given offset, size, and stride
+	/// Returns 1D slice with given offset, size, and stride
 	Data slice(int offset, int size, int stride) const;
 
 	/// Get index stride
@@ -323,9 +395,21 @@ public:
 	/// Allocate internal memory and copy over previous data
 	void clone();
 
-	/// Set element at 1D index using pointer casting
+	/// Get mutable reference to element at 1D index using pointer casting
 	template <class T>
 	T& elem(int i){ return elems<T>()[i*stride()]; }
+
+	/// Get mutable reference to element at 2D index using pointer casting
+	template <class T>
+	T& elem(int i1, int i2){ return elems<T>()[indexFlat(i1,i2)*stride()]; }
+
+	/// Get mutable reference to element at 3D index using pointer casting
+	template <class T>
+	T& elem(int i1, int i2, int i3){ return elems<T>()[indexFlat(i1,i2,i3)*stride()]; }
+
+	/// Get mutable reference to element at 4D index using pointer casting
+	template <class T>
+	T& elem(int i1, int i2, int i3, int i4){ return elems<T>()[indexFlat(i1,i2,i3,i4)*stride()]; }
 
 	/// Returns pointer to first element
 	// note: this is potentially dangerous call, therefore use with caution...
