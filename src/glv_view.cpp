@@ -259,44 +259,6 @@ void View::doDraw(GLV& g){
 	}
 }
 
-//void View::drawPre(){
-//	using namespace glv::draw;
-//	
-//	if(enabled(DrawBack)){
-//		color(colors().back);
-//		rectangle(0, 0, pix(w), pix(h));
-//	}
-//}
-
-
-//void View::drawPost(){
-//	using namespace glv::draw;
-//	
-//	if(enabled(DrawBorder)){
-//		float borderWidth = 1.0;
-//		
-//		// changing brightness doesn't always look so great...
-////		if(enabled(Focused) && enabled(FocusHighlight)){
-////			HSV hsv(colors().border);
-////			hsv.v > 0.5 ? hsv.v -= 0.2 : hsv.v += 0.2;
-////			color(Color(hsv));
-////		}
-////		else{
-////			color(colors().border);
-////		}
-//
-//		color(colors().border);
-//
-//		// double border thickness if focused
-//		if(enabled(Focused) && enabled(FocusHighlight)){
-//			borderWidth *= 2;
-//		}
-//
-//		lineWidth(borderWidth);
-//		frame(0, 0, pix(w), pix(h));
-//	}
-//}
-
 
 // This returns the last child and sibling View containing point.
 View * View::findTarget(space_t &x, space_t &y){

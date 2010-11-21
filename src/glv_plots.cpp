@@ -57,10 +57,45 @@ Surface x	(1, 1, n, m)	((v11, v21, v31), (v12, v22, v32))
 */
 
 
+
+Plottable& Plottable::add(GraphicsMap& v){
+	mGraphicsMaps.push_back(&v);
+	return *this;
+}
+
+Plottable& Plottable::remove(GraphicsMap& v){
+	std::remove(mGraphicsMaps.begin(), mGraphicsMaps.end(), &v);
+	return *this;
+}
+
+void Plottable::doPlot(GraphicsData& gd, const Data& d){
+	if(!d.hasData()) return;
+	draw::color(mColor);
+	draw::stroke(stroke());
+	
+	Indexer ind(d.shape()+1); // dimension 0 is non-spatial
+	//onMap(gd, d, ind);
+
+	{	GraphicsMaps::iterator it = mGraphicsMaps.begin();
+		while(it != mGraphicsMaps.end()){
+			(*it)->onMap(gd, d, ind);
+			ind.reset();
+			++it;
+		}
+	}
+	
+	onDraw(gd, d);
+}
+
+
 PlotDensity::PlotDensity(const Color& c, int ipol)
 :	Plottable(draw::Triangles, 1, c), mTex(0,0, GL_RGBA, GL_FLOAT), mIpol(ipol)
 {
 	add(defaultColorMap());
+}
+
+GraphicsMap& PlotDensity::defaultColorMap(){
+	static GraphicsMap * m = new DefaultColorMap; return *m;
 }
 
 void PlotDensity::DefaultColorMap::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
@@ -123,85 +158,13 @@ void PlotDensity::onContextDestroy(){
 //			double a = atan2(w1,w0)/(-2*M_PI); if(a<0) a=1+a;
 //			Color c = HSV(a, 1, m);
 
-void PlotDensity::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
-//	double dx = 2./d.size(1);
-//	double dy = 2./d.size(2);
-	
-	int N0 = d.size(0);	// number of "internal" dimensions
-	HSV hsv = mColor;
+void PlotDensity::onDraw(GraphicsData& b, const Data& d){
 
 //	int Nbytes = mTex.alloc(d.size(1), d.size(2));
 //	if(Nbytes){
 //		mTex.create(); //printf("tex %d: %d bytes\n", mTex.id(), Nbytes);
 //	}
 
-	switch(N0){
-	case 1:
-		while(i()){
-			float w0 = d.at<float>(0,i[0],i[1],i[2]);
-			
-			Color c(mColor * w0, mColor.a);
-//			float * tbuf = mTex.buffer<float>();
-//			int ind = i.indexFlat(0,1);
-//			tbuf[ind*3+0] = c.r;
-//			tbuf[ind*3+1] = c.g;
-//			tbuf[ind*3+2] = c.b;
-			
-			gd.addColor(c);
-
-//			the non-texture approach...
-//			double x = i.frac(0)*2 - 1;
-//			double y = i.frac(1)*2 - 1;
-//			float w0 = d.at<float>(0,i[0],i[1],i[2]);
-//			Color c = mColor * w0;
-//			int idx = b.vertices2().size();
-//			b.addVertex2(x,y, x+dx,y, x+dx,y+dy, x,y+dy);
-//			b.addColor(c,c,c,c);
-//			b.addIndex(idx+0, idx+1, idx+3);
-//			b.addIndex(idx+1, idx+2, idx+3);
-		}
-		break;
-
-	case 2:
-		while(i()){
-			float w0 = d.at<float>(0,i[0],i[1],i[2]);
-			float w1 = d.at<float>(1,i[0],i[1],i[2]);
-			Color c = HSV(hsv.h, hsv.s*w1, hsv.v*w0);
-			gd.addColor(c);
-		}
-		break;
-
-	case 3:
-	case 4:
-		while(i()){
-			float w0 = d.at<float>(0,i[0],i[1],i[2]);
-			float w1 = d.at<float>(1,i[0],i[1],i[2]);
-			float w2 = d.at<float>(2,i[0],i[1],i[2]);
-			Color c = Color(w0, w1, w2);
-			gd.addColor(c);
-		}
-		break;
-
-	default:;
-	}
-
-//	mTex.create(d.size(1), d.size(2), &b.colors()[0]);
-//
-//	mTex.magFilter(mIpol ? GL_LINEAR : GL_NEAREST);
-//	draw::enable(draw::Texture2D);
-////	draw::color(1,1,1,mColor.a);
-//	draw::color(1,1,1,1);
-////	draw::color(mColor);
-//	mTex.begin();
-//	mTex.send();
-//	mTex.draw(-1,1,1,-1);
-//	mTex.end();
-//	draw::disable(draw::Texture2D);
-	
-//	b.reset();
-}
-
-void PlotDensity::onDraw(GraphicsData& b, const Data& d){
 	mTex.create(d.size(1), d.size(2), &b.colors()[0]);
 
 	mTex.magFilter(mIpol ? GL_LINEAR : GL_NEAREST);
@@ -217,7 +180,8 @@ void PlotDensity::onDraw(GraphicsData& b, const Data& d){
 }
 
 
-void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
+
+void PlotFunction1D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 //	Indexer j(i.size());
 //	while(j()){
 //		double x = j[0];
@@ -252,8 +216,18 @@ void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	}
 }
 
+PlotFunction1D::PlotFunction1D(const Color& c)
+:	Plottable(draw::LineStrip, 1,c)
+{
+	add(defaultVertexMap());
+}
 
-void PlotFunction2D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
+GraphicsMap& PlotFunction1D::defaultVertexMap(){
+	static GraphicsMap * m = new DefaultVertexMap; return *m;
+}
+
+
+void PlotFunction2D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	if(d.size(0) < 2) return;
 	while(i()){
 		double x = d.at<double>(0, i[0], i[1]);
@@ -262,6 +236,15 @@ void PlotFunction2D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	}
 }
 
+PlotFunction2D::PlotFunction2D(const Color& c)
+:	Plottable(draw::LineStrip, 1,c)
+{
+	add(defaultVertexMap());
+}
+
+GraphicsMap& PlotFunction2D::defaultVertexMap(){
+	static GraphicsMap * m = new DefaultVertexMap; return *m;
+}
 
 
 static bool evPlotCreateContext(View * v, GLV& g){

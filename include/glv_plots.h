@@ -19,16 +19,13 @@ class Plot;
 class Plottable;
 
 
-/*
-We need to be able to map arbitrary vectors of data to the plot colors
-and vertices. We can do this by having an ordered list of functors in 
-Plottable.
-*/
 
 /// Map from model data to graphics data
 class GraphicsMap{
 public:
 	virtual ~GraphicsMap(){}
+	
+	/// Routine to generate graphics from model data
 	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind) = 0;
 };
 
@@ -46,13 +43,6 @@ public:
 	{}
 
 	virtual ~Plottable(){}
-
-	/// Plotting callback
-	
-	/// The passed in graphics buffers should be filled with the plot data. It
-	/// is not necessary to explicitly call any drawing commands as this will be
-	/// handled by the Plot.
-	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind) = 0;
 
 	/// Called when a new graphics context is created
 	virtual void onContextCreate(){}
@@ -79,12 +69,11 @@ public:
 	int stroke() const { return mStroke; }	
 	Plottable& stroke(int v){ mStroke=v; return *this; }
 
-	Plottable& add(GraphicsMap& v){ mGraphicsMaps.push_back(&v); return *this; }
+	/// Add a graphics map
+	Plottable& add(GraphicsMap& v);
 
-	Plottable& remove(GraphicsMap& v){
-		std::remove(mGraphicsMaps.begin(), mGraphicsMaps.end(), &v);
-		return *this;
-	}
+	/// Remove a graphics map
+	Plottable& remove(GraphicsMap& v);
 
 protected:
 	friend class Plot;
@@ -98,24 +87,7 @@ protected:
 	GraphicsMaps mGraphicsMaps;
 	bool mDrawUnder;
 	
-	void doPlot(GraphicsData& gd, const Data& d){
-		if(!d.hasData()) return;
-		//draw::color(mColor);
-		draw::stroke(stroke());
-		
-		Indexer ind(d.shape()+1); // dimension 0 is non-spatial
-		//onMap(gd, d, ind);
-
-		{	GraphicsMaps::iterator it = mGraphicsMaps.begin();
-			while(it != mGraphicsMaps.end()){
-				(*it)->onMap(gd, d, ind);
-				ind.reset();
-				++it;
-			}
-		}
-		
-		onDraw(gd, d);
-	}
+	void doPlot(GraphicsData& gd, const Data& d);
 	
 	// defines how graphics data should be drawn
 	virtual void onDraw(GraphicsData& gd, const Data& d){
@@ -130,22 +102,18 @@ protected:
 class PlotDensity : public Plottable{
 public:
 
-	struct DefaultColorMap : public GraphicsMap{
-		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
-	};
-	
-	static GraphicsMap& defaultColorMap(){
-		static GraphicsMap * m = new DefaultColorMap;
-		return *m;
-	}
-	
-
-	PlotDensity(const Color& c=Color(1,0,0), int interpolate=0);
+	/// @param[in] color		plot color
+	/// @param[in] interpolate	interpolation (0=none, 1=linear)
+	PlotDensity(const Color& color=Color(1,0,0), int interpolate=0);
 
 	/// Set interpolation mode (0=none, 1=linear)
 	PlotDensity& interpolate(int v){ mIpol=v; return *this; }
+	
+	static GraphicsMap& defaultColorMap();
 
-	void onMap(GraphicsData& b, const Data& d, const Indexer& i);
+	struct DefaultColorMap : public GraphicsMap{
+		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+	};
 
 protected:
 	virtual void onContextCreate();
@@ -157,16 +125,32 @@ protected:
 
 
 /// One-dimensional function plotter
-struct PlotFunction1D : public Plottable{
-	PlotFunction1D(const Color& c=Color(0)): Plottable(draw::LineStrip, 1,c){}
-	void onMap(GraphicsData& g, const Data& d, const Indexer& i);
+class PlotFunction1D : public Plottable{
+public:
+
+	/// @param[in] color	plot color
+	PlotFunction1D(const Color& color=Color(0));
+
+	static GraphicsMap& defaultVertexMap();
+
+	struct DefaultVertexMap : public GraphicsMap{
+		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+	};
 };
 
 
 /// Two-dimensional function plotter
-struct PlotFunction2D : public Plottable{
-	PlotFunction2D(const Color& c=Color(0)): Plottable(draw::LineStrip, 1,c){}
-	void onMap(GraphicsData& g, const Data& d, const Indexer& i);
+class PlotFunction2D : public Plottable{
+public:
+
+	/// @param[in] color	plot color
+	PlotFunction2D(const Color& color=Color(0));
+
+	static GraphicsMap& defaultVertexMap();
+
+	struct DefaultVertexMap : public GraphicsMap{
+		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+	};
 };
 
 

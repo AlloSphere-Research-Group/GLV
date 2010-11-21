@@ -75,8 +75,8 @@ struct Canvas : public Plot{
 
 		Plot::onEvent(e,g);
 
-		float gx = pixToGrid(0, g.mouse.xRel());	// convert mouse to grid position
-		float gy = pixToGrid(1, g.mouse.yRel());	// convert mouse to grid position
+		float gx = pixToGrid(0, g.mouse().xRel());	// convert mouse to grid position
+		float gy = pixToGrid(1, g.mouse().yRel());	// convert mouse to grid position
 		int cx = (gx*0.5+0.5) * P.size(0);			// convert grid to cell position
 		int cy = (gy*0.5+0.5) * P.size(1);			// convert grid to cell position
 
@@ -84,11 +84,11 @@ struct Canvas : public Plot{
 		case Event::MouseDown:
 		case Event::MouseDrag:
 			if(P.inBounds(cx, cy)){
-				P.elem<float>(cx,cy,it0) = g.mouse.button() ? -1:1;
+				P.elem<float>(cx,cy,it0) = g.mouse().button() ? -1:1;
 			}
 			break;
 		case Event::KeyDown:
-			switch(g.keyboard.key()){
+			switch(g.keyboard().key()){
 			case 'c': P.assignAll(0); break;
 			}
 			break;
