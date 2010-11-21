@@ -150,11 +150,14 @@ class Buffer : protected Alloc{
 public:
 
 	/// @param[in] size			Number of elements in buffer
-	explicit Buffer(int size=0): mSize(size), mElems(size){}
+	explicit Buffer(int capcity=0): mSize(0), mElems(capcity){}
 
-	/// @param[in] size			Number of elements in buffer
-	/// @param[in] capacity		Number of elements to allocate
-	Buffer(int size, int capacity): mSize(size), mElems(capacity){}
+//	/// @param[in] size			Number of elements in buffer
+//	explicit Buffer(int size=0): mSize(size), mElems(size){}
+//
+//	/// @param[in] size			Number of elements in buffer
+//	/// @param[in] capacity		Number of elements to allocate
+//	Buffer(int size, int capacity): mSize(size), mElems(capacity){}
 
 	~Buffer(){}
 
@@ -226,12 +229,15 @@ private:
 /// An interval is a connected region of the real line. Geometrically, it
 /// describes a 0-sphere. Order is strongly enforced so that the endpoints will
 /// always satisfy min <= max.
-template <class T>
+template <class T=double>
 class Interval{
 public:
 
 	Interval()
 	:	mMin(0), mMax(1){}
+
+	Interval(const T& max)
+	{ endpoints(0,max); }
 
 	Interval(const T& min, const T& max)
 	{ endpoints(min,max); }
@@ -248,12 +254,21 @@ public:
 	bool proper() const { return min()!=max(); }	///< Returns true if diameter is non-zero
 	T radius() const { return diameter()/T(2); }	///< Returns one-half the diameter
 
+	/// Linearly map point in unit interval to point in interval
+	T fromUnit(const T& v) const { return v*diameter() + min(); }
+
 	/// Linearly map point in interval to point in the unit interval
 	T toUnit(const T& v) const { return (v-min())/diameter(); }
 	
+	/// Linearly map point from interval to argument interval
+	template <class U>
+	T to(const T& v, const Interval<U>& i){ return i.fromUnit(toUnit(v)); }
+	
+	/// Returns true if both endpoints are equal
 	template <class U>
 	bool operator == (const Interval<U>& v){ return min()==v.min() && max()==v.max(); }
 
+	/// Returns true if endpoints are not equal
 	template <class U>
 	bool operator != (const Interval<U>& v){ return !(*this == v); }
 	

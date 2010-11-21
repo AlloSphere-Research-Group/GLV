@@ -91,6 +91,13 @@ struct HSV{
 	HSV(const Color& c){ *this = c; }
 	
 	HSV& operator=(const Color& c){ c.getHSV(h, s, v); return *this; }
+	
+	HSV& rotateHue(float v){ h += v; wrapHue(); return *this; }
+	
+	void wrapHue(){
+		if(h>1){ h -= int(h); }
+		else if(h<0){ h -= int(h)-1; }
+	}
 };
 
 

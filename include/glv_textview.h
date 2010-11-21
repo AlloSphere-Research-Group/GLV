@@ -248,8 +248,8 @@ public:
 
 	virtual bool onEvent(Event::t e, GLV& g){
 	
-		const Keyboard& k = g.keyboard;
-		const Mouse& m = g.mouse;
+		const Keyboard& k = g.keyboard();
+		const Mouse& m = g.mouse();
 	
 		switch(e){
 		case Event::KeyDown:

@@ -38,10 +38,10 @@ void View3D::onDraw(GLV& g){
 	// View is outside window, so just return...
 	if(ax > top->w || ay > top->h) return;
 
-	//create viewport just at widget location
+	// create viewport just at widget location
 	glViewport((int)ax, (int)ay, (int)w, (int)h);
 	
-	//save openGL state
+	// save OpenGL state
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
 	draw::enable(DepthTest);
@@ -65,21 +65,22 @@ void View3D::onDraw(GLV& g){
 	gluPerspective(mFOVY, (GLfloat)w/(GLfloat)h, mNear, mFar);
 
 	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
 	glLoadIdentity();
 	glMultMatrixd(mMatrix);
 
 	// Do all 3D drawing
 	onDraw3D(g);
 
-	//return openGL state
+	// return OpenGL state
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glPopMatrix();
 	
 	glPopAttrib();
 	
-	//return viewport to being entire top-level rect
+	// return viewport to being entire top-level rect
 	glViewport(0, 0, (int)top->w, (int)top->h);
 	
 	// do 2D drawing

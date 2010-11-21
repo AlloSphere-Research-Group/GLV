@@ -104,7 +104,7 @@ void GLV::doFocusCallback(bool get){
 }
 
 void GLV::drawGLV(unsigned int w, unsigned int h, double dsec){
-	preamble(w, h);
+	glDrawBuffer(GL_BACK);
 	drawWidgets(w, h, dsec);
 }
 
@@ -157,10 +157,8 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 	push2D(w, h);	// initialise the OpenGL renderer for our 2D GUI world
 
 	graphicsData().reset();
-	onAnimate(dsec, *this);
-	drawPre();
-	onDraw(*this);
-	drawPost();
+	if(enabled(Animate)) onAnimate(dsec, *this);
+	doDraw(*this);
 
 	push(ModelView);			// push model matrix because of transformations in drawContext()
 	
@@ -211,10 +209,8 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 			scissor(pix(r.l), pix(h - r.bottom() - 1.499), pix(r.w+1), pix(r.h+1.499));
 
 			graphicsData().reset();
-			cv->onAnimate(dsec, *this);
-			cv->drawPre();
-			push(); cv->onDraw(*this); pop();		// push/pop model cuz user might forget to...
-			cv->drawPost();
+			if(cv->enabled(Animate)) cv->onAnimate(dsec, *this);
+			cv->doDraw(*this);
 		}
 	}
 	
@@ -234,15 +230,6 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 std::vector<GLV *>& GLV::instances(){
 	static std::vector<GLV *> * sInstances = new std::vector<GLV *>;
 	return *sInstances;
-}
-
-void GLV::preamble(unsigned int w, unsigned int h){
-	using namespace draw;
-	glDrawBuffer(GL_BACK);
-	//colors().back.print();
-	
-	//clearColor(colors().back.r, colors().back.g, colors().back.b, colors().back.a);
-	//clear(ColorBufferBit | DepthBufferBit);	// TODO: this needs to be coordinated with the display settings
 }
 
 bool GLV::propagateEvent(){ //printf("GLV::propagateEvent(): %s\n", Event::getName(eventtype));
@@ -280,22 +267,22 @@ void GLV::setFocus(View * v){
 
 void GLV::setKeyDown(int keycode){
 	eventType(Event::KeyDown);
-	keyboard.mKeycode = keycode;
-	keyboard.mIsDown = true;
+	mKeyboard.mKeycode = keycode;
+	mKeyboard.mIsDown = true;
 }
 
 void GLV::setKeyUp(int keycode){
 	eventType(Event::KeyUp);
-	keyboard.mKeycode = keycode;
-	keyboard.mIsDown = false;
+	mKeyboard.mKeycode = keycode;
+	mKeyboard.mIsDown = false;
 }
 
 void GLV::setMouseDown(space_t& x, space_t& y, int button, int clicks){
 	eventType(Event::MouseDown);	
 	//if(button == Mouse::Left)
 		setFocus(findTarget(x, y));
-	mouse.posRel(x,y);
-	mouse.updateButton(button, true, clicks);
+	mMouse.posRel(x,y);
+	mMouse.updateButton(button, true, clicks);
 }
 
 void GLV::setMouseMotion(space_t& x, space_t& y, Event::t e){
@@ -315,18 +302,18 @@ void GLV::setMouseDrag(space_t& x, space_t& y){
 }
 
 void GLV::setMousePos(int x, int y, space_t relx, space_t rely){
-	mouse.pos(x, y);
-	mouse.posRel(relx, rely);
+	mMouse.pos(x, y);
+	mMouse.posRel(relx, rely);
 }
 
 void GLV::setMouseUp(space_t& x, space_t& y, int button, int clicks){
 	eventType(Event::MouseUp);
-	mouse.updateButton(button, false, clicks);
+	mMouse.updateButton(button, false, clicks);
 }
 
 void GLV::setMouseWheel(int wheelDelta){
 	eventType(Event::MouseWheel);
-	mouse.bufferPos(mouse.mW[0] + (space_t)wheelDelta, mouse.mW);
+	mMouse.bufferPos(mMouse.mW[0] + (space_t)wheelDelta, mMouse.mW);
 }
 
 bool GLV::valid(const GLV * g){

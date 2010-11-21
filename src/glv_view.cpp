@@ -11,7 +11,7 @@ namespace glv{
 	Notifier(), SmartObject<View>(),\
 	parent(0), child(0), sibling(0), \
 	draw(cb),\
-	mFlags(Visible | DrawBack | DrawBorder | CropSelf | FocusHighlight | FocusToTop | HitTest | Controllable), \
+	mFlags(Visible | DrawBack | DrawBorder | CropSelf | FocusHighlight | FocusToTop | HitTest | Controllable | Animate), \
 	mStyle(&(Style::standard())), mAnchorX(0), mAnchorY(0), mStretchX(0), mStretchY(0), \
 	mFont(0)
 
@@ -220,19 +220,20 @@ void View::constrainWithinParent(){
 }
 
 
-void View::drawPre(){
+void View::doDraw(GLV& g){
 	using namespace glv::draw;
-	
+
+//	drawPre();
 	if(enabled(DrawBack)){
 		color(colors().back);
 		rectangle(0, 0, pix(w), pix(h));
 	}
-}
 
+	onDraw(g);
+	g.graphicsData().reset();
+	if(draw) draw(this, g);
 
-void View::drawPost(){
-	using namespace glv::draw;
-	
+//	drawPost();
 	if(enabled(DrawBorder)){
 		float borderWidth = 1.0;
 		
@@ -257,6 +258,44 @@ void View::drawPost(){
 		frame(0, 0, pix(w), pix(h));
 	}
 }
+
+//void View::drawPre(){
+//	using namespace glv::draw;
+//	
+//	if(enabled(DrawBack)){
+//		color(colors().back);
+//		rectangle(0, 0, pix(w), pix(h));
+//	}
+//}
+
+
+//void View::drawPost(){
+//	using namespace glv::draw;
+//	
+//	if(enabled(DrawBorder)){
+//		float borderWidth = 1.0;
+//		
+//		// changing brightness doesn't always look so great...
+////		if(enabled(Focused) && enabled(FocusHighlight)){
+////			HSV hsv(colors().border);
+////			hsv.v > 0.5 ? hsv.v -= 0.2 : hsv.v += 0.2;
+////			color(Color(hsv));
+////		}
+////		else{
+////			color(colors().border);
+////		}
+//
+//		color(colors().border);
+//
+//		// double border thickness if focused
+//		if(enabled(Focused) && enabled(FocusHighlight)){
+//			borderWidth *= 2;
+//		}
+//
+//		lineWidth(borderWidth);
+//		frame(0, 0, pix(w), pix(h));
+//	}
+//}
 
 
 // This returns the last child and sibling View containing point.
@@ -421,7 +460,7 @@ void View::on(Event::t e, eventCallback cb){
 }
 
 
-void View::onDraw(GLV& g){ if(draw) draw(this); }
+void View::onDraw(GLV& g){ if(draw) draw(this, g); }
 
 bool View::onEvent(Event::t e, GLV& g){ return true; }
 

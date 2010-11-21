@@ -29,7 +29,7 @@ Mouse::Mouse()
 	}
 }
 
-void Mouse :: print(){
+void Mouse :: print() const {
 	printf("abspos: [%i, %i]\n", (int)x(), (int)y());
 	printf("relpos: [%f, %f]\n", (float)xRel(), (float)yRel());
 	printf("dpos:   [%i, %i]\n", (int)dx(), (int)dy());

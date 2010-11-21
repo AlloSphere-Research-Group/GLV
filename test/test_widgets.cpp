@@ -14,7 +14,7 @@ SliderGrid<3> sg31(Rect(100)), sg32(Rect(100)), sg33(Rect(100));
 SliderGrid<2> sg21(Rect(100));
 
 
-void drawCB(View * v){
+void drawCB(View * v, GLV& g){
 	using namespace draw;
 	
 	push3D(v->w, v->h);

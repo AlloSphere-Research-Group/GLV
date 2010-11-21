@@ -123,9 +123,9 @@ static void modToGLV(){
 	GLV * g = WindowImpl::getGLV();
 	if(g){
 		int mod = glutGetModifiers();
-		g->keyboard.alt  (mod & GLUT_ACTIVE_ALT);
-		g->keyboard.ctrl (mod & GLUT_ACTIVE_CTRL);
-		g->keyboard.shift(mod & GLUT_ACTIVE_SHIFT);
+		const_cast<Keyboard *>(&g->keyboard())->alt  (mod & GLUT_ACTIVE_ALT);
+		const_cast<Keyboard *>(&g->keyboard())->ctrl (mod & GLUT_ACTIVE_CTRL);
+		const_cast<Keyboard *>(&g->keyboard())->shift(mod & GLUT_ACTIVE_SHIFT);
 		//printf("a:%d c:%d s:%d\n", g->keyboard.alt(), g->keyboard.ctrl(), g->keyboard.shift());
 	}
 }

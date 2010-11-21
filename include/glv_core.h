@@ -27,14 +27,14 @@ typedef float space_t;
 typedef TRect<space_t> Rect;
 
 /// Type for a drawing callback
-typedef void (*drawCallback)(View * v);
+typedef void (*drawCallback)(View * v, GLV& g);
 
 /// Type for an event callback
 
 /// The first parameter is the View receiving the event and the second is the
 /// GLV context sending the event.  The function returns true if the event is
 /// to be bubbled up to the receiver's parent View.
-typedef bool (*eventCallback)(View * v, GLV& glv);
+typedef bool (*eventCallback)(View * v, GLV& g);
 
 /// Type for a list of event callbacks
 typedef std::list<eventCallback> eventCallbackList;
@@ -57,6 +57,7 @@ namespace Property{
 		AlwaysBubble	=1<<10, /**< Whether to bubble all events to parent */
 		Maximized		=1<<11, /**< Whether geometry is matched to parent's */
 		KeepWithinParent=1<<12, /**< Ensure that View is fully contained within parent */
+		Animate			=1<<13, /**< Whether to animate */
 		
 		DrawGrid		=1<<27,	/**< Whether to draw grid lines between widget elements */
 		DrawSelectionBox=1<<28,	/**< Whether to draw a box around selected widget elements */
@@ -179,24 +180,24 @@ public:
 	Keyboard();
 	~Keyboard(){}
 	
-	int key() const;		///< Returns key code (non-shifted character) of last key event.
+	int key() const;		///< Returns ASCII key code of last key event
 	int keyAsNumber() const;///< Returns decimal number correlating to key code
-	bool alt() const;		///< Whether an alt key is down.
-	bool caps() const;		///< Whether capslock is down.
-	bool ctrl() const;		///< Whether a ctrl key is down.
-	bool meta() const;		///< Whether a meta (e.g. windows, apple) key is down.
-	bool shift() const;		///< Whether a shift key is down.
-	bool isDown() const;	///< Whether last event was button down.
+	bool alt() const;		///< Whether an alt key is down
+	bool caps() const;		///< Whether capslock is down
+	bool ctrl() const;		///< Whether a ctrl key is down
+	bool meta() const;		///< Whether a meta (e.g. windows, apple) key is down
+	bool shift() const;		///< Whether a shift key is down
+	bool isDown() const;	///< Whether last event was button down
 	bool isNumber() const;	///< Whether key is a number key
-	bool key(int k) const;	///< Whether the last key was 'k'.
+	bool key(int k) const;	///< Whether the last key was 'k'
 
-	void alt  (bool state);	///< Set alt key state.
-	void caps (bool state);	///< Set alt key state.
-	void ctrl (bool state);	///< Set ctrl key state.
-	void meta (bool state);	///< Set meta key state.
-	void shift(bool state);	///< Set shift key state.
+	void alt  (bool v);		///< Set alt key state
+	void caps (bool v);		///< Set alt key state
+	void ctrl (bool v);		///< Set ctrl key state
+	void meta (bool v);		///< Set meta key state
+	void shift(bool v);		///< Set shift key state
 
-	void print();			///< Print keyboard state to stdout.
+	void print();			///< Print keyboard state to stdout
 
 protected:
 	int	mKeycode;			// last key event key number
@@ -218,39 +219,38 @@ public:
 	Mouse();
 	~Mouse(){};
 
-	// Accessors
-	space_t x() const;				///< Current x position.
-	space_t y() const;				///< Current y position.
-	space_t x(int button) const;	///< Get button's last down absolute x position.
-	space_t y(int button) const;	///< Get button's last down absolute y position.
-	space_t w() const;				///< Current wheel position.
+	space_t x() const;				///< Current x position
+	space_t y() const;				///< Current y position
+	space_t x(int button) const;	///< Get button's last down absolute x position
+	space_t y(int button) const;	///< Get button's last down absolute y position
+	space_t w() const;				///< Current wheel position
 	
-	space_t dx() const;				///< Current x velocity.
-	space_t dy() const;				///< Current y velocity.
-	space_t dw() const;				///< Current wheel velocity.
-	space_t ddx() const;			///< Current x acceleration.
-	space_t ddy() const;			///< Current y acceleration.
-	space_t ddw() const;			///< Current wheel acceleration.
+	space_t dx() const;				///< Current x velocity
+	space_t dy() const;				///< Current y velocity
+	space_t dw() const;				///< Current wheel velocity
+	space_t ddx() const;			///< Current x acceleration
+	space_t ddy() const;			///< Current y acceleration
+	space_t ddw() const;			///< Current wheel acceleration
 
-	space_t xRel() const;			///< Current x position relative to current listener.
-	space_t yRel() const;			///< Current y position relative to current listener.
-	space_t xRel(int button) const;	///< Get button's last down relative x position.
-	space_t yRel(int button) const;	///< Get button's last down relative y position.
+	space_t xRel() const;			///< Current x position relative to current listener
+	space_t yRel() const;			///< Current y position relative to current listener
+	space_t xRel(int button) const;	///< Get button's last down relative x position
+	space_t yRel(int button) const;	///< Get button's last down relative y position
 	
-	int button() const;				///< Last event button number.
-	int clicks() const;				///< Number of sequential clicks of buttons.
-	bool isDown() const;			///< Whether last event was button down.
-	bool isDown(int button) const;	///< Whether button is currently down.
-	bool left() const;				///< Whether left button is currently down.
-	bool middle() const;			///< Whether middle button is currently down.
-	bool right() const;				///< Whether right button is currently down.
+	int button() const;				///< Last event button number
+	int clicks() const;				///< Number of sequential clicks of buttons
+	bool isDown() const;			///< Whether last event was button down
+	bool isDown(int button) const;	///< Whether button is currently down
+	bool left() const;				///< Whether left button is currently down
+	bool middle() const;			///< Whether middle button is currently down
+	bool right() const;				///< Whether right button is currently down
 	
 	float sens() const { return (left() && right()) ? 0.25 : 1; }
 
-	void setContext(View * v);		///< Translate relative pos into sub-View.
-	void unsetContext(View * v);	///< Translate relative pos out of sub-View.
+	void print() const;				///< Print out information about Mouse to stdout
 
-	void print();					///< Print out information about Mouse to stdout
+	void setContext(View * v);		///< Translate relative pos into sub-View
+	void unsetContext(View * v);	///< Translate relative pos out of sub-View
 
 protected:
 
@@ -486,8 +486,7 @@ protected:
 	std::string mDescriptor;		// String describing view
 	Font * mFont;					// constructed on first use
 
-	void drawPre();					// Drawing routine called before calling user draw
-	void drawPost();				// Drawing routine called after calling user draw
+	void doDraw(GLV& g);
 	bool hasName() const { return ""!=mName; }
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
 };
@@ -507,9 +506,9 @@ public:
 
 	virtual const char * className() const { return "GLV"; }
 
+	const Keyboard& keyboard() const { return mKeyboard; };	///< Current keyboard state
+	const Mouse& mouse() const { return mMouse; }			///< Current mouse state
 
-	Mouse mouse;		///< Current mouse state
-	Keyboard keyboard;	///< Current keyboard state
 
 	/// Get last event type propagated
 	Event::t eventType() const { return mEventType; }
@@ -517,7 +516,7 @@ public:
 	/// Get currently focused View
 	View * focusedView() const { return mFocusedView; }
 
-	draw::GraphicsData& graphicsData(){ return mGraphicsData; }
+	GraphicsData& graphicsData(){ return mGraphicsData; }
 
 
 	/// Send this event to everyone in tree (including self)
@@ -534,9 +533,6 @@ public:
 	
 	/// Set event type to propagate
 	void eventType(Event::t e){ mEventType = e; }
-	
-	/// Clears color and depth buffers.  Prepares OpenGL context for draw loop
-	void preamble(unsigned int w, unsigned int h);
 
 	/// Update input event state; called by external event handlers.
 
@@ -597,10 +593,13 @@ public:
 	void refreshModels();
 
 protected:
+	Keyboard mKeyboard;
+	Mouse mMouse;
+
 	View * mFocusedView;	// current focused widget
 	Event::t mEventType;	// current event type
 	ModelManager mMM;
-	draw::GraphicsData mGraphicsData;
+	GraphicsData mGraphicsData;
 
 	// Returns whether the event should be bubbled to parent
 	bool doEventCallbacks(View& target, Event::t e);

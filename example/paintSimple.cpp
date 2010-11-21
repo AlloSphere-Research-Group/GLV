@@ -17,10 +17,10 @@ struct Canvas : public Plot{
 
 	bool onEvent(Event::t e, GLV& g){
 
-		float x = g.mouse.xRel();
-		float y = height()-g.mouse.yRel();
-		int cx = x/width() * data().size(1);
-		int cy = y/height()* data().size(2);
+		float gx = pixToGrid(0, g.mouse.xRel());	// convert mouse to grid position
+		float gy = pixToGrid(1, g.mouse.yRel());	// convert mouse to grid position
+		int cx = (gx*0.5+0.5) * data().size(1);		// convert grid to cell position
+		int cy = (gy*0.5+0.5) * data().size(2);		// convert grid to cell position
 
 		switch(e){
 		case Event::MouseDown:

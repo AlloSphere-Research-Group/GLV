@@ -367,22 +367,22 @@ TEM bool SliderGrid<Dim>::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 	case Event::MouseDrag:
-					valueAdd( g.mouse.dx()/w * diam() * Dim * g.mouse.sens(), cx);
-		if(cx!=cy)	valueAdd(-g.mouse.dy()/h * diam() * Dim * g.mouse.sens(), cy);
+					valueAdd( g.mouse().dx()/w * diam() * Dim * g.mouse().sens(), cx);
+		if(cx!=cy)	valueAdd(-g.mouse().dy()/h * diam() * Dim * g.mouse().sens(), cy);
 		break;
 		
 	case Event::MouseDown:
-		cx = int(g.mouse.xRel()/w * Dim);
-		cy = int(g.mouse.yRel()/h * Dim);
+		cx = int(g.mouse().xRel()/w * Dim);
+		cy = int(g.mouse().yRel()/h * Dim);
 		cy = (Dim-1) - cy;
 		cx = glv::clip(cx, Dim-1);
 		cy = glv::clip(cy, Dim-1);
 
-		if(g.mouse.left() && !g.mouse.right()){
+		if(g.mouse().left() && !g.mouse().right()){
 			float cw = w/Dim;
 			float ch = h/Dim;
-						setValue(toInterval(    (g.mouse.xRel()/cw - cx)), cx);
-			if(cx!=cy)	setValue(toInterval(1.f-(g.mouse.yRel()/ch - ((Dim-1)-cy))), cy);
+						setValue(toInterval(    (g.mouse().xRel()/cw - cx)), cx);
+			if(cx!=cy)	setValue(toInterval(1.f-(g.mouse().yRel()/ch - ((Dim-1)-cy))), cy);
 		}
 		break;
 		

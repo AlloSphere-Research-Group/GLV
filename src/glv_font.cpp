@@ -251,29 +251,6 @@ struct TextIterator{
 };
 
 
-/*
-static void text(
-	const char * s,
-	float l, float t,
-	float letterSpacing, float lineSpacing, unsigned int tabSpaces, float pixelSize
-){
-	float dx = Glyph::width()*(1+letterSpacing);
-	float x=l, y=t, tabUnits = tabSpaces * dx;
-	//begin(Lines);
-	while(*s){
-		switch(*s){
-			case '\t':	x = (int(x/tabUnits) + 1) * tabUnits; break;
-			case '\r':
-			case '\n':	x = l; y += dx * 2.f * lineSpacing; break;
-			case '\b':	x -= dx; break;
-			default:	if(character(*s, x, y, pixelSize)) x+=dx;
-		}
-		++s;* (1+f.letterSpacing())
-	}
-	//end();
-}
-*/
-
 
 Font::Font(unsigned size_)
 :	mLetterSpacing(0), mLineSpacing(1), mTabSpaces(4)
@@ -306,14 +283,6 @@ void Font::render(const char * v, float x, float y, float z){
 		tx,ty,tz, 1
 	};
 	glMultMatrixf(m);
-
-	//scale(mScaleX, mScaleY, mScaleY);
-/*
-	glv::text(
-		v, int(x/mScaleX), int(y/mScaleY),
-		letterSpacing(), lineSpacing(), tabSpaces(), 1./mScaleY
-	);
-*/
 
 	struct RenderText : public TextIterator{
 		RenderText(const Font& f_, const char *& s_, float muly_): TextIterator(f_,s_), muly(muly_){}
@@ -362,22 +331,6 @@ void Font::getBounds(float& w, float& h, const char * text) const {
 	//h = ti.y*mScaleY + cap();
 
 	w *= mScaleX;
-/*
-	float lw = 0;							// current line's width
-	float dx = Glyph::width() * mScaleX; 	// monospaced typefaces all have same width
-	float dy = 2 * cap();
-	float tabw = tabSpaces() * dx;
-
-	while(*text){
-		char c = *text++;
-		switch(c){
-		case '\n': h += dy; lw = 0; break;
-		case '\t': lw = ((int)(w/tabw) + 1) * tabw; if(lw > w) w=lw; break;
-		case '\b': lw -= dx; break;
-		default: lw += dx; if(lw > w) w=lw;
-		}
-	}
-*/
 }
 
 float Font::cap() const { return (Glyph::baseline() - Glyph::cap()) * mScaleY; }

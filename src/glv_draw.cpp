@@ -215,29 +215,12 @@ void spokes(float l, float t, float w, float h, int n, float a){
 
 
 void text(const char * s, float l, float t, unsigned fontSize, float lineSpacing, unsigned tabSpaces){
-
 	Font f;
 	f.size(fontSize);
 	f.lineSpacing(lineSpacing);
 	f.tabSpaces(tabSpaces);
-	f.render(s, l,t,0);
+	f.render(s, l+0.375, t+0.375, 0);
 	//f.render(s, int(l)+0.5, int(t)+0.5,0);
-
-//	float dx = Glyph::baseline();
-//	float x=l, y=t, tabUnits = tabSpaces * dx;
-//	//x = (int)x + 0.5; y = (int)y + 0.5;
-//	//begin(Lines);
-//	while(*s){
-//		switch(*s){
-//			case '\t':	x = ((int)(x/tabUnits) + 1) * tabUnits; break;
-//			case '\r':
-//			case '\n':	x = l; y += dx * 2.f * lineSpacing; break;
-//			case '\b':	x -= dx; break;
-//			default:	if(character(*s, x, y)) x += dx;
-//		}
-//		s++;
-//	}
-//	//end();
 }
 
 } // draw::

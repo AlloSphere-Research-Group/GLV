@@ -106,9 +106,9 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 			if(enabled(SelectOnDrag)){
 				selectSlider(g, false);
 			}
-			if(g.mouse.right() || g.mouse.left()) {
+			if(g.mouse().right() || g.mouse().left()) {
 				// accumulate differences
-				mAcc += diam()*(isVertical() ? -g.mouse.dy()/h*sizeY() : g.mouse.dx()/w*sizeX()) * g.mouse.sens();
+				mAcc += diam()*(isVertical() ? -g.mouse().dy()/h*sizeY() : g.mouse().dx()/w*sizeX()) * g.mouse().sens();
 				setValue(mAcc);
 			}
 			return false;
@@ -118,7 +118,7 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 			return false;
 			
 		case Event::KeyDown:{
-			switch(g.keyboard.key()){
+			switch(g.keyboard().key()){
 			case 'x':
 			case 'a': setValue(getValue() + diam()/32.); return false;
 			case 'z': setValue(getValue() - diam()/32.); return false;
@@ -138,7 +138,7 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 
 void Sliders::selectSlider(GLV& g, bool click){
 
-	Mouse& m = g.mouse;
+	const Mouse& m = g.mouse();
 	
 	int oldIdx = selected();
 	selectFromMousePos(g);
@@ -173,14 +173,14 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 		case Event::MouseDrag:
-			valueAdd( g.mouse.dx()/w * diam() * g.mouse.sens(), 0);
-			valueAdd(-g.mouse.dy()/h * diam() * g.mouse.sens(), 1);
+			valueAdd( g.mouse().dx()/w * diam() * g.mouse().sens(), 0);
+			valueAdd(-g.mouse().dy()/h * diam() * g.mouse().sens(), 1);
 			return false;
 			
 		case Event::MouseDown:
-			if(g.mouse.left() && !g.mouse.right()){
-				setValue(toInterval(    g.mouse.xRel()/w), 0);
-				setValue(toInterval(1.f-g.mouse.yRel()/h), 1);
+			if(g.mouse().left() && !g.mouse().right()){
+				setValue(toInterval(    g.mouse().xRel()/w), 0);
+				setValue(toInterval(1.f-g.mouse().yRel()/h), 1);
 			}
 			return false;
 			
@@ -188,7 +188,7 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 		case Event::KeyUp: return false;
 		
 		case Event::KeyDown:
-			switch(g.keyboard.key()){
+			switch(g.keyboard().key()){
 				case 'x': valueAdd(-diam()/w, 0); return false;
 				case 'c': valueAdd( diam()/w, 0); return false;
 				case 'a': valueAdd( diam()/h, 1); return false;
@@ -356,8 +356,8 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 	
 	//printf("%f %f\n", value0, value1);
 
-	float dv = (w>h) ? g.mouse.dx()/w : g.mouse.dy()/h;
-	float mp = (w>h) ? g.mouse.xRel()/w : g.mouse.yRel()/h;
+	float dv = (w>h) ? g.mouse().dx()/w : g.mouse().dy()/h;
+	float mp = (w>h) ? g.mouse().xRel()/w : g.mouse().yRel()/h;
 	float d1 = mp-value0; if(d1<0) d1=-d1;
 	float d2 = mp-value1; if(d2<0) d2=-d2;
 	float rg = range();
@@ -370,7 +370,7 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 		// on a click. We can set its center or increment its center in the
 		// direction of the click. Also, we may not want to move the slider
 		// if the click lands within the range...
-		if(g.mouse.left()){
+		if(g.mouse().left()){
 			float v1 = value0;
 			float v2 = value1;
 			float center_ = to01(center());
@@ -407,7 +407,7 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 		return false;
 	
 	case Event::MouseDrag:
-		dv *= diam() * g.mouse.sens();
+		dv *= diam() * g.mouse().sens();
 		if(3==mDragMode){
 			valueAdd(dv, 0, mMin, mMax-rg);
 			valueAdd(dv, 1, mMin+rg, mMax);
@@ -550,9 +550,24 @@ void FunctionGraph::onDraw(GLV& g){
 	std::vector<Curve *>::iterator it = mCurves.begin();
 	std::vector<Curve *>::iterator it_e = mCurves.end();
 	
+	GraphicsData& gd = g.graphicsData();
+	
 	color(mStyle->color.fore);
 
-	begin(LineStrip);
+//	begin(LineStrip);
+//	int i=0;
+//	for(; it != it_e; ++it){
+//		Curve &c = *(*it);
+//		
+//		float dx = (mKnots[i+1].x - mKnots[i].x)/(c.size()-1);
+//		float x = mKnots[i].x;
+//		for(int t = 0; t < c.size(); t++) {
+//			vertex(x*w, (1.-c[t])*h);
+//			x += dx;
+//		}
+//		i++;
+//	}
+//	end();
 	int i=0;
 	for(; it != it_e; ++it){
 		Curve &c = *(*it);
@@ -560,16 +575,16 @@ void FunctionGraph::onDraw(GLV& g){
 		float dx = (mKnots[i+1].x - mKnots[i].x)/(c.size()-1);
 		float x = mKnots[i].x;
 		for(int t = 0; t < c.size(); t++) {
-			vertex(x*w, (1.-c[t])*h);
+			gd.addVertex(x*w, (1.-c[t])*h);
 			x += dx;
 		}
 		i++;
 	}
-	end();
+	draw::paint(LineStrip, gd);
 	
 	color(mStyle->color.fore, mStyle->color.fore.a*0.5);
 
-	begin(TriangleStrip);
+	gd.reset();
 	i=0;
 	it = mCurves.begin();
 	for(; it != it_e; ++it){
@@ -578,13 +593,13 @@ void FunctionGraph::onDraw(GLV& g){
 		float dx = (mKnots[i+1].x - mKnots[i].x)/(c.size()-1);
 		float x = mKnots[i].x;
 		for(int t = 0; t < c.size(); t++) {
-			vertex(x*w, (1.-c[t])*h);
-			vertex(x*w, h);
+			gd.addVertex(x*w, (1.-c[t])*h);
+			gd.addVertex(x*w, h);
 			x += dx;
 		}
 		i++;
 	}
-	end();
+	draw::paint(TriangleStrip, gd);
 	
 	for(int k = 0; k < mNKnots; k++) {
 		int cx = mKnots[k].x*w;
@@ -597,15 +612,15 @@ bool FunctionGraph::onEvent(Event::t e, GLV& glv)
 {
 	switch(e){
 	case Event::MouseDrag: {
-		if(glv.mouse.left() && mCurrentKnot >= 0) {
+		if(glv.mouse().left() && mCurrentKnot >= 0) {
 			if(mCurrentKnot == 0 || mCurrentKnot == (mNKnots-1)) {
-				mKnots[mCurrentKnot].y = 1.-(glv.mouse.yRel()/h);
+				mKnots[mCurrentKnot].y = 1.-(glv.mouse().yRel()/h);
 				mKnots[mCurrentKnot].y = (mKnots[mCurrentKnot].y < 0.) ? 0. : 
 												((mKnots[mCurrentKnot].y > 1.) ? 1. : mKnots[mCurrentKnot].y);
 			}
 			else {
-				mKnots[mCurrentKnot].x = (glv.mouse.xRel()/w);
-				mKnots[mCurrentKnot].y = 1.-(glv.mouse.yRel()/h);
+				mKnots[mCurrentKnot].x = (glv.mouse().xRel()/w);
+				mKnots[mCurrentKnot].y = 1.-(glv.mouse().yRel()/h);
 				
 				mKnots[mCurrentKnot].x = (mKnots[mCurrentKnot].x < 0) ? 0 : 
 											((mKnots[mCurrentKnot].x > 1.) ? 1 : mKnots[mCurrentKnot].x);
@@ -648,8 +663,8 @@ bool FunctionGraph::onEvent(Event::t e, GLV& glv)
 	break;
 	
 	case Event::MouseDown: {
-		if(glv.mouse.left()) {
-			mCurrentKnot = knotHitTest(glv.mouse.xRel(), glv.mouse.yRel());
+		if(glv.mouse().left()) {
+			mCurrentKnot = knotHitTest(glv.mouse().xRel(), glv.mouse().yRel());
 		}
 	}
 	break;

@@ -5,7 +5,7 @@ namespace glv{
 
 bool Widget::widgetKeyDown(View * v, GLV& g){
 	Widget& w = *(Widget *)v;
-	switch(g.keyboard.key()){
+	switch(g.keyboard().key()){
 		case Key::Down:	++w.sy; break;
 		case Key::Up:	--w.sy; break;
 		case Key::Right:++w.sx; break;
@@ -69,7 +69,7 @@ void Widget::onDraw(GLV& g){
 bool Widget::onEvent(Event::t e, GLV& g){
 	switch(e){
 		case Event::KeyDown:
-			switch(g.keyboard.key()){
+			switch(g.keyboard().key()){
 				case Key::Down:	++sy; break;
 				case Key::Up:	--sy; break;
 				case Key::Right:++sx; break;
@@ -173,8 +173,8 @@ bool Widget::onAssignData(Data& d, int ind1, int ind2){
 
 void Widget::selectFromMousePos(GLV& g){
 	select(
-		(g.mouse.xRel() / w) * sizeX(),
-		(g.mouse.yRel() / h) * sizeY()
+		(g.mouse().xRel() / w) * sizeX(),
+		(g.mouse().yRel() / h) * sizeY()
 	);
 }
 

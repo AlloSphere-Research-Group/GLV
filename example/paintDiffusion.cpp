@@ -44,16 +44,18 @@ struct Canvas : public Plot{
 
 	bool onEvent(Event::t e, GLV& g){
 
-		float x = g.mouse.xRel();
-		float y = height()-g.mouse.yRel();
-		int cx = x/width() * P.size(0);
-		int cy = y/height()* P.size(1);
+		Plot::onEvent(e,g);	// "inherit" mouse/keyboard controls
+
+		float gx = pixToGrid(0, g.mouse.xRel());	// convert mouse to grid position
+		float gy = pixToGrid(1, g.mouse.yRel());	// convert mouse to grid position
+		int cx = (gx*0.5+0.5) * P.size(0);			// convert grid to cell position
+		int cy = (gy*0.5+0.5) * P.size(1);			// convert grid to cell position
 
 		switch(e){
 		case Event::MouseDown:
 		case Event::MouseDrag:
 			if(P.inBounds(cx, cy)){
-				P.elem<float>(cx,cy,iz) = g.mouse.button() ? 0:1;
+				P.elem<float>(cx,cy,iz) = g.mouse.button() ? -1:1;
 			}
 			break;
 		case Event::KeyDown:
@@ -75,7 +77,7 @@ struct Canvas : public Plot{
 int main(){
 	GLV top;
 	Canvas v1(Rect(0));
-	v1.add(*new PlotDensity(Color(1)));
+	v1.add(*new PlotDensity(HSV(0.5, 1, 1)));
 	v1.stretch(1,1);
 	top << v1;
 

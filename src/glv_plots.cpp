@@ -57,9 +57,52 @@ Surface x	(1, 1, n, m)	((v11, v21, v31), (v12, v22, v32))
 */
 
 
-PlotDensity::PlotDensity(const Color& c)
-:	Plottable(draw::Triangles, 1, c), mTex(0,0, GL_RGB, GL_FLOAT), mIpol(0)
+PlotDensity::PlotDensity(const Color& c, int ipol)
+:	Plottable(draw::Triangles, 1, c), mTex(0,0, GL_RGBA, GL_FLOAT), mIpol(ipol)
 {
+	add(defaultColorMap());
+}
+
+void PlotDensity::DefaultColorMap::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
+	
+	int N0 = d.size(0);	// number of "internal" dimensions
+
+	Color col = gd.colors()[0];
+	HSV hsv = col;
+	
+	Color col1 = HSV(hsv).rotateHue( 1./16);
+	Color col2 = HSV(hsv).rotateHue(-1./16);
+
+	switch(N0){
+	case 1:
+		while(i()){
+			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+
+			Color c((w0 > 0 ? col1*w0 : col2*-w0), col.a);
+			
+			//Color c(col * w0, col.a);			
+			gd.addColor(c);
+		}
+		break;
+
+	case 2:
+		while(i()){
+			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+			float w1 = d.at<float>(1,i[0],i[1],i[2]);
+			Color c = HSV(hsv.h, hsv.s*w1, hsv.v*w0);
+			gd.addColor(c);
+		}
+		break;
+
+	default:
+		while(i()){
+			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+			float w1 = d.at<float>(1,i[0],i[1],i[2]);
+			float w2 = d.at<float>(2,i[0],i[1],i[2]);
+			Color c = Color(w0, w1, w2);
+			gd.addColor(c);
+		}
+	}
 }
 
 void PlotDensity::onContextCreate(){
@@ -80,28 +123,31 @@ void PlotDensity::onContextDestroy(){
 //			double a = atan2(w1,w0)/(-2*M_PI); if(a<0) a=1+a;
 //			Color c = HSV(a, 1, m);
 
-void PlotDensity::onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i){
+void PlotDensity::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
 //	double dx = 2./d.size(1);
 //	double dy = 2./d.size(2);
 	
 	int N0 = d.size(0);	// number of "internal" dimensions
 	HSV hsv = mColor;
 
-	int Nbytes = mTex.alloc(d.size(1), d.size(2));
-	if(Nbytes){
-		mTex.create(); //printf("tex %d: %d bytes\n", mTex.id(), Nbytes);
-	}
+//	int Nbytes = mTex.alloc(d.size(1), d.size(2));
+//	if(Nbytes){
+//		mTex.create(); //printf("tex %d: %d bytes\n", mTex.id(), Nbytes);
+//	}
 
 	switch(N0){
 	case 1:
 		while(i()){
 			float w0 = d.at<float>(0,i[0],i[1],i[2]);
-			Color c = mColor * w0;
-			float * tbuf = mTex.buffer<float>();
-			int ind = i.indexFlat(0,1);
-			tbuf[ind*3+0] = c.r;
-			tbuf[ind*3+1] = c.g;
-			tbuf[ind*3+2] = c.b;
+			
+			Color c(mColor * w0, mColor.a);
+//			float * tbuf = mTex.buffer<float>();
+//			int ind = i.indexFlat(0,1);
+//			tbuf[ind*3+0] = c.r;
+//			tbuf[ind*3+1] = c.g;
+//			tbuf[ind*3+2] = c.b;
+			
+			gd.addColor(c);
 
 //			the non-texture approach...
 //			double x = i.frac(0)*2 - 1;
@@ -121,11 +167,7 @@ void PlotDensity::onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i)
 			float w0 = d.at<float>(0,i[0],i[1],i[2]);
 			float w1 = d.at<float>(1,i[0],i[1],i[2]);
 			Color c = HSV(hsv.h, hsv.s*w1, hsv.v*w0);
-			float * tbuf = mTex.buffer<float>();
-			int ind = i.indexFlat(0,1);
-			tbuf[ind*3+0] = c.r;
-			tbuf[ind*3+1] = c.g;
-			tbuf[ind*3+2] = c.b;
+			gd.addColor(c);
 		}
 		break;
 
@@ -136,20 +178,37 @@ void PlotDensity::onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i)
 			float w1 = d.at<float>(1,i[0],i[1],i[2]);
 			float w2 = d.at<float>(2,i[0],i[1],i[2]);
 			Color c = Color(w0, w1, w2);
-			float * tbuf = mTex.buffer<float>();
-			int ind = i.indexFlat(0,1);
-			tbuf[ind*3+0] = c.r;
-			tbuf[ind*3+1] = c.g;
-			tbuf[ind*3+2] = c.b;
+			gd.addColor(c);
 		}
 		break;
 
 	default:;
 	}
 
+//	mTex.create(d.size(1), d.size(2), &b.colors()[0]);
+//
+//	mTex.magFilter(mIpol ? GL_LINEAR : GL_NEAREST);
+//	draw::enable(draw::Texture2D);
+////	draw::color(1,1,1,mColor.a);
+//	draw::color(1,1,1,1);
+////	draw::color(mColor);
+//	mTex.begin();
+//	mTex.send();
+//	mTex.draw(-1,1,1,-1);
+//	mTex.end();
+//	draw::disable(draw::Texture2D);
+	
+//	b.reset();
+}
+
+void PlotDensity::onDraw(GraphicsData& b, const Data& d){
+	mTex.create(d.size(1), d.size(2), &b.colors()[0]);
+
 	mTex.magFilter(mIpol ? GL_LINEAR : GL_NEAREST);
 	draw::enable(draw::Texture2D);
+//	draw::color(1,1,1,mColor.a);
 	draw::color(1,1,1,1);
+//	draw::color(mColor);
 	mTex.begin();
 	mTex.send();
 	mTex.draw(-1,1,1,-1);
@@ -158,7 +217,7 @@ void PlotDensity::onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i)
 }
 
 
-void PlotFunction1D::onPlot(draw::GraphicsData& g, const Data& d, const Indexer& i){
+void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 //	Indexer j(i.size());
 //	while(j()){
 //		double x = j[0];
@@ -194,7 +253,7 @@ void PlotFunction1D::onPlot(draw::GraphicsData& g, const Data& d, const Indexer&
 }
 
 
-void PlotFunction2D::onPlot(draw::GraphicsData& g, const Data& d, const Indexer& i){
+void PlotFunction2D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	if(d.size(0) < 2) return;
 	while(i()){
 		double x = d.at<double>(0, i[0], i[1]);
@@ -205,48 +264,83 @@ void PlotFunction2D::onPlot(draw::GraphicsData& g, const Data& d, const Indexer&
 
 
 
+static bool evPlotCreateContext(View * v, GLV& g){
+	Plot& p = *static_cast<Plot *>(v);
+	Plot::Plottables::iterator i = p.plottables().begin();
+	while(i != p.plottables().end()){
+		(**i).onContextCreate();
+		++i;
+	}
+	return true;
+}
+
+static bool evPlotDestroyContext(View * v, GLV& g){
+//	printf("destroy\n");
+	Plot& p = *static_cast<Plot *>(v);
+	Plot::Plottables::iterator i = p.plottables().begin();
+	while(i != p.plottables().end()){
+		(**i).onContextDestroy();
+		++i;
+	}
+	return true;
+}
+
 Plot::Plot(const Rect& r)
 :	Grid(r)
 {	resetValInd();
+	addCallback(Event::WindowCreate, evPlotCreateContext);
+	addCallback(Event::WindowDestroy, evPlotDestroyContext);
+	addCallback(Event::Quit, evPlotDestroyContext);
 }
 
 Plot::Plot(const Rect& r, Plottable& p)
 :	Grid(r)
 {	resetValInd();
 	add(p);
+	addCallback(Event::WindowCreate, evPlotCreateContext);
+	addCallback(Event::WindowDestroy, evPlotDestroyContext);
+	addCallback(Event::Quit, evPlotDestroyContext);
 }
 
 void Plot::onDraw(GLV& g){
+
+	GraphicsData& gd = g.graphicsData();
+	draw::color(colors().fore);
+
+	{ pushGrid();
+		Plottables::iterator i = mPlottables.begin();
+		while(i != mPlottables.end()){
+			Plottable& p = **i;
+			if(p.drawUnderGrid()){
+				gd.reset();
+				gd.colors()[0] = p.color();
+				p.doPlot(gd, p.data().hasData() ? p.data() : data());
+			}
+			++i;
+		}
+	popGrid(); }
+
 	Grid::onDraw(g);
-	draw::GraphicsData& gd = g.graphicsData();
+
 	draw::color(colors().fore);
 
 	// push into grid space and call attached plottables
-	pushGrid();
+	{ pushGrid();
 		Plottables::iterator i = mPlottables.begin();
 		while(i != mPlottables.end()){
-			gd.reset();
 			Plottable& p = **i;
-			p.doPlot(gd, p.data().hasData() ? p.data() : data());
+			if(!p.drawUnderGrid()){
+				gd.reset();
+				gd.colors()[0] = p.color();
+				p.doPlot(gd, p.data().hasData() ? p.data() : data());
+			}
 			++i;
 		}
-	popGrid();
+	popGrid(); }
 }
 
 bool Plot::onEvent(Event::t e, GLV& g){
 	Grid::onEvent(e,g);
-	switch(e){
-	case Event::WindowCreate:
-	{	Plottables::iterator i = mPlottables.begin();
-		while(i != mPlottables.end()){ (**i).onContextCreate(); ++i; } }
-		break;
-	case Event::Quit:
-	case Event::WindowDestroy:
-	{	Plottables::iterator i = mPlottables.begin();
-		while(i != mPlottables.end()){ (**i).onContextDestroy(); ++i; } }
-		break;
-	default:;
-	}
 	return true;
 }
 

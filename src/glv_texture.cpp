@@ -90,22 +90,28 @@ void Texture2::end() const { glBindTexture(GL_TEXTURE_2D, 0); }
 Texture2& Texture2::bind(){ begin(); return *this; }
 
 Texture2& Texture2::create(GLsizei width, GLsizei height, GLvoid * pixs){
-	w = width;
-	h = height;
-	mPixels = pixs;
+	if(!id() || w!=width || h!=height || pixs != mPixels){
+		w = width;
+		h = height;
+		mPixels = pixs;
 
-	destroy();
-	glGenTextures(1, &mID); //printf("%i\n", mID);
-	bind();
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, mFormat, mType, mPixels);
-	sendParams();
+		destroy();
+		glGenTextures(1, &mID); //printf("%i\n", mID);
+		bind();
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, mFormat, mType, mPixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, mFormat, w, h, 0, mFormat, mType, mPixels);
+		sendParams();
+	}
 	return *this;
 }
 
 Texture2& Texture2::create(){ create(w,h, mPixels); return *this; }
 
 void Texture2::destroy(){
-	if(id()) glDeleteTextures(1, &mID);
+	if(id()){
+		glDeleteTextures(1, &mID);
+		mID = 0;
+	}
 }
 
 
@@ -146,6 +152,7 @@ Texture2& Texture2::send(){
 }
 
 void Texture2::sendParams(){
+//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mMagFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mMagFilter);
 }

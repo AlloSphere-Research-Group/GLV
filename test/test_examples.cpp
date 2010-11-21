@@ -83,7 +83,7 @@ struct SubView3D : View3D{
 } v3D(Rect(200)), v3D2(Rect(100));
 
 
-void drawCB(View * v){
+void drawCB(View * v, GLV& g){
 	using namespace glv::draw;
 	for(int i=0; i<tabs.size(); ++i) groups[i].property(Visible, tabs.getValue(i));
 }

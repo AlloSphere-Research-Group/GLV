@@ -8,7 +8,7 @@ using namespace glv;
 Window win(320, 240);
 int count=0;
 
-void drawCB(View * v){
+void drawCB(View * v, GLV& g){
 
 	using namespace draw;
 
@@ -18,10 +18,19 @@ void drawCB(View * v){
 		static float ang=0;
 		translate(0,0,-1);
 		rotate(0,ang,ang*0.31); ++ang;
-		begin(Quads);
-			color(1); vertex(-1,-1,0);
-			color(0.7,0.3,0); vertex(-1,1,0); vertex(1,1,0); vertex(1,-1,0);
-		end();
+		
+		GraphicsData& gr = g.graphicsData();
+		gr.addColor(Color(1));
+		gr.addColor(Color(0.7,0.3,0));
+		gr.addColor(Color(0.7,0.3,0));
+		gr.addColor(Color(0.7,0.3,0));
+
+		gr.addVertex3(-1,-1, 0);
+		gr.addVertex3(-1, 1, 0);
+		gr.addVertex3( 1,-1, 0);
+		gr.addVertex3( 1, 1, 0);
+
+		paint(TriangleStrip, gr);
 	pop3D();
 
 	color(0);

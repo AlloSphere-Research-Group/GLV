@@ -43,7 +43,7 @@ struct CharView : public View{
 	virtual bool onEvent(Event::t e, GLV& glv){
 		
 		if(Event::KeyDown == e){
-			int key = glv.keyboard.key();
+			int key = glv.keyboard().key();
 			
 			switch(key){
 				case Key::Up:   thickness += 0.5; break;
@@ -80,9 +80,9 @@ struct ColorView : public View{
 	}
 	
 	virtual bool onEvent(Event::t e, GLV& glv){
-		if(parent && glv.mouse.left()){
-			float sat = glv.mouse.yRel()/h;
-			parent->colors().back.setHSV(glv.mouse.xRel()/w, 1, sat*sat);
+		if(parent && glv.mouse().left()){
+			float sat = glv.mouse().yRel()/h;
+			parent->colors().back.setHSV(glv.mouse().xRel()/w, 1, sat*sat);
 			return false;
 		}
 		return true;
@@ -137,6 +137,8 @@ public:
 	virtual void onDraw(GLV& g){
 		using namespace glv::draw;
 		
+		GraphicsData& gd = g.graphicsData();
+		
 		if(enabled(DrawGrid)){
 			color(colors().fore, 0.25);
 			grid(0,0,w,h,mSizeX,mSizeY, false);
@@ -144,37 +146,37 @@ public:
 		
 		color(colors().fore, 0.65);
 		stroke(2);
-		begin(mPrim);
+
 		for(unsigned i=0; i<mPoints.size(); ++i){
 			float x,y;
 			indexToPoint(x,y, mPoints[i]);
-			vertex(x,y);
+			gd.addVertex(x,y);
 		}
-		end();
+		paint(mPrim, gd);
 
-		color(colors().fore);
 		draw::enable(PointSmooth);
 		stroke(6);
-		begin(Points);
-		for(unsigned i=0; i<mPoints.size(); ++i){
+
+		gd.reset();
+		for(int i=0; i<(int)mPoints.size(); ++i){
 			float x,y;
 			indexToPoint(x,y, mPoints[i]);
-			vertex(x,y);
+			if(isSelected() && mSelected == i){
+				gd.addColor(Color(1,0,0));
+			}
+			else{
+				gd.addColor(colors().fore);
+			}
+			gd.addVertex(x,y);
 		}
-		if(isSelected()){
-			color(1,0,0);
-			float x,y;
-			indexToPoint(x,y, mPoints[mSelected]);
-			vertex(x,y);
-		}
-		end();
+		paint(Points, gd);
 
 	}
 	
 	virtual bool onEvent(Event::t e, GLV& g){
 		
-		Mouse& m = g.mouse;
-		Keyboard& k = g.keyboard;
+		const Mouse& m = g.mouse();
+		const Keyboard& k = g.keyboard();
 		
 		int idx; pointToIndex(idx, m.xRel(), m.yRel());
 		

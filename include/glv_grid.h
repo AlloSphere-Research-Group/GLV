@@ -77,15 +77,15 @@ protected:
 	bool mNumbering[DIM];
 	bool mShowAxes, mShowGrid, mShowNumbering, mPreserveAspect;
 
-	int addGridLines(int i, double dist, draw::GraphicsData& gb);
+	int addGridLines(int i, double dist, GraphicsData& gb);
 
-	// map grid coordinate to pixel coordinate
+	// map grid coordinate to GLV pixel coordinate
 	double gridToPix(int i, double v){
 		double r = interval(i).toUnit(v);
 		return (i ? 1-r : r) * extentVector[i];
 	}
 
-	// map pixel coordinate to grid coordinate
+	// map GLV pixel coordinate to grid coordinate
 	double pixToGrid(int i, double v){
 		if(i) v = extentVector[i]-v;
 		return v/extentVector[i] * interval(i).diameter() + interval(i).min();

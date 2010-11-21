@@ -6,17 +6,17 @@
 namespace glv{
 
 Grid::Grid(const Rect& r, double rangeMin, double rangeMax, double majorDist, int minorDiv)
-:	View(r), mShowAxes(true), mShowGrid(true), mShowNumbering(true), mPreserveAspect(false)
+:	View(r), mShowAxes(true), mShowGrid(true), mShowNumbering(false), mPreserveAspect(false)
 {
 	range(rangeMin, rangeMax);
 	major(majorDist); minor(minorDiv);
-	numbering(false);
+	numbering(true);
 	for(int i=0; i<DIM; ++i) mVel[i]=0;
 	mVelW=0;
 }
 
 // add grid lines to vertex buffer, returns number of lines added
-int Grid::addGridLines(int i, double dist, draw::GraphicsData& gb){
+int Grid::addGridLines(int i, double dist, GraphicsData& gb){
 
 	float  p = gridToPix(i, floor(interval(i).min(), dist));				
 	float dp = gridToPix(i, dist) - gridToPix(i, 0);
@@ -38,13 +38,19 @@ int Grid::addGridLines(int i, double dist, draw::GraphicsData& gb){
 }
 
 void Grid::onAnimate(double dt, GLV& g){
-	for(int i=0; i<DIM; ++i){
-		if(mVel[i] != 0) interval(i).translate(mVel[i]);
-	}
-	if(mVelW != 0) zoomOnMousePos(mVelW, g.mouse);
+//	for(int i=0; i<DIM; ++i){
+//		if(mVel[i] != 0) interval(i).translate(mVel[i]);
+//	}
+//	if(mVelW != 0) zoomOnMousePos(mVelW, g.mouse);
 }
 
 void Grid::onDraw(GLV& g){
+
+	for(int i=0; i<DIM; ++i){
+		if(mVel[i] != 0) interval(i).translate(mVel[i]);
+	}
+	if(mVelW != 0) zoomOnMousePos(mVelW, g.mouse());
+
 	using namespace glv::draw;
 	GraphicsData& gb = g.graphicsData();
 
@@ -109,47 +115,53 @@ bool Grid::onEvent(Event::t e, GLV& g){
 //	printf("[% 6.3f, % 6.3f], [% 6.3f, % 6.3f]\n",
 //		interval(0).min(), interval(0).max(), interval(1).min(), interval(1).max());
 
-	Mouse& m = g.mouse;
-	Keyboard& k = g.keyboard;
+	const Mouse& m = g.mouse();
+	const Keyboard& k = g.keyboard();
 	switch(e){			
 		case Event::MouseDown:
 			return false;
 
 		case Event::MouseDrag:
-			if(m.left()){
+			if(k.shift() && m.left()){
 				interval(0).translate(-pixToGridMul(0, m.dx()));
 				interval(1).translate( pixToGridMul(1, m.dy()));
 			}
-			if(m.right()){
+			if(k.shift() && m.right()){
 				zoomOnMousePos(m.dy()*0.01, m);			
 			}
 			return false;
 
 		case Event::KeyDown:
-			switch(k.key()){
-				case 'a': mVel[0] =-pixToGridMul(0,8); break;
-				case 'd': mVel[0] = pixToGridMul(0,8); break;
-				case 'x': mVel[1] =-pixToGridMul(0,8); break;
-				case 'w': mVel[1] = pixToGridMul(0,8); break;
-				case 'e': mVelW =-0.04; break;
-				case 'c': mVelW = 0.04; break;
-				case 'o': origin(); break;
-				case 'g': mShowGrid ^= 1; break;
-				case 'b': mShowAxes ^= 1; break;
-				case 'n': mShowNumbering ^= 1; break;
-				default: return true;
-			}
-			return false;
+			//printf("%c %d\n", k.key(), k.key());
+			//if(k.shift()){
+				switch(k.key()){
+					case 'A': mVel[0] =-pixToGridMul(0,8); break;
+					case 'D': mVel[0] = pixToGridMul(0,8); break;
+					case 'X': mVel[1] =-pixToGridMul(0,8); break;
+					case 'W': mVel[1] = pixToGridMul(0,8); break;
+					case 'E': mVelW =-0.04; break;
+					case 'C': mVelW = 0.04; break;
+					case 'O': origin(); break;
+					case 'g': mShowGrid ^= 1; break;
+					case 'b': mShowAxes ^= 1; break;
+					case 'n': mShowNumbering ^= 1; break;
+					default: return true;
+				}
+				return false;
+//			}
+//			else{
+//				return true;
+//			}
 		
 		case Event::MouseUp:	return false;
 		case Event::KeyUp:
 			switch(k.key()){
-				case 'a':
-				case 'd': mVel[0] = 0; break;
-				case 'x':
-				case 'w': mVel[1] = 0; break;
-				case 'e':
-				case 'c': mVelW = 0; break;
+				case 'A':
+				case 'D': mVel[0] = 0; break;
+				case 'X':
+				case 'W': mVel[1] = 0; break;
+				case 'E':
+				case 'C': mVelW = 0; break;
 				default: return true;
 			}
 			return false;

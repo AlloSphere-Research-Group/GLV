@@ -5,7 +5,7 @@
 
 using namespace glv;
 
-void drawCB(View * v){
+void drawCB(View * v, GLV& g){
 	using namespace glv::draw;
 	float numIcons = 10;
 	float x = 20, y = 20, inc = pix((v->w - 2*x) / numIcons);
@@ -43,12 +43,12 @@ void drawCB(View * v){
 	x = 20; y += d + 10;
 	for(int i=2; i<5; ++i){ for(int j=2; j<5; ++j){ grid(x,y,d,d,i,j); x+=inc; }}
 	
-	x = 20.5; y += d + 10; y = (int)y + 0.5;
+	x = 20; y += d + 10; y = (int)y;
 	color(0); lineWidth(1);
 	text("Amazingly few discotheques provide jukeboxes.", x, y);
 	
-	x = 20.5; y += d + 10;
-	y = (int)y + 0.5;
+	x = 20; y += d + 10;
+	y = (int)y;
 
 	text(
 		"!\"#$%&'()*+,-./0\n"

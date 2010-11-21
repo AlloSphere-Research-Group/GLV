@@ -287,8 +287,8 @@ void NumberDialer::onDraw(GLV& g){ //printf("% g\n", value());
 
 bool NumberDialer::onEvent(Event::t e, GLV& g){
 
-	Keyboard& k = g.keyboard;
-	Mouse& m    = g.mouse;
+	const Keyboard& k = g.keyboard();
+	const Mouse& m    = g.mouse();
 
 	switch(e){
 	case Event::MouseDown:{
@@ -415,9 +415,9 @@ void TextView::onDraw(GLV& g){
 
 bool TextView::onEvent(Event::t e, GLV& g){
 
-	const Keyboard& k = g.keyboard;
+	const Keyboard& k = g.keyboard();
 	int key = k.key();
-	float mx = g.mouse.xRel();
+	float mx = g.mouse().xRel();
 
 	switch(e){
 		case Event::KeyDown:
