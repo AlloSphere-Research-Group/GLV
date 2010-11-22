@@ -12,7 +12,7 @@ struct PlotVector : public Plottable{
 
 	PlotVector(): Plottable(draw::Triangles){}
 
-	void onPlot(draw::GraphicsData& b, const Data& d, const Indexer& i){
+	void onMap(GraphicsData& b, const Data& d, const Indexer& i){
 		double dx = 2./d.size(1);
 		double dy = 2./d.size(2);
 		while(i()){

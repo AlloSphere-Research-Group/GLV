@@ -1,5 +1,5 @@
-#ifndef INC_GLV_OBSERVER_H
-#define INC_GLV_OBSERVER_H
+#ifndef INC_GLV_NOTIFICATION_H
+#define INC_GLV_NOTIFICATION_H
 
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */

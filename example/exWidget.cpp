@@ -17,22 +17,22 @@ public:
 		switch(e){			
 			case Event::MouseDown:
 				select(
-					(g.mouse.xRel() / w) * sizeX(),
-					(g.mouse.yRel() / h) * sizeY()
+					(g.mouse().xRel() / w) * sizeX(),
+					(g.mouse().yRel() / h) * sizeY()
 				);
 				return false;
 
 			case Event::MouseDrag:
 				if(enabled(SelectOnDrag)){
 					select(
-						(g.mouse.xRel() / w) * sizeX(),
-						(g.mouse.yRel() / h) * sizeY()
+						(g.mouse().xRel() / w) * sizeX(),
+						(g.mouse().yRel() / h) * sizeY()
 					);
 				}
 				return false;
 
 			case Event::KeyDown:
-				switch(g.keyboard.key()){
+				switch(g.keyboard().key()){
 					case Key::Down:	select(selectedX()  , selectedY()+1); break;
 					case Key::Up:	select(selectedX()  , selectedY()-1); break;
 					case Key::Right:select(selectedX()+1, selectedY()  ); break;

@@ -64,6 +64,7 @@ int main (int argc, char ** argv){
 	scene.stretch(1,1).anchor(0,0);
 	toolBar.stretch(1,0).anchor(0,0);
 	statusBar.stretch(1,0).anchor(0,1);
+	statusString.align(0,1).anchor(Place::CL);
 	
 	top << scene << toolBar << (statusBar << statusString);
 

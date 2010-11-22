@@ -39,7 +39,7 @@ public:
 		
 		switch(e){
 		case Event::KeyDown:
-			if(g.keyboard.key() == 's'){
+			if(g.keyboard().key() == 's'){
 				modelManager().saveSnapshot("preset " + toString(presetNum++));
 				printf("\n%s\n", modelManager().snapshotsToString().c_str());
 			}

@@ -17,7 +17,7 @@ public:
 		
 		switch(e){
 		case Event::KeyDown:
-			if(g.keyboard.key() == 's'){
+			if(g.keyboard().key() == 's'){
 				modelManager().saveSnapshot("preset " + toString(presetNum++));
 				printf("\n%s\n", modelManager().snapshotsToString().c_str());
 			}
@@ -71,10 +71,10 @@ int main(){
 	s.setValue(0.77);
 	top.modelManager().saveSnapshot("preset 2");
 
-	top.modelManager().snapshotsToFile("snapshots.txt");
-		
-	top.modelManager().clearSnapshots();
-	top.modelManager().snapshotsFromFile("snapshots.txt");
+//	top.modelManager().snapshotsToFile("snapshots.txt");
+//		
+//	top.modelManager().clearSnapshots();
+//	top.modelManager().snapshotsFromFile("snapshots.txt");
 
 	//printf("\n%s\n", top.modelManager().snapshotsToString().c_str());
 	

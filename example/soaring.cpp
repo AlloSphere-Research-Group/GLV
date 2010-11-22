@@ -80,7 +80,7 @@ Slider2D sliderXZ(Rect(100));
 Window win(800, 600, "Soaring");
 
 bool evKeyDown(View * v, GLV& g){
-	if(g.keyboard.key() == Key::Escape) win.fullScreenToggle();
+	if(g.keyboard().key() == Key::Escape) win.fullScreenToggle();
 	return false;
 }
 

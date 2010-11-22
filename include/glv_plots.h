@@ -32,7 +32,7 @@ public:
 
 
 /// Defines a routine for generating plot graphics from model data
-class Plottable{
+class Plottable : public GraphicsMap{
 public:
 
 	/// @param[in] prim		drawing primitive
@@ -49,6 +49,8 @@ public:
 	
 	/// Called when the current graphics context is destroyed
 	virtual void onContextDestroy(){}
+
+	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind){}
 
 	/// Get color
 	const Color& color() const { return mColor; }

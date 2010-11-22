@@ -74,12 +74,12 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	draw::stroke(stroke());
 	
 	Indexer ind(d.shape()+1); // dimension 0 is non-spatial
-	//onMap(gd, d, ind);
+	onMap(gd, d, ind);
 
 	{	GraphicsMaps::iterator it = mGraphicsMaps.begin();
 		while(it != mGraphicsMaps.end()){
-			(*it)->onMap(gd, d, ind);
 			ind.reset();
+			(*it)->onMap(gd, d, ind);
 			++it;
 		}
 	}
