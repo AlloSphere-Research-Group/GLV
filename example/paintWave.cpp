@@ -113,7 +113,7 @@ struct Canvas : public Plot{
 int main(){
 	GLV top;
 	Canvas v1(Rect(0));
-	v1.add(*new PlotDensity(HSV(0,0.5,1)));
+	v1.add(*new PlotDensity(HSV(0,0.5,1), 1./16));
 	v1.stretch(1,1);
 	top << v1;
 
