@@ -149,8 +149,8 @@ template <class T, class Alloc=std::allocator<T> >
 class Buffer : protected Alloc{
 public:
 
-	/// @param[in] size			Number of elements in buffer
-	explicit Buffer(int capcity=0): mSize(0), mElems(capcity){}
+	/// @param[in] capacity		capacity of buffer
+	explicit Buffer(int capacity=0): mSize(0), mElems(capacity){}
 
 //	/// @param[in] size			Number of elements in buffer
 //	explicit Buffer(int size=0): mSize(size), mElems(size){}
