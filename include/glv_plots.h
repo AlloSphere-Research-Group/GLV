@@ -105,23 +105,29 @@ class PlotDensity : public Plottable{
 public:
 
 	/// @param[in] color		plot color
+	/// @param[in] hueSpread	amount spread hue for positive and negative values
 	/// @param[in] interpolate	interpolation (0=none, 1=linear)
-	PlotDensity(const Color& color=Color(1,0,0), int interpolate=0);
+	PlotDensity(const Color& color=Color(1,0,0), float hueSpread=0, int interpolate=0);
+
+	PlotDensity& hueSpread(float v){ mHueSpread=v; return *this; }
 
 	/// Set interpolation mode (0=none, 1=linear)
 	PlotDensity& interpolate(int v){ mIpol=v; return *this; }
 	
-	static GraphicsMap& defaultColorMap();
+//	static GraphicsMap& defaultColorMap();
+//
+//	struct DefaultColorMap : public GraphicsMap{
+//		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+//	};
 
-	struct DefaultColorMap : public GraphicsMap{
-		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
-	};
+	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
 
 protected:
 	virtual void onContextCreate();
 	virtual void onContextDestroy();
 	virtual void onDraw(GraphicsData& gd, const Data& d);
 	Texture2 mTex;
+	float mHueSpread;
 	int mIpol;
 };
 

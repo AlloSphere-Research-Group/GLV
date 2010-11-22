@@ -192,6 +192,7 @@ void lineWidth(float val);							///< Set width of lines
 void matrixMode(int mode);							///< Set current transform matrix
 void ortho(float l, float r, float b, float t);		///< Set orthographic projection mode
 void paint(int prim, Point2 * verts, int numVerts);	///< Draw array of 2D vertices
+void paint(int prim, const GraphicsData& gb);		///< Render graphics data
 void paint(int prim, Point2 * verts, Color * cols, int numVerts);
 void paint(int prim, Point2 * verts, unsigned * indices, int numIndices); ///< Draw indexed array of 2D vertices
 void paint(int prim, Point2 * verts, Color * cols, unsigned * indices, int numIndices); 
@@ -278,8 +279,6 @@ void spokes(float l, float t, float w, float h, int sides, float angleNorm=0);
 ///
 void text(const char * s, float l=0, float t=0, unsigned fontSize=8, float lineSpacing=1, unsigned tabSpaces=4);
 
-/// Render graphics data
-void paint(int prim, const GraphicsData& gb);
 
 
 /// Disables rendering capabilities

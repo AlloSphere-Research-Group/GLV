@@ -88,25 +88,22 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 }
 
 
-PlotDensity::PlotDensity(const Color& c, int ipol)
-:	Plottable(draw::Triangles, 1, c), mTex(0,0, GL_RGBA, GL_FLOAT), mIpol(ipol)
+PlotDensity::PlotDensity(const Color& c, float hueSpread, int ipol)
+:	Plottable(draw::Triangles, 1, c), mTex(0,0, GL_RGBA, GL_FLOAT),
+	mHueSpread(hueSpread), mIpol(ipol)
 {
-	add(defaultColorMap());
+//	add(defaultColorMap());
 }
 
-GraphicsMap& PlotDensity::defaultColorMap(){
-	static GraphicsMap * m = new DefaultColorMap; return *m;
-}
-
-void PlotDensity::DefaultColorMap::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
+void PlotDensity::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
 	
 	int N0 = d.size(0);	// number of "internal" dimensions
 
 	Color col = gd.colors()[0];
 	HSV hsv = col;
 	
-	Color col1 = HSV(hsv).rotateHue( 1./16);
-	Color col2 = HSV(hsv).rotateHue(-1./16);
+	Color col1 = HSV(hsv).rotateHue( mHueSpread);
+	Color col2 = HSV(hsv).rotateHue(-mHueSpread);
 
 	switch(N0){
 	case 1:
@@ -139,6 +136,53 @@ void PlotDensity::DefaultColorMap::onMap(GraphicsData& gd, const Data& d, const 
 		}
 	}
 }
+
+
+//GraphicsMap& PlotDensity::defaultColorMap(){
+//	static GraphicsMap * m = new DefaultColorMap; return *m;
+//}
+//
+//void PlotDensity::DefaultColorMap::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
+//	
+//	int N0 = d.size(0);	// number of "internal" dimensions
+//
+//	Color col = gd.colors()[0];
+//	HSV hsv = col;
+//	
+//	Color col1 = HSV(hsv).rotateHue( 1./16);
+//	Color col2 = HSV(hsv).rotateHue(-1./16);
+//
+//	switch(N0){
+//	case 1:
+//		while(i()){
+//			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+//
+//			Color c((w0 > 0 ? col1*w0 : col2*-w0), col.a);
+//			
+//			//Color c(col * w0, col.a);			
+//			gd.addColor(c);
+//		}
+//		break;
+//
+//	case 2:
+//		while(i()){
+//			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+//			float w1 = d.at<float>(1,i[0],i[1],i[2]);
+//			Color c = HSV(hsv.h, hsv.s*w1, hsv.v*w0);
+//			gd.addColor(c);
+//		}
+//		break;
+//
+//	default:
+//		while(i()){
+//			float w0 = d.at<float>(0,i[0],i[1],i[2]);
+//			float w1 = d.at<float>(1,i[0],i[1],i[2]);
+//			float w2 = d.at<float>(2,i[0],i[1],i[2]);
+//			Color c = Color(w0, w1, w2);
+//			gd.addColor(c);
+//		}
+//	}
+//}
 
 void PlotDensity::onContextCreate(){
 	// note: texture created in onPlot since we don't know the size

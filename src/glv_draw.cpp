@@ -133,7 +133,9 @@ void paint(int prim, const GraphicsData& b){
 	int Nv3= b.vertices3().size();
 	int Ni = b.indices().size();
 
-	if(Nc){
+	bool Ec = Nc && (Nc >= Nv2 || Nc >= Nv3);
+
+	if(Ec){
 		glEnableClientState(GL_COLOR_ARRAY);
 		glColorPointer(4, GL_FLOAT, 0, &b.colors()[0]);
 	}
@@ -142,7 +144,8 @@ void paint(int prim, const GraphicsData& b){
 	
 	if(Ni)	glDrawElements(prim, b.indices().size(), GL_UNSIGNED_INT, &b.indices()[0]);
 	else	glDrawArrays(prim, 0, Nv3 ? Nv3 : Nv2);
-	if(Nc) glDisableClientState(GL_COLOR_ARRAY);
+
+	if(Ec)	glDisableClientState(GL_COLOR_ARRAY);
 }
 
 

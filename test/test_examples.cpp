@@ -200,8 +200,8 @@ int main(int argc, char ** argv){
 	tabs << (new Label("SliderRange"	))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	tabs << (new Label("Sliders"		))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	tabs << (new Label("Table"			))->anchor(0.5, y).pos(Place::CC); y+=dy;
-	tabs << (new Label("FunctionPlot"	))->anchor(0.5, y).pos(Place::CC); y+=dy;
-	tabs << (new Label("DensityPlot"	))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("Function Plots"	))->anchor(0.5, y).pos(Place::CC); y+=dy;
+	tabs << (new Label("Density Plot"	))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	tabs << (new Label("TextView"		))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	tabs << (new Label("View3D"			))->anchor(0.5, y).pos(Place::CC); y+=dy;
 	top << tabs;
