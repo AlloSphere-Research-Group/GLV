@@ -152,13 +152,6 @@ public:
 	/// @param[in] capacity		capacity of buffer
 	explicit Buffer(int capacity=0): mSize(0), mElems(capacity){}
 
-//	/// @param[in] size			Number of elements in buffer
-//	explicit Buffer(int size=0): mSize(size), mElems(size){}
-//
-//	/// @param[in] size			Number of elements in buffer
-//	/// @param[in] capacity		Number of elements to allocate
-//	Buffer(int size, int capacity): mSize(size), mElems(capacity){}
-
 	~Buffer(){}
 
 	/// Get mutable element at index
