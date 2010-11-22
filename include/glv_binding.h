@@ -31,7 +31,10 @@ enum{
 class Window{
 public:
 
-	struct Dimensions{ unsigned l,t,w,h; };
+	/// Rectangle geometry
+	struct Dimensions{
+		unsigned l,t,w,h; ///< geometry
+	};
 
 	/// Constructor
 	Window(
