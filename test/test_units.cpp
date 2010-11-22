@@ -523,7 +523,7 @@ int main(){
 			for(int i=0; i<d.size(); ++i){
 				int i1,i2,i3,i4;
 				d.indexDim(i1,i2,i3,i4, i);
-				assert(d.indexValid(i1,i2,i3,i4));
+				assert(d.inBounds(i1,i2,i3,i4));
 				assert(d.indexFlat(i1,i2,i3,i4) == i);
 			}
 			
@@ -658,7 +658,7 @@ int main(){
 
 		const View * views[] = {&l, &tv, &b, &bs, &s, &ss, &s2D, &nd};
 		for(unsigned i=0; i<sizeof(views)/sizeof(View *); ++i){
-			const Data& d = views[i]->data();
+			//const Data& d = views[i]->data();
 			//printf("%p: %s\n", &d, d.toString().c_str());
 			//views[i]->model().print(); printf("\n");
 		}
@@ -722,29 +722,29 @@ int main(){
 		
 		mm.snapshotsFromString("{" + snapshotString1 + ",\r\n" + snapshotString2 + "}");
 
-		mm.snapshots()["test 1"]["l"].print();
-		mm.snapshots()["test 1"]["b"].print();
-		mm.snapshots()["test 1"]["bs"].print();
-		mm.snapshots()["test 1"]["s"].print();
-		mm.snapshots()["test 1"]["ss"].print();
-		mm.snapshots()["test 1"]["s2D"].print();
-		mm.snapshots()["test 1"]["nd"].print();
-		mm.snapshots()["test 2"]["l"].print();
-		mm.snapshots()["test 2"]["b"].print();
-		mm.snapshots()["test 2"]["bs"].print();
-		mm.snapshots()["test 2"]["s"].print();
-		mm.snapshots()["test 2"]["ss"].print();
-		mm.snapshots()["test 2"]["s2D"].print();
-		mm.snapshots()["test 2"]["nd"].print();
-
-		mm.snapshotsToFile("snapshots.txt");
-		
-		mm.clearSnapshots();
-		mm.snapshotsFromFile("snapshots.txt");
-
-		str1.clear();
-		mm.snapshotsToString(str1);
-		printf("%s\n", str1.c_str());
+//		mm.snapshots()["test 1"]["l"].print();
+//		mm.snapshots()["test 1"]["b"].print();
+//		mm.snapshots()["test 1"]["bs"].print();
+//		mm.snapshots()["test 1"]["s"].print();
+//		mm.snapshots()["test 1"]["ss"].print();
+//		mm.snapshots()["test 1"]["s2D"].print();
+//		mm.snapshots()["test 1"]["nd"].print();
+//		mm.snapshots()["test 2"]["l"].print();
+//		mm.snapshots()["test 2"]["b"].print();
+//		mm.snapshots()["test 2"]["bs"].print();
+//		mm.snapshots()["test 2"]["s"].print();
+//		mm.snapshots()["test 2"]["ss"].print();
+//		mm.snapshots()["test 2"]["s2D"].print();
+//		mm.snapshots()["test 2"]["nd"].print();
+//
+//		mm.snapshotsToFile("snapshots.txt");
+//		
+//		mm.clearSnapshots();
+//		mm.snapshotsFromFile("snapshots.txt");
+//
+//		str1.clear();
+//		mm.snapshotsToString(str1);
+//		printf("%s\n", str1.c_str());
 	}
 
 //	{

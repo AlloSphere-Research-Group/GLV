@@ -47,7 +47,7 @@ void drawCB(View * v, GLV& g){
 
 
 bool evKeyDown(View * v, GLV& g){
-	switch(g.keyboard.key()){
+	switch(g.keyboard().key()){
 		case Key::Escape: win.fullScreenToggle(); break;
 		case 'c': win.hideCursor(!win.hideCursor()); break;
 		case 'g': win.gameModeToggle(); break;

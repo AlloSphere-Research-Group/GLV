@@ -33,7 +33,7 @@ void drawCB(View * v, GLV& g){
 }
 
 bool keyDownCB(View * v, GLV& glv){
-	switch(glv.keyboard.key()){
+	switch(glv.keyboard().key()){
 		case '`': glv.toggle(Visible); break;
 	}
 	return false;
