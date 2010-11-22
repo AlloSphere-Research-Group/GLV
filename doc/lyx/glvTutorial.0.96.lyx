@@ -1893,6 +1893,184 @@ This is a class used to store the current state of the mouse.
 on in the x and y directions.
 \end_layout
 
+\begin_layout Subsubsection
+Data
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+Data
+\family default
+ is a dynamically typed, multidimensional array that 
+\family typewriter
+View
+\family default
+s use to store model data according to the standard model-view-controller
+ paradigm.
+ The types of data are specified by the enumeration types 
+\family typewriter
+BOOL
+\family default
+, 
+\family typewriter
+INT
+\family default
+, 
+\family typewriter
+FLOAT
+\family default
+, 
+\family typewriter
+DOUBLE
+\family default
+, and 
+\family typewriter
+STRING
+\family default
+.
+ The special type 
+\family typewriter
+VOID
+\family default
+ designates no type.
+ The array supports up to four dimensions of arbitrary size.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\footnotesize\ttfamily},language={C++},showstringspaces=false,tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Data d(Data::INT, 5,4,3,2);	// allocate array with dimensions 5 x 4 x 3
+ x 2 of type int
+\end_layout
+
+\begin_layout Plain Layout
+
+d.type();					// returns INT
+\end_layout
+
+\begin_layout Plain Layout
+
+d.order();					// returns number of dimensions (=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+d.size();					// returns total number of elements (=120)
+\end_layout
+
+\begin_layout Plain Layout
+
+d.size(0);					// returns size of dimension 0 (=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+d.size(1);					// returns size of dimension 1 (=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+d.size(1,2,3);				// returns product of sizes of dimensions 1, 2, and 3 (=24)
+\end_layout
+
+\begin_layout Plain Layout
+
+d.shape(2,3,4,5);			// reverse dimensions to be 2 x 3 x 4 x 5
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+d.assign(123, 0,0,0,0);		// sets element at index (0,0,0,0) to 123
+\end_layout
+
+\begin_layout Plain Layout
+
+d.at<int>(0,0,0,0);			// gets element at index (0,0,0,0) (=123)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One handy feature of 
+\family typewriter
+Data
+\family default
+ is the ability to create subsets of data called slices.
+ A slice points to the same memory as its originator, but can have a different
+ memory offset, index stride, and shape.
+ By default, whenever a new slice is created it turns into a one-dimensional
+ array with a size equal to the total number of elements of its originator.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\footnotesize\ttfamily},language={C++},showstringspaces=false,tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Data x(Data::INT, 4);
+\end_layout
+
+\begin_layout Plain Layout
+
+x.assign(10, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+x.assign(20, 1);
+\end_layout
+
+\begin_layout Plain Layout
+
+x.assign(30, 2);
+\end_layout
+
+\begin_layout Plain Layout
+
+x.assign(40, 3);
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+Data a = x.slice();					// [10, 20, 30, 40]
+\end_layout
+
+\begin_layout Plain Layout
+
+Data b = x.slice(0, d.size()/2, 2);	// [10, 30]
+\end_layout
+
+\begin_layout Plain Layout
+
+Data c = x.slice(1, d.size()/2, 2);	// [20, 40]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Messaging
 \end_layout
