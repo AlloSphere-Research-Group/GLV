@@ -7,33 +7,33 @@ using namespace glv;
 
 Slider sl11(Rect(100, 20));
 Slider2D sl21(Rect(100, 100), 0.5, 0.5);
-Button btn1(Rect(20, 20), false);
-Button btn2(Rect(20, 20), true);
-Button btn3(Rect(20, 20), true, draw::check);
+Button btn1(Rect(20, 20), true);
+Button btn2(Rect(20, 20), false);
+Button btn3(Rect(20, 20), false, draw::check);
 SliderGrid<3> sg31(Rect(100)), sg32(Rect(100)), sg33(Rect(100));
 SliderGrid<2> sg21(Rect(100));
 
 
-void drawCB(View * v){
+void drawCB(View * v, GLV& g){
 	using namespace draw;
 	
 	push3D(v->w, v->h);
 
 	Color c;
-	c.setHSV(sg31.value(0), sg31.value(1), sg31.value(2)*sg31.value(2));
+	c.setHSV(sg31.getValue(0), sg31.getValue(1), sg31.getValue(2)*sg31.getValue(2));
 	color(c);
 
-	translate(sg32.value(0)*2-1, sg32.value(1)*2-1, -sg32.value(2)*2);
-	rotate(sg33.value(0)*360, sg33.value(1)*360, sg33.value(2)*360);
-	scale(sg21.value(0), sg21.value(1));
+	translate(sg32.getValue(0)*2-1, sg32.getValue(1)*2-1, -sg32.getValue(2)*2);
+	rotate(sg33.getValue(0)*360, sg33.getValue(1)*360, sg33.getValue(2)*360);
+	scale(sg21.getValue(0), sg21.getValue(1));
 	
-	rect(-1, -1, 1, 1);
+	rectangle(-1, -1, 1, 1);
 
 	pop3D();
 }
 
 bool keyDownCB(View * v, GLV& glv){
-	switch(glv.keyboard.key()){
+	switch(glv.keyboard().key()){
 		case '`': glv.toggle(Visible); break;
 	}
 	return false;
@@ -79,9 +79,9 @@ int main (int argc, char ** argv){
 	btn2 << (new Label("Toggle"))->anchor(Place::CR).pos(Place::CL, 4,0);
 	btn3 << (new Label("Checkbox"))->anchor(Place::CR).pos(Place::CL, 4,0);
 	
-	sg31.valueMid();
-	sg32.valueMid();
-	sg21.valueMax();
+	sg31.setValueMid();
+	sg32.setValueMid();
+	sg21.setValueMax();
 
 
 	// Define south-bound layout. Views added to top GLV view.

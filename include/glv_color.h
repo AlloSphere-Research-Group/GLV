@@ -14,10 +14,16 @@ class HSV;
 /// An RGBA color.
 struct Color{
 
-	float r;	///< Red component in [0, 1]
-	float g;	///< Green component in [0, 1]
-	float b;	///< Blue component in [0, 1]
-	float a;	///< Alpha component in [0, 1]
+	union{
+		struct{
+			float r;	///< Red component in [0, 1]
+			float g;	///< Green component in [0, 1]
+			float b;	///< Blue component in [0, 1]
+			float a;	///< Alpha component in [0, 1]
+		};
+		float components[4];
+	};
+
 
 	/// @param[in] r			red component
 	/// @param[in] g			green component
@@ -31,7 +37,12 @@ struct Color{
 
 	Color(const HSV& hsv, float a=1.f);
 	
-	// Setters
+	/// Set color component at index with no bounds checking
+	float& operator[](int i){ return components[i]; }
+	
+	/// Get color component at index with no bounds checking
+	const float& operator[](int i) const { return components[i]; }
+
 	
 	Color& operator= (const HSV& hsv);				///< Set color from HSV values
 	Color& operator*=(float v);						///< Multiply RGBA values by argument
@@ -41,6 +52,7 @@ struct Color{
 	Color blackAndWhite() const;					///< Returns nearest black or white color
 	Color inverse() const;							///< Returns inverted color
 	float luminance() const;						///< Get luminance value
+	Color mix(const Color& c, float amt);			///< Returns linear mix with another color (0 = none)
 
 	void clamp();									///< Clamp RGB components into [0,1]
 	void invert();									///< Invert colors
@@ -79,6 +91,13 @@ struct HSV{
 	HSV(const Color& c){ *this = c; }
 	
 	HSV& operator=(const Color& c){ c.getHSV(h, s, v); return *this; }
+	
+	HSV& rotateHue(float v){ h += v; wrapHue(); return *this; }
+	
+	void wrapHue(){
+		if(h>1){ h -= int(h); }
+		else if(h<0){ h -= int(h)-1; }
+	}
 };
 
 
@@ -112,7 +131,8 @@ inline Color& Color::operator*=(float v){ set(r*v, g*v, b*v, a*v); return *this;
 //inline Color Color::blackAndWhite() const { return Color((r>0.5||g>0.5||b>0.5)?1:0); }
 inline Color Color::blackAndWhite() const { return Color(luminance()>0.5f?1.f:0.f); }
 inline Color Color::inverse() const { return Color(1.f-r, 1.f-g, 1.f-b, a); }
-inline float Color::luminance() const { return r*0.3f+g*0.59f+b*0.11f; }
+inline float Color::luminance() const { return r*0.299f+g*0.587f+b*0.114f; }
+inline Color Color::mix(const Color& c, float f){ return (c-*this)*f + *this; }
 
 inline void	Color::clamp(){
 	r<0.f ? r=0.f : (r>1.f ? r=1.f : 0);

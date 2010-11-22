@@ -230,6 +230,7 @@ public:
 	space_t padY() const { return mPad2; }
 
 	virtual const char * className() const { return "Table"; }
+	virtual void onDraw(GLV& g);
 
 protected:
 
@@ -244,6 +245,7 @@ protected:
 	std::vector<Cell> mCells;
 	std::string mAlign;
 	space_t mPad1, mPad2;
+	std::vector<space_t> mColWs, mRowHs;
 	
 	bool isAlignCode(char c){
 		return	c=='<' || c=='>' || c=='^' || c=='v' || c=='x' || 

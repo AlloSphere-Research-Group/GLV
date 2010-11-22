@@ -175,4 +175,76 @@ Notifications
 -------------
 
 
+Data
+--------------------------------------------------------------------------------
+
+Should we distinguish between compact and extended dimensions?
+	d < 0 are compact (color, orientation)
+	d >=0 are extended (spatial position, time)
+
+
+
+
+
+Model
+--------------------------------------------------------------------------------
+
+There are three distinct types of models:
+- data, parameters and state associated with a simulation or recording
+- view, variables determining presentational aspects of views
+- layout, geometry and spatial relationships of views
+
+
+Data Model:
+
+slider = 0.5
+sliders = { 0.1, 0.4, 1, 0 }
+
+
+View Model:
+
+gridView = {
+	major = 1,
+	minor = 4,
+	showAxes = 1,
+	showGrid = 1,
+	interval = {-1, 1, -1, 1},
+}
+
+view3D = {
+	near = 0.1,
+	far = 100,
+	fovy = 60
+}
+
+
+class Model{
+	virtual string modelToToken() = 0;
+	virtual int modelFromString() = 0;
+};
+
+class DataModel{
+	virtual string modelToToken(){
+		return data.toToken();
+	}
+	
+	virtual int modelFromString(string s){
+		data.fromToken(s);
+	}
+	
+	Data data;
+};
+
+class ViewModel{
+	
+};
+
+
+class View{
+	Model * mDataModel;
+	Model * mViewModel;
+};
+
+
+
 

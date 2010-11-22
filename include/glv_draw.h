@@ -34,12 +34,93 @@ struct Point3{
 };
 
 
+/// Buffers of vertices, colors, and indices
+class GraphicsData{
+public:
+
+	GraphicsData()
+	:	mColors(1)
+	{}
+
+	const Buffer<Color>& colors() const { return mColors; }
+	const Buffer<unsigned>& indices() const { return mIndices; }
+	const Buffer<Point2>& vertices2() const { return mVertices2; }
+	const Buffer<Point3>& vertices3() const { return mVertices3; }
+
+	void reset(){
+		mVertices2.reset(); mVertices3.reset();
+		mColors.reset(); mIndices.reset();
+	}
+
+	void addColor(const Color& c){
+		colors().append(c); }
+
+	void addColor(const Color& c1, const Color& c2){
+		addColor(c1); addColor(c2); }
+
+	void addColor(const Color& c1, const Color& c2, const Color& c3){
+		addColor(c1,c2); addColor(c3); }
+
+	void addColor(const Color& c1, const Color& c2, const Color& c3, const Color& c4){
+		addColor(c1,c2,c3); addColor(c4); }
+
+	void addIndex(unsigned i){
+		indices().append(i); }
+
+	void addIndex(unsigned i1, unsigned i2){
+		addIndex(i1); addIndex(i2); }
+
+	void addIndex(unsigned i1, unsigned i2, unsigned i3){
+		addIndex(i1,i2); addIndex(i3); }
+
+	void addIndex(unsigned i1, unsigned i2, unsigned i3, unsigned i4){
+		addIndex(i1,i2,i3); addIndex(i4); }
+
+	void addVertex(double x, double y){ addVertex2(x,y); }
+	void addVertex(double x, double y, double z){ addVertex3(x,y,z); }
+
+	void addVertex2(double x, double y){
+		vertices2().append(Point2(x,y)); }
+
+	void addVertex2(double x1, double y1, double x2, double y2){
+		addVertex2(x1,y1); addVertex2(x2,y2); }
+
+	void addVertex2(double x1, double y1, double x2, double y2, double x3, double y3){
+		addVertex2(x1,y1,x2,y2); addVertex2(x3,y3); }
+
+	void addVertex2(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4){
+		addVertex2(x1,y1,x2,y2,x3,y3); addVertex2(x4,y4); }
+
+	template <class VEC2>
+	void addVertex2(const VEC2& v){
+		addVertex2(v[0], v[1]); }
+
+	void addVertex3(double x, double y, double z){
+		vertices3().append(Point3(x,y,z)); }
+
+	template <class VEC3>
+	void addVertex3(const VEC3& v){
+		addVertex3(v[0], v[1], v[2]); }
+
+	Buffer<Color>& colors(){ return mColors; }
+	Buffer<unsigned>& indices(){ return mIndices; }
+	Buffer<Point2>& vertices2(){ return mVertices2; }
+	Buffer<Point3>& vertices3(){ return mVertices3; }
+
+protected:
+	Buffer<Point2> mVertices2;
+	Buffer<Point3> mVertices3;
+	Buffer<Color> mColors;
+	Buffer<unsigned> mIndices;
+};
+
+
+
 /// Drawing routines.
 namespace draw{
 
 const double C_PI = 4. * atan(1.);
 const double C_2PI = 2. * C_PI;
-
 
 
 #ifdef check
@@ -93,7 +174,6 @@ enum{
 
 
 // Basic rendering commands
-void begin(int primitive);							///< Begin vertex group delimitation
 void blendFunc(int sfactor, int dfactor);			///< Set blending function
 void blendTrans();									///< Set blending function to transparent
 void blendAdd();									///< Set blending function to additive
@@ -104,16 +184,18 @@ void color(float gray, float a=1);					///< Set current draw color
 void color(float r, float g, float b, float a=1);		///< Set current draw color
 void color(const Color& c);							///< Set current draw color
 void color(const Color& c, float a);				///< Set current draw color, but override alpha component
-void end();											///< End vertex group delimitation
 void fog(float end, float start, const Color& c=Color(0));	///< Set linear fog parameters
+void genEllipse(Point2 * pts, int n, double ang01, double loops, float l, float t, float r, float b);
 void identity();									///< Load identity transform matrix
 void lineStipple(char factor, short pattern);		///< Specify line stipple pattern
 void lineWidth(float val);							///< Set width of lines
 void matrixMode(int mode);							///< Set current transform matrix
 void ortho(float l, float r, float b, float t);		///< Set orthographic projection mode
 void paint(int prim, Point2 * verts, int numVerts);	///< Draw array of 2D vertices
+void paint(int prim, const GraphicsData& gb);		///< Render graphics data
 void paint(int prim, Point2 * verts, Color * cols, int numVerts);
 void paint(int prim, Point2 * verts, unsigned * indices, int numIndices); ///< Draw indexed array of 2D vertices
+void paint(int prim, Point2 * verts, Color * cols, unsigned * indices, int numIndices); 
 void paint(int prim, Point3 * verts, int numVerts);	///< Draw array of 3D vertices
 void paint(int prim, Point3 * verts, Color * cols, int numVerts);
 void paint(int prim, Point3 * verts, unsigned * indices, int numIndices); ///< Draw indexed array of 3D vertices
@@ -146,29 +228,29 @@ void translateY(float y);
 void translateZ(float z);
 void viewport(float x, float y, float w, float h);
 
-template <class V3> void vertex(const V3& v);		///< Send single vertex given 3-element array accessible object
-void vertex(float x, float y);						///< Send single xy vertex
-void vertex(float x, float y, float z);				///< Send single xyz vertex
-
-template <class T>
-void vertexY(T * ys, unsigned long len, T xInc=1, int prim = LineStrip);
-
-template <class T>
-void vertex(T * xs, T * ys, unsigned long len, int prim = LineStrip);
 
 
 // icons
-void check		(float l, float t, float r, float b);			///< Check mark
-template <int N> void disc(float l, float t, float r, float b);	///< Disc with N edges
-void frame		(float l, float t, float r, float b);			///< Rectangular frame
-void minus		(float l, float t, float r, float b);			///< Minus
-void plus		(float l, float t, float r, float b);			///< Plus
-void rect		(float l, float t, float r, float b);			///< Solid rectangle
-void triangleR	(float l, float t, float r, float b);			///< Right pointing triangle
-void triangleL	(float l, float t, float r, float b);			///< Left pointing triangle
-void triangleU	(float l, float t, float r, float b);			///< Upward pointing triangle
-void triangleD	(float l, float t, float r, float b);			///< Downward pointing triangle
-void x			(float l, float t, float r, float b);			///< X mark
+void check		(float l, float t, float r, float b);	///< Check mark
+template<int N>
+void circle		(float l, float t, float r, float b);	///< Circle with N edges
+template<int N>
+void disc		(float l, float t, float r, float b);	///< Disc with N edges
+void frame		(float l, float t, float r, float b);	///< Rectangular frame
+void minus		(float l, float t, float r, float b);	///< Minus
+void plus		(float l, float t, float r, float b);	///< Plus
+void rectangle	(float l, float t, float r, float b);	///< Solid rectangle
+template<int N, int M, int L>
+void rose		(float l, float t, float r, float b);	///< Rose curve with N edges and M+L loops
+template<int N, int M>
+void star		(float l, float t, float r, float b);	///< Star polygon with N edges and M loops
+void triangleR	(float l, float t, float r, float b);	///< Right pointing triangle
+void triangleL	(float l, float t, float r, float b);	///< Left pointing triangle
+void triangleU	(float l, float t, float r, float b);	///< Upward pointing triangle
+void triangleD	(float l, float t, float r, float b);	///< Downward pointing triangle
+void x			(float l, float t, float r, float b);	///< X mark
+
+
 
 /// Parallel horizontal and vertical lines
 void grid(float l, float t, float w, float h, float divx, float divy, bool incEnds=true);
@@ -182,7 +264,7 @@ void linesH(float l, float t, float w, float h, int n);
 inline int pix(float v);
 
 /// Regular polygon
-void pgon(float l, float t, float w, float h, int sides, float angleNorm=0);
+void pgon(float l, float t, float w, float h, int sides, float angleNorm=0, double loops=1);
 
 void shape(int prim, float x0, float y0, float x1, float y1);
 void shape(int prim, float x0, float y0, float x1, float y1, float x2, float y2);
@@ -245,6 +327,23 @@ static Enable enable;
 
 // Implementation ______________________________________________________________
 
+inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5*(t+b), l+(r-l)*0.3,b, r,t); }
+
+template<int N>
+inline void circle(float l, float t, float r, float b){ return star<N,1>(l,t,r,b); }
+
+template <int N>
+void disc(float l, float t, float r, float b){
+	Point2 pts[N+2];
+	genEllipse(pts+1, N, 0, 1, l,t,r,b);
+	pts[0](0.5*(l+r), 0.5*(t+b));
+	pts[N+1] = pts[1];
+	paint(TriangleFan, pts, GLV_ARRAY_SIZE(pts));
+}
+
+inline void frame(float l, float t, float r, float b){ shape(LineLoop, l, t, l, b, r, b, r, t); }
+inline void minus(float l, float t, float r, float b){ float my=0.5*(t+b); shape(Lines, l,my, r,my); }
+
 inline void paint(int prim, Point2 * verts, int numVerts){
 	//glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(2, GL_FLOAT, 0, verts);
@@ -263,6 +362,14 @@ inline void paint(int prim, Point2 * verts, Color * cols, int numVerts){
 inline void paint(int prim, Point2 * verts, unsigned * indices, int numIndices){
 	glVertexPointer(2, GL_FLOAT, 0, verts);
 	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
+}
+
+inline void paint(int prim, Point2 * verts, Color * cols, unsigned * indices, int numIndices){
+	glEnableClientState(GL_COLOR_ARRAY);
+	glVertexPointer(2, GL_FLOAT, 0, verts);
+	glColorPointer(4, GL_FLOAT, 0, cols);
+	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
+	glDisableClientState(GL_COLOR_ARRAY);
 }
 
 inline void paint(int prim, Point3 * verts, int numVerts){
@@ -291,33 +398,6 @@ inline void paint(int prim, Point3 * verts, Color * cols, unsigned * indices, in
 	glDisableClientState(GL_COLOR_ARRAY);
 }
 
-inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5*(t+b), l+(r-l)*0.3,b, r,t); }
-
-template <int N>
-void disc(float l, float t, float r, float b){
-	static const double theta = C_2PI/N;
-	float px=1, py=0, rx=cos(theta), ry=sin(theta);
-	float mx=0.5*(l+r), my=0.5*(t+b), sx=(r-l)*0.5, sy=(b-t)*0.5;
-	
-	Point2 pts[N+2];
-	
-	pts[0](mx,my);
-
-	for(int i=1; i<N+1; ++i){
-		pts[i](mx+px*sx, my+py*sy);
-		float tx=px;
-		px = px*rx - py*ry;
-		py = tx*ry + py*rx;
-	}
-	
-	pts[N+1] = pts[1];
-	
-	paint(TriangleFan, pts, GLV_ARRAY_SIZE(pts));
-}
-
-inline void frame(float l, float t, float r, float b){ shape(LineLoop, l, t, l, b, r, b, r, t); }
-inline void minus(float l, float t, float r, float b){ float my=0.5*(t+b); shape(Lines, l,my, r,my); }
-
 // [-2,-1) -> -1.5
 // [-1, 0) -> -0.5
 // [ 0, 1) ->  0.5
@@ -329,6 +409,21 @@ inline void plus(float l, float t, float r, float b){
 	float my = 0.5*(t+b);
 	shape(Lines, mx,t, mx,b, l,my, r,my);
 }
+
+template<int N, int M, int L>
+void rose(float l, float t, float r, float b){
+	Point2 pts1[N], pts2[N];
+	genEllipse(pts1,N, -0.25, M, l,t,r,b);
+	genEllipse(pts2,N, -0.25, L, l,t,r,b);
+	for(int i=0; i<N; ++i){
+		pts1[i].x = (pts1[i].x+pts2[i].x)*0.5;
+		pts1[i].y = (pts1[i].y+pts2[i].y)*0.5;
+	}
+	paint(LineLoop, pts1,N);
+}
+
+template<int N, int M>
+inline void star(float l, float t, float r, float b){ pgon(l,t,r-l,b-t,N,-0.25,M); }
 
 inline void shape(int prim, float x0, float y0, float x1, float y1){
 	float v[] = {x0,y0,x1,y1};
@@ -345,6 +440,7 @@ inline void shape(int prim, float x0, float y0, float x1, float y1, float x2, fl
 	paint(prim, (Point2 *)v, 4);
 }
 
+inline void rectangle(float l, float t, float r, float b){ shape(TriangleStrip, l,t, l,b, r,t, r,b); }
 inline void stroke(float w){ lineWidth(w); pointSize(w); }
 inline void triangleD(float l, float t, float r, float b){ shape(Triangles, 0.5*(l+r),b, r,t, l,t); }
 inline void triangleL(float l, float t, float r, float b){ shape(Triangles, l,0.5*(t+b), r,b, r,t); }
@@ -366,44 +462,14 @@ inline void translateX(float x){ translate(x, 0, 0); }
 inline void translateY(float y){ translate(0, y, 0); }
 inline void translateZ(float z){ translate(0, 0, z); }
 
-template <class V3>
-inline void vertex(const V3& v){ vertex(v[0], v[1], v[2]); }
-
-template <class T>
-void vertexY(T * ys, unsigned long len, T xInc, int prim){
-	begin(prim);
-	for(unsigned long i=0; i<len; ++i) vertex((float)(xInc * i), (float)ys[i]);
-	end();
-}
-
-template <class T>
-void vertex(T * xs, T * ys, unsigned long len, int prim){
-	begin(prim);
-	for(unsigned long i=0; i<len; ++i) vertex((float)xs[i], (float)ys[i]);
-	end();
-}
-
-
 
 // platform dependent
-inline void begin(int prim){
-#ifndef GLV_USE_OPENGL_ES
-	glBegin(prim);
-#endif
-}
 inline void blendFunc(int sfactor, int dfactor){ glBlendFunc(sfactor, dfactor); }
 inline void blendAdd(){ glBlendEquation(GL_FUNC_ADD); blendFunc(GL_SRC_COLOR, GL_ONE); }
 inline void blendTrans(){ glBlendEquation(GL_FUNC_ADD); blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
 inline void clear(int mask){ glClear(mask); }
 inline void clearColor(float r, float g, float b, float a){ glClearColor(r,g,b,a); }
 inline void color(float r, float g, float b, float a){ glColor4f(r,g,b,a); }
-
-inline void end(){
-#ifndef GLV_USE_OPENGL_ES
-	glEnd();
-#endif
-}
-
 inline void identity(){ glLoadIdentity(); }
 inline void lineStipple(char factor, short pattern){ glLineStipple(factor, pattern); }
 inline void lineWidth(float v){ glLineWidth(v); }
@@ -418,7 +484,6 @@ inline void push(){ glPushMatrix(); }
 inline void pushAttrib(int attribs){ glPushAttrib(attribs); }
 inline void pop() { glPopMatrix(); }
 inline void popAttrib(){ glPopAttrib(); }
-inline void rect(float l, float t, float r, float b){ glRectf(r, b, l, t); }
 inline void rotateX(float deg){ glRotatef(deg, 1.f, 0.f, 0.f); }
 inline void rotateY(float deg){ glRotatef(deg, 0.f, 1.f, 0.f); }
 inline void rotateZ(float deg){ glRotatef(deg, 0.f, 0.f, 1.f); }
@@ -427,18 +492,6 @@ inline void scissor(float x, float y, float w, float h){ glScissor((GLint)x,(GLi
 inline void texCoord(float x, float y){ glTexCoord2f(x,y); }
 inline void translate(float x, float y, float z){ glTranslatef(x,y,z); }
 inline void viewport(float x, float y, float w, float h){ glViewport((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h); }
-
-inline void vertex(float x, float y){
-#ifndef GLV_USE_OPENGL_ES
-	glVertex2f(x,y);
-#endif
-}
-
-inline void vertex(float x, float y, float z){
-#ifndef GLV_USE_OPENGL_ES
-	glVertex3f(x,y,z);
-#endif
-}
 
 } // draw::
 

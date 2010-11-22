@@ -26,9 +26,9 @@ public:
 	
     static void onNotify(const glv::Notification& n){
         TestWindow *this_ = static_cast<TestWindow *>(n.receiver());
-        std::cout << this_->slider->value() << std::endl;
+        std::cout << this_->slider->getValue() << std::endl;
         if(this_->other)
-            this_->other->passive_slider->value(this_->slider->value());
+            this_->other->passive_slider->setValue(this_->slider->getValue());
     }
 
     Slider *slider;

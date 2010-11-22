@@ -8,9 +8,6 @@ Consider removing virtual onResize from Rect to get rid of vtable pointer member
 Anchoring can lead to unexpected behavior when set before adding to a layout
 
 - 
-Text looks bad at positions other than half-integers, e.g. (0, 0) vs. (0.5, 0.5).
-
-- 
 Add more widgets:
 	ScrollView: scrollbars when children outside of view
 	TextView: text display and editing

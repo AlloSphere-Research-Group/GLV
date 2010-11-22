@@ -163,10 +163,10 @@ Table& Table::arrange(){
 	
 
 	// compute extent of table
-	space_t * colWs = new space_t[mSize1];
-	space_t * rowHs = new space_t[mSize2];
-	for(int i=0; i<mSize1; ++i) colWs[i]=0;
-	for(int i=0; i<mSize2; ++i) rowHs[i]=0;
+	mColWs.resize(mSize1);
+	mRowHs.resize(mSize2);
+	mColWs.assign(mColWs.size(), 0);
+	mRowHs.assign(mRowHs.size(), 0);
 	
 	// resize table according to non-spanning cells
 	vp = child; ind=0;
@@ -178,8 +178,8 @@ Table& Table::arrange(){
 		c.view = vp;
 
 		// c.w or c.h equal to 1 mean contents span 1 cell
-		if(c.w == 1 && v.w > colWs[i1]) colWs[i1] = v.w;
-		if(c.h == 1 && v.h > rowHs[i2]) rowHs[i2] = v.h;
+		if(c.w == 1 && v.w > mColWs[i1]) mColWs[i1] = v.w;
+		if(c.h == 1 && v.h > mRowHs[i2]) mRowHs[i2] = v.h;
 
 		vp = vp->sibling; ++ind;
 	}
@@ -194,22 +194,22 @@ Table& Table::arrange(){
 		if(c.w != 1){
 			int beg = c.x;
 			int end = c.x + c.w;
-			space_t cur = sumSpan(colWs, end, beg) + (c.w-1)*mPad1;
+			space_t cur = sumSpan(&mColWs[0], end, beg) + (c.w-1)*mPad1;
 			
 			if(v.w > cur){
 				space_t add = (v.w - cur)/c.w;
-				for(int j=beg; j<end; ++j) colWs[j] += add;			
+				for(int j=beg; j<end; ++j) mColWs[j] += add;			
 			}
 		}
 
 		if(c.h != 1){
 			int beg = c.y;
 			int end = c.y + c.h;
-			space_t cur = sumSpan(rowHs, end, beg) + (c.h-1)*mPad2;
+			space_t cur = sumSpan(&mRowHs[0], end, beg) + (c.h-1)*mPad2;
 			
 			if(v.h > cur){
 				space_t add = (v.h - cur)/c.h;
-				for(int j=beg; j<end; ++j) rowHs[j] += add;
+				for(int j=beg; j<end; ++j) mRowHs[j] += add;
 			}
 		}
 	}
@@ -220,15 +220,15 @@ Table& Table::arrange(){
 	// search for first non-zero row height from back
 	int ny=mSize2-1;
 	for(; ny>=0; --ny){
-		if(rowHs[ny] != 0) break;
+		if(mRowHs[ny] != 0) break;
 	}
 	++ny;
 	//printf("%d %d\n", ny+1, mSize2);
 	//mSize2 = ny+1;	// this causes a crash next time arrange is called???
 
-	space_t accW = sumSpan(colWs, mSize1) + mPad1*(mSize1+1);
-	//space_t accH = sumSpan(rowHs, mSize2) + mPad2*(mSize2+1);
-	space_t accH = sumSpan(rowHs, ny) + mPad2*(ny+1);
+	space_t accW = sumSpan(&mColWs[0], mSize1) + mPad1*(mSize1+1);
+	//space_t accH = sumSpan(mRowHs, mSize2) + mPad2*(mSize2+1);
+	space_t accH = sumSpan(&mRowHs[0], ny) + mPad2*(ny+1);
 	extent(accW, accH);
 
 
@@ -245,10 +245,10 @@ Table& Table::arrange(){
 		space_t padt = mPad2*(i2+1);
 		space_t padr = (c.w-1)*mPad1;
 		space_t padb = (c.h-1)*mPad2;
-		space_t pl = sumSpan(colWs, i1) + padl;
-		space_t pt = sumSpan(rowHs, i2) + padt;
-		space_t pr = sumSpan(colWs, i1+c.w, i1) + pl+padr;
-		space_t pb = sumSpan(rowHs, i2+c.h, i2) + pt+padb;
+		space_t pl = sumSpan(&mColWs[0], i1) + padl;
+		space_t pt = sumSpan(&mRowHs[0], i2) + padt;
+		space_t pr = sumSpan(&mColWs[0], i1+c.w, i1) + pl+padr;
+		space_t pb = sumSpan(&mRowHs[0], i2+c.h, i2) + pt+padb;
 		space_t cx = (pr-pl)*0.5;
 		space_t cy = (pb-pt)*0.5;
 
@@ -266,10 +266,6 @@ Table& Table::arrange(){
 		};
 		#undef CS
 	}
-
-	delete[] colWs;
-	delete[] rowHs;
-	
 	return *this;
 }
 
@@ -335,6 +331,27 @@ Table& Table::arrangement(const char * va){
 	}
 	
 	return *this;
+}
+
+
+void Table::onDraw(GLV& g){
+//	for(unsigned i=0; i<mColWs.size(); ++i) printf("%g ", mColWs[i]); printf("\n");
+//	for(unsigned i=0; i<mRowHs.size(); ++i) printf("%g ", mRowHs[i]); printf("\n\n");
+
+//	using namespace glv::draw;
+//	if(enabled(DrawGrid)){
+//		color(colors().border);
+//		lineWidth(1);
+//		for(unsigned i=0; i<mCells.size(); ++i){
+//			Cell& c = mCells[i];
+//			//printf("%d %d %d %d\n", c.x, c.y, c.w, c.h);
+//			space_t cl = sumSpan(&mColWs[0], c.x) + c.x*mPad1;
+//			space_t ct = sumSpan(&mRowHs[0], c.y) + c.y*mPad2;
+//			space_t cw = sumSpan(&mColWs[0], c.x+c.w, c.x) + c.w*mPad1;
+//			space_t ch = sumSpan(&mRowHs[0], c.y+c.h, c.y) + c.h*mPad2;
+//			frame(cl, ct, cl+cw, ct+ch);
+//		}
+//	}
 }
 
 

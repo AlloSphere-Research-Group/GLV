@@ -2,6 +2,7 @@
 	See COPYRIGHT file for authors and license information */
 
 #include <algorithm>
+#include <ctype.h>		// isalnum
 #include "glv_core.h"
 
 namespace glv{
@@ -10,8 +11,9 @@ namespace glv{
 	Notifier(), SmartObject<View>(),\
 	parent(0), child(0), sibling(0), \
 	draw(cb),\
-	mFlags(Visible | DrawBack | DrawBorder | CropSelf | FocusHighlight | FocusToTop | HitTest | Controllable), \
-	mStyle(&(Style::standard())), mAnchorX(0), mAnchorY(0), mStretchX(0), mStretchY(0)
+	mFlags(Visible | DrawBack | DrawBorder | CropSelf | FocusHighlight | FocusToTop | HitTest | Controllable | Animate), \
+	mStyle(&(Style::standard())), mAnchorX(0), mAnchorY(0), mStretchX(0), mStretchY(0), \
+	mFont(0)
 
 View::View(space_t left, space_t top, space_t width, space_t height, drawCallback cb)
 :	Rect(left, top, width, height), VIEW_INIT
@@ -55,6 +57,7 @@ View::~View(){
 		else child->remove();
 	}
 
+	delete mFont;
 }
 
 
@@ -213,23 +216,24 @@ void View::constrainWithinParent(){
 		d = h < 20 ? h : 20;
 		t = t < d - h ? d - h : t > parent->h - d ? parent->h - d : t;
 	}
-	validate();
+	rectifyGeometry();
 }
 
 
-void View::drawPre(){
+void View::doDraw(GLV& g){
 	using namespace glv::draw;
-	
+
+//	drawPre();
 	if(enabled(DrawBack)){
 		color(colors().back);
-		rect(0, 0, pix(w), pix(h));
+		rectangle(0, 0, pix(w), pix(h));
 	}
-}
 
+	onDraw(g);
+	g.graphicsData().reset();
+	if(draw) draw(this, g);
 
-void View::drawPost(){
-	using namespace glv::draw;
-	
+//	drawPost();
 	if(enabled(DrawBorder)){
 		float borderWidth = 1.0;
 		
@@ -255,21 +259,6 @@ void View::drawPost(){
 	}
 }
 
-void View::validate(){
-	fixNegativeExtent();
-
-	if(enabled(KeepWithinParent) && parent){
-		space_t maxw = parent->width();
-		space_t maxh = parent->height();
-		
-		extent(w>maxw?maxw:w, h>maxh?maxh:h);
-	
-		if(left() < 0) left(0);
-		if(top() < 0) top(0);
-		if(right() > maxw) right(maxw);
-		if(bottom() > maxh) bottom(maxh);
-	}
-}
 
 // This returns the last child and sibling View containing point.
 View * View::findTarget(space_t &x, space_t &y){
@@ -330,7 +319,13 @@ void View::fit(){
 void View::focused(bool b){
 	property(Focused, b);
 	if(b && enabled(FocusToTop)) makeLastSibling(); // move to end of chain, so drawn last
-	notify(Update::Focus);
+	notify(this, Update::Focus);
+}
+
+
+Font& View::font(){
+	if(!mFont){	mFont = new Font; }
+	return *mFont;
 }
 
 
@@ -358,9 +353,58 @@ View& View::maximize(){
 }
 
 
+//void View::modelToString(std::string& v, const std::string& modelName) const {
+//
+//	ModelManager mm;
+//
+//	struct Add : TraversalAction{
+//		Add(ModelManager& v): m(v){}
+//		bool operator()(const View * v, int depth){
+//			if(v->hasName()) m.add(v->name(), *v);
+//			return true;
+//		}
+//		ModelManager& m;	
+//	} add(mm);
+//
+//	traverseDepth(add);
+//	mm.stateToToken(v, modelName);
+//}
+//
+//
+//int View::modelFromString(const std::string& v){
+//
+//	ModelManager mm;
+//
+//	struct Add : TraversalAction{
+//		Add(ModelManager& v): m(v){}
+//		bool operator()(View * v, int depth){
+//			if(v->hasName()) m.add(v->name(), *v);
+//			return true;
+//		}
+//		ModelManager& m;	
+//	} add(mm);
+//
+//	traverseDepth(add);
+//	return mm.stateFromToken(v);
+//}
+
+
+
 void View::move(space_t x, space_t y){
 	posAdd(x, y);
 	constrainWithinParent();
+}
+
+
+View& View::name(const std::string& v){
+	if(isalpha(v[0]) || v[0]=='_'){
+		unsigned i=1;
+		for(; i<v.size(); ++i){
+			if(!isalnum(v[i])) break;
+		}
+		if(v.size()==i) mName=v;
+	}
+	return *this;
 }
 
 
@@ -378,13 +422,12 @@ void View::on(Event::t e, eventCallback cb){
 }
 
 
-void View::onDraw(){ if(draw) draw(this); }
+void View::onDraw(GLV& g){ if(draw) draw(this, g); }
 
-bool View::onEvent(Event::t e, GLV& glv){ return true; }
+bool View::onEvent(Event::t e, GLV& g){ return true; }
 
 
 void View::onResize(space_t dx, space_t dy){
-
 	// Move/resize anchored children
 	// This will recursively call onResize's through the entire tree
 	View * v = child;	
@@ -423,16 +466,15 @@ const View * View::posAbs(space_t& al, space_t& at) const{
 
 void View::printDescendents() const {
 
-	struct PrintNode : View::TraversalAction{
-		bool operator()(View * v, int depth){ return false; }
+	struct A : ConstTraversalAction{
 		bool operator()(const View * v, int depth){
 			for(int i=0; i<depth; ++i) printf("|\t");
 			printf("%s %p\n", v->className(), v);
 			return true;
 		}	
-	} action;
+	} a;
 	
-	traverseDepth(this, action);
+	traverseDepth(a);
 }
 
 void View::printFlags() const{
@@ -455,6 +497,23 @@ void View::reanchor(space_t dx, space_t dy){
 		mRestore.posAdd(dx * mAnchorX, dy * mAnchorY);
 		mRestore.extent(mRestore.w + dx * mStretchX, mRestore.h + dy * mStretchY);
 		if(parent) set(0,0, parent->w, parent->h);
+	}
+}
+
+
+void View::rectifyGeometry(){
+	fixNegativeExtent();
+
+	if(enabled(KeepWithinParent) && parent){
+		space_t maxw = parent->width();
+		space_t maxh = parent->height();
+		
+		extent(w>maxw?maxw:w, h>maxh?maxh:h);
+	
+		if(left() < 0) left(0);
+		if(top() < 0) top(0);
+		if(right() > maxw) right(maxw);
+		if(bottom() > maxh) bottom(maxh);
 	}
 }
 
@@ -518,10 +577,11 @@ const View * View::toAbs(space_t& x, space_t& y) const {
  	return v;
 }
 
-#define TRAVERSE_DEPTH(VIEW)\
-void View::traverseDepth(VIEW * top, TraversalAction& action){\
-	VIEW * const root = top;\
-	VIEW * n = root;\
+
+#define TRAVERSE_DEPTH(Qual, qual)\
+void View::traverseDepth(Qual##TraversalAction& action) qual {\
+	qual View * const root = this;\
+	qual View * n = root;\
 	int depth = 0;\
 	while(n){\
 		action(n, depth);\
@@ -543,37 +603,9 @@ void View::traverseDepth(VIEW * top, TraversalAction& action){\
 		}\
 	}\
 }
-TRAVERSE_DEPTH(View)
-TRAVERSE_DEPTH(const View)
+TRAVERSE_DEPTH(,)
+TRAVERSE_DEPTH(Const, const)
 
-//void View::traverseDepth(const View * top, TraversalAction& action){
-//	const View * const root = top;
-//	const View * n = root;
-//	int depth = 0;
-//
-//	while(n){
-//		action(n, depth);
-//		
-//		if(n->child){			// down to child
-//			++depth;
-//			n = n->child;
-//		}
-//		else if(n->sibling){	// across to sibling
-//			n = n->sibling;
-//		}
-//		else{					// up and over to next branch
-//			while(n->parent){
-//				--depth;
-//				n = n->parent;
-//				if(root == n) return;
-//				else if(n->sibling){ n = n->sibling; break; }
-//			}
-//		}
-//	}
-//}
-
-void View::valueToString(std::string& v){ v=""; }
-
-bool View::valueFromString(const std::string& v){ return false; }
+//std::string View::valueString() const { std::string r; valueToString(r); return r; }
 
 } // glv::

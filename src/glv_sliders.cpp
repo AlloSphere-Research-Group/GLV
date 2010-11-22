@@ -6,44 +6,199 @@
 
 namespace glv{
 
+Sliders::Sliders(const Rect& r, int nx, int ny, bool dragSelect)
+:	Widget(r, 1, false, false, false),
+	mAcc(0)
+{
+	data().resize(Data::DOUBLE, nx,ny);
+	property(SelectOnDrag, dragSelect);
+}
+
+void Sliders::onDraw(GLV& g){
+	Widget::onDraw(g);
+
+	using namespace glv::draw;
+	float x=padding()*0.5, xd=dx(), yd=dy();
+
+//	TODO: dial drawing code...
+//		for(int i=0; i<sizeX(); ++i){
+//			float y=padding()*0.5;
+//		
+//			for(int j=0; j<sizeY(); ++j){
+//				int ind = index(i,j);
+//				if(isSelected(i,j)) color(colors().fore);
+//				else color(colors().fore, colors().fore.a*0.5);
+//				
+//				color(colors().fore, colors().fore.a*0.5);
+//				disc<32>(x,y,xd,yd);
+//				lineWidth(1);
+//				float v = Base::values()[ind];
+//				color(colors().fore);
+//				static const float pi = 3.141592653589793;
+//				shape(Lines, xd/2, yd/2, xd/2 + xd/2*cos(v*2*pi+pi/2), yd/2 + yd/2*sin(v*2*pi-pi/2));
+//
+//				y += yd;
+//			}
+//			x += xd;	
+//		}
+
+
+	if(isVertical()){
+		for(int i=0; i<sizeX(); ++i){
+		
+			float y=padding()*0.5;
+		
+			for(int j=0; j<sizeY(); ++j){
+				int ind = index(i,j);
+				if(isSelected(i,j)) color(colors().fore);
+				else color(colors().fore, colors().fore.a*0.5);
+
+				float v01 = to01(getValue(ind));
+				float y0 = to01(0)*yd;
+				//rect(x + x0, y, f*xd+x, y+yd-padding());
+				
+				rectangle(x, y+yd-v01*yd, x+xd-padding(), y+yd-y0);
+
+				// if zero line showing
+				if(mMax>0 && mMin<0){
+					color(colors().border);
+					float linePos = draw::pix(y+yd-y0);
+					shape(draw::Lines, x, linePos, x+xd, linePos);
+				}
+				y += yd;
+			}
+			x += xd;	
+		}
+	}
+	else{
+		for(int i=0; i<sizeX(); ++i){
+		
+			float y=padding()*0.5;
+		
+			for(int j=0; j<sizeY(); ++j){
+				int ind = index(i,j);
+				if(isSelected(i,j)) color(colors().fore);
+				else color(colors().fore, colors().fore.a*0.5);
+
+				float v01 = to01(getValue(ind));
+				float x0 = to01(0)*xd;
+				rectangle(x + x0, y, v01*xd+x, y+yd-padding());
+
+				// if zero line showing
+				if(mMax>0 && mMin<0){
+					color(colors().border);
+					float linePos = draw::pix(x+x0);
+					shape(draw::Lines, linePos, y, linePos, y+yd);
+				}
+				y += yd;
+			}
+			x += xd;
+		}
+	}
+}
+
+bool Sliders::onEvent(Event::t e, GLV& g){
+	Widget::onEvent(e,g);
+	
+	switch(e){
+		case Event::MouseDrag:
+			// if drag settable
+			if(enabled(SelectOnDrag)){
+				selectSlider(g, false);
+			}
+			if(g.mouse().right() || g.mouse().left()) {
+				// accumulate differences
+				mAcc += diam()*(isVertical() ? -g.mouse().dy()/h*sizeY() : g.mouse().dx()/w*sizeX()) * g.mouse().sens();
+				setValue(mAcc);
+			}
+			return false;
+			
+		case Event::MouseDown:
+			selectSlider(g, true);
+			return false;
+			
+		case Event::KeyDown:{
+			switch(g.keyboard().key()){
+			case 'x':
+			case 'a': setValue(getValue() + diam()/32.); return false;
+			case 'z': setValue(getValue() - diam()/32.); return false;
+			default:;
+			}
+			break;
+		
+		case Event::KeyUp:
+		case Event::MouseUp: return false;
+		}
+
+		default:;
+			
+	}
+	return true;
+}
+
+void Sliders::selectSlider(GLV& g, bool click){
+
+	const Mouse& m = g.mouse();
+	
+	int oldIdx = selected();
+	selectFromMousePos(g);
+	int idx = selected();
+	
+	float val = isVertical() ? (1-(m.yRel()/h*sizeY() - selectedY())) : (m.xRel()/w*sizeX() - selectedX());
+	val = toInterval(val);
+	
+	// if left-button, set value
+	if(m.left() && !m.right()){
+		setValue(val);
+	}
+	
+	// if click or new slider, reset accumulator
+	if(click || (oldIdx != idx)){
+		if(m.left() && !m.right()) mAcc = val;
+		else mAcc = getValue(idx);
+	}
+}
+
+
 // Slider2D
 
-Slider2D::Slider2D(const Rect& r, float valX, float valY, space_t knobSize)
-:	SliderBase<2>(r), knobSize(knobSize)
+Slider2D::Slider2D(const Rect& r, double valX, double valY, space_t knobSize)
+:	SliderVector<2>(r), knobSize(knobSize)
 {
-	value(valX, 0);
-	value(valY, 1);
+	setValue(valX, 0);
+	setValue(valY, 1);
 }
 
 bool Slider2D::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 		case Event::MouseDrag:
-			valueAdd( g.mouse.dx()/w * diam() * sens(g.mouse), 0);
-			valueAdd(-g.mouse.dy()/h * diam() * sens(g.mouse), 1);
-			break;
+			valueAdd( g.mouse().dx()/w * diam() * g.mouse().sens(), 0);
+			valueAdd(-g.mouse().dy()/h * diam() * g.mouse().sens(), 1);
+			return false;
 			
 		case Event::MouseDown:
-			if(g.mouse.left() && !g.mouse.right()){
-				value(toInterval(    g.mouse.xRel()/w), 0);
-				value(toInterval(1.f-g.mouse.yRel()/h), 1);
+			if(g.mouse().left() && !g.mouse().right()){
+				setValue(toInterval(    g.mouse().xRel()/w), 0);
+				setValue(toInterval(1.f-g.mouse().yRel()/h), 1);
 			}
-			break;
+			return false;
 			
-		case Event::MouseUp: clipAccs(); break;
-			
+		case Event::MouseUp: clipAccs();
+		case Event::KeyUp: return false;
+		
 		case Event::KeyDown:
-			switch(g.keyboard.key()){
-				case 'x': valueAdd(-diam()/w, 0); break;
-				case 'c': valueAdd( diam()/w, 0); break;
-				case 'a': valueAdd( diam()/h, 1); break;
-				case 'z': valueAdd(-diam()/h, 1); break;
-				default: return true;
+			switch(g.keyboard().key()){
+				case 'x': valueAdd(-diam()/w, 0); return false;
+				case 'c': valueAdd( diam()/w, 0); return false;
+				case 'a': valueAdd( diam()/h, 1); return false;
+				case 'z': valueAdd(-diam()/h, 1); return false;
+				default:;
 			}
 			break;
-		default: break;
+		default:;
 	}
-	return false;
+	return true;
 }
 
 
@@ -51,18 +206,18 @@ void Slider2D::drawKnob(const Slider2D& s){
 	using namespace glv::draw;
 	float sz = s.knobSize;	// size of indicator block
 	float sz2 = sz * 0.5f;
-	float posX = sz2 + (s.w - sz) * s.to01(s.value(0));
-	float posY = sz2 + (s.h - sz) * (1.f - s.to01(s.value(1)));
+	float posX = sz2 + (s.w - sz) * s.to01(s.getValue(0));
+	float posY = sz2 + (s.h - sz) * (1.f - s.to01(s.getValue(1)));
 	
 	color(s.colors().fore);
-	rect(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
+	rectangle(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
 }
 
 /*
 static void drawQuad(const Slider2D& s){
 	using namespace glv::draw;
-	float posX = s.w * s.value(0);
-	float posY = s.h * (1.f - s.value(1));
+	float posX = s.w * s.getValue(0);
+	float posY = s.h * (1.f - s.getValue(1));
 	
 	color(s.colors().fore);
 	
@@ -78,7 +233,7 @@ static void drawQuad(const Slider2D& s){
 }
 */
 
-void Slider2D::onDraw(){
+void Slider2D::onDraw(GLV& g){
 
 	drawKnob(*this);
 	//drawQuad(*this);
@@ -138,47 +293,47 @@ void Slider2D::onDraw(){
 
 
 
-SliderRange::SliderRange(const Rect& r, float val1, float val2)
-:	SliderBase<2>(r), mDragMode(0), mJump(0.1)
+SliderRange::SliderRange(const Rect& r, double val1, double val2)
+:	SliderVector<2>(r), mDragMode(0), mJump(0.1)
 {
 	extrema(val1, val2);
 }
 
-float SliderRange::center() const { return (value(0) + value(1))*0.5; }
-float SliderRange::jump() const { return mJump; }
-float SliderRange::range() const { return value(1)-value(0); }
+double SliderRange::center() const { return (getValue(0) + getValue(1))*0.5; }
+double SliderRange::jump() const { return mJump; }
+double SliderRange::range() const { return getValue(1)-getValue(0); }
 
-SliderRange& SliderRange::center(float v){ return centerRange(v, range()); }
+SliderRange& SliderRange::center(double v){ return centerRange(v, range()); }
 
-SliderRange& SliderRange::centerRange(float c, float r){
-//	float mn = c-(r/2.);
-//	float mx = mn+r;
+SliderRange& SliderRange::centerRange(double c, double r){
+//	double mn = c-(r/2.);
+//	double mx = mn+r;
 //	if(mn<0){ mx -= mn  ; mn=0; }
 //	if(mx>1){ mn -= mx-1; mx=1; }
 //	return extrema(mn,mx);
-	float mn = c-(r/2.);
-	float mx = mn+r;
+	double mn = c-(r/2.);
+	double mx = mn+r;
 	// adjust min/max values to preserve range
 	if(mn<mMin){ mx += mMin-mn; mn=mMin; }
 	if(mx>mMax){ mn -= mx-mMax; mx=mMax; }
 	return extrema(mn,mx);
 }
 
-SliderRange& SliderRange::extrema(float min, float max){
+SliderRange& SliderRange::extrema(double min, double max){
 	glv::sort(min,max);
-	value(min,0);
-	value(max,1);
+	setValue(min,0);
+	setValue(max,1);
 	return *this;
 }
 
-SliderRange& SliderRange::jump(float v){ mJump=v; return *this; }
-SliderRange& SliderRange::range(float v){ return centerRange(center(), v); }
+SliderRange& SliderRange::jump(double v){ mJump=v; return *this; }
+SliderRange& SliderRange::range(double v){ return centerRange(center(), v); }
 
-void SliderRange::onDraw(){
+void SliderRange::onDraw(GLV& g){
 	using namespace glv::draw;
 
-	float v1 = to01(value(0));
-	float v2 = to01(value(1));
+	float v1 = to01(getValue(0));
+	float v2 = to01(getValue(1));
 	if(v2<v1){ float t=v1; v1=v2; v2=t; }
 	
 	// prevent degeneracy
@@ -187,22 +342,22 @@ void SliderRange::onDraw(){
 
 	color(colors().fore);
 	if(w>h){	// horizontal
-		rect(v1*w,0, v2*w,h);
+		rectangle(v1*w,0, v2*w,h);
 	}
 	else{
-		rect(0,v1*h, w,v2*h);
+		rectangle(0,v1*h, w,v2*h);
 	}
 }
 
 bool SliderRange::onEvent(Event::t e, GLV& g){
 
-	float value0 = to01(value(0));
-	float value1 = to01(value(1));
+	float value0 = to01(getValue(0));
+	float value1 = to01(getValue(1));
 	
 	//printf("%f %f\n", value0, value1);
 
-	float dv = (w>h) ? g.mouse.dx()/w : g.mouse.dy()/h;
-	float mp = (w>h) ? g.mouse.xRel()/w : g.mouse.yRel()/h;
+	float dv = (w>h) ? g.mouse().dx()/w : g.mouse().dy()/h;
+	float mp = (w>h) ? g.mouse().xRel()/w : g.mouse().yRel()/h;
 	float d1 = mp-value0; if(d1<0) d1=-d1;
 	float d2 = mp-value1; if(d2<0) d2=-d2;
 	float rg = range();
@@ -215,7 +370,7 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 		// on a click. We can set its center or increment its center in the
 		// direction of the click. Also, we may not want to move the slider
 		// if the click lands within the range...
-		if(g.mouse.left()){
+		if(g.mouse().left()){
 			float v1 = value0;
 			float v2 = value1;
 			float center_ = to01(center());
@@ -252,7 +407,7 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 		return false;
 	
 	case Event::MouseDrag:
-		dv *= diam() * sens(g.mouse);
+		dv *= diam() * g.mouse().sens();
 		if(3==mDragMode){
 			valueAdd(dv, 0, mMin, mMax-rg);
 			valueAdd(dv, 1, mMin+rg, mMax);
@@ -389,17 +544,30 @@ void FunctionGraph::eval(int n, float *vals)
 	vals[idx] = mKnots[k].y;
 }
 
-void FunctionGraph::onDraw()
-{
+void FunctionGraph::onDraw(GLV& g){
 	using namespace glv::draw;
-
 	
 	std::vector<Curve *>::iterator it = mCurves.begin();
 	std::vector<Curve *>::iterator it_e = mCurves.end();
 	
+	GraphicsData& gd = g.graphicsData();
+	
 	color(mStyle->color.fore);
 
-	begin(LineStrip);
+//	begin(LineStrip);
+//	int i=0;
+//	for(; it != it_e; ++it){
+//		Curve &c = *(*it);
+//		
+//		float dx = (mKnots[i+1].x - mKnots[i].x)/(c.size()-1);
+//		float x = mKnots[i].x;
+//		for(int t = 0; t < c.size(); t++) {
+//			vertex(x*w, (1.-c[t])*h);
+//			x += dx;
+//		}
+//		i++;
+//	}
+//	end();
 	int i=0;
 	for(; it != it_e; ++it){
 		Curve &c = *(*it);
@@ -407,16 +575,16 @@ void FunctionGraph::onDraw()
 		float dx = (mKnots[i+1].x - mKnots[i].x)/(c.size()-1);
 		float x = mKnots[i].x;
 		for(int t = 0; t < c.size(); t++) {
-			vertex(x*w, (1.-c[t])*h);
+			gd.addVertex(x*w, (1.-c[t])*h);
 			x += dx;
 		}
 		i++;
 	}
-	end();
+	draw::paint(LineStrip, gd);
 	
 	color(mStyle->color.fore, mStyle->color.fore.a*0.5);
 
-	begin(TriangleStrip);
+	gd.reset();
 	i=0;
 	it = mCurves.begin();
 	for(; it != it_e; ++it){
@@ -425,13 +593,13 @@ void FunctionGraph::onDraw()
 		float dx = (mKnots[i+1].x - mKnots[i].x)/(c.size()-1);
 		float x = mKnots[i].x;
 		for(int t = 0; t < c.size(); t++) {
-			vertex(x*w, (1.-c[t])*h);
-			vertex(x*w, h);
+			gd.addVertex(x*w, (1.-c[t])*h);
+			gd.addVertex(x*w, h);
 			x += dx;
 		}
 		i++;
 	}
-	end();
+	draw::paint(TriangleStrip, gd);
 	
 	for(int k = 0; k < mNKnots; k++) {
 		int cx = mKnots[k].x*w;
@@ -444,15 +612,15 @@ bool FunctionGraph::onEvent(Event::t e, GLV& glv)
 {
 	switch(e){
 	case Event::MouseDrag: {
-		if(glv.mouse.left() && mCurrentKnot >= 0) {
+		if(glv.mouse().left() && mCurrentKnot >= 0) {
 			if(mCurrentKnot == 0 || mCurrentKnot == (mNKnots-1)) {
-				mKnots[mCurrentKnot].y = 1.-(glv.mouse.yRel()/h);
+				mKnots[mCurrentKnot].y = 1.-(glv.mouse().yRel()/h);
 				mKnots[mCurrentKnot].y = (mKnots[mCurrentKnot].y < 0.) ? 0. : 
 												((mKnots[mCurrentKnot].y > 1.) ? 1. : mKnots[mCurrentKnot].y);
 			}
 			else {
-				mKnots[mCurrentKnot].x = (glv.mouse.xRel()/w);
-				mKnots[mCurrentKnot].y = 1.-(glv.mouse.yRel()/h);
+				mKnots[mCurrentKnot].x = (glv.mouse().xRel()/w);
+				mKnots[mCurrentKnot].y = 1.-(glv.mouse().yRel()/h);
 				
 				mKnots[mCurrentKnot].x = (mKnots[mCurrentKnot].x < 0) ? 0 : 
 											((mKnots[mCurrentKnot].x > 1.) ? 1 : mKnots[mCurrentKnot].x);
@@ -495,8 +663,8 @@ bool FunctionGraph::onEvent(Event::t e, GLV& glv)
 	break;
 	
 	case Event::MouseDown: {
-		if(glv.mouse.left()) {
-			mCurrentKnot = knotHitTest(glv.mouse.xRel(), glv.mouse.yRel());
+		if(glv.mouse().left()) {
+			mCurrentKnot = knotHitTest(glv.mouse().xRel(), glv.mouse().yRel());
 		}
 	}
 	break;
@@ -526,4 +694,4 @@ int FunctionGraph::knotHitTest(space_t x, space_t y)
 	return idx;
 }
 
-} // end namespace glv
+} // glv::

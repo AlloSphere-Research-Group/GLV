@@ -37,7 +37,7 @@ struct Scene : View3D{
 		return r;
 	}
 
-	virtual void onDraw3D(){
+	virtual void onDraw3D(GLV& g){
 		using namespace glv::draw;
 
 		float itof = 2./N;
@@ -80,7 +80,7 @@ Slider2D sliderXZ(Rect(100));
 Window win(800, 600, "Soaring");
 
 bool evKeyDown(View * v, GLV& g){
-	if(g.keyboard.key() == Key::Escape) win.fullScreenToggle();
+	if(g.keyboard().key() == Key::Escape) win.fullScreenToggle();
 	return false;
 }
 
@@ -92,8 +92,8 @@ int main (int argc, char ** argv){
 	sliderXZ.interval(0.02, -0.02);
 	sliderXZ.attachVariable(scene.incx, 0);
 	sliderXZ.attachVariable(scene.incz, 1);
-	sliderXZ.value(0.0005, 0);
-	sliderXZ.value(0.0057, 1);
+	sliderXZ.setValue(0.0005, 0);
+	sliderXZ.setValue(0.0057, 1);
 	
 	top << (scene << sliderXZ);
 

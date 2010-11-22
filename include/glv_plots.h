@@ -4,227 +4,199 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include <algorithm>
 #include <vector>
 #include <set>
 #include "glv_core.h"
 #include "glv_draw.h"
+#include "glv_grid.h"
+#include "glv_texture.h"
+#include "glv_widget.h"
 
-namespace glv {
-
-/* TODO:
-- multiple representations of the same data (use 1D pointers and copy-on-draw)
-- multiple plots on same graph
-*/
-
-
-/*
-Plot plotX, plotY, plotXY;
-
-vector<Point2> data1, data2;
-
-plotX.addData(&data1[0].x, data1.size(), 2, PlotDim::X);
-plotY.addData(&data1[0].y, data1.size(), 2, PlotDim::Y);
-plotXY.addData(&data1[0], data1.size(), 1, PlotDim::XY);
-*/
+namespace glv{
 
 class Plot;
-
-/// Define the dependent dimension(s) of a plot
-namespace PlotDim{ 
-	enum t{
-//		None= 0,
-		X	= 1<<0,
-		Y	= 1<<1,
-		XY	= X|Y
-	};
-	inline t operator| (const t& a, const t& b){ return t(int(a) | int(b)); }
-}
+class Plottable;
 
 
-class PlotData{
+
+/// Map from model data to graphics data
+class GraphicsMap{
+public:
+	virtual ~GraphicsMap(){}
+	
+	/// Routine to generate graphics from model data
+	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind) = 0;
+};
+
+
+
+/// Defines a routine for generating plot graphics from model data
+class Plottable : public GraphicsMap{
 public:
 
-	PlotData();
-	explicit PlotData(int size, PlotDim::t dim);
+	/// @param[in] prim		drawing primitive
+	/// @param[in] stroke	width of lines or points
+	/// @param[in] col		color
+	Plottable(int prim=draw::Points, float stroke=1, const Color& col=Color(1,0,0))
+	:	mPrim(prim), mStroke(stroke), mColor(col), mDrawUnder(false)
+	{}
 
-	~PlotData();
+	virtual ~Plottable(){}
 
-	PlotData& dotEnds(bool v);				///< Set whether to draw dots at end points of 2-D plot
-	PlotData& dotPoints(bool v);			///< Set whether to draw dots at points of 2-D plot
-	PlotData& interpolate(bool v);			///< Set whether to apply cubic interpolation to 2-D plot
-	PlotData& color(const Color& c);		///< Set plotting color
-	PlotData& drawType(int primitive);		///< Set drawing primitive type
-	PlotData& interval(int min, int max);	///< Set range of buffer indices to plot to [min, max)
-	PlotData& stroke(float width);			///< Set stroke width of pen
+	/// Called when a new graphics context is created
+	virtual void onContextCreate(){}
+	
+	/// Called when the current graphics context is destroyed
+	virtual void onContextDestroy(){}
 
-	PlotData& reference(int dim, float * src, int size, int stride=1){
-		mPointsRef[dim] = src;
-		mStrides[dim] = stride;
-		mSize=size;
-		interval(0, mSize);
-		return *this;
-	}
+	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind){}
 
-	PlotData& resize(int size, PlotDim::t dim);		///< Change size of internal buffers
-	PlotData& zero();								///< Zero point buffer
+	/// Get color
+	const Color& color() const { return mColor; }
+	Plottable& color(const Color& v){ mColor=v; return *this; }
 
-	Color * colors();
-	float * points(int dim) const;
+	/// Get data
+	const Data& data() const { return mData; }
+	Data& data(){ return mData; }
+	
+	bool drawUnderGrid() const { return mDrawUnder; }
+	Plottable& drawUnderGrid(bool v){ mDrawUnder=v; return *this; }
+	
+	/// Get geometric primitive
+	int prim() const { return mPrim; }	
+	Plottable& prim(int v){ mPrim=v; return *this; }
 
-	bool dotPoints() const { return mDotPoints; }	///< Get whether points are dotted
-	bool dotEnds() const { return mDotEnds; }		///< Get whether endpoints are dotted
-	int size() const { return mSize; }				///< Get size of internal data buffer(s)
-	int stride(int dim) const { return mPointsRef[dim] ? mStrides[dim] : 1; }
-	float stroke() const { return mStroke;}			///< Get stroke width
+	/// Get stroke width (for lines and points)
+	int stroke() const { return mStroke; }	
+	Plottable& stroke(int v){ mStroke=v; return *this; }
+
+	/// Add a graphics map
+	Plottable& add(GraphicsMap& v);
+
+	/// Remove a graphics map
+	Plottable& remove(GraphicsMap& v);
 
 protected:
 	friend class Plot;
-	enum{ DIMS=2 };
 
-	int mSize;
-	int mIMin, mIMax;
-	int mStrides[DIMS];
-	float * mPoints[DIMS];
-	float * mPointsRef[DIMS];
-	Color * mColor;
-	Color * mColors;
+	typedef std::vector<GraphicsMap *> GraphicsMaps;
 
-	int mDrawPrim;
+	int mPrim;
 	float mStroke;
-	bool mDotEnds, mDotPoints, mInterpolate;
-
-	bool isX() const { return mPoints[0] || mPointsRef[0]; }
-	bool isY() const { return mPoints[1] || mPointsRef[1]; }
-	bool isXY() const { return isX() && isY(); }
-
-	void allocColors(){ freeColors(); mColors = new Color[size()]; }
-	void free(){
-		for(int i=0; i<DIMS; ++i){
-			if(mPoints[i]) delete[] mPoints[i];
-		}
-		freeColors();
+	Color mColor;
+	Data mData;
+	GraphicsMaps mGraphicsMaps;
+	bool mDrawUnder;
+	
+	void doPlot(GraphicsData& gd, const Data& d);
+	
+	// defines how graphics data should be drawn
+	virtual void onDraw(GraphicsData& gd, const Data& d){
+		draw::paint(prim(), gd);
 	}
-	void freeColors(){ if(mColors) delete[] mColors; mColors=0; }
 };
 
 
 
 
-//class PlotData{
-//public:
-//
-//	PlotData();
-//	~PlotData();
-//
-//	explicit PlotData(int size);//, const Color& color=Color(0.5));
-//
-//	Point2 * points();
-//	Color * colors();
-//
-//	PlotData& dotEnds(bool v);				///< Set whether to draw dots at end points of 2-D plot
-//	PlotData& dotPoints(bool v);			///< Set whether to draw dots at points of 2-D plot
-//	PlotData& interpolate(bool v);			///< Set whether to apply cubic interpolation to 2-D plot
-//	PlotData& color(const Color& c);		///< Set plotting color
-//	PlotData& drawType(int primitive);		///< Set drawing primitive type
-//	PlotData& interval(int min, int max);	///< Set range of buffer indices to plot to [min, max)
-//	PlotData& PlotData::plotDim(PlotDim::t v);
-//	PlotData& stroke(float width);			///< Set stroke width of pen
-//
-//	PlotData& resize(int n);				///< Change size of internal buffers
-//	PlotData& zero();						///< Zero point buffer
-//
-//	bool dotPoints() const { return mDotPoints; }	///< Get whether points are dotted
-//	bool dotEnds() const { return mDotEnds; }		///< Get whether endpoints are dotted
-//	int size() const { return mSize; }				///< Get size of internal data buffer(s)
-//	float stroke() const { return mStroke;}			///< Get stroke width
-//
-//	void draw(float mulX, float addX, float mulY, float addY, const Color& defaultCol) const;
-//
-//protected:
-//	PlotDim::t mPlotDim;
-//	int mSize;
-//	int mIMin, mIMax;
-//	Point2 * mPoints;
-//	Color * mColors;
-//	Color * mColor;
-//	int mDrawPrim;
-//	float mStroke;
-//	bool mDotEnds, mDotPoints, mInterpolate;
-//
-//	void allocPoints(){ freePoints(); mPoints = new Point2[size()]; zero(); }
-//	void allocColors(){ freeColors(); mColors = new Color[size()]; }
-//	void freePoints(){ if(mPoints) delete[] mPoints; mPoints=0; }
-//	void freeColors(){ if(mColors) delete[] mColors; mColors=0; }
-//	bool hasX() const { return mPlotDim==PlotDim::X || mPlotDim==PlotDim::XY; }
-//	bool hasY() const { return mPlotDim==PlotDim::Y || mPlotDim==PlotDim::XY; }
-//};
-
-
-/// A 1D or 2D function plot
-
-///
-///
-class Plot : public View{
+/// Density plotter
+class PlotDensity : public Plottable{
 public:
 
-	Plot(const Rect& r=Rect(100));
+	/// @param[in] color		plot color
+	/// @param[in] hueSpread	amount spread hue for positive and negative values
+	/// @param[in] interpolate	interpolation (0=none, 1=linear)
+	PlotDensity(const Color& color=Color(1,0,0), float hueSpread=0, int interpolate=0);
 
-//	/// @param[in] r			geometry
-//	/// @param[in] data			plot data
-//	Plot(const Rect& r, const PlotData& data);
+	PlotDensity& hueSpread(float v){ mHueSpread=v; return *this; }
 
-	Plot(const Rect& r, const Color& plotColor);
-
-	/// @param[in] r			geometry
-	/// @param[in] size			size of internal data buffer(s)
-	Plot(const Rect& r, int size, PlotDim::t dim);
+	/// Set interpolation mode (0=none, 1=linear)
+	PlotDensity& interpolate(int v){ mIpol=v; return *this; }
 	
-	/// @param[in] r			geometry
-	/// @param[in] size			size of internal data buffer(s)
-	/// @param[in] plotColor	color of plot
-	Plot(const Rect& r, int size, PlotDim::t dim, const Color& plotColor);
+//	static GraphicsMap& defaultColorMap();
+//
+//	struct DefaultColorMap : public GraphicsMap{
+//		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+//	};
 
-	virtual ~Plot();
-
-	Plot& center();							///< Center axes
-	Plot& equalizeAxes();					///< Make axis dimensions the same
-	Plot& preserveAspect(bool v);			///< Set whether aspect ratio is preserved to 1:1
-	Plot& range(float ext);					///< Set range of x & y axes to [-ext,ext]
-	Plot& rangeFit(float padPercentage=10);
-	Plot& rangeX(float ext);				///< Set range of x axis to [-ext,ext]
-	Plot& rangeY(float ext);				///< Set range of y axis to [-ext,ext]
-	Plot& rangeX(float min, float max);		///< Set range of x axis to [min,max]
-	Plot& rangeY(float min, float max);		///< Set range of y axis to [min,max]
-	Plot& showAxes(bool v);					///< Set whether to show axes
-	Plot& tickMajor(float d);				///< Set major tick distance for x and y (<= 0 turns off)
-	Plot& tickMajorX(float d);				///< Set major tick distance for x (<= 0 turns off)
-	Plot& tickMajorY(float d);				///< Set major tick distance for x (<= 0 turns off)
-//	Plot& zero();							///< Zeroes all buffer elements
-
-	PlotData * createData(int size, PlotDim::t dim);
-	Plot& addData(PlotData& v);
-
-	PlotData& data(int i=0);
-
-	virtual const char * className() const { return "Plot"; }
-	virtual void onDraw();
-	virtual bool onEvent(Event::t e, GLV& glv);
+	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
 
 protected:
-	enum{ DIM=2 };
-	std::vector<Point2> mPoints;
-	std::vector<PlotData *> mData;
-	std::set<PlotData *> mOwnData;
+	virtual void onContextCreate();
+	virtual void onContextDestroy();
+	virtual void onDraw(GraphicsData& gd, const Data& d);
+	Texture2 mTex;
+	float mHueSpread;
+	int mIpol;
+};
 
-	float mMin[DIM], mMax[DIM];
-	float mTickMajorX, mTickMajorY;
-	bool mShowAxes, mPreserveAspect;
 
-	void plotExtent(float& pw, float& ph);
-	void zoom(float px, float py, float zm);
-	Plot& validate();
+/// One-dimensional function plotter
+class PlotFunction1D : public Plottable{
+public:
 
-	void draw(const PlotData& d, float mulX, float addX, float mulY, float addY, const Color& defaultCol);
+	/// @param[in] color	plot color
+	PlotFunction1D(const Color& color=Color(0));
+
+	static GraphicsMap& defaultVertexMap();
+
+	struct DefaultVertexMap : public GraphicsMap{
+		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+	};
+};
+
+
+/// Two-dimensional function plotter
+class PlotFunction2D : public Plottable{
+public:
+
+	/// @param[in] color	plot color
+	PlotFunction2D(const Color& color=Color(0));
+
+	static GraphicsMap& defaultVertexMap();
+
+	struct DefaultVertexMap : public GraphicsMap{
+		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+	};
+};
+
+
+
+/// Plots data according to one or more attached Plottables
+class Plot : public Grid {
+public:
+	typedef std::vector<Plottable *> Plottables;
+
+	Plot(const Rect& r=Rect(0));
+
+	Plot(const Rect& r, Plottable& p);
+
+	Plottables& plottables(){ return mPlottables; }
+	const Plottables& plottables() const { return mPlottables; }
+
+	int valueIndex(int i) const { return mValInd[i]; }
+
+	/// Add new plotting routine
+	Plot& add(Plottable& v);
+
+	Plot& remove(Plottable& v);
+
+	Plot& valueIndex(int from, int to){
+		mValInd[from] = to; return *this;
+	}
+
+	virtual const char * className() const { return "Plot"; }
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
+
+protected:
+	Plottables mPlottables;
+	int mValInd[4];
+	
+	void resetValInd(){
+		for(int i=0; i<4; ++i) mValInd[i]=i;
+	}
 };
 
 

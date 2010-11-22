@@ -7,7 +7,7 @@ namespace glv{
 
 namespace Event{
 
-	const char * string(const Event::t e){
+	const char * toString(const Event::t e){
 		#define CS(t) case Event::t: return #t;
 		switch(e){
 			CS(Null)
@@ -23,6 +23,10 @@ namespace Event{
 	}
 }
 
+
+Style::Style(bool deletable)
+:	SmartPointer(deletable)
+{}
 
 
 StyleColor::StyleColor(){

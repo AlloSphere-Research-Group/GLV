@@ -5,6 +5,7 @@
 #include "glv.h"
 #include "glv_behavior.h"
 #include "glv_binding.h"
+#include "glv_icon.h"
 
 namespace glv{
 
@@ -21,7 +22,7 @@ struct CharView : public View{
 	int input;
 	float thickness;
 
-	virtual void onDraw(){
+	virtual void onDraw(GLV& g){
 		using namespace glv::draw;
 		scale(w/8, h/11);	// scale characters to extent of view
 		
@@ -42,7 +43,7 @@ struct CharView : public View{
 	virtual bool onEvent(Event::t e, GLV& glv){
 		
 		if(Event::KeyDown == e){
-			int key = glv.keyboard.key();
+			int key = glv.keyboard().key();
 			
 			switch(key){
 				case Key::Up:   thickness += 0.5; break;
@@ -60,7 +61,7 @@ struct ColorView : public View{
 	
 	ColorView(const Rect& r=Rect(40)): View(r){}
 	
-	virtual void onDraw(){
+	virtual void onDraw(GLV& g){
 		int divH = 32, divS = 16;
 		float incH = 1./divH, incS = 1./divS;
 		
@@ -73,15 +74,15 @@ struct ColorView : public View{
 				float hue = (float)j * incH;
 				col.setHSV(hue, 1, sat*sat);
 				draw::color(col);
-				draw::rect(w * hue, h * sat, w * (hue + incH), h * (sat + incS));
+				draw::rectangle(w * hue, h * sat, w * (hue + incH), h * (sat + incS));
 			}
 		}
 	}
 	
 	virtual bool onEvent(Event::t e, GLV& glv){
-		if(parent && glv.mouse.left()){
-			float sat = glv.mouse.yRel()/h;
-			parent->colors().back.setHSV(glv.mouse.xRel()/w, 1, sat*sat);
+		if(parent && glv.mouse().left()){
+			float sat = glv.mouse().yRel()/h;
+			parent->colors().back.setHSV(glv.mouse().xRel()/w, 1, sat*sat);
 			return false;
 		}
 		return true;
@@ -103,9 +104,9 @@ public:
 	View& source() const { return *mSource; }
 	CopyCat& source(View& v){ if(&v != this) mSource=&v; return *this; }
 
-	virtual void onDraw(){
+	virtual void onDraw(GLV& g){
 		space_t sw, sh; getDim(sw, sh); setDim(w, h);
-		source().onDraw();
+		source().onDraw(g);
 		setDim(sw, sh);
 	}
 	
@@ -133,8 +134,10 @@ public:
 		deselect(); 
 	}
 
-	virtual void onDraw(){
+	virtual void onDraw(GLV& g){
 		using namespace glv::draw;
+		
+		GraphicsData& gd = g.graphicsData();
 		
 		if(enabled(DrawGrid)){
 			color(colors().fore, 0.25);
@@ -143,37 +146,37 @@ public:
 		
 		color(colors().fore, 0.65);
 		stroke(2);
-		begin(mPrim);
+
 		for(unsigned i=0; i<mPoints.size(); ++i){
 			float x,y;
 			indexToPoint(x,y, mPoints[i]);
-			vertex(x,y);
+			gd.addVertex(x,y);
 		}
-		end();
+		paint(mPrim, gd);
 
-		color(colors().fore);
 		draw::enable(PointSmooth);
 		stroke(6);
-		begin(Points);
-		for(unsigned i=0; i<mPoints.size(); ++i){
+
+		gd.reset();
+		for(int i=0; i<(int)mPoints.size(); ++i){
 			float x,y;
 			indexToPoint(x,y, mPoints[i]);
-			vertex(x,y);
+			if(isSelected() && mSelected == i){
+				gd.addColor(Color(1,0,0));
+			}
+			else{
+				gd.addColor(colors().fore);
+			}
+			gd.addVertex(x,y);
 		}
-		if(isSelected()){
-			color(1,0,0);
-			float x,y;
-			indexToPoint(x,y, mPoints[mSelected]);
-			vertex(x,y);
-		}
-		end();
+		paint(Points, gd);
 
 	}
 	
 	virtual bool onEvent(Event::t e, GLV& g){
 		
-		Mouse& m = g.mouse;
-		Keyboard& k = g.keyboard;
+		const Mouse& m = g.mouse();
+		const Keyboard& k = g.keyboard();
 		
 		int idx; pointToIndex(idx, m.xRel(), m.yRel());
 		

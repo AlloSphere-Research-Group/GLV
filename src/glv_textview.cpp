@@ -1,6 +1,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include <math.h>
 #include <string>
 #include <string.h>
 #include "glv_textview.h"
@@ -9,31 +10,35 @@ namespace glv{
 
 #define CTOR_LIST mAlignX(0), mAlignY(0), mVertical(false)
 #define CTOR_BODY\
+	data().resize(Data::STRING);\
+	useInterval(false);\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
-	value(str);\
-	vertical(vert);
+	setValue(str);\
+	vertical(vert)
 
 Label::Label(const std::string& str, const Spec& s)
-:	View(0,0,0,0), mAlignX(0), mAlignY(0)
+:	Widget(Rect(0)), mAlignX(0), mAlignY(0)
 {
+	data().resize(Data::STRING);
+	useInterval(false);
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);
-	value(str);
+	setValue(str);
 	vertical(s.vert);
 	size(s.size);
 	pos(s.posAnch, s.dx, s.dy).anchor(s.posAnch);
 }
 
 Label::Label(const std::string& str, bool vert)
-:	View(0,0,0,0), CTOR_LIST
-{	CTOR_BODY }
+:	Widget(Rect(0)), CTOR_LIST
+{	CTOR_BODY; }
 
 Label::Label(const std::string& str, space_t l, space_t t, bool vert)
-:	View(l,t,0,0), CTOR_LIST
-{	CTOR_BODY }
+:	Widget(Rect(l,t,0,0)), CTOR_LIST
+{	CTOR_BODY; }
 
 Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool vert)
-:	View(0,0,0,0), CTOR_LIST
-{	CTOR_BODY 
+:	Widget(Rect(0)), CTOR_LIST
+{	CTOR_BODY;
 	pos(p, px, py).anchor(p);
 }
 
@@ -43,15 +48,17 @@ Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool ve
 Label& Label::align(float vx, float vy){ mAlignX=vx; mAlignY=vy; return *this; }
 
 Label& Label::size(float pixels){
-	mFont.size(pixels);
+	font().size(pixels);
 	fitExtent();
 	return *this;
 }
 
-Label& Label::value(const std::string& s){
-	mLabel = s;
+Label& Label::setValue(const std::string& s){
+//	model().set(s);
+//	fitExtent();
+//	if(numObservers(Update::Value)) notify(Update::Value, LabelChange(s));
+	Widget::setValue(s);
 	fitExtent();
-	if(numObservers(Update::Value)) notify(Update::Value, LabelChange(s));
 	return *this;
 }
 
@@ -63,22 +70,36 @@ Label& Label::vertical(bool v){
 	return *this;
 }
 
-void Label::onDraw(){
+void Label::onDraw(GLV& g){
 	using namespace glv::draw;
 	lineWidth(1);
 	color(colors().text);
 	if(mVertical){ translate(0,h); rotate(0,0,-90); }
-	mFont.render(mLabel.c_str());
+	//font().render(value().c_str());
+	font().render(data().toString().c_str());
 	//scale(mSize, mSize);
-	//text(mLabel.c_str());
+	//text(value().c_str());
 }
 
 
 void Label::fitExtent(){
+
+	float tw, th;
+	font().getBounds(tw,th, data().toString().c_str());
+	th -= font().descent();
+
+	space_t dw = tw - w;
+	space_t dh = th - h;
+	posAdd(-dw*mAlignX, -dh*mAlignY);
+	extent(tw, th);
+	if(mVertical) rotateRect();
+
+/*
 	space_t dx = 8;
 	space_t tw = 0, th = 8, mw = 0;
-	const char * c = mLabel.c_str();
-
+	//const char * c = value().c_str();
+	const char * c = data().toString().c_str();
+	if(!c) return;
 	while(*c){
 		switch(*c++){
 		case '\n': th += dx*2; tw = 0; break;
@@ -88,7 +109,7 @@ void Label::fitExtent(){
 		}
 	}
 	
-	float mul = mFont.scaleX();
+	float mul = font().scaleX();
 	
 	space_t dw = mw*mul - w;
 	space_t dh = th*mul - h;
@@ -96,6 +117,7 @@ void Label::fitExtent(){
 	
 	extent(mw*mul, th*mul);
 	if(mVertical) rotateRect();
+*/
 }
 
 void Label::rotateRect(){ t += w - h; transpose(); }
@@ -103,11 +125,12 @@ void Label::rotateRect(){ t += w - h; transpose(); }
 
 #define CTOR_LIST mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0), mShowSign(true)
 #define CTOR_BODY\
+	data().resize(Data::DOUBLE);\
 	resize(numInt, numFrac);\
 	dig(mNI);
 
 NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac)
-:	Base(r, 1,1,0,false,false), CTOR_LIST
+:	Widget(r, 0,false,false), CTOR_LIST
 {	
 	CTOR_BODY
 	mMax = maxVal();
@@ -116,29 +139,30 @@ NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac)
 }
 
 NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min)
-:	Base(r, 1,1,0,false,false), CTOR_LIST
+:	Widget(r, 0,false,false), CTOR_LIST
 {	
 	CTOR_BODY
 	interval(max, min);	
 }
 
 NumberDialer::NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min)
-:	Base(Rect(l,t, (h-2)*(numInt+numFrac+1), h), 1,1,0,false,false), CTOR_LIST
+:	Widget(Rect(l,t, (h-2)*(numInt+numFrac+1), h), 0,false,false), CTOR_LIST
 {
 	CTOR_BODY
 	interval(max, min);
 }
 
 NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
-:	Base(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 1,1,0,false,false), CTOR_LIST
+:	Widget(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 0,false,false), CTOR_LIST
 {
 	CTOR_BODY
 	interval(max, min);
 } 
 
 NumberDialer::NumberDialer(const NumberDialer& v)
-:	Base(v, 1,1,0,false,false), CTOR_LIST
+:	Widget(v,0, false,false), CTOR_LIST
 {
+	data() = Data(Data::DOUBLE);
 	dig(v.sizeInteger());
 	resize(v.sizeInteger(), v.sizeFraction());
 	interval(v.max(), v.min());
@@ -177,11 +201,9 @@ NumberDialer& NumberDialer::showSign(bool v){
 	return *this;
 }
 
-//double NumberDialer::value() const{ return mVal * mValMul; }
-double NumberDialer::value() const{ return values()[0]; }
-NumberDialer& NumberDialer::value(double v){ valSet(convert(v)); return *this; }
+NumberDialer& NumberDialer::setValue(double v){ valSet(convert(v)); return *this; }
 
-void NumberDialer::onDraw(){ //printf("% g\n", value());
+void NumberDialer::onDraw(GLV& g){ //printf("% g\n", value());
 	using namespace glv::draw;
 	float dx = w/size(); // # pixels per cell
 	lineWidth(1);
@@ -190,7 +212,7 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 	if(enabled(Focused)){
 //		color(colors().fore, colors().fore.a*0.4);
 		color(colors().selection);
-		rect(dig()*dx, 0, (dig()+1)*dx, h);
+		rectangle(dig()*dx, 0, (dig()+1)*dx, h);
 	}
 	
 	// draw number
@@ -233,8 +255,8 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 //		}
 //	draw::pop();
 
-	mFont.size(dx - mPad);
-	mFont.letterSpacing(mPad/mFont.size());
+	font().size(dx - mPad);
+	font().letterSpacing(mPad/font().size());
 	float x = mPad;
 	float y = mPad;
 
@@ -258,15 +280,15 @@ void NumberDialer::onDraw(){ //printf("% g\n", value());
 	}
 
 //	printf("%s\n", str);
-	mFont.render(str, x, y);
-	if(mNF>0) mFont.render(".", dx*(mNI+sizeSign()-0.5) + x, y);
+	font().render(str, x, y);
+	if(mNF>0) font().render(".", dx*(mNI+sizeSign()-0.5) + x, y);
 }
 
 
 bool NumberDialer::onEvent(Event::t e, GLV& g){
 
-	Keyboard& k = g.keyboard;
-	Mouse& m    = g.mouse;
+	const Keyboard& k = g.keyboard();
+	const Mouse& m    = g.mouse();
 
 	switch(e){
 	case Event::MouseDown:{
@@ -302,9 +324,9 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 			case 'a': onNumber() ? valAdd( mag()) : flipSign(); return false;
 			case 'z': onNumber() ? valAdd(-mag()) : flipSign(); return false;
 			case '-': flipSign(); return false;
-			case 'c': value(0); return false;
+			case 'c': setValue(0); return false;
 			case '.': dig(size()-mNF); return false; // go to first fraction digit (if any)
-			case Key::Right: dig(dig()+1); return false;
+			case Key::Right:	enable(DrawBorder); dig(dig()+1); return false;
 			case Key::Left:  dig(dig()-1); return false;
 			}
 		}
@@ -320,40 +342,49 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 
 
 TextView::TextView(const Rect& r, float textSize)
-:	View(r), mSpacing(1), mPadX(4), mSel(0), mBlink(0)
+:	Widget(r), mSpacing(1), mPadX(4), mSel(0), mBlink(0)
 {
+	data().resize(Data::STRING);
 	setPos(0);
 	size(textSize);
 }
 
-void TextView::callNotify(){ notify(Update::Value, TextViewChange(&mText)); }
+//void TextView::callNotify(){ notify(Update::Value, TextViewChange(&mText)); }
 
 TextView& TextView::size(float pixels){
-	mFont.size(pixels);
+	font().size(pixels);
 	return *this;
 }
 
-TextView& TextView::value(const std::string& v){
-	if(v != mText){
-		mText=v;
-		callNotify();
+//TextView& TextView::setValue(const std::string& v){
+//	if(v != mText){
+//		mText=v;
+//		callNotify();
+//	}
+//	return *this;
+//}
+
+bool TextView::onAssignData(Data& d, int ind1, int ind2){
+	if(Widget::onAssignData(d, ind1, ind2)){
+		mText = getValue();
+		return true;
 	}
-	return *this;
+	return false;
 }
 
-void TextView::onDraw(){
+void TextView::onDraw(GLV& g){
 	using namespace draw;
 	
 	if(++mBlink==40) mBlink=0; // update blink interval
 
 	float padX = mPadX;
 	float padY = 4;
-	float addY =-2;		// subtraction from top since some letters go above cap
+	float addY =-4;//was -2		// subtraction from top since some letters go above cap
 
-	float tl = mPos * mFont.advance('M') + padX;
-//	float tr = tl + mFont.advance('M');
+	float tl = mPos * font().advance('M') + padX;
+//	float tr = tl + font().advance('M');
 	float tt = addY + padY;
-	float tb = tt + mFont.descent() - addY;
+	float tb = tt + fabs(font().descent()+font().cap()) - addY;
 	float strokeWidth = 1;
 	
 	// draw selection
@@ -361,14 +392,14 @@ void TextView::onDraw(){
 		float sl, sr;
 		if(mSel>0){
 			sl = tl;
-			sr = sl + mSel*mFont.advance('M');
+			sr = sl + mSel*font().advance('M');
 		}
 		else{
 			sr = tl;
-			sl = sr + mSel*mFont.advance('M');
+			sl = sr + mSel*font().advance('M');
 		}
 		color(colors().selection);
-		rect(sl, tt, sr, tb);
+		rectangle(sl, tt, sr, tb);
 	}
 
 	// draw cursor
@@ -379,20 +410,20 @@ void TextView::onDraw(){
 
 	draw::lineWidth(strokeWidth);
 	color(colors().text);
-	mFont.render(mText.c_str(), padX, padY);
+	font().render(mText.c_str(), padX, padY);
 }
 
 bool TextView::onEvent(Event::t e, GLV& g){
 
-	const Keyboard& k = g.keyboard;
+	const Keyboard& k = g.keyboard();
 	int key = k.key();
-	float mx = g.mouse.xRel();
+	float mx = g.mouse().xRel();
 
 	switch(e){
 		case Event::KeyDown:
 			if(isprint(key)){
 				deleteSelected();
-				mText.insert(mPos, 1, k.key()); callNotify();
+				mText.insert(mPos, 1, k.key()); setValue(mText);
 				setPos(mPos+1);
 				return false;
 			}
@@ -436,7 +467,8 @@ bool TextView::onEvent(Event::t e, GLV& g){
 
 		case Event::MouseDown:
 			setPos(xToPos(mx));
-			break;
+		case Event::MouseUp:
+			return false;
 
 		case Event::MouseDrag:
 			{
@@ -445,7 +477,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 				else select(p-mPos);
 				//printf("%d\n", mSel);
 			}
-			break;
+			return false;
 
 		default:;
 	}
@@ -468,7 +500,7 @@ void TextView::deleteSelected(){
 
 void TextView::deleteText(int start, int num){
 	mText.erase(start, num);
-	callNotify();
+	setValue(mText);
 }
 
 void TextView::select(int v){
@@ -488,7 +520,7 @@ void TextView::setPos(int v){
 }
 
 int TextView::xToPos(float x){
-	float charw = mFont.advance('M');
+	float charw = font().advance('M');
 	if(x<0) x=0;
 	int p = (x-mPadX*1)/charw;
 	if(p > (int)mText.size()) p = mText.size();

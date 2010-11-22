@@ -34,10 +34,29 @@ void fog(float end, float start, const Color& c){
 }
 
 
+void genEllipse(
+	Point2 * pts, int n, double angle01, double loops,
+	float l, float t, float r, float b
+){
+	const double theta = loops*C_2PI/n;
+	double px=cos(angle01*C_2PI);
+	double py=sin(angle01*C_2PI);
+	double rx=cos( theta);
+	double ry=sin(-theta); // negative to ensure CCW winding for front facing polygon
+	double mx=0.5*(l+r), my=0.5*(t+b), sx=(r-l)*0.5, sy=(b-t)*0.5;
+
+	for(int i=0; i<n; ++i){
+		pts[i](mx+px*sx, my+py*sy);
+		double tx=px;
+		px = px*rx - py*ry;
+		py = tx*ry + py*rx;
+	}
+}
+
 void grid(float l, float t, float w, float h, float divx, float divy, bool incEnds){
 	double inc, r=l+w, b=t+h;
 
-	if(divy > 0){
+	if(divy > 0 && h>0){
 		inc = (double)h/(double)divy;
 		double i = incEnds ? t-0.0001 : t-0.0001+inc;
 		double e = incEnds ? b : b-inc;
@@ -49,7 +68,7 @@ void grid(float l, float t, float w, float h, float divx, float divy, bool incEn
 		paint(Lines, xy, ind+1);
 	}
 
-	if(divx > 0){
+	if(divx > 0 && w>0){
 		inc = (double)w/(double)divx;
 		double i = incEnds ? l-0.0001 : l-0.0001+inc;
 		double e = incEnds ? r : r-inc;
@@ -108,18 +127,32 @@ void linePattern(float l, float t, float w, float h, int n, const char * pat){
 }
 
 
-void pgon(float l, float t, float w, float h, int n, float a){
-	w *= 0.5; h *= 0.5;
-	push(); translate(l + w, t + h); scale(w, h); rotate(0, 0, a * 360);
+void paint(int prim, const GraphicsData& b){
+	int Nc = b.colors().size();
+	int Nv2= b.vertices2().size();
+	int Nv3= b.vertices3().size();
+	int Ni = b.indices().size();
 
-	Point2 pts[n];
-	for(int i=0; i<n; ++i){
-		float p = (double)i / (double)n * C_2PI;
-		pts[i](cos(p), sin(p));
+	bool Ec = Nc && (Nc >= Nv2 || Nc >= Nv3);
+
+	if(Ec){
+		glEnableClientState(GL_COLOR_ARRAY);
+		glColorPointer(4, GL_FLOAT, 0, &b.colors()[0]);
 	}
-	paint(LineLoop, pts, GLV_ARRAY_SIZE(pts));
+	if(Nv3)	glVertexPointer(3, GL_FLOAT, 0, &b.vertices3()[0]);
+	else	glVertexPointer(2, GL_FLOAT, 0, &b.vertices2()[0]);
+	
+	if(Ni)	glDrawElements(prim, b.indices().size(), GL_UNSIGNED_INT, &b.indices()[0]);
+	else	glDrawArrays(prim, 0, Nv3 ? Nv3 : Nv2);
 
-	pop();
+	if(Ec)	glDisableClientState(GL_COLOR_ARRAY);
+}
+
+
+void pgon(float l, float t, float w, float h, int n, float a, double loops){
+	Point2 pts[n];
+	genEllipse(pts,n, a,loops, l,t,l+w,t+h);
+	paint(LineLoop, pts, GLV_ARRAY_SIZE(pts));
 }
 
 
@@ -135,6 +168,9 @@ void push2D(float w, float h){
 		ortho(0, w, h, 0);		// flat 2D world dimension L,R,B,T
 	
 	push(ModelView); identity();
+	
+	// render all primitives at integer positions, ref: OpenGL Redbook
+	//translate(0.375, 0.375);
 }
 
 
@@ -182,29 +218,12 @@ void spokes(float l, float t, float w, float h, int n, float a){
 
 
 void text(const char * s, float l, float t, unsigned fontSize, float lineSpacing, unsigned tabSpaces){
-
 	Font f;
 	f.size(fontSize);
 	f.lineSpacing(lineSpacing);
 	f.tabSpaces(tabSpaces);
-	f.render(s, l,t,0);
+	f.render(s, l+0.375, t+0.375, 0);
 	//f.render(s, int(l)+0.5, int(t)+0.5,0);
-
-//	float dx = Glyph::baseline();
-//	float x=l, y=t, tabUnits = tabSpaces * dx;
-//	//x = (int)x + 0.5; y = (int)y + 0.5;
-//	//begin(Lines);
-//	while(*s){
-//		switch(*s){
-//			case '\t':	x = ((int)(x/tabUnits) + 1) * tabUnits; break;
-//			case '\r':
-//			case '\n':	x = l; y += dx * 2.f * lineSpacing; break;
-//			case '\b':	x -= dx; break;
-//			default:	if(character(*s, x, y)) x += dx;
-//		}
-//		s++;
-//	}
-//	//end();
 }
 
 } // draw::

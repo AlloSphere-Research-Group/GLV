@@ -49,10 +49,19 @@ class Font{
 public:
 	Font(unsigned size=8);
 	
-	~Font();
-	
-	//void render(char c, float x=0, float=0, float z=0);
-	void render(const char * text, float x=0, float=0, float z=0);
+	virtual ~Font();
+
+	virtual float advance(const char c) const;
+
+	/// Returns total advance width of text string
+	virtual float advance(const char *text) const;
+
+	/// Get bounding box of text string
+	virtual void getBounds(float& w, float& h, const char * text) const;
+
+	/// Render text string
+	virtual void render(const char * text, float x=0, float=0, float z=0);
+
 
 	/// Set spacing, in ems, between the left and right edges of successive letters
 	Font& letterSpacing(float v);
@@ -66,16 +75,12 @@ public:
 	/// Set number of spaces per tab
 	Font& tabSpaces(unsigned spaces);
 
-	/// Returns advance width of character
-	float advance(char c) const;
+	float baseline() const;		///< Get absolute position on which glyphs rest
+	float cap() const;			///< Get distance from baseline to top of uppercase glyphs
+	float xheight() const;		///< Get distance from baseline to top of lowercase glyphs
+	float descent() const;		///< Get distance from baseline to lowest position of glyphs
 
-	/// Returns total advance width of text string
-	float advance(const char *text) const;
-	
-	float cap() const;
-	float median() const;
-	float baseline() const;
-	float descent() const;
+//	float width() const;		///< Get width of
 
 	float letterSpacing() const { return mLetterSpacing; }
 	float lineSpacing() const { return mLineSpacing; }

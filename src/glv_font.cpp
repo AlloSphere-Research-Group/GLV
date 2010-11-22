@@ -1,3 +1,4 @@
+#include <ctype.h>		// isgraph
 #include <string.h>		// strlen
 #include "glv_draw.h"
 #include "glv_font.h"
@@ -13,7 +14,7 @@ struct Glyph{
 	static float cap()		{ return 0; }
 	static float median()	{ return 3; }
 	static float baseline()	{ return 8; }
-	static float descent()	{ return 11; }
+	static float descent()	{ return 12; }
 	static float width()	{ return 8; }
 	
 	unsigned char dots() const { return (field & MaskDots) >> 5; }
@@ -134,7 +135,8 @@ static bool character(int c, float dx, float dy, float ps){
 //		float po = ps/2;
 //		float psInv = 1./ps;
 //		#define ALIGN(x) round(x,ps,psInv,po)
-		#define ALIGN(x) x
+		#define ALIGN(x) (x)
+		#define MUL(x) (x)/ps
 	
 		Point2 xy[32];
 		int ind=-1;
@@ -170,7 +172,7 @@ static bool character(int c, float dx, float dy, float ps){
 			x += dots; y += dots;
 		}
 
-		n--;
+		--n;
 		// 16 + 1 = 17
 		//vertex(x[0] + dx, y[0] + dy);
 		xy[++ind](ALIGN(x[0]+dx), ALIGN(y[0]+dy));
@@ -205,26 +207,48 @@ static bool character(int c, float dx, float dy, float ps){
 }
 
 
-static void text(
-	const char * s,
-	float l, float t,
-	float letterSpacing, float lineSpacing, unsigned int tabSpaces, float pixelSize
-){
-	float dx = Glyph::width()*(1+letterSpacing);
-	float x=l, y=t, tabUnits = tabSpaces * dx;
-	//begin(Lines);
-	while(*s){
-		switch(*s){
-			case '\t':	x = ((int)(x/tabUnits) + 1) * tabUnits; break;
-			case '\r':
-			case '\n':	x = l; y += dx * 2.f * lineSpacing; break;
-			case '\b':	x -= dx; break;
-			default:	if(character(*s, x, y, pixelSize)) x+=dx;
-		}
-		++s;
+struct TextIterator{
+
+	TextIterator(const Font& f_, const char *& s_): x(0),y(0),l(0),t(0),w(0),h(0), s(s_), f(f_){}
+
+	virtual ~TextIterator(){}
+
+	void run(){
+		while((*this)()){}
 	}
-	//end();
-}
+
+	bool operator()(){
+		if(*s){
+			char c = *s++;
+			l = x; t = y;
+//			w = f.advance(c) * (1+f.letterSpacing()); // varies per character if proportional
+//			h = 1 * f.cap() * f.lineSpacing();
+//			float tabUnits = f.advance('M') * f.tabSpaces() * (1+f.letterSpacing());
+			w = Glyph::width(); // varies per character if proportional
+			h = (Glyph::descent() - Glyph::cap());
+			float tabUnits = Glyph::width() * f.tabSpaces() * (1+f.letterSpacing());
+			float dx = w * (1+f.letterSpacing());
+			float dy = h * f.lineSpacing();
+
+			switch(c){
+				case '\t': x = (int(x/tabUnits) + 1) * tabUnits; w = x-l; break;
+				case '\r':
+				case '\n': x = 0; y += dy; break;
+				case '\b': x -= w; break;
+				default:   if(onPrintable(c)) x += dx;
+			}
+			return true;
+		}
+		return false;
+	}	
+
+	virtual bool onPrintable(char c){ return true; }
+
+	float x,y;			// raster position
+	float l,t,w,h;		// bounding box of current character
+	const char *& s;
+	const Font& f;
+};
 
 
 
@@ -250,7 +274,7 @@ void Font::render(const char * v, float x, float y, float z){
 	//float sh = -0.5*sy; // TODO: shear needs to be done an a per-line basis
 	float sh = 0;
 	
-	tx=ty=tz=0;
+	//tx=ty=tz=0;
 
 	float m[16] = {
 		sx, 0, 0, 0,
@@ -260,11 +284,16 @@ void Font::render(const char * v, float x, float y, float z){
 	};
 	glMultMatrixf(m);
 
-	//scale(mScaleX, mScaleY, mScaleY);
-	glv::text(
-		v, int(x/mScaleX), int(y/mScaleY),
-		letterSpacing(), lineSpacing(), tabSpaces(), 1./mScaleY
-	);
+	struct RenderText : public TextIterator{
+		RenderText(const Font& f_, const char *& s_, float muly_): TextIterator(f_,s_), muly(muly_){}
+		bool onPrintable(char c){
+			return character(c, x, y, muly);
+		}
+		float muly;
+	} renderText(*this, v, 1./mScaleY);
+
+	renderText.run();
+
 //	glv::text(v, 0,0, lineSpacing(), tabSpaces(), mScaleY);
 	draw::pop(ModelView);
 }
@@ -284,14 +313,30 @@ Font& Font::tabSpaces(unsigned v){ mTabSpaces=v; return *this; }
 
 float Font::advance(const char *text) const {
 	return advance(' ') * strlen(text);
+	//return Glyph::width() * mScaleX * strlen(text);
 }
 
 float Font::advance(char c) const { return Glyph::width() * mScaleX; }
 
-float Font::cap() const { return Glyph::cap() * mScaleY; }
-float Font::median() const { return Glyph::median() * mScaleY; }
+void Font::getBounds(float& w, float& h, const char * text) const {
+	w=h=0;
+	if(!text) return;
+
+	TextIterator ti(*this, text);
+	while(ti()){
+		if(ti.x > w) w = ti.x;
+	}
+
+	h = (ti.y + ti.h) * mScaleY;
+	//h = ti.y*mScaleY + cap();
+
+	w *= mScaleX;
+}
+
+float Font::cap() const { return (Glyph::baseline() - Glyph::cap()) * mScaleY; }
+float Font::xheight() const { return (Glyph::baseline() - Glyph::median()) * mScaleY; }
 float Font::baseline() const { return Glyph::baseline() * mScaleY; }
-float Font::descent() const { return Glyph::descent() * mScaleY; }
+float Font::descent() const { return (Glyph::descent() - Glyph::baseline()) * mScaleY; }
 
 
 } // glv::
