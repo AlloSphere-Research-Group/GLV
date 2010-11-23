@@ -26,7 +26,7 @@ FunctionGraph fg(Rect(200, 100), 4, 10);
 Plot plotXY(Rect(150), *new PlotFunction2D(Color(0,0,0.5)));
 Plot plotX(Rect(150,60), *new PlotFunction1D(Color(0,0.5,0)));
 Plot plotY(Rect(60,150), *new PlotFunction1D(Color(0.5,0,0)));
-Plot dplot(Rect(200), *new PlotDensity);
+Plot dplot(Rect(200), *new PlotDensity(HSV(0.2, 0.5), 1./16));
 
 NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,8, 8,0);
 Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100)), sl1HS(sl1H,0), sl1VS(sl1V,0);
@@ -152,7 +152,7 @@ int main(int argc, char ** argv){
 			for(int i=0; i<data.size(1); ++i){
 				double y = double(j)/data.size(2)*2-1;
 				double x = double(i)/data.size(1)*2-1;
-				double r = fabs(sin(hypot(x,y)*8));
+				double r = (sin(hypot(x,y)*8));
 				data.assign(r, 0, i,j);
 			}
 		}
