@@ -63,7 +63,6 @@ public:
 
 	Label& align(float vx, float vy);		///< Set alignment factors for label area
 	Label& size(float pixels);				///< Set label size
-	Label& setValue(const std::string& s);	///< Set label string
 	Label& vertical(bool v);				///< Set whether label is displayed vertically
 
 	/// Get value
@@ -78,6 +77,14 @@ protected:
 	
 	void fitExtent();
 	void rotateRect();		// swap between vertical and horizontal
+
+	virtual bool onAssignData(Data& d, int ind1, int ind2){
+		if(Widget::onAssignData(d, ind1, ind2)){
+			fitExtent();
+			return true;
+		}
+		return false;
+	}
 };
 
 
@@ -175,6 +182,17 @@ protected:
 		if((mVal>0 && -mVal>=convert(mMin)) || (mVal<0 && -mVal<=convert(mMax)))
 			valSet(-mVal);
 	}
+
+//NumberDialer& NumberDialer::setValue(double v){ valSet(convert(v)); return *this; }
+//	virtual bool onAssignData(Data& d, int ind1, int ind2){
+//	
+//		double v = d.at<double>(ind1, ind2);
+//	
+//		if(Widget::onAssignData(d, ind1, ind2)){
+//			return true;
+//		}
+//		return false;
+//	}
 };
 
 

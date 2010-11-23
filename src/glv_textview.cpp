@@ -53,14 +53,14 @@ Label& Label::size(float pixels){
 	return *this;
 }
 
-Label& Label::setValue(const std::string& s){
-//	model().set(s);
+//Label& Label::setValue(const std::string& s){
+////	model().set(s);
+////	fitExtent();
+////	if(numObservers(Update::Value)) notify(Update::Value, LabelChange(s));
+//	Widget::setValue(s);
 //	fitExtent();
-//	if(numObservers(Update::Value)) notify(Update::Value, LabelChange(s));
-	Widget::setValue(s);
-	fitExtent();
-	return *this;
-}
+//	return *this;
+//}
 
 Label& Label::vertical(bool v){
 	if(v != mVertical){
