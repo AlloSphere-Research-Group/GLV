@@ -70,9 +70,9 @@ int main(){
 
 	//v11_.data().print();
 
-	v1__.preserveAspect(false);
-	v_1_.preserveAspect(false);
-	v__1.preserveAspect(false);
+//	v1__.equalizeAxes(false);
+//	v_1_.equalizeAxes(false);
+//	v__1.equalizeAxes(false);
 
 	v1__.range(0, data.size(1,2), 0).range(-1.2, 1.2, 1);
 	v_1_.range(0, data.size(1,2), 0).range(-1.2, 1.2, 1);

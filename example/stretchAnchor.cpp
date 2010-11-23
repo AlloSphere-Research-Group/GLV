@@ -19,7 +19,7 @@ int main(int argc, char ** argv){
 	
 	glv.colors().set(StyleColor::WhiteOnBlack);
 	glv.cloneStyle();
-	v1.colors().set(StyleColor::SmokeyGray);
+	v1.colors().set(StyleColor::SmokyGray);
 	
 	glv << v1;
 	v1 << v2;
