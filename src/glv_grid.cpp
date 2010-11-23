@@ -6,7 +6,7 @@
 namespace glv{
 
 Grid::Grid(const Rect& r, double rangeMin, double rangeMax, double majorDist, int minorDiv)
-:	View(r), mShowAxes(true), mShowGrid(true), mShowNumbering(false), mPreserveAspect(false)
+:	View(r), mShowAxes(true), mShowGrid(true), mShowNumbering(false), mEqualize(false)
 {
 	range(rangeMin, rangeMax);
 	major(majorDist); minor(minorDiv);
@@ -105,7 +105,7 @@ void Grid::onDraw(GLV& g){
 		}
 	}
 
-	if(mPreserveAspect){ // NOTE: this always works when called from draw loop
+	if(mEqualize){ // NOTE: this always works when called from draw loop
 		w>=h	? interval(0).diameter(interval(1).diameter()*w/h)
 				: interval(1).diameter(interval(0).diameter()*h/w);
 	}
