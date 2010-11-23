@@ -51,9 +51,13 @@ int toToken(std::string& dst, const T * src, int size);
 template <class T>
 inline std::string toToken(const T& obj){ std::string r; toToken(r,obj); return r; }
 
-
+/// Convert Data object to string
 int toString(std::string& dst, const Data& src);
+
+/// Convert Data object to token string
 int toToken(std::string& dst, const Data& src);
+
+/// Assign Data object elements from string
 int fromToken(Data& dst, const std::string& src);
 
 
@@ -191,8 +195,14 @@ protected:
 class Data : public ReferenceCounter {
 public:
 
+	/// Data types
 	enum Type{
-		VOID=0, BOOL, INT, FLOAT, DOUBLE, STRING
+		VOID=0,		/**< */
+		BOOL,		/**< */
+		INT,		/**< */
+		FLOAT,		/**< */
+		DOUBLE,		/**< */
+		STRING		/**< */
 	};
 	static std::string typeToString(Type t);
 
