@@ -10,10 +10,6 @@
 
 namespace glv {
 
-/// Icon function type
-typedef void (* iconFunc)(float l, float t, float r, float b);
-
-
 /// One or more buttons on a grid
 class Buttons : public Widget {
 public:
@@ -31,10 +27,16 @@ public:
 		iconFunc on=draw::rectangle, iconFunc off=0
 	);
 
+	/// Get off state icon
 	const iconFunc& iconOff() const { return mIconOff; }
+	
+	/// Get on state icon
 	const iconFunc& iconOn () const { return mIconOn; }
 
+	/// Set off state icon
 	Buttons& iconOff(const iconFunc& f){ mIconOff=f; return *this; }
+
+	/// Set on state icon
 	Buttons& iconOn (const iconFunc& f){ mIconOn =f; return *this; }
 
 	virtual const char * className() const { return "Buttons"; }

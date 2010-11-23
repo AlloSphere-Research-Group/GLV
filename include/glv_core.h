@@ -213,7 +213,12 @@ friend class GLV;
 public:
 
 	/// Mouse button enumeration
-	enum{ Left = 0, Middle, Right, Extra = (GLV_MAX_MOUSE_BUTTONS - 1) };
+	enum{
+		Left = 0,							/**< Left mouse button */
+		Middle,								/**< Middle mouse button */
+		Right,								/**< Right mouse button */
+		Extra = (GLV_MAX_MOUSE_BUTTONS - 1)	/**< Extra mouse button */
+	};
 
 	/// Constructor.
 	Mouse();
@@ -283,10 +288,11 @@ class StyleColor{
 public:
 	StyleColor();
 	
+	/// Color style presets
 	enum Preset{
 		BlackOnWhite,		/**< */
 		Gray,				/**< */
-		SmokeyGray,			/**< */
+		SmokyGray,			/**< */
 		WhiteOnBlack		/**< */
 	};
 
@@ -358,7 +364,7 @@ public:
 	virtual void onDraw(GLV& g);					///< Drawing callback
 	virtual bool onEvent(Event::t e, GLV& g);		///< Event callback to be called after those in callback list
 	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
-	virtual void onDataModelSync(){}					///< Update internal values if different from attached model variables
+	virtual void onDataModelSync(){}				///< Update internal values if different from attached model variables
 
 	// Doubly linked tree list of views
 	// TODO: move this stuff to a Node sub-class
@@ -413,7 +419,6 @@ public:
 	std::string valueString() const;			/// Returns model value(s) as string
 	int visible() const;						///< Returns whether View visibility flag is set
 
-	
 	View& anchor(space_t mx, space_t my);		///< Set translation factors relative to parent resize amount
 	View& anchor(Place::t parentPlace);			///< Set translation factors relative to parent resize amount
 
@@ -433,7 +438,6 @@ public:
 	View& enable(Property::t p);				///< Enable property flag(s)
 	View& property(Property::t p, bool v);		///< Set property flag(s) to a specfic value	
 	View& toggle(Property::t p);				///< Toggle property flag(s)
-
 
 	View& bringToFront();						///< Brings to front of parent View
 	View& cloneStyle();							///< Creates own copy of current style
@@ -493,21 +497,25 @@ protected:
 
 
 
-/// The top-level View
+/// The topmost view
+
+/// The GLV is the topmost view that serves as an interface between OS events
+/// (windowing, device input) and GLV events. The GLV is responsible for sending
+/// events to views and rendering the GUI.
 class GLV : public View{
 public:
 
-	/// @param[in] cb		My drawing callback
-	/// @param[in] width	Initial width
-	/// @param[in] height	Initial height
-	GLV(drawCallback cb = 0, space_t width = 800, space_t height = 600);
+	/// @param[in] drawFunc		drawing callback
+	/// @param[in] width		width
+	/// @param[in] height		height
+	GLV(drawCallback drawFunc=0, space_t width=800, space_t height=600);
 
 	virtual ~GLV();
 
 	virtual const char * className() const { return "GLV"; }
 
-	const Keyboard& keyboard() const { return mKeyboard; };	///< Current keyboard state
-	const Mouse& mouse() const { return mMouse; }			///< Current mouse state
+	const Keyboard& keyboard() const { return mKeyboard; };	///< Get current keyboard state
+	const Mouse& mouse() const { return mMouse; }			///< Get current mouse state
 
 
 	/// Get last event type propagated
@@ -516,10 +524,11 @@ public:
 	/// Get currently focused View
 	View * focusedView() const { return mFocusedView; }
 
+	/// Get reference to temporary graphics data for rendering
 	GraphicsData& graphicsData(){ return mGraphicsData; }
 
 
-	/// Send this event to everyone in tree (including self)
+	/// Sends an event to everyone in tree (including self)
 	void broadcastEvent(Event::t e);
 	
 	/// GLV MAIN RENDER LOOP: draw all Views in the GLV
@@ -534,17 +543,20 @@ public:
 	/// Set event type to propagate
 	void eventType(Event::t e){ mEventType = e; }
 
-	/// Update input event state; called by external event handlers.
+	/// Propagates event through view tree adhering to bubbling rules
 
 	/// Be sure to set the eventType first!
 	/// Returns whether the event was consumed.
 	bool propagateEvent();
 
-	/// set current event target
+	/// Set current event target
 	void setFocus(View * v); 
 	
-	void setKeyDown(int keycode);		// Sets keyboard and GLV event state
-	void setKeyUp(int keycode);			// Sets keyboard and GLV event state
+	/// Sets keyboard and GLV event state
+	void setKeyDown(int keycode);
+	
+	/// Sets keyboard and GLV event state
+	void setKeyUp(int keycode);
 	
 	/// Set state from mouse down event
 	

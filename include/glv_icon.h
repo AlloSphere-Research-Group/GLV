@@ -9,7 +9,7 @@
 namespace glv{
 
 /*
-These are to replace the function pointer icons under draw::.
+These are intended to replace the function pointer icons in draw::.
 They are a bit more difficult to handle than function pointers, such as when 
 passing into a constructor. C++ polymorphism forces us to use either pointers
 or references.

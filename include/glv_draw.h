@@ -13,6 +13,10 @@
 
 namespace glv {
 
+/// Icon function type
+typedef void (* iconFunc)(float l, float t, float r, float b);
+
+/// Two-dimensional point
 struct Point2{
 	Point2(){}
 	Point2(float x_, float y_): x(x_), y(y_){}
@@ -23,6 +27,7 @@ struct Point2{
 	};
 };
 
+/// Three-dimensional point
 struct Point3{
 	Point3(){}
 	Point3(float x_, float y_, float z_): x(x_), y(y_), z(z_){}
@@ -38,73 +43,101 @@ struct Point3{
 class GraphicsData{
 public:
 
-	GraphicsData()
-	:	mColors(1)
-	{}
+	GraphicsData(): mColors(1){}
 
+	/// Get color buffer
 	const Buffer<Color>& colors() const { return mColors; }
+	
+	/// Get index buffer
 	const Buffer<unsigned>& indices() const { return mIndices; }
+	
+	/// Get 2D vertex buffer
 	const Buffer<Point2>& vertices2() const { return mVertices2; }
+	
+	/// Get 3D vertex buffer
 	const Buffer<Point3>& vertices3() const { return mVertices3; }
 
+	/// Reset all buffers
 	void reset(){
 		mVertices2.reset(); mVertices3.reset();
 		mColors.reset(); mIndices.reset();
 	}
 
+	/// Append color
 	void addColor(const Color& c){
 		colors().append(c); }
 
+	/// Append colors
 	void addColor(const Color& c1, const Color& c2){
 		addColor(c1); addColor(c2); }
 
+	/// Append colors
 	void addColor(const Color& c1, const Color& c2, const Color& c3){
 		addColor(c1,c2); addColor(c3); }
 
+	/// Append colors
 	void addColor(const Color& c1, const Color& c2, const Color& c3, const Color& c4){
 		addColor(c1,c2,c3); addColor(c4); }
 
+	/// Append index
 	void addIndex(unsigned i){
 		indices().append(i); }
 
+	/// Append indices
 	void addIndex(unsigned i1, unsigned i2){
 		addIndex(i1); addIndex(i2); }
 
+	/// Append indices
 	void addIndex(unsigned i1, unsigned i2, unsigned i3){
 		addIndex(i1,i2); addIndex(i3); }
 
+	/// Append indices
 	void addIndex(unsigned i1, unsigned i2, unsigned i3, unsigned i4){
 		addIndex(i1,i2,i3); addIndex(i4); }
 
+	/// Append 2D vertex
 	void addVertex(double x, double y){ addVertex2(x,y); }
+
+	/// Append 3D vertex
 	void addVertex(double x, double y, double z){ addVertex3(x,y,z); }
 
+	/// Append 2D vertex
 	void addVertex2(double x, double y){
 		vertices2().append(Point2(x,y)); }
 
+	/// Append 2D vertices
 	void addVertex2(double x1, double y1, double x2, double y2){
 		addVertex2(x1,y1); addVertex2(x2,y2); }
 
+	/// Append 2D vertices
 	void addVertex2(double x1, double y1, double x2, double y2, double x3, double y3){
 		addVertex2(x1,y1,x2,y2); addVertex2(x3,y3); }
 
+	/// Append 2D vertices
 	void addVertex2(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4){
 		addVertex2(x1,y1,x2,y2,x3,y3); addVertex2(x4,y4); }
 
+	/// Append 2D vertex
 	template <class VEC2>
-	void addVertex2(const VEC2& v){
-		addVertex2(v[0], v[1]); }
+	void addVertex2(const VEC2& v){ addVertex2(v[0], v[1]); }
 
-	void addVertex3(double x, double y, double z){
-		vertices3().append(Point3(x,y,z)); }
+	/// Append 3D vertex
+	void addVertex3(double x, double y, double z){ vertices3().append(Point3(x,y,z)); }
 
+	/// Append 3D vertex
 	template <class VEC3>
-	void addVertex3(const VEC3& v){
-		addVertex3(v[0], v[1], v[2]); }
+	void addVertex3(const VEC3& v){ addVertex3(v[0], v[1], v[2]); }
 
+	/// Get mutable color buffer
 	Buffer<Color>& colors(){ return mColors; }
+
+	/// Get mutable index buffer
 	Buffer<unsigned>& indices(){ return mIndices; }
+
+	/// Get mutable 2D vertex buffer
 	Buffer<Point2>& vertices2(){ return mVertices2; }
+
+	/// Get mutable 3D vertex buffer
 	Buffer<Point3>& vertices3(){ return mVertices3; }
 
 protected:
@@ -116,18 +149,17 @@ protected:
 
 
 
-/// Drawing routines.
+/// Drawing routines
 namespace draw{
 
 const double C_PI = 4. * atan(1.);
 const double C_2PI = 2. * C_PI;
 
-
 #ifdef check
 	#undef check
 #endif
 
-// primitives
+/// Primitives
 enum{
 	Points        = GL_POINTS,
 	Lines         = GL_LINES,
@@ -145,7 +177,7 @@ enum{
 #endif
 };
 
-// capabilities (for disable() and enable())
+/// Capabilities (for disable() and enable())
 enum{
 	Blend			= GL_BLEND,
 	DepthTest		= GL_DEPTH_TEST,
@@ -158,7 +190,7 @@ enum{
 	Texture2D		= GL_TEXTURE_2D
 };
 
-// attribute masks
+/// Attribute masks
 enum{
 	ColorBufferBit	= GL_COLOR_BUFFER_BIT,
 	DepthBufferBit	= GL_DEPTH_BUFFER_BIT,
@@ -166,6 +198,7 @@ enum{
 	ViewPortBit		= GL_VIEWPORT_BIT
 };
 
+/// Transform matrices
 enum{
 	ModelView		= GL_MODELVIEW,
 	Projection		= GL_PROJECTION,

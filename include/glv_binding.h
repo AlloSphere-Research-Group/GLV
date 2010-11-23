@@ -9,7 +9,6 @@
 
 namespace glv{
 
-class WindowImpl;	// binding-specific window implementation
 class GLV;
 
 /// Display mode bit masks
@@ -31,9 +30,14 @@ enum{
 class Window{
 public:
 
+	class Impl;		// binding specific implementation
+
 	/// Rectangle geometry
 	struct Dimensions{
-		unsigned l,t,w,h; ///< geometry
+		unsigned l;	///< left position, in pixels
+		unsigned t;	///< top position, in pixels
+		unsigned w;	///< width, in pixels
+		unsigned h;	///< height, in pixels
 	};
 
 	/// Constructor
@@ -44,7 +48,7 @@ public:
 	);
 
 	~Window();
-	
+
 	bool active() const { return mIsActive; }			///< Returns window active
 	unsigned bottom() const { Dimensions d=dimensions(); return d.t+d.h; }	///< Returns bottom edge position
 	Dimensions dimensions() const;						///< Returns dimensions of window
@@ -63,7 +67,7 @@ public:
 	unsigned width() const { return dimensions().w; }	///< Returns window width
 
 	void dimensions(const Dimensions& d);				///< Sets dimensions of window
-	void fit();
+	void fit();											///< Fit dimensions to GLV dimensions
 	void fps(double v);									///< Sets frames/second
 	void fullScreen(bool on);							///< Sets fullscreen mode
 	void fullScreenToggle();							///< Toggles fullscreen
@@ -87,13 +91,13 @@ protected:
 	Dimensions mWinDims;	// backup for when going fullscreen
 	double mFPS;
 	std::string mTitle;
-	int mDispMode;		// display mode bit field
+	int mDispMode;			// display mode bit field
 	bool mFullScreen;
 	bool mGameMode;
-	bool mHideCursor;	// hide cursor?
-	bool mIsActive;		// window context ready?
+	bool mHideCursor;		// hide cursor?
+	bool mIsActive;			// window context ready?
 	
-	bool shouldDraw();	// if the GLV views should be drawn
+	bool shouldDraw();		// if the GLV views should be drawn
 
 	void onWindowCreate();
 	void onWindowDestroy();
@@ -118,8 +122,9 @@ protected:
 	
     // pointer to the binding-specific implementation
 	//std::auto_ptr<WindowImpl> mImpl;
-	WindowImpl * mImpl;
     // with the auto_ptr for the implementation, disallow assignment and copy
+	Impl * mImpl;
+
 private:
     const Window& operator=(const Window&);
     Window(const Window&);

@@ -6,6 +6,67 @@
 
 namespace glv{
 
+/// Font
+class Font{
+public:
+	Font(unsigned size=8);
+	
+	virtual ~Font();
+
+	/// Get advance amount (width) of character
+	virtual float advance(const char c) const;
+
+	/// Returns total advance width of text string
+	virtual float advance(const char *text) const;
+
+	/// Get bounding box of text string
+	virtual void getBounds(float& w, float& h, const char * text) const;
+
+	/// Render text string
+	virtual void render(const char * text, float x=0, float=0, float z=0);
+
+
+	/// Set spacing, in ems, between the left and right edges of successive letters
+	Font& letterSpacing(float v);
+
+	/// Set spacing, in ems, between lines
+	Font& lineSpacing(float v);
+
+	/// Set the font size in pixels
+	Font& size(unsigned size);
+	
+	/// Set number of spaces per tab
+	Font& tabSpaces(unsigned spaces);
+
+	float baseline() const;		///< Get absolute position on which glyphs rest
+	float cap() const;			///< Get distance from baseline to top of uppercase glyphs
+	float xheight() const;		///< Get distance from baseline to top of lowercase glyphs
+	float descent() const;		///< Get distance from baseline to lowest position of glyphs
+
+	/// Get letter spacing, in ems
+	float letterSpacing() const { return mLetterSpacing; }
+	
+	/// Get line spacing, in ems
+	float lineSpacing() const { return mLineSpacing; }
+	
+	/// Get scaling factor in x direction
+	float scaleX() const { return mScaleX; }
+	
+	/// Get font size, in pixels
+	unsigned size() const { return mSize; }
+	
+	/// Get number of spaces per tab
+	unsigned tabSpaces() const { return mTabSpaces; }
+
+private:
+	unsigned mSize;
+	float mScaleX, mScaleY;
+	float mLetterSpacing;
+	float mLineSpacing;
+	unsigned mTabSpaces;
+};
+
+
 // font rendering styles
 //enum
 //{
@@ -17,13 +78,13 @@ namespace glv{
 //	GLV_FONT_EXTRUDE
 //};
 
-namespace FontStyle{
-	enum t{
-		Regular,
-		Bold,
-		Italic
-	};
-}
+//namespace FontStyle{
+//	enum t{
+//		Regular,
+//		Bold,
+//		Italic
+//	};
+//}
 
 
 /*
@@ -43,59 +104,6 @@ Glyph:
 	advance width (total space for glyph)
 	sidebearings (padding on either side)
 */
-
-/// Font
-class Font{
-public:
-	Font(unsigned size=8);
-	
-	virtual ~Font();
-
-	virtual float advance(const char c) const;
-
-	/// Returns total advance width of text string
-	virtual float advance(const char *text) const;
-
-	/// Get bounding box of text string
-	virtual void getBounds(float& w, float& h, const char * text) const;
-
-	/// Render text string
-	virtual void render(const char * text, float x=0, float=0, float z=0);
-
-
-	/// Set spacing, in ems, between the left and right edges of successive letters
-	Font& letterSpacing(float v);
-
-	/// Set spacing, in ems, between lines
-	Font& lineSpacing(float v);
-
-	/// Set the size in pixels
-	Font& size(unsigned size);
-	
-	/// Set number of spaces per tab
-	Font& tabSpaces(unsigned spaces);
-
-	float baseline() const;		///< Get absolute position on which glyphs rest
-	float cap() const;			///< Get distance from baseline to top of uppercase glyphs
-	float xheight() const;		///< Get distance from baseline to top of lowercase glyphs
-	float descent() const;		///< Get distance from baseline to lowest position of glyphs
-
-//	float width() const;		///< Get width of
-
-	float letterSpacing() const { return mLetterSpacing; }
-	float lineSpacing() const { return mLineSpacing; }
-	float scaleX() const { return mScaleX; }
-	unsigned size() const { return mSize; }
-	unsigned tabSpaces() const { return mTabSpaces; }
-
-private:
-	unsigned mSize;
-	float mScaleX, mScaleY;
-	float mLetterSpacing;
-	float mLineSpacing;
-	unsigned mTabSpaces;
-};
-
 
 /*
 // From an older version of GLV...

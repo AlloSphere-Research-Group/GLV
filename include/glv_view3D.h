@@ -8,8 +8,11 @@
 
 namespace glv {
 
+/// View for three-dimensional rendering
 class View3D : public View {
 public:
+
+	/// @param[in] r	geometry
 	View3D(const Rect& r=Rect(0));
 	virtual ~View3D(){}
 

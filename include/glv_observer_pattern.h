@@ -58,15 +58,26 @@ public:
 	:	mSender(sndr), mReceiver(rcvr), mData(data)
 	{}
 
-	void * sender() const { return mSender; }		///< Get pointer to sending object
-	void * receiver() const { return mReceiver; }	///< Get pointer to receiving object
-	const void * data() const { return mData; }		///< Get pointer to data object
-
+	/// Get pointer to sending object
 	template <class T>
 	T * sender() const { return static_cast<T *>(sender()); }
 
+	/// Get raw pointer to sending object
+	void * sender() const { return mSender; }
+
+	/// Get pointer to receiving object
 	template <class T>
 	T * receiver() const { return static_cast<T *>(receiver()); }
+
+	/// Get raw pointer to receiving object
+	void * receiver() const { return mReceiver; }
+
+	/// Get raw pointer to data object
+	const void * data() const { return mData; }
+
+	/// Get pointer to data object
+	template <class T>
+	const T * data() const { return static_cast<T *>(data()); }
 
 protected:
 	void * mSender;

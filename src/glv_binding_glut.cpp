@@ -19,22 +19,28 @@
 namespace glv {
 
 // GLUT window implementation
-class WindowImpl{
+class Window::Impl{
 public:
-	WindowImpl(Window *window, int winID)
+	Impl(Window *window, int winID)
 	: mWindow(window)
 	, mID(winID)
 	, mInGameMode(false){
 		windows()[mID] = this;
 	}
 	
-	~WindowImpl(){
+	~Impl(){
 		windows().erase(mID);
 		if(mInGameMode) windows().erase(mIDGameMode);
 		glutDestroyWindow(mID);
 	}
-	
-	void draw();	// GLUT draw function
+
+	void draw(){
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		if(mWindow->shouldDraw()){
+			mWindow->mGLV->drawGLV(mWindow->width(), mWindow->height(), mWindow->fps());
+			glutSwapBuffers();
+		}
+	}
 	
 	void scheduleDraw(){
 		scheduleDrawStatic(mInGameMode ? mIDGameMode : mID);
@@ -43,10 +49,10 @@ public:
 	void showing(bool v){ mShowing=v; }
 	
 	// Returns the implementation of the currently selected window
-	static WindowImpl * getWindowImpl(){ return getWindowImpl(glutGetWindow()); }
+	static Impl * getWindowImpl(){ return getWindowImpl(glutGetWindow()); }
 	
 	
-	static WindowImpl * getWindowImpl(int id){
+	static Impl * getWindowImpl(int id){
 		if(windows().count(id) > 0){
 			return windows()[id];
 		}
@@ -55,7 +61,7 @@ public:
 	
 	// Returns the currently selected window or 0 if invalid
 	static Window * getWindow(){
-		WindowImpl * w = getWindowImpl();
+		Impl * w = getWindowImpl();
 		if(w) return w->mWindow;
 		return 0;
 	}
@@ -69,11 +75,11 @@ public:
 
 private:
 
-	typedef std::map<int, WindowImpl *> WindowsMap;
+	typedef std::map<int, Impl *> WindowsMap;
 
 	// schedule draws of a specific window
 	static void scheduleDrawStatic(int winID){
-		WindowImpl *impl = getWindowImpl(winID);
+		Impl *impl = getWindowImpl(winID);
 		
 		// If there is a valid implementation, then draw and schedule next draw...
 		if(impl){
@@ -120,7 +126,7 @@ static void glutDisplayCB(){
 // this must be called whenever a GLUT input event for a keyboard or mouse
 // callback is generated.
 static void modToGLV(){
-	GLV * g = WindowImpl::getGLV();
+	GLV * g = Window::Impl::getGLV();
 	if(g){
 		int mod = glutGetModifiers();
 		const_cast<Keyboard *>(&g->keyboard())->alt  (mod & GLUT_ACTIVE_ALT);
@@ -133,7 +139,7 @@ static void modToGLV(){
 static void keyToGLV(unsigned int key, bool down, bool special){
 	//printf("GLUT: keyboard event k:%d d:%d s:%d\n", key, down, special);
 
-	GLV * g = WindowImpl::getGLV();
+	GLV * g = Window::Impl::getGLV();
 	if(g){
 		if(special){
 
@@ -219,7 +225,7 @@ static void glutSpecialCB(int key, int x, int y){ keyToGLV(key, true, true); }
 static void glutSpecialUpCB(int key, int x, int y){ keyToGLV(key, false, true); }
 
 static void glutVisibilityCB(int v){
-	WindowImpl * w = WindowImpl::getWindowImpl();
+	Window::Impl * w = Window::Impl::getWindowImpl();
 	if(w){
 		w->showing(v == GLUT_VISIBLE);
 	}
@@ -227,7 +233,7 @@ static void glutVisibilityCB(int v){
 
 static void glutMouseCB(int btn, int state, int ax, int ay){
 	//printf("GLUT: mouse event x:%d y:%d bt:#%d,%d\n", ax,ay, btn, state==GLUT_DOWN);
-	GLV * g = WindowImpl::getGLV();
+	GLV * g = Window::Impl::getGLV();
 	if(g){
 		space_t x = (space_t)ax;
 		space_t y = (space_t)ay;
@@ -251,7 +257,7 @@ static void glutMouseCB(int btn, int state, int ax, int ay){
 }
 
 static void motionToGLV(int ax, int ay, glv::Event::t e){
-	GLV * g = WindowImpl::getGLV();
+	GLV * g = Window::Impl::getGLV();
 	if(g){
 		space_t x = (space_t)ax;
 		space_t y = (space_t)ay;
@@ -279,7 +285,7 @@ static void glutReshapeCB(int w, int h){
 	//printf("glutReshapeCB(%d, %d)\n", w, h);
 
 	// This callback should only set the GLV's dimensions.
-	Window * win = WindowImpl::getWindow();
+	Window * win = Window::Impl::getWindow();
 	//if(win) win->resize(w, h);
 	if(win) win->setGLVDims(w, h);
 }
@@ -325,7 +331,7 @@ void Window::implCtor(unsigned l, unsigned t, unsigned w, unsigned h){
     glutIgnoreKeyRepeat(1);
 
     //mImpl.reset(new WindowImpl(this, winID));
-	mImpl = new WindowImpl(this, winID);
+	mImpl = new Impl(this, winID);
 
 	registerCBs();
 	mImpl->scheduleDraw();
@@ -395,7 +401,7 @@ void Window::implGameMode(){
 		}
 
 		mImpl->mIDGameMode = glutEnterGameMode();
-		WindowImpl::windows()[mImpl->mIDGameMode] = mImpl;
+		Window::Impl::windows()[mImpl->mIDGameMode] = mImpl;
 		mImpl->mInGameMode = true;
 		registerCBs();
 		mImpl->scheduleDraw();
@@ -403,7 +409,7 @@ void Window::implGameMode(){
 	
 	// Exit game mode
 	else{
-		WindowImpl::windows().erase(mImpl->mIDGameMode);
+		Window::Impl::windows().erase(mImpl->mIDGameMode);
 		mImpl->mInGameMode = false;
 		glutSetWindow(mImpl->mID); // freeglut requires this before leaving game mode
 		glutLeaveGameMode();
@@ -452,14 +458,5 @@ Window::Dimensions Window::implWinDims() const{
 	d.h = glutGet(GLUT_WINDOW_HEIGHT);
 	return d;
 }
-
-void WindowImpl::draw(){
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	if(mWindow->shouldDraw()){
-		mWindow->mGLV->drawGLV(mWindow->width(), mWindow->height(), mWindow->fps());
-		glutSwapBuffers();
-	}
-}
-
 
 } // glv::
