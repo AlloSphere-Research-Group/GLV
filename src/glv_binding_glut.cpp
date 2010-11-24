@@ -1,6 +1,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include <stdio.h>
 #include "glv_binding.h"
 #include "glv_core.h"
 
@@ -425,8 +426,11 @@ void Window::implHideCursor(bool v){
 void Window::implIconify(){ glutIconifyWindow(); }
 
 void Window::implInitialize(){
-	int argc = 0;
-	char * argv[] = {0};
+//	int argc = 0;
+//	char * argv[] = {0};
+//	glutInit(&argc,argv);
+	int   argc   = 1;
+	char *argv[] = {"MyApp", NULL};
 	glutInit(&argc,argv);
 }
 

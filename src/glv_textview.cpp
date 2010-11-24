@@ -220,7 +220,7 @@ void NumberDialer::onDraw(GLV& g){ //printf("% g\n", value());
 	int msd = mNF;	// position from right of most significant digit
 	
 	if(absVal > 0){
-		msd = (int)log10(absVal);
+		msd = (int)log10((double)absVal);
 		int p = size() - (mShowSign ? 2:1);
 		msd = msd < mNF ? mNF : (msd > p ? p : msd);
 	}

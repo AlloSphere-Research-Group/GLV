@@ -52,8 +52,7 @@
 
 	#define GLV_PLATFORM_INIT_CONTEXT\
 		{	GLenum err = glewInit();\
-			if (GLEW_OK != err){\
-  				/* Problem: glewInit failed, something is seriously wrong. */\
+			if(GLEW_OK != err){\
   				fprintf(stderr, "GLEW Init Error: %s\n", glewGetErrorString(err));\
 			}\
 		}
@@ -65,16 +64,38 @@
 	#define GLV_PLATFORM_WIN
 	#define GLV_OPENGL
 
+	#define WIN32_LEAN_AND_MEAN
+	#define VC_EXTRALEAN
 	#include <windows.h>
+	
+	#ifdef min
+	#undef min
+	#endif
+	#ifdef max
+	#undef max
+	#endif
+	#ifdef far
+	#undef far
+	#endif
+	#ifdef near
+	#undef near
+	#endif
 
+	#include <GL/glew.h>
 	#include <gl/gl.h>
 	#include <gl/glu.h>
 
+	#pragma comment( lib, "glew32.lib")
 	#pragma comment( lib, "winmm.lib")
 	#pragma comment( lib, "opengl32.lib" )
 	#pragma comment( lib, "glu32.lib" )
 	
-	#define GLV_PLATFORM_INIT_CONTEXT
+	#define GLV_PLATFORM_INIT_CONTEXT\
+		{	GLenum err = glewInit();\
+			if(GLEW_OK != err){\
+  				fprintf(stderr, "GLEW Init Error: %s\n", glewGetErrorString(err));\
+			}\
+		}
 
 #endif
 

@@ -43,6 +43,39 @@ Xcode (OS X)
 
 A static library and framework will be in project build folder.
 
+........................................
+MS Visual Studio (Windows)
+........................................
+There is no Visual Studio project included, but it is simple to set one up by creating your own by selecting "Console Application" and then choosing "empty project." You'll then need to add the GLV source files and OpenGL and GLEW (and if using Window, GLUT) dependencies.
+
+Obtain GLEW from
+  http://glew.sourceforge.net/
+
+To use the shared library version of GLEW, you need to copy the headers and libraries into their destination directories. On Windows this typically boils down to copying:
+
+bin/glew32.dll		to    	%SystemRoot%/system32
+lib/glew32.lib		to    	{VC Root}/Lib
+include/GL/glew.h	to    	{VC Root}/Include/GL
+include/GL/wglew.h	to    	{VC Root}/Include/GL
+
+
+Obtain GLUT from
+  http://www.xmission.com/%7Enate/glut.html
+
+1. Put the file "glut32.dll" in "C:\WINDOWS\system32"
+2. Put the file "glut.h" into 
+
+C:\Program Files\Microsoft Visual Studio 10.0\VC\Include\GL
+
+3. Put the file "glut32.lib" into
+C:\Program Files\Microsoft Visual Studio 10.0\VC\lib
+
+Configure the linker using this 
+
+Project -> Configuration Properties -> Linker -> Input
+add opengl32.lib; glut32.lib; glu32.lib; in "additional dependencies"
+
+
 
 ----------------------------------------
 2.2 Compiling Direct From Source

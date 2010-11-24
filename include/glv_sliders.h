@@ -310,11 +310,11 @@ TEM void SliderGrid<Dim>::onDraw(GLV& g){
 	color(colors().fore);
 	lineWidth(1);
 	frame(cx * w * rDim, (Dim-cy-1) * h * rDim, (cx+1) * w * rDim, (Dim-cy) * h * rDim);
-	enable(LineStipple);
+	draw::enable(LineStipple);
 	lineStipple(1, 0xAAAA);
 	grid(0,0,w,h,Dim,Dim, false);
 	shape(Lines,0,h,w,0);
-	disable(LineStipple);
+	draw::disable(LineStipple);
 
 	/*
 	float dx = rDim*w;

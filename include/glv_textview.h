@@ -168,11 +168,11 @@ protected:
 
 	void setWidth(){ w = (h-2)*size(); }
 	int convert(double v) const { return (v/mValMul) + (v>0. ? 0.5:-0.5); }
-	int mag() const { return pow(10, size()-1-dig()); }
+	int mag() const { return pow(10., size()-1-dig()); }
 	bool onNumber() const { return mPos!=signPos(); }
 	int dig() const { return mPos; }
 	void dig(int v){ mPos = v<0 ? 0 : v>=size() ? size()-1 : v; }
-	double maxVal() const { return (pow(10, mNI+mNF)-1)/pow(10, mNF); }
+	double maxVal() const { return (pow(10., mNI+mNF)-1)/pow(10., mNF); }
 	int signPos() const { return mShowSign ? 0 : -1; }
 	int size() const { return mNI + mNF + sizeSign(); }
 	int sizeSign() const { return mShowSign ? 1:0; }

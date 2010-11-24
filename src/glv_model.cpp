@@ -1,9 +1,15 @@
 #include "glv_model.h"
-#include <cctype>	// isalnum, isblank
+//#include <cctype>	// isalnum, isblank
+#include <ctype.h>	// isalnum, isblank
 #include <stdio.h>	// sscanf, FILE
 #include <string.h>	// strchr, strpbrk
 
 namespace glv{
+
+bool isBlank(char c){
+	return (c==' ') || (c=='\t');
+}
+
 
 bool isIdentifier(const std::string& s){
 	if(isalpha(s[0]) || s[0]=='_'){
@@ -641,7 +647,7 @@ struct KeyValueParser{
 				while(isalnum(*e) || *e=='_') ++e;	// go to end of key name
 				key.assign(b, e-b);
 
-				while(isblank(*e) || *e=='=') ++e;	// go to '='
+				while(isBlank(*e) || *e=='=') ++e;	// go to '='
 				
 				// find next valid token
 				b=e=strpbrk(e, "\"{0123456789.-+");

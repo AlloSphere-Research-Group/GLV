@@ -86,7 +86,7 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 	
 	bubble &= v.onEvent(e, *this);
 	end:
-	return bubble | v.enabled(AlwaysBubble);
+	return bubble || v.enabled(AlwaysBubble);
 }
 
 void GLV::doFocusCallback(bool get){

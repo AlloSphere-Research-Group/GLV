@@ -18,7 +18,7 @@ int printError(const char * pre, bool verbose, FILE * out){
 		CS(STACK_OVERFLOW, "This command would cause a stack overflow.")
 		CS(STACK_UNDERFLOW, "This command would cause a stack underflow.")
 		CS(OUT_OF_MEMORY, "There is not enough memory left to execute the command.")
-		CS(TABLE_TOO_LARGE, "The specified table exceeds the implementation's maximum supported table size.")
+//		CS(TABLE_TOO_LARGE, "The specified table exceeds the implementation's maximum supported table size.")
 		default:;
 	}
 	#undef CS
