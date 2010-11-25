@@ -28,28 +28,12 @@ Widget::Widget(
 //	addCallback(Event::KeyDown, widgetKeyDown);
 }
 
-void Widget::drawGrid(){
+void Widget::drawGrid(GraphicsData& g){
 	
 	if(enabled(DrawGrid) && size()>1){
 		using namespace glv::draw;
-
-		float xd = dx();
-		float yd = dy();
-
 		color(colors().border); lineWidth(1);
-
-		Point2 pts[(sizeX()+sizeY()-2)*2];
-		int i=0;
-
-		for(int x=1; x<sizeX(); ++x){
-			pts[i++](x*xd, 0);
-			pts[i++](x*xd, h);
-		}
-		for(int y=1; y<sizeY(); ++y){
-			pts[i++](0, y*yd);
-			pts[i++](w, y*yd);
-		}
-		paint(Lines, pts, GLV_ARRAY_SIZE(pts));
+		draw::grid(g, 0,0,w,h, sizeX(), sizeY(), false);
 	}
 }
 
@@ -63,7 +47,8 @@ void Widget::drawSelectionBox(){
 
 void Widget::onDraw(GLV& g){
 	drawSelectionBox();
-	drawGrid();
+	drawGrid(g.graphicsData());
+	g.graphicsData().reset();
 }
 
 bool Widget::onEvent(Event::t e, GLV& g){

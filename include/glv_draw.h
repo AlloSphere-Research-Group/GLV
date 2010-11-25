@@ -218,7 +218,7 @@ void color(float r, float g, float b, float a=1);		///< Set current draw color
 void color(const Color& c);							///< Set current draw color
 void color(const Color& c, float a);				///< Set current draw color, but override alpha component
 void fog(float end, float start, const Color& c=Color(0));	///< Set linear fog parameters
-void genEllipse(Point2 * pts, int n, double ang01, double loops, float l, float t, float r, float b);
+void genEllipse(Point2 * pts, int num, int stride, double ang01, double loops, float l, float t, float r, float b);
 void identity();									///< Load identity transform matrix
 void lineStipple(char factor, short pattern);		///< Specify line stipple pattern
 void lineWidth(float val);							///< Set width of lines
@@ -271,12 +271,14 @@ template<int N>
 void disc		(float l, float t, float r, float b);	///< Disc with N edges
 void frame		(float l, float t, float r, float b);	///< Rectangular frame
 void minus		(float l, float t, float r, float b);	///< Minus
+template <int N, int M, int A>
+void polygon	(float l, float t, float r, float b);	///< Regular polygon with N edges, M loops, and angle A
 void plus		(float l, float t, float r, float b);	///< Plus
 void rectangle	(float l, float t, float r, float b);	///< Solid rectangle
 template<int N, int M, int L>
 void rose		(float l, float t, float r, float b);	///< Rose curve with N edges and M+L loops
-template<int N, int M>
-void star		(float l, float t, float r, float b);	///< Star polygon with N edges and M loops
+template<int N, int A>
+void spokes		(float l, float t, float r, float b);	///< N spokes rotated by angle A
 void triangleR	(float l, float t, float r, float b);	///< Right pointing triangle
 void triangleL	(float l, float t, float r, float b);	///< Left pointing triangle
 void triangleU	(float l, float t, float r, float b);	///< Upward pointing triangle
@@ -284,32 +286,22 @@ void triangleD	(float l, float t, float r, float b);	///< Downward pointing tria
 void x			(float l, float t, float r, float b);	///< X mark
 
 
-
 /// Parallel horizontal and vertical lines
-void grid(float l, float t, float w, float h, float divx, float divy, bool incEnds=true);
-
-void linePattern(float l, float t, float w, float h, int n, const char * pat="/");
-
-/// Parallel horizontal lines
-void linesH(float l, float t, float w, float h, int n);
+void grid(GraphicsData& g, float l, float t, float w, float h, float divx, float divy, bool incEnds=true);
 
 /// Converts a float to its pixel value.
 inline int pix(float v);
 
-/// Regular polygon
-void pgon(float l, float t, float w, float h, int sides, float angleNorm=0, double loops=1);
-
+/// Draw vertices using primitive
 void shape(int prim, float x0, float y0, float x1, float y1);
+
+/// Draw vertices using primitive
 void shape(int prim, float x0, float y0, float x1, float y1, float x2, float y2);
+
+/// Draw vertices using primitive
 void shape(int prim, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3);
 
-void spokes(float l, float t, float w, float h, int sides, float angleNorm=0);
-
-
 /// Draws a text string, including new lines and tabs.
-
-/// The spacing between characters is fixed.
-///
 void text(const char * s, float l=0, float t=0, unsigned fontSize=8, float lineSpacing=1, unsigned tabSpaces=4);
 
 
@@ -363,12 +355,12 @@ static Enable enable;
 inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5*(t+b), l+(r-l)*0.3,b, r,t); }
 
 template<int N>
-inline void circle(float l, float t, float r, float b){ return star<N,1>(l,t,r,b); }
+inline void circle(float l, float t, float r, float b){ return polygon<N,1,1>(l,t,r,b); }
 
 template <int N>
 void disc(float l, float t, float r, float b){
 	Point2 pts[N+2];
-	genEllipse(pts+1, N, 0, 1, l,t,r,b);
+	genEllipse(pts+1,N,1, 0, 1, l,t,r,b);
 	pts[0](0.5*(l+r), 0.5*(t+b));
 	pts[N+1] = pts[1];
 	paint(TriangleFan, pts, GLV_ARRAY_SIZE(pts));
@@ -376,6 +368,25 @@ void disc(float l, float t, float r, float b){
 
 inline void frame(float l, float t, float r, float b){ shape(LineLoop, l, t, l, b, r, b, r, t); }
 inline void minus(float l, float t, float r, float b){ float my=0.5*(t+b); shape(Lines, l,my, r,my); }
+
+template <int N, int M, int A>
+void polygon(float l, float t, float r, float b){
+	Point2 pts[N];
+	genEllipse(pts,N,1, A/360.,M, l,t,r,b);
+	paint(LineLoop, pts, GLV_ARRAY_SIZE(pts));
+}
+
+template<int N, int A>
+void spokes(float l, float t, float r, float b){
+	int N2 = N<<1;
+	Point2 pts[N2];
+	float cx = (l+r)/2;
+	float cy = (t+b)/2;
+	genEllipse(pts+1,N,2, A/360.,1, l,t,r,b);
+	for(int i=0; i<N2; i+=2) pts[i](cx,cy);
+	paint(Lines, pts, GLV_ARRAY_SIZE(pts));
+}
+
 
 inline void paint(int prim, Point2 * verts, int numVerts){
 	//glEnableClientState(GL_VERTEX_ARRAY);
@@ -446,8 +457,8 @@ inline void plus(float l, float t, float r, float b){
 template<int N, int M, int L>
 void rose(float l, float t, float r, float b){
 	Point2 pts1[N], pts2[N];
-	genEllipse(pts1,N, -0.25, M, l,t,r,b);
-	genEllipse(pts2,N, -0.25, L, l,t,r,b);
+	genEllipse(pts1,N,1, -0.25, M, l,t,r,b);
+	genEllipse(pts2,N,1, -0.25, L, l,t,r,b);
 	for(int i=0; i<N; ++i){
 		pts1[i].x = (pts1[i].x+pts2[i].x)*0.5;
 		pts1[i].y = (pts1[i].y+pts2[i].y)*0.5;
@@ -455,8 +466,8 @@ void rose(float l, float t, float r, float b){
 	paint(LineLoop, pts1,N);
 }
 
-template<int N, int M>
-inline void star(float l, float t, float r, float b){ pgon(l,t,r-l,b-t,N,-0.25,M); }
+//template<int N, int M>
+//inline void star(float l, float t, float r, float b){ pgon(l,t,r-l,b-t,N,-0.25,M); }
 
 inline void shape(int prim, float x0, float y0, float x1, float y1){
 	float v[] = {x0,y0,x1,y1};

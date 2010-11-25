@@ -4,6 +4,10 @@
 #include <stdio.h>	// sscanf, FILE
 #include <string.h>	// strchr, strpbrk
 
+#ifndef WIN32
+#define	sprintf_s(buffer, buffer_size, stringbuffer, ...) (snprintf(buffer, buffer_size, stringbuffer, __VA_ARGS__))
+#endif
+
 namespace glv{
 
 bool isBlank(char c){
@@ -27,17 +31,17 @@ template<> int toString<bool>(std::string& dst, const bool& src){
 	return 1;
 }
 template<> int toString<int>(std::string& dst, const int& src){
-	char buf[20]; snprintf(buf, sizeof(buf), "%i", src);
+	char buf[20]; sprintf_s(buf, sizeof(buf), "%i", src);
 	dst = buf;
 	return 1;
 }
 template<> int toString<float>(std::string& dst, const float& src){
-	char buf[32]; snprintf(buf, sizeof(buf), "%g", src); // "%.24g"
+	char buf[32]; sprintf_s(buf, sizeof(buf), "%g", src); // "%.24g"
 	dst = buf;
 	return 1;
 }
 template<> int toString<double>(std::string& dst, const double& src){
-	char buf[40]; snprintf(buf, sizeof(buf), "%lg", src); // "%.32lg"
+	char buf[40]; sprintf_s(buf, sizeof(buf), "%lg", src); // "%.32lg"
 	dst = buf;
 	return 1;
 }
@@ -164,18 +168,18 @@ static inline int count(const Data& a, const Data& b){
 */
 
 Data::Data()
-:	mData(0), mElems(0), mStride(1), mType(Data::VOID)
+:	mData(0), mElems(0), mStride(1), mType(Data::NONE)
 {
 	shapeAll(0);
 	PDEBUG;
 }
 
 Data::Data(Data& v)
-:	mData(0), mElems(0), mStride(1), mType(Data::VOID)
+:	mData(0), mElems(0), mStride(1), mType(Data::NONE)
 { shapeAll(0); *this = v; PDEBUG; }
 
 Data::Data(const Data& v)
-:	mData(0), mElems(0), mStride(1), mType(Data::VOID)
+:	mData(0), mElems(0), mStride(1), mType(Data::NONE)
 { shapeAll(0); *this = v; PDEBUG; }
 
 Data::Data(Data::Type type, int n1, int n2, int n3, int n4)
@@ -342,7 +346,7 @@ PDEBUG;
 	mElems=0;
 	mStride=1;
 	shapeAll(0);
-	mType=Data::VOID;
+	mType=Data::NONE;
 PDEBUG;
 }
 
@@ -407,7 +411,7 @@ Data& Data::resize(const int * sizes, int n){
 
 Data& Data::resize(Data::Type t, const int * sizes, int n){
 PDEBUG;
-	if(t!=VOID && (type()!=t || size()!=product(sizes,n))){
+	if(t!=NONE && (type()!=t || size()!=product(sizes,n))){
 		realloc(t, sizes,n);
 	}
 PDEBUG;

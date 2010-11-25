@@ -197,7 +197,7 @@ public:
 
 	/// Data types
 	enum Type{
-		VOID=0,		/**< */
+		NONE=0,		/**< */
 		BOOL,		/**< */
 		INT,		/**< */
 		FLOAT,		/**< */
@@ -502,7 +502,7 @@ protected:
 
 	void free();
 	void init(){ // zeros all attributes (used in c'tor)
-		mData=0; mElems=0; mStride=1; mType=VOID;
+		mData=0; mElems=0; mStride=1; mType=NONE;
 		shapeAll(0);
 	}
 	void realloc(Data::Type type, const int * sizes=0, int n=0);
@@ -810,7 +810,6 @@ DATA_SET(int, INT)
 DATA_SET(float, FLOAT)
 DATA_SET(double, DOUBLE)
 DATA_SET(std::string, STRING)
-//DATA_SET(void, VOID)
 #undef DATA_SET
 
 } // glv::

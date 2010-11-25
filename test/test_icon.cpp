@@ -25,8 +25,18 @@ void drawCB(View * v, GLV& g){
 	check		(x, y, x+d, y+d); x += inc;
 	
 	x = 20; y += d + 10;
-	for(int i=3; i<8; ++i){ pgon  (x, y, d, d, i); x += inc; }
-	for(int i=3; i<8; ++i){ spokes(x, y, d, d, i); x += inc; }
+
+	polygon<3,1,0>(x,y, x+d,y+d); x += inc;
+	polygon<4,1,0>(x,y, x+d,y+d); x += inc;
+	polygon<5,1,0>(x,y, x+d,y+d); x += inc;
+	polygon<6,1,0>(x,y, x+d,y+d); x += inc;
+	polygon<7,1,0>(x,y, x+d,y+d); x += inc;
+	
+	spokes<3,90>(x,y, x+d,y+d); x += inc;
+	spokes<4,45>(x,y, x+d,y+d); x += inc;
+	spokes<5,0>(x,y, x+d,y+d); x += inc;
+	spokes<6,0>(x,y, x+d,y+d); x += inc;
+	spokes<7,0>(x,y, x+d,y+d); x += inc;
 
 	x = 20; y += d + 10;
 	disc<3>(x, y, x+d, y+d); x += inc;
@@ -36,12 +46,13 @@ void drawCB(View * v, GLV& g){
 	disc<7>(x, y, x+d, y+d); x += inc;
 	
 	x = 20; y += d + 10;
-	linesH(x,y,d,d, 5);				x += inc;
-	linePattern(x,y,d,d, 9, "1 1");	x += inc;
+	//linesH(x,y,d,d, 5);				x += inc;
+	//linePattern(x,y,d,d, 9, "1 1");	x += inc;
 	
 	
 	x = 20; y += d + 10;
-	for(int i=2; i<5; ++i){ for(int j=2; j<5; ++j){ grid(x,y,d,d,i,j); x+=inc; }}
+	GraphicsData gd;
+	for(int i=2; i<5; ++i){ for(int j=2; j<5; ++j){ grid(gd, x,y,d,d,i,j); x+=inc; }}
 	
 	x = 20; y += d + 10; y = (int)y;
 	color(0); lineWidth(1);

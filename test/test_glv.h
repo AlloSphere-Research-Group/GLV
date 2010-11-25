@@ -28,7 +28,7 @@ struct CharView : public View{
 		
 		color(colors().fore, 0.2);
 		lineWidth(1);
-		grid(0,0,8,11,8,11);
+		grid(g.graphicsData(), 0,0,8,11,8,11);
 		
 		color(colors().fore, 0.5);
 		shape(Lines,0,8,8,8);	// draw base line
@@ -141,12 +141,13 @@ public:
 		
 		if(enabled(DrawGrid)){
 			color(colors().fore, 0.25);
-			grid(0,0,w,h,mSizeX,mSizeY, false);
+			grid(gd, 0,0,w,h,mSizeX,mSizeY, false);
 		}
 		
 		color(colors().fore, 0.65);
 		stroke(2);
 
+		gd.reset();
 		for(unsigned i=0; i<mPoints.size(); ++i){
 			float x,y;
 			indexToPoint(x,y, mPoints[i]);

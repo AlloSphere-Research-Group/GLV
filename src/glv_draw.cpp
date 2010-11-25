@@ -35,96 +35,92 @@ void fog(float end, float start, const Color& c){
 
 
 void genEllipse(
-	Point2 * pts, int n, double angle01, double loops,
+	Point2 * pts, int num, int stride,
+	double angle01, double loops,
 	float l, float t, float r, float b
 ){
-	const double theta = loops*C_2PI/n;
+	const double theta = loops*C_2PI/num;
 	double px=cos(angle01*C_2PI);
 	double py=sin(angle01*C_2PI);
 	double rx=cos( theta);
 	double ry=sin(-theta); // negative to ensure CCW winding for front facing polygon
 	double mx=0.5*(l+r), my=0.5*(t+b), sx=(r-l)*0.5, sy=(b-t)*0.5;
 
-	for(int i=0; i<n; ++i){
-		pts[i](mx+px*sx, my+py*sy);
+	for(int i=0; i<num; ++i){
+		pts[i*stride](mx+px*sx, my+py*sy);
 		double tx=px;
 		px = px*rx - py*ry;
 		py = tx*ry + py*rx;
 	}
 }
 
-void grid(float l, float t, float w, float h, float divx, float divy, bool incEnds){
+void grid(GraphicsData& g, float l, float t, float w, float h, float divx, float divy, bool incEnds){
+	g.reset();
 	double inc, r=l+w, b=t+h;
 
 	if(divy > 0 && h>0){
 		inc = (double)h/(double)divy;
 		double i = incEnds ? t-0.0001 : t-0.0001+inc;
 		double e = incEnds ? b : b-inc;
-
-		Point2 xy[2*int((e-i)/inc)];
-		int ind=-1;
-		for(; i<e; i+=inc){ xy[++ind](l,i); xy[++ind](r,i); }
-		
-		paint(Lines, xy, ind+1);
+		for(; i<e; i+=inc) g.addVertex2(l,i, r,i);
 	}
 
 	if(divx > 0 && w>0){
 		inc = (double)w/(double)divx;
 		double i = incEnds ? l-0.0001 : l-0.0001+inc;
 		double e = incEnds ? r : r-inc;
-
-		Point2 xy[2*int((e-i)/inc)];
-		int ind=-1;
-		for(; i<e; i+=inc){ xy[++ind](i,t); xy[++ind](i,b); }
-		
-		paint(Lines, xy, ind+1);
-	}
-}
-
-
-void linesH(float l, float t, float w, float h, int n){
-	double pos = 0;
-	double inc = (double)h/(double)(n-1);
-		
-	push();
-	translate(l,t);
-
-	Point2 pts[n*2];
-
-	for(int i=0; i<n*2; i+=2){
-		pts[i+0](0, pos);
-		pts[i+1](w, pos);
-		pos+=inc;
-	}
-
-	paint(Lines, pts, GLV_ARRAY_SIZE(pts));
-	pop();
-}
-
-
-void linePattern(float l, float t, float w, float h, int n, const char * pat){
-	const char * p = pat;
-	double pos = 0;
-	double inc = (double)w/(double)(n-1);
-	int nDraw=0;
-	Point2 pts[n*2];
-	
-	push();
-	translate(l,t);
-
-	for(int i=0; i<n; ++i){
-		if(!*p) p = pat;
-		if(*p++ != ' '){
-			pts[nDraw+0](pos, 0);
-			pts[nDraw+1](pos, h);
-			nDraw += 2;
-		}
-		pos+=inc;
+		for(; i<e; i+=inc) g.addVertex2(i,t, i,b);
 	}
 	
-	paint(Lines, pts, nDraw);
-	pop();
+	paint(Lines, g);
 }
+
+//// C99 variable length array portability problem
+//
+//void linesH(float l, float t, float w, float h, int n){
+//	double pos = 0;
+//	double inc = (double)h/(double)(n-1);
+//		
+//	push();
+//	translate(l,t);
+//
+//	Point2 pts[n*2];
+//
+//	for(int i=0; i<n*2; i+=2){
+//		pts[i+0](0, pos);
+//		pts[i+1](w, pos);
+//		pos+=inc;
+//	}
+//
+//	paint(Lines, pts, GLV_ARRAY_SIZE(pts));
+//	pop();
+//}
+//
+//
+//void linePattern(float l, float t, float w, float h, int n, const char * pat="/");
+//void linePattern(float l, float t, float w, float h, int n, const char * pat){
+//	const char * p = pat;
+//	double pos = 0;
+//	double inc = (double)w/(double)(n-1);
+//	int nDraw=0;
+//	Point2 pts[n*2];
+//	
+//	push();
+//	translate(l,t);
+//
+//	for(int i=0; i<n; ++i){
+//		if(!*p) p = pat;
+//		if(*p++ != ' '){
+//			pts[nDraw+0](pos, 0);
+//			pts[nDraw+1](pos, h);
+//			nDraw += 2;
+//		}
+//		pos+=inc;
+//	}
+//	
+//	paint(Lines, pts, nDraw);
+//	pop();
+//}
 
 
 void paint(int prim, const GraphicsData& b){
@@ -146,13 +142,6 @@ void paint(int prim, const GraphicsData& b){
 	else	glDrawArrays(prim, 0, Nv3 ? Nv3 : Nv2);
 
 	if(Ec)	glDisableClientState(GL_COLOR_ARRAY);
-}
-
-
-void pgon(float l, float t, float w, float h, int n, float a, double loops){
-	Point2 pts[n];
-	genEllipse(pts,n, a,loops, l,t,l+w,t+h);
-	paint(LineLoop, pts, GLV_ARRAY_SIZE(pts));
 }
 
 
@@ -197,23 +186,6 @@ void pop3D(){
 	popAttrib();					// for popping GL_DEPTH_BUFFER_BIT
 	pop(Projection);
 	pop(ModelView);
-}
-
-
-void spokes(float l, float t, float w, float h, int n, float a){
-	w *= 0.5; h *= 0.5;
-	push();
-	translate(l + w, t + h); scale(w, h); rotate(0, 0, a * 360);
-
-	Point2 pts[2*n];
-	for(int i=0; i<n; ++i){
-		float p = (double)i / (double)n * C_2PI;
-		pts[2*i+0](0,0);
-		pts[2*i+1](cos(p), sin(p));
-	}
-	
-	paint(Lines, pts, 2*n);
-	pop();
 }
 
 
