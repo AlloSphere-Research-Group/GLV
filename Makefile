@@ -80,12 +80,11 @@ LDFLAGS += $(EXT_LDFLAGS) \
 # library files are copied to DESTDIR/lib
 install: $(SLIB_PATH)
 #	@echo 'INSTALL $(DESTDIR)'
-	@$(INSTALL) -d $(DESTDIR)
-	@$(INSTALL) -d $(DESTDIR)lib
-	@$(INSTALL) -d $(DESTDIR)include/$(LIB_NAME)
-	@$(INSTALL) -c -m 644 $(SLIB_PATH) $(DESTDIR)lib
-	@$(INSTALL) -c -m 644 $(INC_DIR)/*.h $(DESTDIR)include/$(LIB_NAME)
-	@$(RANLIB) $(DESTDIR)lib/$(SLIB_FILE)
+	@$(INSTALL) -d $(DESTDIR)/lib
+	@$(INSTALL) -d $(DESTDIR)/include/$(LIB_NAME)
+	@$(INSTALL) -c -m 644 $(SLIB_PATH) $(DESTDIR)/lib
+	@$(INSTALL) -c -m 644 $(INC_DIR)/*.h $(DESTDIR)/include/$(LIB_NAME)
+	@$(RANLIB) $(DESTDIR)/lib/$(SLIB_FILE)
 
 test: $(SLIB_PATH)
 	@$(MAKE) -C $(TEST_DIR)
