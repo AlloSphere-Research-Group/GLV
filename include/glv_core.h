@@ -558,6 +558,9 @@ public:
 	/// Sets keyboard and GLV event state
 	void setKeyUp(int keycode);
 	
+	/// Sets keyboard modifiers
+	void setKeyModifiers(bool shift, bool alt, bool ctrl, bool caps, bool meta);
+	
 	/// Set state from mouse down event
 	
 	/// Input coordinates will be modified to be relative to the target View's origin

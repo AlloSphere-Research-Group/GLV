@@ -130,15 +130,21 @@ static void modToGLV(){
 	GLV * g = Window::Impl::getGLV();
 	if(g){
 		int mod = glutGetModifiers();
-		const_cast<Keyboard *>(&g->keyboard())->alt  (mod & GLUT_ACTIVE_ALT);
-		const_cast<Keyboard *>(&g->keyboard())->ctrl (mod & GLUT_ACTIVE_CTRL);
-		const_cast<Keyboard *>(&g->keyboard())->shift(mod & GLUT_ACTIVE_SHIFT);
+		
+		g->setKeyModifiers(
+			mod & GLUT_ACTIVE_SHIFT,
+			mod & GLUT_ACTIVE_ALT,
+			mod & GLUT_ACTIVE_CTRL,
+			false,	/* no caps key state available */
+			false	/* no meta key state available */
+		);
+		
 		//printf("a:%d c:%d s:%d\n", g->keyboard.alt(), g->keyboard.ctrl(), g->keyboard.shift());
 	}
 }
 
 static void keyToGLV(unsigned int key, bool down, bool special){
-	//printf("GLUT: keyboard event k:%d d:%d s:%d\n", key, down, special);
+//	printf("GLUT: keyboard event k:%3d d:%d s:%d\n", key, down, special);
 
 	GLV * g = Window::Impl::getGLV();
 	if(g){
