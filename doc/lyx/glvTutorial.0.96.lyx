@@ -775,6 +775,70 @@ example/
 Core Objects
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+Resizing
+\end_layout
+
+\begin_layout Plain Layout
+TRect has an onResize virtual method that gets called whenever the size
+ of at least one of the dimensions the rectangle (width and/or height) is
+ changed through one of its method calls.
+ The changes in extent are passed into onResize.
+ Changing the member variables w and h will not trigger the onResize callback.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+The onResize in View gets triggered whenever the extent of the top-level
+ GLV changes.
+ The GLV's extent will be called automatically if it is bound to a Window
+ and will always match the size of the window.
+\end_layout
+
+\begin_layout Plain Layout
+
+\series bold
+Stretch and Anchor Factors 
+\end_layout
+
+\begin_layout Plain Layout
+Every View has stretch and anchor factors that determine how it will be
+ resized and repositioned whenever its parent View is resized.
+ If the factor is 1, then the change in the child parameter matches the
+ change in the parent parameter.
+ If the factor is 0, then the child's parameter does not change.
+ For example, if the x stretch factors is 1, then every time its parent's
+ width changes, then its width changes by the same amount.
+\end_layout
+
+\begin_layout Plain Layout
+Whenever a View is added as a child to another View it will be stretched
+ and anchored to the parent according to its current stretch and anchor
+ factors.
+ This means that the order in which a View's stretch and anchor factors
+ are set and when it is added to a parent View will make a difference.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+When added to another View, a View's extent will be computed from the size
+ of the parent and its own stretch factors.
+ For example, if we want a View to mimic the size of its parent, then its
+ extent should be set to (0,0) and its stretch factors to (1,1) before it
+ is added to the parent.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection
 Rect
 \end_layout
