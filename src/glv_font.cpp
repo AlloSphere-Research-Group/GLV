@@ -221,9 +221,9 @@ struct TextIterator{
 		if(*s){
 			char c = *s++;
 			l = x; t = y;
-//			w = f.advance(c) * (1+f.letterSpacing()); // varies per character if proportional
+//			w = f.advance(c);	// varies per character if proportional
 //			h = 1 * f.cap() * f.lineSpacing();
-//			float tabUnits = f.advance('M') * f.tabSpaces() * (1+f.letterSpacing());
+//			float tabUnits = f.advance('M') * f.tabSpaces();
 			w = Glyph::width(); // varies per character if proportional
 			h = (Glyph::descent() - Glyph::cap());
 			float tabUnits = Glyph::width() * f.tabSpaces() * (1+f.letterSpacing());
@@ -316,7 +316,7 @@ float Font::advance(const char *text) const {
 	//return Glyph::width() * mScaleX * strlen(text);
 }
 
-float Font::advance(char c) const { return Glyph::width() * mScaleX; }
+float Font::advance(char c) const { return Glyph::width() * mScaleX * (1. + letterSpacing()); }
 
 void Font::getBounds(float& w, float& h, const char * text) const {
 	w=h=0;
