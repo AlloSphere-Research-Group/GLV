@@ -28,7 +28,8 @@ Plot plotX(Rect(150,60), *new PlotFunction1D(Color(0,0.5,0)));
 Plot plotY(Rect(60,150), *new PlotFunction1D(Color(0.5,0,0)));
 Plot dplot(Rect(200), *new PlotDensity(HSV(0.2, 0.5), 1./16));
 
-NumberDialer nd1(12,0,0, 4,0, 9999,-9999), nd2(16,0,0, 1,8, 8,0);
+NumberDialer nd1(4,0, 8000,-4000), nd2(1,8, 8,0);
+NumberDialers nds(2,2, 80, -80, 4,7);
 Slider sl1H(Rect(100, 20)), sl1V(Rect(20, 100)), sl1HS(sl1H,0), sl1VS(sl1V,0);
 Slider2D sl2(Rect(100));
 SliderGrid<3> sg3(Rect(100));
@@ -173,8 +174,9 @@ int main(int argc, char ** argv){
 //	groups[++i]<< fontView.stretch(1,1);
 	groups[++i]<< (new Label("Horizontal"))->pos(Place::BL).anchor(Place::CC);
 	groups[  i]<< (new Label("Vertical", true))->pos(Place::BR,-16,0).anchor(Place::CC);
-	groups[++i]<< nd1.pos(Place::BL).anchor(Place::CC);
-	groups[  i]<< nd2.showSign(false).pos(Place::TL, 0, 4).anchor(Place::CC);
+	groups[++i]<< nd1.pos(Place::BR).anchor(Place::CC);
+	groups[  i]<< nd2.showSign(false).pos(Place::TL, 4, 4).anchor(Place::CC); nd2.font().size(14);
+	groups[  i]<< nds.padding(6).pos(Place::BL, 4, 0).anchor(Place::CC);
 	groups[++i]<< sl1H.pos(Place::BL).anchor(Place::CC);
 	groups[  i]<< sl1V.pos(Place::BR, -4,0).anchor(Place::CC);
 	groups[  i]<< sl1HS.pos(Place::BL).anchor(Place::CC); sl1HS.top(sl1H.bottom()+4);

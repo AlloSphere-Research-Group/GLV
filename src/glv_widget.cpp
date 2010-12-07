@@ -20,8 +20,9 @@ bool Widget::widgetKeyDown(View * v, GLV& g){
 Widget::Widget(
 	const Rect& r, space_t pad, bool moment, bool mutExc, bool drawGrid
 )
-:	View(r), mPadding(pad), sx(0), sy(0), mMin(0), mMax(1), mUseInterval(true)
+:	View(r), sx(0), sy(0), mMin(0), mMax(1), mUseInterval(true)
 {
+	padding(pad);
 	property(DrawGrid, drawGrid);
 	property(MutualExc, mutExc);
 	property(Momentary, moment);
@@ -32,15 +33,17 @@ void Widget::drawGrid(GraphicsData& g){
 	
 	if(enabled(DrawGrid) && size()>1){
 		using namespace glv::draw;
+		lineWidth(1);
 		color(colors().border); lineWidth(1);
 		draw::grid(g, 0,0,w,h, sizeX(), sizeY(), false);
 	}
 }
 
 void Widget::drawSelectionBox(){
-	if(enabled(DrawSelectionBox)){
-		draw::lineWidth(1);
-		draw::color(colors().selection);
+	if(enabled(DrawSelectionBox) && size()>1){
+		draw::lineWidth(2);
+//		draw::color(colors().selection);
+		draw::color(colors().border);
 		draw::frame(sx*dx(), sy*dy(), (sx+1)*dx(), (sy+1)*dy());
 	}
 }

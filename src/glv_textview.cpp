@@ -123,46 +123,29 @@ void Label::fitExtent(){
 void Label::rotateRect(){ t += w - h; transpose(); }
 
 
-#define CTOR_LIST mNI(0), mNF(0), mVal(0), mPad(2), mAcc(0), mShowSign(true)
+
+#define CTOR_LIST mNI(0), mNF(0), mAcc(0), mShowSign(true)
 #define CTOR_BODY\
-	data().resize(Data::DOUBLE);\
-	resize(numInt, numFrac);\
+	font().letterSpacing(1./4);\
+	enable(DrawSelectionBox)
+
+NumberDialers::NumberDialers(int numInt, int numFrac, double max, double min, int nx, int ny)
+:	Widget(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 6, false,false,true), CTOR_LIST
+{
+	CTOR_BODY;
+	data().resize(Data::DOUBLE, nx, ny);
+	resize(numInt, numFrac);
 	dig(mNI);
-
-NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac)
-:	Widget(r, 0,false,false), CTOR_LIST
-{	
-	CTOR_BODY
-	mMax = maxVal();
-	mMin =-mMax;
-	valSet(mVal);
-}
-
-NumberDialer::NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min)
-:	Widget(r, 0,false,false), CTOR_LIST
-{	
-	CTOR_BODY
-	interval(max, min);	
-}
-
-NumberDialer::NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min)
-:	Widget(Rect(l,t, (h-2)*(numInt+numFrac+1), h), 0,false,false), CTOR_LIST
-{
-	CTOR_BODY
-	interval(max, min);
-}
-
-NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
-:	Widget(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 0,false,false), CTOR_LIST
-{
-	CTOR_BODY
+	fitExtent();
 	interval(max, min);
 } 
 
-NumberDialer::NumberDialer(const NumberDialer& v)
-:	Widget(v,0, false,false), CTOR_LIST
+NumberDialers::NumberDialers(const NumberDialers& v)
+:	Widget(v,6, false,false,true), CTOR_LIST
 {
-	data() = Data(Data::DOUBLE);
+	CTOR_BODY;
+	data() = v.data();
+	data().clone();
 	dig(v.sizeInteger());
 	resize(v.sizeInteger(), v.sizeFraction());
 	interval(v.max(), v.min());
@@ -171,121 +154,126 @@ NumberDialer::NumberDialer(const NumberDialer& v)
 #undef CTOR_LIST
 #undef CTOR_BODY
 
-int NumberDialer::sizeFraction() const { return mNF; }
-int NumberDialer::sizeInteger() const { return mNI; }
+void NumberDialers::fitExtent(){
+	extent(
+		sizeX() * (paddingX()*2 + (numDigits() * font().advance('M'))),
+		sizeY() * (paddingY()*2 + font().cap())
+	);
+//	print();
+}
 
-NumberDialer& NumberDialer::padding(space_t v){ mPad=v; return *this; }
-
-NumberDialer& NumberDialer::interval(double max, double min){
+NumberDialers& NumberDialers::interval(double max, double min){
 	glv::sort(min,max);
 	mMin = min;
 	mMax = max;
 	double m = maxVal();	// do not allow numbers larger than can be displayed
-	if(mMin<-m) mMin=-m;
-	if(mMax> m) mMax= m;
+	if(mMin < -m) mMin = -m;
+	if(mMax >  m) mMax =  m;
 	showSign(min < 0);
-	valSet(mVal);
+//	valSet(mVal);
+	setValue(getValue());
 	return *this;
 }
 
-NumberDialer& NumberDialer::resize(int numInt, int numFrac){
+NumberDialers& NumberDialers::resize(int numInt, int numFrac){
 	mNI = numInt; mNF = numFrac;
-	mValMul = 1. / pow(10., mNF);
-	setWidth();
+//	mValMul = 1. / pow(10., mNF);
+//	setWidth();
+	fitExtent();
 	return *this;
 }
 
-NumberDialer& NumberDialer::showSign(bool v){
+NumberDialers& NumberDialers::showSign(bool v){
 	mShowSign=v;
-	setWidth();
+//	setWidth();
+	fitExtent();
 	return *this;
 }
 
-NumberDialer& NumberDialer::setValue(double v){ valSet(convert(v)); return *this; }
+int NumberDialers::sizeFraction() const { return mNF; }
+int NumberDialers::sizeInteger() const { return mNI; }
 
-void NumberDialer::onDraw(GLV& g){ //printf("% g\n", value());
+void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 	using namespace glv::draw;
-	float dx = w/size(); // # pixels per cell
-	lineWidth(1);
-	
+
+	fitExtent();
+
+	float dxCell= dx();
+	float dyCell= dy();
+	float dxDig = font().advance('M');
+
+//	View::enable(DrawSelectionBox);
+//	View::enable(DrawGrid);
+
 	// draw box at position (only if focused)
 	if(enabled(Focused)){
+	
+		float bx = dxCell*selectedX() + paddingX()/1;
+		float by = dyCell*selectedY();// + paddingY()/2;
+	
 //		color(colors().fore, colors().fore.a*0.4);
 		color(colors().selection);
-		rectangle(dig()*dx, 0, (dig()+1)*dx, h);
-	}
-	
-	// draw number
-	int absVal = mVal < 0 ? -mVal : mVal;
-	int msd = mNF;	// position from right of most significant digit
-	
-	if(absVal > 0){
-		msd = (int)log10((double)absVal);
-		int p = size() - (mShowSign ? 2:1);
-		msd = msd < mNF ? mNF : (msd > p ? p : msd);
-	}
-	
-	if(mNI == 0) msd-=1;
-
-	color(colors().text);
-//	draw::push();
-//		float sx = (dx- 1.f*mPad)/Glyph::width();
-//		float sy = (h - 2.f*mPad)/Glyph::baseline();
-//		scale(sx, sy);
-//		sx = 1.f/sx;
-//
-//		float tdx = Glyph::width()*0.5f;
-//		float x = (w - dx*0.5f)*sx - tdx;
-//		float y = mPad/sy;
-//		dx *= sx;
-//		
-//		int power = 1;
-//		bool drawChar = false; // don't draw until non-zero or past decimal point
-//
-//		// Draw the digits
-//		if(mNF  > 0) character('.', dx*(mNI+sizeSign()) - tdx, y);
-//		if(mShowSign && mVal < 0) character('-', dx*0.5 - tdx, y);
-//		
-//		for(int i=0; i<=msd; ++i){
-//			char c = '0' + (absVal % (power*10))/power;
-//			power *= 10;
-//			if(c!='0' || i>=mNF) drawChar = true;
-//			if(drawChar) character(c, x, y);
-//			x -= dx;
-//		}
-//	draw::pop();
-
-	font().size(dx - mPad);
-	font().letterSpacing(mPad/font().size());
-	float x = mPad;
-	float y = mPad;
-
-	char str[32];
-	int ic = size();
-	str[ic] = '\0';
-	for(int i=0; i<size(); ++i) str[i]=' ';
-	
-	int power = 1;
-	bool drawChar = false; // don't draw until non-zero or past decimal point
-
-	// Draw the digits
-	if(mShowSign && mVal < 0) str[0] = '-';
-	
-	for(int i=0; i<=msd; ++i){
-		char c = '0' + (absVal % (power*10))/power;
-		power *= 10;
-		if(c!='0' || i>=mNF) drawChar = true;
-		--ic;
-		if(drawChar) str[ic] = c;
+		rectangle(bx + dig()*dxDig, by, bx + (dig()+1)*dxDig, by + dyCell-0.5);
 	}
 
-//	printf("%s\n", str);
-	font().render(str, x, y);
-	if(mNF>0) font().render(".", dx*(mNI+sizeSign()-0.5) + x, y);
+	drawSelectionBox();
+	drawGrid(g.graphicsData());
+
+	lineWidth(1);
+
+	for(int i=0; i<sizeX(); ++i){
+		for(int j=0; j<sizeY(); ++j){
+			
+			float cx = dxCell*i;	// left edge of cell
+			float cy = dyCell*j;	// top edge of cell
+			
+			// draw number
+			int vali = valInt(i,j);
+			int absVal = vali < 0 ? -vali : vali;
+			int msd = mNF;	// position from right of most significant digit
+			
+			if(absVal > 0){
+				msd = (int)log10((double)absVal);
+				int p = numDigits() - (mShowSign ? 2:1);
+				msd = msd < mNF ? mNF : (msd > p ? p : msd);
+			}
+			
+			if(mNI == 0) msd-=1;
+
+			// Determine digit string
+			char str[32];
+			int ic = numDigits();
+			str[ic] = '\0';
+			for(int i=0; i<numDigits(); ++i) str[i]=' ';
+			
+			int power = 1;
+			bool drawChar = false; // don't draw until non-zero or past decimal point
+
+			if(mShowSign && vali < 0) str[0] = '-';
+			
+			for(int i=0; i<=msd; ++i){
+				char c = '0' + (absVal % (power*10))/power;
+				power *= 10;
+				if(c!='0' || i>=mNF) drawChar = true;
+				--ic;
+				if(drawChar) str[ic] = c;
+			}
+
+			// Draw the digit string
+			float tx = int(cx + paddingX());
+			float ty = int(cy + paddingY());
+
+			color(colors().text);
+		//	printf("%s\n", str);
+			font().render(str, tx, ty);
+			if(mNF>0) font().render(".", dxDig*(mNI+numSignDigits()-0.5) + tx, ty);
+		}
+	}
 }
 
+bool NumberDialers::onEvent(Event::t e, GLV& g){
 
-bool NumberDialer::onEvent(Event::t e, GLV& g){
+	if(!Widget::onEvent(e,g)) return false;
 
 	const Keyboard& k = g.keyboard();
 	const Mouse& m    = g.mouse();
@@ -294,7 +282,13 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 	case Event::MouseDown:{
 		mAcc = 0;
 		int oldDig = dig();
-		dig((int)(m.xRel()/w * size()));
+
+		selectFromMousePos(g);
+		float dxDig = font().advance('M');
+		int d = (m.xRel() - (dx() * selectedX() + paddingX())) / dxDig;
+		
+//		printf("%2d (%2d, %2d)\n", d, selectedX(), selectedY());
+		dig(d);
 		if(dig() == 0 && oldDig == 0 && mShowSign) flipSign();
 		return false;
 	}
@@ -313,10 +307,12 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 	case Event::KeyDown:
 	
 		if(k.isNumber() && onNumber()){
-			int v = mVal < 0 ? -mVal : mVal;
-			int p = mag();
+			int vali = valInt(selected());
+			int v = vali < 0 ? -vali : vali;
+			int p = pow(10., numDigits()-1-dig());
 			v += (k.keyAsNumber() - ((v / p) % 10)) * p;
-			valSet(mVal < 0 ? -v : v);
+			v = vali < 0 ? -v : v;
+			setValue(v * pow(10., -mNF));
 			return false;
 		}
 		else{
@@ -325,9 +321,9 @@ bool NumberDialer::onEvent(Event::t e, GLV& g){
 			case 'z': onNumber() ? valAdd(-mag()) : flipSign(); return false;
 			case '-': flipSign(); return false;
 			case 'c': setValue(0); return false;
-			case '.': dig(size()-mNF); return false; // go to first fraction digit (if any)
-			case Key::Right:	enable(DrawBorder); dig(dig()+1); return false;
-			case Key::Left:  dig(dig()-1); return false;
+			case '.': dig(numDigits()-mNF); return false; // go to first fraction digit (if any)
+			case 's': dig(dig()-1); return false;
+			case 'd': dig(dig()+1); return false;
 			}
 		}
 		break;

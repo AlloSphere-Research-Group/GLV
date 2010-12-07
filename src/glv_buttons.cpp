@@ -21,8 +21,8 @@ void Buttons::onDraw(GLV& g){
 
 	float xd = dx();
 	float yd = dy();
-	float p1  = padding();
-	float p_2 = padding()*0.5;
+	float padx  = paddingX();
+	float pady  = paddingY();
 	color(colors().fore);
 	
 	// TODO: small buttons hard to see when not antialiased
@@ -30,12 +30,12 @@ void Buttons::onDraw(GLV& g){
 	//draw::enable(PolygonSmooth);
 	
 	for(int i=0; i<sizeX(); ++i){
-		float x = xd*i + p_2;
+		float x = xd*i + padx*0.5;
 
 		for(int j=0; j<sizeY(); ++j){
-			float y = yd*j + p_2;
-			if(getValue(i,j)){	if(mIconOn ) mIconOn (x, y, x+xd-p1, y+yd-p1); }
-			else{			if(mIconOff) mIconOff(x, y, x+xd-p1, y+yd-p1); }
+			float y = yd*j + pady*0.5;
+			if(getValue(i,j)){	if(mIconOn ) mIconOn (x, y, x+xd-padx, y+yd-pady); }
+			else{				if(mIconOff) mIconOff(x, y, x+xd-padx, y+yd-pady); }
 		}		
 	}
 	

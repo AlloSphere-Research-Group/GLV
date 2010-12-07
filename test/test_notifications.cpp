@@ -46,7 +46,7 @@ int main(int argc, char ** argv){
 	SliderGrid<4> sliderGrid(Rect(100));
 	SliderRange sliderRange(Rect(100,20));
 	//NumberDialer numberDialer(Rect(12*4, 12), 1,2);
-	NumberDialer numberDialer(12,0,0, 1,2, 10,-10);
+	NumberDialer numberDialer(1,2, 10,-10);
 	numberDialer.padding(2);
 
 	// Create labels for update notifications

@@ -100,99 +100,131 @@ protected:
 /// amount determines the spacing around the digits. For best looking
 /// characters use a Rect dimension ns x s where 'n' is the number of digits
 /// and 's' is the character size plus padding amount.
-class NumberDialer : public Widget{
+class NumberDialers : public Widget{
 public:
 
-	/// @param[in] r		Geometry
-	/// @param[in] numInt	Number of places in integer part
-	/// @param[in] numFrac	Number of places in fraction part
-	NumberDialer(const Rect& r, int numInt, int numFrac);
-
-	/// @param[in] r		Geometry
 	/// @param[in] numInt	Number of places in integer part
 	/// @param[in] numFrac	Number of places in fraction part
 	/// @param[in] max		Maximum value
 	/// @param[in] min		Minimum value
-	NumberDialer(const Rect& r, int numInt, int numFrac, double max, double min);
+	/// @param[in] nx		Number of instances along x
+	/// @param[in] ny		Number of instances along y
+	NumberDialers(int numInt, int numFrac, double max, double min, int nx, int ny);
 
-	NumberDialer(space_t h, space_t l, space_t t, int numInt, int numFrac, double max, double min);
-
-	NumberDialer(int numInt, int numFrac, double max, double min);
-
-	NumberDialer(const NumberDialer& v);
-
-	int sizeFraction() const;
-	int sizeInteger() const;
+	/// Copy constructor
+	NumberDialers(const NumberDialers& v);
 
 	/// Get value
 	double getValue() const { return Widget::getValue<double>(); }
+
+	/// Get number of digits in fraction part
+	int sizeFraction() const;
 	
-	/// Set padding amount from top and bottom.
-	NumberDialer& padding(space_t v);
+	/// Get number of digits in integer part
+	int sizeInteger() const;
 	
 	/// Set max and min output range. Values larger than displayable range will be clipped.
-	NumberDialer& interval(double max, double min=0);
+	NumberDialers& interval(double max, double min=0);
+
+	/// Set padding amount
+	NumberDialers& padding(double v){ Widget::padding(v); fitExtent(); return *this; }
 
 	/// Set number of digits in integer and fraction parts
-	NumberDialer& resize(int numInt, int numFrac);
+	NumberDialers& resize(int numInt, int numFrac);
 
 	/// Set whether to show sign
-	NumberDialer& showSign(bool v);
+	NumberDialers& showSign(bool v);
 
-	/// Set value
-	NumberDialer& setValue(double v);
-
-	virtual const char * className() const { return "NumberDialer"; }
+	virtual const char * className() const { return "NumberDialers"; }
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
 	int mNI, mNF, mPos;		// # digits in integer, # digits in fraction, selected digit position
-	int mVal;				// current value
-	space_t mPad;
+//	int mVal;				// current fixed-point value
 	float mAcc;
-	double mValMul;
+//	double mValMul;
 	bool mShowSign;
-	
-	void valSet(int v){	// converts fixed point to floating point value
-		mVal = glv::clip(v, convert(mMax), convert(mMin));
-		double val = mVal * mValMul;
-		Widget::setValue(val);
-	}
-	
-//	virtual void onSetValueNotify(const double& v, int idx){
-//		if(v == Base::values()[idx]) return;
-//		Base::values()[idx] = v;
-//		notify(Update::Value, NumberDialerChange(value()));	
-//	}
 
-	void setWidth(){ w = (h-2)*size(); }
-	int convert(double v) const { return (v/mValMul) + (v>0. ? 0.5:-0.5); }
-	int mag() const { return pow(10., size()-1-dig()); }
+	void fitExtent();
+//	void setWidth(){ w = (h-2)*size(); }
+	
+//	int convert(double v) const { return (v/mValMul) + (v>0. ? 0.5:-0.5); }
+//	int mag() const { return pow(10., numDigits()-1-dig()); }
 	bool onNumber() const { return mPos!=signPos(); }
 	int dig() const { return mPos; }
-	void dig(int v){ mPos = v<0 ? 0 : v>=size() ? size()-1 : v; }
+	void dig(int v){ mPos = v<0 ? 0 : v>=numDigits() ? numDigits()-1 : v; }
 	double maxVal() const { return (pow(10., mNI+mNF)-1)/pow(10., mNF); }
+	int numDigits() const { return mNI + mNF + numSignDigits(); }
+	int numSignDigits() const { return mShowSign ? 1:0; }
 	int signPos() const { return mShowSign ? 0 : -1; }
-	int size() const { return mNI + mNF + sizeSign(); }
-	int sizeSign() const { return mShowSign ? 1:0; }
-	void valAdd(int v){	valSet(v + mVal); }
-
-	void flipSign(){
-		if((mVal>0 && -mVal>=convert(mMin)) || (mVal<0 && -mVal<=convert(mMax)))
-			valSet(-mVal);
+//	void valAdd(int v){	valSet(v + mVal); }
+//	int valInt(int ix, int iy=0){ return convert(data().at<double>(ix,iy)); }
+	int valInt(int ix, int iy=0) const {
+		double v = data().at<double>(ix,iy);
+		return (int)(v * pow(10., mNF) + (v>0. ? 0.5:-0.5));
 	}
 
-//NumberDialer& NumberDialer::setValue(double v){ valSet(convert(v)); return *this; }
+	double mag() const { return pow(10., numDigits()-1-dig() - mNF); }
+	void valAdd(double v){ setValue(getValue() + v); }
+
+	void flipSign(){
+		double v = getValue();
+		if((v>0 && -v>=mMin) || (v<0 && -v<=mMax))
+			setValue(-v);
+	}
+
+//	void flipSign(){
+//		if((mVal>0 && -mVal>=convert(mMin)) || (mVal<0 && -mVal<=convert(mMax)))
+//			valSet(-mVal);
+//	}
+
+//	void valSet(int v){	// converts fixed point to floating point value
+////		mVal = glv::clip(v, convert(mMax), convert(mMin));
+////		double val = mVal * mValMul;
+////		Widget::setValue(val);
+//
+//		double val = v * mValMul;
+//		setValue(val);
+//	}
+
+//	NumberDialers& setValue(double v){ valSet(convert(v)); return *this; }
+
 //	virtual bool onAssignData(Data& d, int ind1, int ind2){
 //	
-//		double v = d.at<double>(ind1, ind2);
+////		double v = d.at<double>(ind1, ind2);		
+////		int vi = convert(v);
+//////		mVal = glv::clip(v, convert(mMax), convert(mMin));
+//////		double val = mVal * mValMul;		
+////		mVal = vi;
 //	
 //		if(Widget::onAssignData(d, ind1, ind2)){
+//			double v = d.at<double>(ind1, ind2);
+//			mVal = convert(v); //printf("%d\n", mVal);
 //			return true;
 //		}
 //		return false;
 //	}
+};
+
+
+
+/// Number editor with individually controllable digits
+class NumberDialer: public NumberDialers{
+public:
+
+	/// @param[in] numInt	Number of places in integer part
+	/// @param[in] numFrac	Number of places in fraction part
+	/// @param[in] max		Maximum value
+	/// @param[in] min		Minimum value
+	NumberDialer(int numInt, int numFrac, double max, double min)
+	:	NumberDialers(numInt,numFrac,max,min,1,1){ padding(2); }
+
+	/// Copy constructor
+	NumberDialer(const NumberDialer& v)
+	:	NumberDialers(v){ padding(2); }
+
+	virtual const char * className() const { return "NumberDialer"; }
 };
 
 

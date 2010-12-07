@@ -40,16 +40,17 @@ public:
 	/// Returns whether this element coordinate is selected
 	bool isSelected(int x, int y) const { return x == selectedX() && y == selectedY(); }
 
-	const double& max() const { return mMax; }			///< Get maximum of value interval
-	const double& min() const { return mMin; }			///< Get minimum of value interval
-	double mid() const { return (max()+min())/2; }		///< Get middle point of value interval
+	const double& max() const { return mMax; }		///< Get maximum of value interval
+	const double& min() const { return mMin; }		///< Get minimum of value interval
+	double mid() const { return (max()+min())/2; }	///< Get middle point of value interval
 
-	space_t padding() const { return mPadding; }	///< Get element padding amount
+	space_t paddingX() const { return mPadding[0]; }	///< Get element padding amount along x
+	space_t paddingY() const { return mPadding[1]; }	///< Get element padding amount along y
 
 	int selected() const { return data().indexFlat(sx, sy); }	///< Get selected element index
 	int selectedX() const { return sx; }			///< Get selected element x coordinate
 	int selectedY() const { return sy; }			///< Get selected element y coordinate
-	int size () const { return data().size(); }	///< Get total number of elements
+	int size () const { return data().size(); }		///< Get total number of elements
 	int sizeX() const { return data().size(0); }	///< Get number of elements along x
 	int sizeY() const { return data().size(1); }	///< Get number of elements along y
 	bool useInterval() const { return mUseInterval; }
@@ -67,7 +68,10 @@ public:
 	}
 
 	/// Set element padding amount
-	Widget& padding(space_t v){ mPadding=v; return *this; }
+	Widget& padding(space_t v){ for(int i=0; i<DIMS; ++i){ mPadding[i]=v; } return *this; }
+
+	/// Set element padding amount
+	Widget& padding(space_t v, int dim){ mPadding[dim]=v; return *this; }
 
 	/// Select element at 1D index
 	Widget& select(int i){ int i1,i2; data().indexDim(i1,i2,i); return select(i1,i2); }
@@ -102,13 +106,14 @@ public:
 	virtual const char * className() const { return "Widget"; }
 
 protected:
+	enum{ DIMS=2 };
 	typedef std::map<int, glv::Data> IndexDataMap;
 
 	IndexDataMap mVariables;		// external variables to sync to, index-Data
-	space_t mPadding;				// num pixels to inset icon
+	space_t mPadding[DIMS];			// num pixels to inset icon
 	int sx, sy;						// last clicked position
 	double mMin, mMax;				// value interval for all elements
-	double mPrevVal;					//
+	double mPrevVal;				//
 	bool mUseInterval;
 
 	IndexDataMap& variables(){ return mVariables; }

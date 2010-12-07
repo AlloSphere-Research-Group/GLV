@@ -437,6 +437,16 @@ int main(){
 	}
 
 	{
+
+//		{
+//			double val = 1e14;
+//			double inc = 1;
+//			printf("%f\n", val + inc*1);
+//			printf("%f\n", val + inc*2);
+//			printf("%f\n", val + inc*3);
+//			printf("%f\n", val + inc*4);
+//		}
+
 		bool b=false;
 		NumberDialer w(1,2,1,0);
 		w.attach(ntValue, Update::Value, &b);

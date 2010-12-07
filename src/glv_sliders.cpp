@@ -18,7 +18,7 @@ void Sliders::onDraw(GLV& g){
 	Widget::onDraw(g);
 
 	using namespace glv::draw;
-	float x=padding()*0.5, xd=dx(), yd=dy();
+	float x=paddingX()*0.5, xd=dx(), yd=dy();
 
 //	TODO: dial drawing code...
 //		for(int i=0; i<sizeX(); ++i){
@@ -46,7 +46,7 @@ void Sliders::onDraw(GLV& g){
 	if(isVertical()){
 		for(int i=0; i<sizeX(); ++i){
 		
-			float y=padding()*0.5;
+			float y=paddingY()*0.5;
 		
 			for(int j=0; j<sizeY(); ++j){
 				int ind = index(i,j);
@@ -57,7 +57,7 @@ void Sliders::onDraw(GLV& g){
 				float y0 = to01(0)*yd;
 				//rect(x + x0, y, f*xd+x, y+yd-padding());
 				
-				rectangle(x, y+yd-v01*yd, x+xd-padding(), y+yd-y0);
+				rectangle(x, y+yd-v01*yd, x+xd-paddingX(), y+yd-y0);
 
 				// if zero line showing
 				if(mMax>0 && mMin<0){
@@ -73,7 +73,7 @@ void Sliders::onDraw(GLV& g){
 	else{
 		for(int i=0; i<sizeX(); ++i){
 		
-			float y=padding()*0.5;
+			float y=paddingY()*0.5;
 		
 			for(int j=0; j<sizeY(); ++j){
 				int ind = index(i,j);
@@ -82,7 +82,7 @@ void Sliders::onDraw(GLV& g){
 
 				float v01 = to01(getValue(ind));
 				float x0 = to01(0)*xd;
-				rectangle(x + x0, y, v01*xd+x, y+yd-padding());
+				rectangle(x + x0, y, v01*xd+x, y+yd-paddingY());
 
 				// if zero line showing
 				if(mMax>0 && mMin<0){

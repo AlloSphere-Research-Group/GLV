@@ -10,13 +10,16 @@ struct Scene : View3D{
 	Scene()
 	:	spin(0),
 		gui("<<<, >--, >--"),
-		freqX(20,0,0, 4,0, N/2,-N/2),
-		freqY(20,0,0, 4,0, N/2,-N/2),
-		freqZ(20,0,0, 4,0, N/2,-N/2)
+		freqX(4,0, N/2,-N/2),
+		freqY(4,0, N/2,-N/2),
+		freqZ(4,0, N/2,-N/2)
 	{
 		freqX.setValue(1); freqY.setValue(2); freqZ.setValue(3);
 		stretch(1,1);
 		disable(DrawBorder);
+		freqX.font().size(20);
+		freqY.font().size(20);
+		freqZ.font().size(20);
 		gui << freqX << freqY << freqZ;
 		gui.arrange();
 		
