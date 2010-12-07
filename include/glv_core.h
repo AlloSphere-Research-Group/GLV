@@ -490,6 +490,19 @@ protected:
 	std::string mDescriptor;		// String describing view
 	Font * mFont;					// constructed on first use
 
+//	space_t mScale;
+//	space_t mTranslate[2];
+//
+//	void transform(space_t& x, space_t& y) const {
+//		x = x*mScale + mTranslate[0];
+//		y = y*mScale + mTranslate[1];
+//	}
+//	
+//	void untransform(space_t& x, space_t& y) const {
+//		x = (x - mTranslate[0])/mScale;
+//		y = (y - mTranslate[1])/mScale;
+//	}
+
 	void doDraw(GLV& g);
 	bool hasName() const { return ""!=mName; }
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes

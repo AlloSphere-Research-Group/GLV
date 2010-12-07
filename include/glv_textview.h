@@ -12,9 +12,6 @@
 
 namespace glv{
 
-typedef ChangedValue<std::string *> TextViewChange;
-
-
 /// Basic label widget
 class Label : public Widget {
 public:

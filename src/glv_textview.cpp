@@ -345,8 +345,6 @@ TextView::TextView(const Rect& r, float textSize)
 	size(textSize);
 }
 
-//void TextView::callNotify(){ notify(Update::Value, TextViewChange(&mText)); }
-
 TextView& TextView::size(float pixels){
 	font().size(pixels);
 	return *this;
