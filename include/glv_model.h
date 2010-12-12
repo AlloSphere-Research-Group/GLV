@@ -466,6 +466,21 @@ public:
 	template <class T>
 	Data& set(T * data, int size){ return set(data, &size,1); }
 
+	/// Set data to reference an external 2D array
+	template <class T>
+	Data& set(T * data, int size1, int size2){
+		int s[]={size1,size2}; return set(data, s,2); }
+
+	/// Set data to reference an external 3D array
+	template <class T>
+	Data& set(T * data, int size1, int size2, int size3){
+		int s[]={size1,size2,size3}; return set(data, s,3); }
+
+	/// Set data to reference an external 4D array
+	template <class T>
+	Data& set(T * data, int size1, int size2, int size3, int size4){
+		int s[]={size1,size2,size3,size4}; return set(data, s,4); }
+
 	/// Set dimensions without reallocing new memory
 	Data& shape(const int * sizes, int n);
 
