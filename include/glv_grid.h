@@ -99,7 +99,7 @@ public:
 	virtual bool onEvent(Event::t e, GLV& g);
 	virtual void onAnimate(double dt, GLV& g);
 	virtual void onDraw(GLV& g);
-//	virtual void onResize(space_t dx, space_t dy);
+	virtual void onResize(space_t dx, space_t dy);
 	
 protected:
 	typedef Interval<double> interval_t;

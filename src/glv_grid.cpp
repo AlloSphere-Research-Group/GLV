@@ -80,12 +80,15 @@ void Grid::onDraw(GLV& g){
 			if(showNumbering() && mNumbering[i]){
 				for(int j=b; j<b+n*2; j+=2){
 					double p = gb.vertices2()[j].elems[i];
-					double v[] = { p+4, 4 };
+					double v[] = { 
+						i ?   4 : p+4,
+						i ? p+4 : h-(4+font().cap())
+					};
 					double gp = pixToGrid(i, p);
 					if(fabs(gp) < 1e-5) gp=0;
 					char buf[16];
 					snprintf(buf, sizeof(buf), "%.3g", gp);
-					font().render(buf, v[i], v[(i+1)%DIM]);
+					font().render(buf, v[0], v[1]);
 				}
 			}
 		}
@@ -105,10 +108,10 @@ void Grid::onDraw(GLV& g){
 		}
 	}
 
-	if(mEqualize){ // NOTE: this always works when called from draw loop
-		w>=h	? interval(0).diameter(interval(1).diameter()*w/h)
-				: interval(1).diameter(interval(0).diameter()*h/w);
-	}
+//	if(mEqualize){ // NOTE: this always works when called from draw loop
+//		w>=h	? interval(0).diameter(interval(1).diameter()*w/h)
+//				: interval(1).diameter(interval(0).diameter()*h/w);
+//	}
 }
 
 bool Grid::onEvent(Event::t e, GLV& g){
@@ -141,7 +144,7 @@ bool Grid::onEvent(Event::t e, GLV& g){
 					case 'W': mVel[1] = pixToGridMul(0,8); break;
 					case 'E': mVelW =-0.04; break;
 					case 'C': mVelW = 0.04; break;
-					case 'O': origin(); break;
+					case 'S': origin(); break;
 					case 'g': mShowGrid ^= 1; break;
 					case 'b': mShowAxes ^= 1; break;
 					case 'n': mShowNumbering ^= 1; break;
@@ -170,12 +173,22 @@ bool Grid::onEvent(Event::t e, GLV& g){
 	}
 }
 
-//void Grid::onResize(space_t dx, space_t dy){
-//	if(mPreserveAspect){ // NOTE: this always works when called from draw loop
+void Grid::onResize(space_t dx, space_t dy){
+
+	View::onResize(dx,dy);
+
+	if(mEqualize){
+
+		// always adjust x interval, unless there is a better way...
+		interval(0).diameter(interval(1).diameter()*(h>0 ? w/h : 1));
+
 //		w>=h	? interval(0).diameter(interval(1).diameter()*w/h)
 //				: interval(1).diameter(interval(0).diameter()*h/w);
-//	}
-//}
+
+//		float pw = w-dx;
+//		float ph = h-dy;
+	}
+}
 
 Grid& Grid::zoom(double amt, double x, double y){
 	// change diameter around arbitrary point in interval
