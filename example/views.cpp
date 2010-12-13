@@ -28,7 +28,7 @@ int main(){
 	View* views[] = {&v, &v1, &v2, &v11, &v12};
 	for(int i=0; i<5; ++i){
 		views[i]->addCallback(Event::MouseDrag, Behavior::mouseMove);
-		views[i]->enable(KeepWithinParent);
+		//views[i]->enable(KeepWithinParent);
 	}
 	
 	// Disable some of the default View properties
