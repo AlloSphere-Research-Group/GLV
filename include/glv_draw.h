@@ -206,6 +206,35 @@ enum{
 };
 
 
+/// Singleton user-defined cammands called after corresponding GL calls
+class UserCommands {
+public:
+	virtual void enable(int cap){}
+	virtual void disable(int cap){}
+
+	virtual void blendFunc(int sfactor, int dfactor){}
+	virtual void lineWidth(float v){}
+	virtual void pointSize(float v){}
+	
+	static void set(UserCommands * v){ get() = v; }
+	
+	static void setDefault(){ get() = none(); }
+	
+	static UserCommands * none(){
+		static UserCommands * v = new UserCommands;
+		return v;
+	}
+
+	static UserCommands *& get(){
+		static UserCommands * v = none();
+		return v;
+	}
+
+protected:
+	UserCommands(){}
+};
+
+
 // Basic rendering commands
 void blendFunc(int sfactor, int dfactor);			///< Set blending function
 void blendTrans();									///< Set blending function to transparent
@@ -319,7 +348,9 @@ struct Disable{
 	const Disable& operator()(int cap1, int cap2, int cap3) const { return *this << cap1<<cap2<<cap3; }
 	
 	/// Disable a capability
-	const Disable& operator<< (int cap) const { glDisable(cap); return *this; }
+	const Disable& operator<< (int cap) const {
+		glDisable(cap); UserCommands::get()->disable(cap); return *this;
+	}
 };
 
 /// Global Disable functor
@@ -340,7 +371,9 @@ struct Enable{
 	const Enable& operator()(int cap1, int cap2, int cap3) const { return *this << cap1<<cap2<<cap3; }
 	
 	/// Enable a capability
-	const Enable& operator<< (int cap) const { glEnable(cap); return *this; }
+	const Enable& operator<< (int cap) const {
+		glEnable(cap); UserCommands::get()->enable(cap); return *this;
+	}
 };
 
 /// Global Enable functor
@@ -508,7 +541,7 @@ inline void translateZ(float z){ translate(0, 0, z); }
 
 
 // platform dependent
-inline void blendFunc(int sfactor, int dfactor){ glBlendFunc(sfactor, dfactor); }
+inline void blendFunc(int s, int d){ glBlendFunc(s,d); UserCommands::get()->blendFunc(s,d); }
 inline void blendAdd(){ glBlendEquation(GL_FUNC_ADD); blendFunc(GL_SRC_COLOR, GL_ONE); }
 inline void blendTrans(){ glBlendEquation(GL_FUNC_ADD); blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
 inline void clear(int mask){ glClear(mask); }
@@ -516,10 +549,10 @@ inline void clearColor(float r, float g, float b, float a){ glClearColor(r,g,b,a
 inline void color(float r, float g, float b, float a){ glColor4f(r,g,b,a); }
 inline void identity(){ glLoadIdentity(); }
 inline void lineStipple(char factor, short pattern){ glLineStipple(factor, pattern); }
-inline void lineWidth(float v){ glLineWidth(v); }
+inline void lineWidth(float v){ glLineWidth(v); UserCommands::get()->lineWidth(v); }
 inline void matrixMode(int mode){ glMatrixMode(mode); }
 inline void ortho(float l, float r, float b, float t){ gluOrtho2D(l,r,b,t); }
-inline void pointSize(float v){ glPointSize(v); }
+inline void pointSize(float v){ glPointSize(v); UserCommands::get()->pointSize(v); }
 inline void pointAtten(float c2, float c1, float c0){
 	GLfloat att[3] = {c0, c1, c2};
 	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, att);
