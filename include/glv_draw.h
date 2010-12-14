@@ -209,6 +209,8 @@ enum{
 /// Singleton user-defined cammands called after corresponding GL calls
 class UserCommands {
 public:
+	virtual ~UserCommands(){}
+
 	virtual void enable(int cap){}
 	virtual void disable(int cap){}
 
