@@ -27,24 +27,24 @@ int main(int argc, char ** argv){
 	//---- Hierarchy View
 	View hierView; layout << hierView;
 	hierView	//.enable(CropChildren)
-				(Event::MouseDrag, Behavior::mouseMove)
+				.addHandler(Event::MouseDrag, Behavior::mouseMove)
 				<< new Label("Hierarchy", 0, -10);
 
 	LayoutGrid lg0(hierView, 2, 2, 14);
 	for(int i=0; i<4; ++i){
-		View& v = (new View)->enable(CropChildren)(Event::MouseDrag, Behavior::mouseMove);
+		View& v = (new View)->enable(CropChildren).addHandler(Event::MouseDrag, Behavior::mouseMove);
 		lg0 << v;
 	
 		LayoutGrid lg(v, 2, 2, 14);
 		for(int j=0; j<4; ++j)
-			lg << (*(new View))(Event::MouseDrag, Behavior::mouseMove);
+			lg << (*(new View)).addHandler(Event::MouseDrag, Behavior::mouseMove);
 	}
 	
 	//---- Anchored children view
 	View anchorView; layout << anchorView;
 	anchorView	.disable(DrawBack)
-				(Event::MouseDrag, Behavior::mouseResizeCorner)
-				(Event::MouseDrag, Behavior::mouseMove)
+				.addHandler(Event::MouseDrag, Behavior::mouseResizeCorner)
+				.addHandler(Event::MouseDrag, Behavior::mouseMove)
 				<< new Label("Anchored Children", 0, -10);
 
 	LayoutGrid lg(anchorView, 3, 3, 14);

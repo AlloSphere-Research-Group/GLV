@@ -13,9 +13,8 @@ struct CharView : public View{
 	CharView(const Rect& r=Rect(80, 110))
 	:	View(r), input(0), thickness(2)
 	{
-		(*this)	(Event::MouseDrag, Behavior::mouseMove)
-				(Event::MouseDrag, Behavior::mouseResize);
-
+		addHandler(Event::MouseDrag, Behavior::mouseMove);
+		addHandler(Event::MouseDrag, Behavior::mouseResize);
 		disable(CropSelf);
 	}
 	

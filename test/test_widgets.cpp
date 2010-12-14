@@ -13,24 +13,34 @@ Button btn3(Rect(20, 20), false, draw::check);
 SliderGrid<3> sg31(Rect(100)), sg32(Rect(100)), sg33(Rect(100));
 SliderGrid<2> sg21(Rect(100));
 
+struct MyGLV : public GLV {
+	void onDraw(GLV& g){
+		using namespace draw;
+		
+		push3D(width(), height());
 
-void drawCB(View * v, GLV& g){
-	using namespace draw;
+		Color c;
+		c.setHSV(sg31.getValue(0), sg31.getValue(1), sg31.getValue(2)*sg31.getValue(2));
+		color(c);
+
+		translate(sg32.getValue(0)*2-1, sg32.getValue(1)*2-1, -sg32.getValue(2)*2);
+		rotate(sg33.getValue(0)*360, sg33.getValue(1)*360, sg33.getValue(2)*360);
+		scale(sg21.getValue(0), sg21.getValue(1));
+		
+		rectangle(-1, -1, 1, 1);
+
+		pop3D();
+	}
 	
-	push3D(v->w, v->h);
-
-	Color c;
-	c.setHSV(sg31.getValue(0), sg31.getValue(1), sg31.getValue(2)*sg31.getValue(2));
-	color(c);
-
-	translate(sg32.getValue(0)*2-1, sg32.getValue(1)*2-1, -sg32.getValue(2)*2);
-	rotate(sg33.getValue(0)*360, sg33.getValue(1)*360, sg33.getValue(2)*360);
-	scale(sg21.getValue(0), sg21.getValue(1));
-	
-	rectangle(-1, -1, 1, 1);
-
-	pop3D();
-}
+	bool onEvent(Event::t e, GLV& g){
+		if(e == Event::KeyDown){
+			switch(g.keyboard().key()){
+				case '`': toggle(Visible); return false;
+			}
+		}
+		return true;
+	}
+};
 
 bool keyDownCB(View * v, GLV& glv){
 	switch(glv.keyboard().key()){
@@ -43,9 +53,7 @@ bool keyDownCB(View * v, GLV& glv){
 
 int main (int argc, char ** argv){
 
-	GLV top(drawCB);
-	top(Event::KeyDown, keyDownCB);
-
+	MyGLV top;
 	top.colors().set(HSV(0.3,0.,0.6), 0.55);
 	//top.colors().back.set(0);
 	//glv::Style::standard().color.hsv(0, 0, 0.5);

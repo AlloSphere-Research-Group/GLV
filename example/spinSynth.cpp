@@ -58,7 +58,7 @@ int main (int argc, char ** argv){
 	slider2.attach(ntStatusString, Update::Value);
 	slider3.attach(ntStatusString, Update::Value);
 
-	GLV top(0,0,0);
+	GLV top(0,0);
 	top.colors().set(Color(HSV(0.1,0.5,0.8), 1), 0.7);
 	
 	scene.stretch(1,1).anchor(0,0);

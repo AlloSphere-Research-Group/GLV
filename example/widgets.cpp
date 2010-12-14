@@ -59,8 +59,8 @@ struct FontView : View {
 
 struct SubView3D : View3D{
 	SubView3D(const Rect& r): View3D(r), angle(0){
-		addCallback(Event::MouseDrag, Behavior::mouseResizeCorner);
-		addCallback(Event::MouseDrag, Behavior::mouseMove);
+		addHandler(Event::MouseDrag, Behavior::mouseResizeCorner);
+		addHandler(Event::MouseDrag, Behavior::mouseMove);
 		enable(KeepWithinParent);
 	}
 	
@@ -90,16 +90,16 @@ struct SubView3D : View3D{
 } v3D(Rect(200)), v3D2(Rect(100));
 
 
-void drawCB(View * v, GLV& g){
-	using namespace glv::draw;
-	for(int i=0; i<tabs.size(); ++i) groups[i].property(Visible, tabs.getValue(i));
-}
-
+struct MyGLV : public GLV{
+	void onDraw(GLV& g){
+		for(int i=0; i<tabs.size(); ++i) groups[i].property(Visible, tabs.getValue(i));
+	}
+};
 
 
 int main(int argc, char ** argv){
 	
-	GLV top(drawCB);
+	MyGLV top;
 	
 	Window win(600, 400, "Example: Widgets", &top);
 
@@ -163,8 +163,8 @@ int main(int argc, char ** argv){
 
 //btsLED.enable(Momentary);
 	int i=-1;
-	groups[++i]<< bt1.pos(Place::BL).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);
-	groups[  i]<< bt2.pos(Place::BR, -4,0).anchor(Place::CC)(Event::MouseDrag, Behavior::mouseResize);
+	groups[++i]<< bt1.pos(Place::BL).anchor(Place::CC).addHandler(Event::MouseDrag, Behavior::mouseResize);
+	groups[  i]<< bt2.pos(Place::BR, -4,0).anchor(Place::CC).addHandler(Event::MouseDrag, Behavior::mouseResize);
 	groups[  i]<< (btl.pos(Place::TR, -4, 4).anchor(Place::CC) << new Label("OK", Place::CC, 0,0));
 	groups[++i]<< bts14.pos(Place::BR, -4,0).anchor(Place::CC);
 	groups[  i]<< bts41.pos(Place::TL, 0, 4).anchor(Place::CC);

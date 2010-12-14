@@ -6,59 +6,73 @@
 using namespace glv;
 
 Window win(320, 240);
-int count=0;
 
-void drawCB(View * v, GLV& g){
+struct MyGLV : public GLV{
 
-	using namespace draw;
+	MyGLV(): count(0){}
 
-	if(200==count) win.show(); ++count;
+	void onDraw(GLV& g){
 
-	push3D(v->w, v->h);
-		static float ang=0;
-		translate(0,0,-1);
-		rotate(0,ang,ang*0.31); ++ang;
-		
-		GraphicsData& gr = g.graphicsData();
-		gr.addColor(Color(1));
-		gr.addColor(Color(0.7,0.3,0));
-		gr.addColor(Color(0.7,0.3,0));
-		gr.addColor(Color(0.7,0.3,0));
+		using namespace draw;
 
-		gr.addVertex3(-1,-1, 0);
-		gr.addVertex3(-1, 1, 0);
-		gr.addVertex3( 1,-1, 0);
-		gr.addVertex3( 1, 1, 0);
+		if(100==count) win.show(); ++count;
 
-		paint(TriangleStrip, gr);
-	pop3D();
+		push3D(width(), height());
+			static float ang=0;
+			translate(0,0,-1);
+			rotate(0,ang,ang*0.31); ++ang;
+			
+			GraphicsData& gr = g.graphicsData();
+			gr.addColor(Color(1));
+			gr.addColor(Color(0.7,0.3,0));
+			gr.addColor(Color(0.7,0.3,0));
+			gr.addColor(Color(0.7,0.3,0));
 
-	color(0);
-	text(
-		"esc  toggle full screen\n"
-		"  g  toggle game mode\n"
-		"  h  hide\n"
-		"  i  iconify\n"
-		"  c  show/hide cursor\n"
-		"  q  quit",
-		8, 8
-	);
-}
+			gr.addVertex3(-1,-1, 0);
+			gr.addVertex3(-1, 1, 0);
+			gr.addVertex3( 1,-1, 0);
+			gr.addVertex3( 1, 1, 0);
 
+			paint(TriangleStrip, gr);
+		pop3D();
 
-bool evKeyDown(View * v, GLV& g){
-	switch(g.keyboard().key()){
-		case Key::Escape: win.fullScreenToggle(); break;
-		case 'c': win.hideCursor(!win.hideCursor()); break;
-		case 'g': win.gameModeToggle(); break;
-		case 'h': win.hide(); count=0; break;
-		case 'i': win.iconify(); count=0; break;
-		case 's': win.show(); break;
-		case 'q': Application::quit(); break;
-		default:;
+		color(0);
+		text(
+			"esc  toggle full screen\n"
+			"  g  toggle game mode\n"
+			"  h  hide\n"
+			"  i  iconify\n"
+			"  c  show/hide cursor\n"
+			"  q  quit",
+			8, 8
+		);
 	}
-	return false;
-}
+	
+	bool onEvent(Event::t e, GLV& g){
+		switch(e){
+		case Event::KeyDown:
+			switch(g.keyboard().key()){
+				case Key::Escape: win.fullScreenToggle(); break;
+				case 'c': win.hideCursor(!win.hideCursor()); break;
+				case 'g': win.gameModeToggle(); break;
+				case 'h': win.hide(); count=0; break;
+				case 'i': win.iconify(); count=0; break;
+				case 's': win.show(); break;
+				case 'q': Application::quit(); break;
+				default:;
+			}
+		
+		case Event::WindowResize: printf("Event::WindowResize\n"); break;
+		case Event::WindowCreate: printf("Event::WindowCreate\n"); break;
+		case Event::WindowDestroy: printf("Event::WindowDestroy\n"); break;
+		case Event::Quit: printf("Event::Quit\n"); break;
+		default:;
+		}
+		return false;
+	}
+
+	int count;
+};
 
 bool evWinResize(View * v, GLV& g){ printf("Event::WindowResize\n"); return false; }
 bool evWinCreate(View * v, GLV& g){ printf("Event::WindowCreate\n"); return false; }
@@ -66,13 +80,13 @@ bool evWinDestroy(View * v, GLV& g){ printf("Event::WindowDestroy\n"); return fa
 bool evQuit(View * v, GLV& g){ printf("Event::Quit\n"); return false; }
 
 int main(){
-	GLV glv(drawCB);
+	MyGLV glv;
 	glv.colors().set(StyleColor::Gray);
-	glv(Event::KeyDown, evKeyDown);
-	glv(Event::WindowResize, evWinResize);
-	glv(Event::WindowCreate, evWinCreate);
-	glv(Event::WindowDestroy, evWinDestroy);
-	glv(Event::Quit, evQuit);
+//	glv(Event::KeyDown, evKeyDown);
+//	glv(Event::WindowResize, evWinResize);
+//	glv(Event::WindowCreate, evWinCreate);
+//	glv(Event::WindowDestroy, evWinDestroy);
+//	glv(Event::Quit, evQuit);
 	win.setGLV(glv);
 	Application::run();
 }

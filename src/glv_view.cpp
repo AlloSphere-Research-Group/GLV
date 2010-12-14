@@ -10,16 +10,11 @@ namespace glv{
 #define VIEW_INIT\
 	Notifier(), SmartObject<View>(),\
 	parent(0), child(0), sibling(0), \
-	draw(cb),\
 	mFlags(Visible | DrawBack | DrawBorder | CropSelf | FocusHighlight | FocusToTop | HitTest | Controllable | Animate), \
 	mStyle(&(Style::standard())), mAnchorX(0), mAnchorY(0), mStretchX(0), mStretchY(0), \
 	mFont(0)
 
-View::View(space_t left, space_t top, space_t width, space_t height, drawCallback cb)
-:	Rect(left, top, width, height), VIEW_INIT
-{}
-
-View::View(const Rect& rect, Place::t anch, drawCallback cb)
+View::View(const Rect& rect, Place::t anch)
 :	Rect(rect), VIEW_INIT
 {
 	anchor(anch);
@@ -161,11 +156,101 @@ bool View::absToRel(View * v, space_t & x, space_t & y) const{
 	return false;
 }
 
+//void View::addCallback(Event::t e, eventCallback cb){
+//	if(!hasCallback(e, cb)){
+//		callbackLists[e].push_back(cb);
+//	}
+//}
+//
+//bool View::hasCallback(Event::t e, eventCallback cb) const {
+//	if(hasCallbacks(e)){
+//		const eventCallbackList& l = callbackLists.find(e)->second;
+//		return find(l.begin(), l.end(), cb) != l.end();
+//	}
+//	return false;
+//}
+//
+//
+//bool View::hasCallbacks(Event::t e) const {
+//	return 0!=callbackLists.count(e);
+//}
+//
+//int View::numCallbacks(Event::t e) const{	
+//	const std::map<Event::t, eventCallbackList>::const_iterator it = callbackLists.find(e);
+//	return it != callbackLists.end() ? it->second.size() : 0;
+//}
+//
+//void View::on(Event::t e, eventCallback cb){
+//	if(hasCallbacks(e) && !callbackLists[e].empty())
+//		callbackLists[e].pop_front();
+//	
+//	callbackLists[e].push_front(cb);
+//}
+//
+//void View::removeCallback(Event::t e, eventCallback cb){
+//	if(hasCallbacks(e)){
+//		std::list<eventCallback>::iterator it;
+//		for(it = callbackLists[e].begin(); it != callbackLists[e].end(); ){
+//			if(*it == cb)	it = callbackLists[e].erase(it);
+//			else			it++;
+//		}
+//	}
+//}
+//
+//void View::removeAllCallbacks(Event::t e){
+//	if(hasCallbacks(e)){
+//		while(!callbackLists[e].empty())
+//			callbackLists[e].pop_front();
+//	}
+//}
 
-void View::addCallback(Event::t e, eventCallback cb){
-	if(!hasCallback(e, cb)){
-		callbackLists[e].push_back(cb);
+
+View& View::addHandler(DrawHandler& v){
+	mDrawHandlers.push_back(&v);
+	return *this;
+}
+
+View& View::addHandler(Event::t e, EventHandler& h){
+	if(!hasEventHandler(e, h)){
+		mEventHandlersMap[e].push_back(&h);
 	}
+	return *this;
+}
+
+void View::removeHandler(DrawHandler& v){
+	DrawHandlers::iterator it = mDrawHandlers.begin();
+	while(it != mDrawHandlers.end()){
+		if(*it == &v) mDrawHandlers.erase(it++);
+		else ++it;
+	}
+}
+
+void View::removeHandler(Event::t e, EventHandler& h){
+	if(hasEventHandlers(e)){
+		EventHandlers& hs = mEventHandlersMap[e];
+		EventHandlers::iterator it = hs.begin();
+		while(it != hs.end()){
+			if(*it == &h) hs.erase(it++);
+			else ++it;
+		}
+	}
+}
+
+bool View::hasEventHandler(Event::t e, const EventHandler& h) const {
+	if(hasEventHandlers(e)){
+		const EventHandlers& hs = mEventHandlersMap.find(e)->second;
+		return find(hs.begin(), hs.end(), &h) != hs.end();
+	}
+	return false;
+}
+
+bool View::hasEventHandlers(Event::t e) const {
+	return 0!=mEventHandlersMap.count(e);
+}
+
+int View::numEventHandlers(Event::t e) const {
+	const EventHandlersMap::const_iterator it = mEventHandlersMap.find(e);
+	return it != mEventHandlersMap.end() ? it->second.size() : 0;
 }
 
 
@@ -229,9 +314,20 @@ void View::doDraw(GLV& g){
 		rectangle(0, 0, pix(w), pix(h));
 	}
 
-	onDraw(g);
-	g.graphicsData().reset();
-	if(draw) draw(this, g);
+	bool drawNext = true;
+	DrawHandlers::iterator it = mDrawHandlers.begin();
+	while(it != mDrawHandlers.end()){
+		DrawHandlers::iterator itnext = ++it; --it;
+		g.graphicsData().reset();
+		drawNext = (*it)->onDraw(this, g);
+		if(!drawNext) break;
+		it = itnext;
+	}
+
+	if(drawNext){
+		g.graphicsData().reset();
+		onDraw(g);
+	}
 
 //	drawPost();
 	if(enabled(DrawBorder)){
@@ -270,21 +366,48 @@ View * View::findTarget(space_t &x, space_t &y){
 	space_t rx = x, ry = y;
 	
 	while(n->child){
-	
+
 		// target may be the child or one of its siblings
 		View * sib = n->child;
 		View * match = 0;
 		
+		space_t cx = rx, cy = ry;
+		
 		// Iterate through siblings
 		while(sib){
-			if(sib->containsPoint(x,y) && sib->visible()) match = sib;
+			if(sib->visible() && sib->containsPoint(x,y)){
+				match = sib;
+			}
+//			if(sib->visible()){
+//				if(!sib->enabled(CropChildren) && sib->child){
+//					View * v = sib->child;
+//					
+//					do {
+//						space_t ax = rx - sib->l, ay = ry - sib->t;
+//						if(v != v->findTarget(ax, ay)){
+//							match = v;
+//							cx = ax + match->l;
+//							cy = ay + match->t;
+//							match->print();
+//							//printf("%g %g\n", cx, cy);
+//						}
+//						//printf("%g %g\n", ax, ay);
+//
+//						v = v->sibling;
+//					} while(v);
+//				}
+//				else if(sib->containsPoint(x,y)){
+//					match = sib;
+//					cx = rx; cy = ry;
+//				}
+//			}
 			sib = sib->sibling;
 		}
 		
 		// we found a sibling target; update the relative x & y & run the main while() again
 		if(match){
 			n = match;
-			rx -= n->l; ry -= n->t;	// compute relative coords
+			rx = cx - n->l; ry = cy - n->t;	// compute relative coords
 			
 			if(match->enabled(HitTest)){
 				target = match;
@@ -326,20 +449,6 @@ void View::focused(bool b){
 Font& View::font(){
 	if(!mFont){	mFont = new Font; }
 	return *mFont;
-}
-
-
-bool View::hasCallback(Event::t e, eventCallback cb) const {
-	if(hasCallbacks(e)){
-		const eventCallbackList& l = callbackLists.find(e)->second;
-		return find(l.begin(), l.end(), cb) != l.end();
-	}
-	return false;
-}
-
-
-bool View::hasCallbacks(Event::t e) const {
-	return 0!=callbackLists.count(e);
 }
 
 
@@ -408,21 +517,9 @@ View& View::name(const std::string& v){
 }
 
 
-int View::numCallbacks(Event::t e) const{	
-	const std::map<Event::t, eventCallbackList>::const_iterator it = callbackLists.find(e);
-	return it != callbackLists.end() ? it->second.size() : 0;
+void View::onDraw(GLV& g){
+//	if(draw) draw(this, g);
 }
-
-
-void View::on(Event::t e, eventCallback cb){
-	if(hasCallbacks(e) && !callbackLists[e].empty())
-		callbackLists[e].pop_front();
-	
-	callbackLists[e].push_front(cb);
-}
-
-
-void View::onDraw(GLV& g){ if(draw) draw(this, g); }
 
 bool View::onEvent(Event::t e, GLV& g){ return true; }
 
@@ -514,25 +611,6 @@ void View::rectifyGeometry(){
 		if(top() < 0) top(0);
 		if(right() > maxw) right(maxw);
 		if(bottom() > maxh) bottom(maxh);
-	}
-}
-
-
-void View::removeCallback(Event::t e, eventCallback cb){
-	if(hasCallbacks(e)){
-		std::list<eventCallback>::iterator it;
-		for(it = callbackLists[e].begin(); it != callbackLists[e].end(); ){
-			if(*it == cb)	it = callbackLists[e].erase(it);
-			else			it++;
-		}
-	}
-}
-
-
-void View::removeAllCallbacks(Event::t e){
-	if(hasCallbacks(e)){
-		while(!callbackLists[e].empty())
-			callbackLists[e].pop_front();
 	}
 }
 

@@ -26,19 +26,33 @@ typedef float space_t;
 /// Type for View rectangle geometry
 typedef TRect<space_t> Rect;
 
-/// Type for a drawing callback
-typedef void (*drawCallback)(View * v, GLV& g);
+/// Draw handler
+struct DrawHandler{
+	virtual ~DrawHandler(){}
+	
+	/// Drawing callback. Returns whether to execute subsequent handlers.
+	virtual bool onDraw(View * v, GLV& g) = 0;
+};
 
-/// Type for an event callback
+/// Event handler
+struct EventHandler{
+	virtual ~EventHandler(){}
+	
+	/// Event callback
 
-/// The first parameter is the View receiving the event and the second is the
-/// GLV context sending the event.  The function returns true if the event is
-/// to be bubbled up to the receiver's parent View.
-typedef bool (*eventCallback)(View * v, GLV& g);
+	/// The first parameter is the View receiving the event and the second is the
+	/// GLV context sending the event.  The function returns true if the event is
+	/// to be bubbled up to the receiver's parent View.
+	virtual bool onEvent(View * v, GLV& g) = 0;
+};
 
-/// Type for a list of event callbacks
-typedef std::list<eventCallback> eventCallbackList;
 
+struct CEventHandler : public EventHandler{
+	typedef bool (* EventFunction)(View * v, GLV& g);
+	CEventHandler(EventFunction& func): function(func){}
+	virtual bool onEvent(View * v, GLV& g){ return function(v,g); }
+	EventFunction function;
+};
 
 
 /// View property flags
@@ -58,7 +72,8 @@ namespace Property{
 		Maximized		=1<<11, /**< Whether geometry is matched to parent's */
 		KeepWithinParent=1<<12, /**< Ensure that View is fully contained within parent */
 		Animate			=1<<13, /**< Whether to animate */
-		
+//		AlwaysOnTop		=1<<14, /**< Whether to always be on top of other views */
+
 		DrawGrid		=1<<27,	/**< Whether to draw grid lines between widget elements */
 		DrawSelectionBox=1<<28,	/**< Whether to draw a box around selected widget elements */
 		Momentary		=1<<29,	/**< Whether widget element goes back to initial value on mouse up */
@@ -317,7 +332,7 @@ public:
 //};
 
 
-/// Overall appearance scheme.
+/// Overall appearance scheme
 class Style : public SmartPointer{
 public:
 	Style(bool deletable=false);
@@ -337,25 +352,29 @@ public:
 
 
 
-/// The base class of all GUI elements.
-class View : public Rect, public DataModel, public Notifier, public SmartObject<View> {
+/// The base class of all GUI elements
 
-friend class GLV;
-
+///
+///
+class View
+:	public Rect,
+	public DataModel,
+	public Notifier,
+	public SmartObject<View>
+{
 public:
 
-	/// @param[in] left		Initial left edge position
-	/// @param[in] top		Initial top edge position
-	/// @param[in] width	Initial width
-	/// @param[in] height	Initial height
-	/// @param[in] cb		Drawing callback
-	View(space_t left, space_t top, space_t width, space_t height, drawCallback cb=0);
+	/// Ordered list of draw handlers
+	typedef std::list<DrawHandler *> DrawHandlers;
+
+	/// Ordered list of event handlers
+	typedef std::list<EventHandler *> EventHandlers;
 
 	
 	/// @param[in] rect		Rect geometry of View
 	/// @param[in] anchor	Anchor place
 	/// @param[in] cb		Drawing callback
-	View(const Rect& rect=Rect(200, 200), Place::t anchor=Place::TL, drawCallback cb=0);
+	View(const Rect& rect=Rect(200, 200), Place::t anchor=Place::TL);
 
 	virtual ~View();
 
@@ -394,22 +413,53 @@ public:
 	View& operator << (View& newChild){ add(newChild); return *this; }
 	View& operator << (View* newChild){ add(newChild); return *this; }
 
+
+	/// Append draw handler
 	
-	/// Map of event callback sequences.
-	std::map<Event::t, eventCallbackList> callbackLists;
+	/// When the View is drawn, first its draw handlers are executed in sequence
+	/// then its virtual onDraw(). The return value of the draw handlers
+	/// determine whether subsequent handlers should be called. The return
+	/// value of the last handler determines whether the virtual onDraw()
+	/// should be called.
+	View& addHandler(DrawHandler& v);
+
+	/// Append event handler
+
+	/// If the event callback already exists in the list, then it will be not be
+	/// added.
+	/// If multiple callbacks are registered for the same event type, then two
+	/// types of prioritization take place. First, callbacks on the front of the
+	/// list get called first. Second, if a callback returns false (for 
+	/// bubbling), then it cancels execution of any subsequent callbacks in the
+	/// list. The return value of the last handler determines whether the 
+	/// virtual onDraw() should be called.
+	View& addHandler(Event::t e, EventHandler& h);
 	
-	drawCallback draw;		///< Drawing callback
+	/// Remove draw handler
+	void removeHandler(DrawHandler& v);
+
+	/// Remove event handler
+	void removeHandler(Event::t e, EventHandler& h);
+
+	/// Returns whether a particular event handler has been registered
+	bool hasEventHandler(Event::t e, const EventHandler& h) const;
 	
+	/// Returns whether there are one or more event handlers registered for a particular event	
+	bool hasEventHandlers(Event::t e) const;
+	
+	/// Returns number of registered event handlers
+	int numEventHandlers(Event::t e) const;
+
+//	void on(Event::t e, eventCallback cb=0);	///< Set first callback for a specific event type.
+//	void removeCallback(Event::t e, eventCallback cb);	///< Remove a callback for a given event (if found)
+//	void removeAllCallbacks(Event::t e);		///< Detach all callbacks for a given event	
 	
 	bool absToRel(View * target, space_t& x, space_t& y) const;
 	StyleColor& colors() const;					///< Get style colors
 	const std::string& descriptor() const;		///< Get descriptor
 	int enabled(Property::t v) const;			///< Returns whether a property is set
 	Font& font();								///< Get font
-	bool hasCallback(Event::t e, eventCallback cb) const; ///< Returns whether a particular callback has been registered
-	bool hasCallbacks(Event::t e) const;		///< Returns whether there are callback(s) registered for a particular event
 	const std::string& name() const;			///< Get name
-	int numCallbacks(Event::t e) const;			///< Returns number of registered callbacks
 	const View * posAbs(space_t& al, space_t& at) const; ///< Computes absolute left-top position. Returns topmost parent view.
 	void printDescendents() const;				///< Print tree of descendent Views to stdout
 	void printFlags() const;
@@ -421,18 +471,6 @@ public:
 
 	View& anchor(space_t mx, space_t my);		///< Set translation factors relative to parent resize amount
 	View& anchor(Place::t parentPlace);			///< Set translation factors relative to parent resize amount
-
-	/// Push an event callback onto the back of the event callbacks list.
-
-	/// If the event callback already exists in the list, then it will be not be
-	/// added.
-	/// If multiple callbacks are registered for the same event type, then two
-	/// types of prioritization take place. First, callbacks on the front of the
-	/// list get called first. Second, if a callback returns false (for 
-	/// bubbling), then it cancels execution of any subsequent callbacks in the
-	/// list.
-	void addCallback(Event::t type, eventCallback cb);
-	View& operator()(Event::t e, eventCallback cb){ addCallback(e, cb); return *this; }
 
 	View& disable(Property::t p);				///< Disable property flag(s)
 	View& enable(Property::t p);				///< Enable property flag(s)
@@ -453,10 +491,6 @@ public:
 	void fit();									///< Fit geometry so all children are visible
 	void focused(bool b);						///< Set whether I'm focused
 	void move(space_t x, space_t y);			///< Translate constraining within parent.
-	
-	void on(Event::t e, eventCallback cb=0);	///< Set first callback for a specific event type.
-	void removeCallback(Event::t e, eventCallback cb);	///< Remove a callback for a given event (if found)
-	void removeAllCallbacks(Event::t e);		///< Detach all callbacks for a given event	
 
 	/// Set descriptor, e.g. tooltip text
 	View& descriptor(const std::string& v);
@@ -481,6 +515,11 @@ public:
 	void rectifyGeometry();						///< Correct geometry for proper display 
 
 protected:
+	friend class GLV;
+	typedef std::map<Event::t, EventHandlers> EventHandlersMap;
+	
+	DrawHandlers mDrawHandlers;
+	EventHandlersMap mEventHandlersMap;
 	Property::t mFlags;				// Property flags
 	Style * mStyle;					// Visual appearance
 	space_t mAnchorX, mAnchorY;		// Position anchoring factors when parent is resized
@@ -518,10 +557,9 @@ protected:
 class GLV : public View{
 public:
 
-	/// @param[in] drawFunc		drawing callback
-	/// @param[in] width		width
-	/// @param[in] height		height
-	GLV(drawCallback drawFunc=0, space_t width=800, space_t height=600);
+	/// @param[in] width		width, in pixels
+	/// @param[in] height		height, in pixels
+	GLV(space_t width=800, space_t height=600);
 
 	virtual ~GLV();
 

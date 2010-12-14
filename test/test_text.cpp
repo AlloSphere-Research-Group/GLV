@@ -34,7 +34,7 @@ three	0		3		6		9"
 
 	View* views[] = {&v1, &v2};
 	for(unsigned i=0; i<sizeof(views)/sizeof(views[0]); ++i){
-		views[i]->addCallback(Event::MouseDrag, Behavior::mouseMove);
+		views[i]->addHandler(Event::MouseDrag, Behavior::mouseMove);
 		views[i]->enable(KeepWithinParent);
 		views[i]->enable(DrawBack);
 		glv << views[i];

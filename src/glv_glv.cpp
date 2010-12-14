@@ -5,8 +5,8 @@
 
 namespace glv{
 
-GLV::GLV(drawCallback cb, space_t width, space_t height)
-:	View(0, 0, width, height, cb), mFocusedView(this)
+GLV::GLV(space_t width, space_t height)
+:	View(Rect(width, height)), mFocusedView(this)
 {
 	disable(DrawBorder | FocusHighlight);
 //	cloneStyle();
@@ -68,24 +68,42 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 //	
 //	return bubble | v.enabled(AlwaysBubble);
 
+//	bool bubble = true;
+//
+//	if(v.hasCallbacks(e)){
+//		const eventCallbackList& cbl = v.callbackLists[e];
+//		
+//		// Execute callbacks in list
+//		for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
+//			//if(*it) bubble |= (*it)(&v, *this);
+//			if(*it){
+//				bool r = (*it)(&v, *this);
+//				bubble &= r;
+//				if(!bubble) goto end;
+//			}
+//		}
+//	}
+//	
+//	bubble &= v.onEvent(e, *this);
+//	end:
+//	return bubble || v.enabled(AlwaysBubble);
+
 	bool bubble = true;
 
-	if(v.hasCallbacks(e)){
-		const eventCallbackList& cbl = v.callbackLists[e];
-		
+	if(v.hasEventHandlers(e)){
+		const EventHandlers& hs = v.mEventHandlersMap[e];
+
 		// Execute callbacks in list
-		for(eventCallbackList::const_iterator it = cbl.begin(); it != cbl.end(); it++){
-			//if(*it) bubble |= (*it)(&v, *this);
+		for(EventHandlers::const_iterator it = hs.begin(); it != hs.end(); ++it){
 			if(*it){
-				bool r = (*it)(&v, *this);
-				bubble &= r;
-				if(!bubble) goto end;
+				bubble = (*it)->onEvent(&v, *this);
+				if(!bubble) break;
 			}
 		}
 	}
+
+	if(bubble) bubble = v.onEvent(e, *this);
 	
-	bubble &= v.onEvent(e, *this);
-	end:
 	return bubble || v.enabled(AlwaysBubble);
 }
 
@@ -96,7 +114,7 @@ void GLV::doFocusCallback(bool get){
 	if(mFocusedView){
 		mFocusedView->focused(get);
 		
-		if(mFocusedView->numCallbacks(e) ){
+		if(mFocusedView->numEventHandlers(e)){
 			eventType(e);
 			doEventCallbacks(*mFocusedView, e);
 		}

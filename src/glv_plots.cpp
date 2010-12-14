@@ -72,6 +72,8 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	if(!d.hasData()) return;
 	draw::color(mColor);
 	draw::stroke(stroke());
+	draw::enable(draw::PointSmooth);
+	draw::enable(draw::LineSmooth);
 	
 	Indexer ind(d.shape()+1); // dimension 0 is non-spatial
 	onMap(gd, d, ind);
@@ -291,42 +293,46 @@ GraphicsMap& PlotFunction2D::defaultVertexMap(){
 }
 
 
-static bool evPlotCreateContext(View * v, GLV& g){
-	Plot& p = *static_cast<Plot *>(v);
-	Plot::Plottables::iterator i = p.plottables().begin();
-	while(i != p.plottables().end()){
-		(**i).onContextCreate();
-		++i;
+struct EvPlotCreateContext : public EventHandler{
+	bool onEvent(View * v, GLV& g){
+		Plot& p = *static_cast<Plot *>(v);
+		Plot::Plottables::iterator i = p.plottables().begin();
+		while(i != p.plottables().end()){
+			(**i).onContextCreate();
+			++i;
+		}
+		return true;
 	}
-	return true;
-}
+} evPlotCreateContext;
 
-static bool evPlotDestroyContext(View * v, GLV& g){
-//	printf("destroy\n");
-	Plot& p = *static_cast<Plot *>(v);
-	Plot::Plottables::iterator i = p.plottables().begin();
-	while(i != p.plottables().end()){
-		(**i).onContextDestroy();
-		++i;
+struct EvPlotDestroyContext : public EventHandler{
+	bool onEvent(View * v, GLV& g){
+//		printf("destroy\n");
+		Plot& p = *static_cast<Plot *>(v);
+		Plot::Plottables::iterator i = p.plottables().begin();
+		while(i != p.plottables().end()){
+			(**i).onContextDestroy();
+			++i;
+		}
+		return true;
 	}
-	return true;
-}
+} evPlotDestroyContext;
 
 Plot::Plot(const Rect& r)
 :	Grid(r)
 {	resetValInd();
-	addCallback(Event::WindowCreate, evPlotCreateContext);
-	addCallback(Event::WindowDestroy, evPlotDestroyContext);
-	addCallback(Event::Quit, evPlotDestroyContext);
+	addHandler(Event::WindowCreate, evPlotCreateContext);
+	addHandler(Event::WindowDestroy, evPlotDestroyContext);
+	addHandler(Event::Quit, evPlotDestroyContext);
 }
 
 Plot::Plot(const Rect& r, Plottable& p)
 :	Grid(r)
 {	resetValInd();
 	add(p);
-	addCallback(Event::WindowCreate, evPlotCreateContext);
-	addCallback(Event::WindowDestroy, evPlotDestroyContext);
-	addCallback(Event::Quit, evPlotDestroyContext);
+	addHandler(Event::WindowCreate, evPlotCreateContext);
+	addHandler(Event::WindowDestroy, evPlotDestroyContext);
+	addHandler(Event::Quit, evPlotDestroyContext);
 }
 
 void Plot::onDraw(GLV& g){

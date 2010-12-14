@@ -27,7 +27,7 @@ int main(){
 	// Set properties of Views	
 	View* views[] = {&v, &v1, &v2, &v11, &v12};
 	for(int i=0; i<5; ++i){
-		views[i]->addCallback(Event::MouseDrag, Behavior::mouseMove);
+		views[i]->addHandler(Event::MouseDrag, Behavior::mouseMove);
 		//views[i]->enable(KeepWithinParent);
 	}
 	
