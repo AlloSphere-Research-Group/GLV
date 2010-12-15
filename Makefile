@@ -55,18 +55,14 @@ $(SLIB_PATH): createFolders $(addprefix $(OBJ_DIR), $(OBJS))
 
 all: $(SLIB_PATH) test
 
-# Remove active build configuration binary files
+# Remove build files
 clean:
-	@$(RM) $(OBJ_DIR)* $(OBJ_DIR) $(BIN_DIR)* $(BIN_DIR)
-
-# Remove all built binary files
-cleanall:
-	@$(MAKE) clean BUILD_CONFIG=release
-	@$(MAKE) clean BUILD_CONFIG=debug
-	@$(RM) $(BUILD_DIR)* $(BUILD_DIR)
+	@$(RM)r $(BUILD_DIR)
 
 createFolders:
+	@mkdir -p $(BIN_DIR)
 	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(BUILD_DIR)/lib
 
 # Create file with settings for linking to external libraries
 external:
@@ -82,8 +78,8 @@ install: $(SLIB_PATH)
 #	@echo 'INSTALL $(DESTDIR)'
 	@$(INSTALL) -d $(DESTDIR)/lib
 	@$(INSTALL) -d $(DESTDIR)/include/$(LIB_NAME)
-	@$(INSTALL) -c -m 644 $(SLIB_PATH) $(DESTDIR)/lib
-	@$(INSTALL) -c -m 644 $(INC_DIR)/*.h $(DESTDIR)/include/$(LIB_NAME)
+	@$(INSTALL) -C -m 644 $(SLIB_PATH) $(DESTDIR)/lib
+	@$(INSTALL) -C -m 644 $(INC_DIR)/*.h $(DESTDIR)/include/$(LIB_NAME)
 	@$(RANLIB) $(DESTDIR)/lib/$(SLIB_FILE)
 
 test: $(SLIB_PATH)
@@ -91,7 +87,7 @@ test: $(SLIB_PATH)
 
 # Compile and run source files in example/ or test/ folder
 example/%.cpp test/%.cpp: $(SLIB_PATH)
-	@$(CXX) $(CFLAGS) -o $(BIN_DIR)$(*F) $@ $(LDFLAGS) $(SLIB_PATH)
+	@$(CXX) $(CFLAGS) -o $(BIN_DIR)$(*F) $@ $(SLIB_PATH) $(LDFLAGS)
 ifneq ($(AUTORUN), 0)
 	@$(BIN_DIR)$(*F) &
 endif
