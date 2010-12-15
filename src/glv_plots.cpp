@@ -294,8 +294,8 @@ GraphicsMap& PlotFunction2D::defaultVertexMap(){
 
 
 struct EvPlotCreateContext : public EventHandler{
-	bool onEvent(View * v, GLV& g){
-		Plot& p = *static_cast<Plot *>(v);
+	bool onEvent(View& v, GLV& g){
+		Plot& p = *static_cast<Plot *>(&v);
 		Plot::Plottables::iterator i = p.plottables().begin();
 		while(i != p.plottables().end()){
 			(**i).onContextCreate();
@@ -306,9 +306,9 @@ struct EvPlotCreateContext : public EventHandler{
 } evPlotCreateContext;
 
 struct EvPlotDestroyContext : public EventHandler{
-	bool onEvent(View * v, GLV& g){
+	bool onEvent(View& v, GLV& g){
 //		printf("destroy\n");
-		Plot& p = *static_cast<Plot *>(v);
+		Plot& p = *static_cast<Plot *>(&v);
 		Plot::Plottables::iterator i = p.plottables().begin();
 		while(i != p.plottables().end()){
 			(**i).onContextDestroy();

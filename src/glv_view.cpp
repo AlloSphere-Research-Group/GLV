@@ -319,7 +319,7 @@ void View::doDraw(GLV& g){
 	while(it != mDrawHandlers.end()){
 		DrawHandlers::iterator itnext = ++it; --it;
 		g.graphicsData().reset();
-		drawNext = (*it)->onDraw(this, g);
+		drawNext = (*it)->onDraw(*this, g);
 		if(!drawNext) break;
 		it = itnext;
 	}

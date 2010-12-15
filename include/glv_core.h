@@ -31,7 +31,7 @@ struct DrawHandler{
 	virtual ~DrawHandler(){}
 	
 	/// Drawing callback. Returns whether to execute subsequent handlers.
-	virtual bool onDraw(View * v, GLV& g) = 0;
+	virtual bool onDraw(View& v, GLV& g) = 0;
 };
 
 /// Event handler
@@ -43,14 +43,14 @@ struct EventHandler{
 	/// The first parameter is the View receiving the event and the second is the
 	/// GLV context sending the event.  The function returns true if the event is
 	/// to be bubbled up to the receiver's parent View.
-	virtual bool onEvent(View * v, GLV& g) = 0;
+	virtual bool onEvent(View& v, GLV& g) = 0;
 };
 
 
 struct CEventHandler : public EventHandler{
-	typedef bool (* EventFunction)(View * v, GLV& g);
-	CEventHandler(EventFunction& func): function(func){}
-	virtual bool onEvent(View * v, GLV& g){ return function(v,g); }
+	typedef bool (* EventFunction)(View& v, GLV& g);
+	CEventHandler(EventFunction func): function(func){}
+	virtual bool onEvent(View& v, GLV& g){ return function(v,g); }
 	EventFunction function;
 };
 

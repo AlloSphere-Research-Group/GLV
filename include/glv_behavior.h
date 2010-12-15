@@ -11,9 +11,9 @@ namespace glv{
 namespace Behavior{
 
 	struct MouseMove : public EventHandler {
-		bool onEvent(View * v, GLV& g){
+		bool onEvent(View& v, GLV& g){
 			if(g.mouse().left()){
-				v->move(g.mouse().dx(), g.mouse().dy());
+				v.move(g.mouse().dx(), g.mouse().dy());
 				return false;
 			}
 			return true;
@@ -21,20 +21,20 @@ namespace Behavior{
 	};
 
 	struct MouseResizeCorner : public EventHandler {
-		bool onEvent(View * v, GLV& g){
+		bool onEvent(View& v, GLV& g){
 			if(g.mouse().left()){
 
 				float mx = g.mouse().xRel();
 				float my = g.mouse().yRel();
 
-				if(mx > (v->w-16) && my > (v->h-16)){
+				if(mx > (v.w-16) && my > (v.h-16)){
 
 					float dx = g.mouse().dx();
 					float dy = g.mouse().dy();
 
-					v->resizeRightTo(v->right() + dx);
-					v->resizeBottomTo(v->bottom() + dy);
-					v->rectifyGeometry();		
+					v.resizeRightTo(v.right() + dx);
+					v.resizeBottomTo(v.bottom() + dy);
+					v.rectifyGeometry();		
 					
 					return false;
 				}			
@@ -44,23 +44,23 @@ namespace Behavior{
 	};
 
 	struct MouseResize : public EventHandler {
-		bool onEvent(View * v, GLV& g){
+		bool onEvent(View& v, GLV& g){
 			if(g.mouse().middle()){
 			
 				float dx = g.mouse().dx();
 				float dy = g.mouse().dy();
-				float mx = g.mouse().xRel() / v->w;
-				float my = g.mouse().yRel() / v->h;
+				float mx = g.mouse().xRel() / v.w;
+				float my = g.mouse().yRel() / v.h;
 			
 				if(mx < 0.5){
-					v->resizeLeftTo(v->l + dx);
-					my < 0.5 ? v->resizeTopTo(v->t + dy) : v->resizeBottomTo(v->bottom() + dy);
+					v.resizeLeftTo(v.l + dx);
+					my < 0.5 ? v.resizeTopTo(v.t + dy) : v.resizeBottomTo(v.bottom() + dy);
 				}
 				else{
-					v->resizeRightTo(v->right() + dx);
-					my < 0.5 ? v->resizeTopTo(v->t + dy) : v->resizeBottomTo(v->bottom() + dy);					
+					v.resizeRightTo(v.right() + dx);
+					my < 0.5 ? v.resizeTopTo(v.t + dy) : v.resizeBottomTo(v.bottom() + dy);					
 				}
-				v->rectifyGeometry();
+				v.rectifyGeometry();
 				return false;
 			}
 			return true;

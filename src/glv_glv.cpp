@@ -96,7 +96,7 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 		// Execute callbacks in list
 		for(EventHandlers::const_iterator it = hs.begin(); it != hs.end(); ++it){
 			if(*it){
-				bubble = (*it)->onEvent(&v, *this);
+				bubble = (*it)->onEvent(v, *this);
 				if(!bubble) break;
 			}
 		}
