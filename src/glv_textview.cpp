@@ -322,7 +322,9 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 			case '-': flipSign(); return false;
 			case 'c': setValue(0); return false;
 			case '.': dig(numDigits()-mNF); return false; // go to first fraction digit (if any)
+			case Key::Left:
 			case 's': dig(dig()-1); return false;
+			case Key::Right:
 			case 'd': dig(dig()+1); return false;
 			}
 		}

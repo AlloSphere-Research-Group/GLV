@@ -58,14 +58,13 @@ bool Widget::onEvent(Event::t e, GLV& g){
 	switch(e){
 		case Event::KeyDown:
 			switch(g.keyboard().key()){
-				case Key::Down:	++sy; break;
-				case Key::Up:	--sy; break;
-				case Key::Right:++sx; break;
-				case Key::Left:	--sx; break;
-				default: return true;
+				case Key::Down:	if(sizeY()>1){ ++sy; clipIndices(); return false; }
+				case Key::Up:	if(sizeY()>1){ --sy; clipIndices(); return false; }
+				case Key::Right:if(sizeX()>1){ ++sx; clipIndices(); return false; }
+				case Key::Left:	if(sizeX()>1){ --sx; clipIndices(); return false; }
+				default:;
 			}
-			clipIndices();
-			return false;
+			break;
 
 		case Event::MouseUp:
 			if(enabled(Momentary)) setValue(mPrevVal);

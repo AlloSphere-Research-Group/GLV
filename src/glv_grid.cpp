@@ -125,11 +125,11 @@ bool Grid::onEvent(Event::t e, GLV& g){
 			return false;
 
 		case Event::MouseDrag:
-			if(k.shift() && m.left()){
+			if(m.left()){
 				interval(0).translate(-pixToGridMul(0, m.dx()));
 				interval(1).translate( pixToGridMul(1, m.dy()));
 			}
-			if(k.shift() && m.right()){
+			if(m.right()){
 				zoomOnMousePos(m.dy()*0.01, m);			
 			}
 			return false;
@@ -138,13 +138,13 @@ bool Grid::onEvent(Event::t e, GLV& g){
 			//printf("%c %d\n", k.key(), k.key());
 			//if(k.shift()){
 				switch(k.key()){
-					case 'A': mVel[0] =-pixToGridMul(0,8); break;
-					case 'D': mVel[0] = pixToGridMul(0,8); break;
-					case 'X': mVel[1] =-pixToGridMul(0,8); break;
-					case 'W': mVel[1] = pixToGridMul(0,8); break;
-					case 'E': mVelW =-0.04; break;
-					case 'C': mVelW = 0.04; break;
-					case 'S': origin(); break;
+					case 'a': mVel[0] =-pixToGridMul(0,8); break;
+					case 'd': mVel[0] = pixToGridMul(0,8); break;
+					case 'x': mVel[1] =-pixToGridMul(0,8); break;
+					case 'w': mVel[1] = pixToGridMul(0,8); break;
+					case 'e': mVelW =-0.04; break;
+					case 'c': mVelW = 0.04; break;
+					case 's': origin(); break;
 					case 'g': mShowGrid ^= 1; break;
 					case 'b': mShowAxes ^= 1; break;
 					case 'n': mShowNumbering ^= 1; break;
@@ -159,12 +159,12 @@ bool Grid::onEvent(Event::t e, GLV& g){
 		case Event::MouseUp:	return false;
 		case Event::KeyUp:
 			switch(k.key()){
-				case 'A':
-				case 'D': mVel[0] = 0; break;
-				case 'X':
-				case 'W': mVel[1] = 0; break;
-				case 'E':
-				case 'C': mVelW = 0; break;
+				case 'a':
+				case 'd': mVel[0] = 0; break;
+				case 'x':
+				case 'w': mVel[1] = 0; break;
+				case 'e':
+				case 'c': mVelW = 0; break;
 				default: return true;
 			}
 			return false;
