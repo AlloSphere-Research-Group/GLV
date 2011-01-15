@@ -16,6 +16,8 @@ public:
 	View3D(const Rect& r=Rect(0));
 	virtual ~View3D(){}
 
+	virtual const char * className() const { return "View3D"; }
+
 	/// 2D drawing callback called after 3D
 	virtual void onDraw2D(GLV& g){}
 	
