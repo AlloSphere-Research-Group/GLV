@@ -129,10 +129,10 @@ protected:
 
 	// push into grid space for drawing
 	void pushGrid(){
-		float tx = gridToPix(0, 0);
-		float ty = gridToPix(1, 0);
-		float sx = gridToPix(0, interval(0).min()+1);
-		float sy = gridToPix(1, interval(1).min()+1);
+		double tx = gridToPix(0, 0);
+		double ty = gridToPix(1, 0);
+		double sx = gridToPix(0, interval(0).min()+1);
+		double sy = gridToPix(1, interval(1).min()+1);
 		draw::push();
 		draw::translate(tx, ty);
 		draw::scale(sx,sy-h);
