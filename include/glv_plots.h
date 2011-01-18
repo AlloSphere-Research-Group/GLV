@@ -113,7 +113,12 @@ public:
 
 	/// Set interpolation mode (0=none, 1=linear)
 	PlotDensity& interpolate(int v){ mIpol=v; return *this; }
-	
+
+	/// Set rectangular plotting region
+	PlotDensity& plotRegion(const Interval<double>& vx, const Interval<double>& vy){
+		mRegion[0] = vx; mRegion[1] = vy; return *this;
+	}
+
 //	static GraphicsMap& defaultColorMap();
 //
 //	struct DefaultColorMap : public GraphicsMap{
@@ -127,6 +132,7 @@ protected:
 	virtual void onContextDestroy();
 	virtual void onDraw(GraphicsData& gd, const Data& d);
 	Texture2 mTex;
+	Interval<double> mRegion[2];
 	float mHueSpread;
 	int mIpol;
 };

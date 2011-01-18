@@ -72,6 +72,8 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	if(!d.hasData()) return;
 	draw::color(mColor);
 	draw::stroke(stroke());
+//	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+//	glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
 	draw::enable(draw::PointSmooth);
 	draw::enable(draw::LineSmooth);
 	
@@ -94,6 +96,8 @@ PlotDensity::PlotDensity(const Color& c, float hueSpread, int ipol)
 :	Plottable(draw::Triangles, 1, c), mTex(0,0, GL_RGBA, GL_FLOAT),
 	mHueSpread(hueSpread), mIpol(ipol)
 {
+	mRegion[0].endpoints(-1, 1);
+	mRegion[1].endpoints(-1, 1);
 //	add(defaultColorMap());
 }
 
@@ -220,7 +224,7 @@ void PlotDensity::onDraw(GraphicsData& b, const Data& d){
 //	draw::color(mColor);
 	mTex.begin();
 	mTex.send();
-	mTex.draw(-1,1,1,-1);
+	mTex.draw(mRegion[0].min(), mRegion[1].max(), mRegion[0].max(), mRegion[1].min());
 	mTex.end();
 	draw::disable(draw::Texture2D);
 }
@@ -271,6 +275,8 @@ PlotFunction1D::PlotFunction1D(const Color& c)
 GraphicsMap& PlotFunction1D::defaultVertexMap(){
 	static GraphicsMap * m = new DefaultVertexMap; return *m;
 }
+
+
 
 
 void PlotFunction2D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, const Indexer& i){
