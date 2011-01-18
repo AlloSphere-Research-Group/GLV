@@ -71,13 +71,15 @@ void Grid::onDraw(GLV& g){
 	// draw major lines / numbering
 	if(showGrid() || showNumbering()){
 		gb.reset();
-		color(colors().border.mix(colors().back, 10./16));
 		
 		for(int i=0; i<DIM; ++i){
 			int b = gb.vertices2().size();
 			int n = addGridLines(i, mMajor[i], gb);
 
 			if(showNumbering() && mNumbering[i]){
+			
+				color(colors().border);
+			
 				for(int j=b; j<b+n*2; j+=2){
 					double p = gb.vertices2()[j].elems[i];
 					double v[] = { 
@@ -92,7 +94,10 @@ void Grid::onDraw(GLV& g){
 				}
 			}
 		}
-		if(showGrid()) paint(Lines, &gb.vertices2()[0], gb.vertices2().size());
+		if(showGrid()){
+			color(colors().border.mix(colors().back, 10./16));
+			paint(Lines, &gb.vertices2()[0], gb.vertices2().size());
+		}
 	}
 
 	// draw axes
