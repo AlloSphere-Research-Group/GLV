@@ -33,8 +33,8 @@ public:
 
 int main(){
 
-	MyGLV top; top.presetNum=10;
-	Table gui("<"); gui.enable(DrawGrid);
+	MyGLV top; top.presetNum=1;
+	Table gui("<"); //gui.enable(DrawGrid);
 	Label l;
 	TextView tv;
 	Button b;
@@ -45,6 +45,9 @@ int main(){
 	NumberDialer nd(1,4,1,-1);
 	//std::string strings[] = {"test1", "test2", "test3"};
 
+	//bs.disable(DrawBorder);
+	bs.disable(DrawGrid);
+
 	l.setValue("Hello Label!").name("l");
 	tv.setValue("Hello TextView!").name("tv");
 	b.setValue(true).name("b");
@@ -52,7 +55,7 @@ int main(){
 	s.setValue(0.5).name("s");
 	ss.setValue(0.4, 1).name("ss");
 	s2D.setValue(0.5, 0).setValue(0.1, 1).name("s2D");
-	nd.setValue(-0.54941).name("nd");
+	nd.setValue(-0.5494).name("nd");
 
 	View * views[] = {&l, &tv, &b, &bs, &s, &ss, &s2D, &nd};
 	for(unsigned i=0; i<sizeof(views)/sizeof(View *); ++i){
@@ -67,9 +70,9 @@ int main(){
 	top.refreshModels();
 
 	top.modelManager().name("presets");
-	top.modelManager().saveSnapshot("preset 1");
-	s.setValue(0.77);
-	top.modelManager().saveSnapshot("preset 2");
+//	top.modelManager().saveSnapshot("preset 1");
+//	s.setValue(0.77);
+//	top.modelManager().saveSnapshot("preset 2");
 
 //	top.modelManager().snapshotsToFile("snapshots.txt");
 //		

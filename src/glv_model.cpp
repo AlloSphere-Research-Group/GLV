@@ -15,13 +15,13 @@ bool isBlank(char c){
 }
 
 
-bool isIdentifier(const std::string& s){
-	if(isalpha(s[0]) || s[0]=='_'){
+bool isIdentifier(const std::string& v){
+	if(isalpha(v[0]) || '_'==v[0]){
 		unsigned i=1;
-		for(; i<s.size(); ++i){
-			if(!isalnum(s[i])) break;
+		for(; i<v.size(); ++i){
+			if(!(isalnum(v[i]) || '_'==v[i])) break;
 		}
-		if(s.size()==i) return true;
+		if(v.size()==i) return true;
 	}
 	return false;
 }
@@ -583,28 +583,28 @@ int ModelManager::snapshotsFromFile(const std::string& path, bool add){
 	return r;
 }
 
-bool ModelManager::stateToToken(std::string& dst, const std::string& modelName) const {
-	#define NEWLINE "\r\n"
-	if(modelName.size())	dst = "[\"" + modelName + "\"] = {"NEWLINE;
-	else					dst = "{"NEWLINE;
-
-	std::string t;
-	{
-		NamedModels::const_iterator i = mState.begin();
-		for(; i!=mState.end(); ++i){
-			dst += "\t" + namedDataToString(i->first, i->second->getData());
-		}
-	}
-	{
-		NamedConstModels::const_iterator i = mConstState.begin();
-		for(; i!=mConstState.end(); ++i){
-			dst += "\t" + namedDataToString(i->first, i->second->getData());
-		}
-	}
-	dst += "}"NEWLINE;
-	#undef NEWLINE
-	return true;
-}
+//bool ModelManager::stateToToken(std::string& dst, const std::string& modelName) const {
+//	#define NEWLINE "\r\n"
+//	if(modelName.size())	dst = "[\"" + modelName + "\"] = {"NEWLINE;
+//	else					dst = "{"NEWLINE;
+//
+//	std::string t;
+//	{
+//		NamedModels::const_iterator i = mState.begin();
+//		for(; i!=mState.end(); ++i){
+//			dst += "\t" + namedDataToString(i->first, i->second->getData());
+//		}
+//	}
+//	{
+//		NamedConstModels::const_iterator i = mConstState.begin();
+//		for(; i!=mConstState.end(); ++i){
+//			dst += "\t" + namedDataToString(i->first, i->second->getData());
+//		}
+//	}
+//	dst += "}"NEWLINE;
+//	#undef NEWLINE
+//	return true;
+//}
 
 int ModelManager::snapshotsToString(std::string& dst) const {
 	Snapshots::const_iterator it = mSnapshots.begin();
@@ -620,7 +620,9 @@ int ModelManager::snapshotsToString(std::string& dst) const {
 		const Snapshot& snapshot = it->second;
 		Snapshot::const_iterator jt = snapshot.begin();
 		while(jt != snapshot.end()){
-			dst += "\t" + namedDataToString(jt->first, jt->second);
+			if(jt->second.hasData()){
+				dst += "\t" + namedDataToString(jt->first, jt->second);
+			}
 			++jt;
 		}
 		dst += "},\r\n\r\n";
@@ -686,21 +688,21 @@ struct KeyValueParser{
 };
 
 
-int ModelManager::stateFromToken(const std::string& src){
-
-	struct It : KeyValueParser {
-		It(NamedModels& v): m(v){}
-		void onKeyValue(const std::string& key, const std::string& val){
-			if(m.count(key)){
-				//printf("%s = %s\n", key.c_str(), val.c_str());
-				m[key]->modelFromString(val);
-			}
-		}
-		NamedModels& m;
-	} it(mState);
-	
-	return it(src);
-}
+//int ModelManager::stateFromToken(const std::string& src){
+//
+//	struct It : KeyValueParser {
+//		It(NamedModels& v): m(v){}
+//		void onKeyValue(const std::string& key, const std::string& val){
+//			if(m.count(key)){
+//				//printf("%s = %s\n", key.c_str(), val.c_str());
+//				m[key]->modelFromString(val);
+//			}
+//		}
+//		NamedModels& m;
+//	} it(mState);
+//	
+//	return it(src);
+//}
 
 
 

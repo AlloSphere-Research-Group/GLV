@@ -1,6 +1,78 @@
 GLV Design Notes
 --------------------------------------------------------------------------------
 
+Standard Widgets
+----------------
+
+Categories: Text, Valuator, Layout
+
+Button
+	state matches mouse button state
+	action performed on button up only if in widget region
+
+Checkbox
+	state toggles on button down
+	action performed on mouse down
+
+Radio Button
+	multiple buttons with only one on at a time
+	value is an index of currently selected button
+
+Slider
+	draggable "tick" indicating value
+
+Dial
+
+Progress Bar
+	display a "percent complete" as bar and optional text
+
+Scroll Bar
+
+Label
+
+Text Edit
+	edit a block of text
+
+Line Edit
+	edit a single line of text
+
+Dropdown List
+	box with popup list of strings
+	value is an index of currently selected item
+
+Menu
+	grid that can be filled with any available widgets
+	typically items are labels
+	can nest menus
+
+Group
+	an invisible container of widgets
+	can enforce a specific layout on children
+	can tightly wrap itself around children
+
+Pane
+	a "window" with standard decorations, header/footer bars, close button, etc.
+
+Tabbed Pane
+
+Table
+	display widgets on grid
+	can draw lines at cell divisions
+	can allow adjustment of cells by dragging on lines
+
+Scroll
+	allows contents to be scrolled via scrollbars
+
+
+Standard View Events
+--------------------
+MouseDown, MouseUp, MouseDrag
+KeyDown, KeyUp
+Enter, Leave
+Focus, Unfocus
+Activate, Deactivate
+
+
 View Properties
 ---------------
 We should consider making all the bools in View part of a bit field.

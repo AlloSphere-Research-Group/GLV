@@ -338,20 +338,20 @@ void Table::onDraw(GLV& g){
 //	for(unsigned i=0; i<mColWs.size(); ++i) printf("%g ", mColWs[i]); printf("\n");
 //	for(unsigned i=0; i<mRowHs.size(); ++i) printf("%g ", mRowHs[i]); printf("\n\n");
 
-//	using namespace glv::draw;
-//	if(enabled(DrawGrid)){
-//		color(colors().border);
-//		lineWidth(1);
-//		for(unsigned i=0; i<mCells.size(); ++i){
-//			Cell& c = mCells[i];
-//			//printf("%d %d %d %d\n", c.x, c.y, c.w, c.h);
-//			space_t cl = sumSpan(&mColWs[0], c.x) + c.x*mPad1;
-//			space_t ct = sumSpan(&mRowHs[0], c.y) + c.y*mPad2;
-//			space_t cw = sumSpan(&mColWs[0], c.x+c.w, c.x) + c.w*mPad1;
-//			space_t ch = sumSpan(&mRowHs[0], c.y+c.h, c.y) + c.h*mPad2;
-//			frame(cl, ct, cl+cw, ct+ch);
-//		}
-//	}
+	using namespace glv::draw;
+	if(enabled(DrawGrid)){
+		color(colors().border);
+		lineWidth(1);
+		for(unsigned i=0; i<mCells.size(); ++i){
+			Cell& c = mCells[i];
+			//printf("%d %d %d %d\n", c.x, c.y, c.w, c.h);
+			space_t cl = sumSpan(&mColWs[0], c.x) + c.x*mPad1;
+			space_t ct = sumSpan(&mRowHs[0], c.y) + c.y*mPad2;
+			space_t cw = sumSpan(&mColWs[0], c.x+c.w, c.x) + c.w*mPad1;
+			space_t ch = sumSpan(&mRowHs[0], c.y+c.h, c.y) + c.h*mPad2;
+			frame(cl, ct, cl+cw, ct+ch);
+		}
+	}
 }
 
 

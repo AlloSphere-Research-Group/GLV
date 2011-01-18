@@ -146,8 +146,11 @@ public:
 	/// Get one-dimensional index into plane
 	int indexFlat(int dim1, int dim2) const { return mIndex[dim2]*size(dim1) + mIndex[dim1]; }
 
-	/// Get current fractional position within a dimension
+	/// Get current position within a dimension in half-open unit interval [0, 1)
 	double frac(int dim) const { return double(mIndex[dim])/mSizes[dim]; }
+	
+	/// Get current position within a dimension in closed unit interval [0, 1]
+	double fracClosed(int dim) const { return double(mIndex[dim])/(mSizes[dim]-1); }
 
 	/// Get size of a dimension
 	int size(int dim) const { return mSizes[dim]; }
@@ -540,16 +543,14 @@ public:
 	/// Get data associated with the model, if any
 	virtual const Data& getData() const { static Data d; return d; }
 
+	/// Set data associated with the model, if any
 	virtual void setData(const Data& d){}
 
-	virtual std::string modelToString(){
-		return "";
-	}
-
-	///
-	virtual int modelFromString(const std::string& v){
-		return 0;
-	}
+//	// TODO: this may not be necessary
+//	virtual std::string modelToString(){ return ""; }
+//
+//	// TODO: this may not be necessary
+//	virtual int modelFromString(const std::string& v){ return 0; }
 };
 
 
@@ -569,17 +570,17 @@ public:
 
 	virtual void setData(const Data& d){ assignData(d); }
 
-	virtual std::string modelToString(){
-		return data().toToken();
-	}
-
-	virtual int modelFromString(const std::string& v){
-		Data d = data();
-		d.clone();
-		int r = d.fromToken(v);
-		if(r) assignData(d);
-		return r;
-	}
+//	virtual std::string modelToString(){
+//		return data().toToken();
+//	}
+//
+//	virtual int modelFromString(const std::string& v){
+//		Data d = data();
+//		d.clone();
+//		int r = d.fromToken(v);
+//		if(r) assignData(d);
+//		return r;
+//	}
 
 	const Data& data() const { return mData; }
 
@@ -725,15 +726,15 @@ public:
 
 protected:
 	std::string mName;				// name identifier
-	NamedModels mState;
-	NamedConstModels mConstState;
-	Snapshots mSnapshots;
+	NamedModels mState;				// pointers to active mutable models
+	NamedConstModels mConstState;	// pointers to active immutable models
+	Snapshots mSnapshots;			// repository of saved model data
 
-	/// Convert current model state to string
-	bool stateToToken(std::string& dst, const std::string& modelName) const;
+//	// Convert current model state to string
+//	bool stateToToken(std::string& dst, const std::string& modelName) const;
 	
-	/// Convert string to model state
-	int stateFromToken(const std::string& src);
+//	// Convert string to model state
+//	int stateFromToken(const std::string& src);
 
 	static std::string namedDataToString(const std::string& s, const Data& d){
 		std::string r;

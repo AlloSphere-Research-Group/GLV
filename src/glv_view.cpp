@@ -506,13 +506,16 @@ void View::move(space_t x, space_t y){
 
 
 View& View::name(const std::string& v){
-	if(isalpha(v[0]) || v[0]=='_'){
-		unsigned i=1;
-		for(; i<v.size(); ++i){
-			if(!isalnum(v[i])) break;
-		}
-		if(v.size()==i) mName=v;
-	}
+//printf("View::name(%s)\n", v.c_str());
+//	if(isalpha(v[0]) || '_' == v[0]){
+//		unsigned i=1;
+//		for(; i<v.size(); ++i){
+//			if(!(isalnum(v[i]) || '_' == v[i])) break;
+//		}
+//		if(v.size()==i) mName=v;
+//	}
+
+	if(glv::isIdentifier(v)) mName=v;
 	return *this;
 }
 
@@ -566,7 +569,8 @@ void View::printDescendents() const {
 	struct A : ConstTraversalAction{
 		bool operator()(const View * v, int depth){
 			for(int i=0; i<depth; ++i) printf("|\t");
-			printf("%s %p\n", v->className(), v);
+			const std::string& nm = v->name();
+			printf("%s %p %s\n", v->className(), v, (nm[0] ? "\"" + nm + "\"" : nm).c_str());
 			return true;
 		}	
 	} a;
