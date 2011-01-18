@@ -2,7 +2,6 @@
 	See COPYRIGHT file for authors and license information */
 
 #include <stdio.h>
-#include "glv_core.h"
 #include "glv_binding.h"
 
 namespace glv{

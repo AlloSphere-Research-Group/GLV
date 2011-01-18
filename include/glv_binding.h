@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include "glv_core.h"
 
 namespace glv{
 
@@ -162,8 +163,25 @@ protected:
 	static void implQuit();
 };
 
-typedef Window AbstractWindow;
-typedef Application AbstractApplication;
+
+
+/// Key event handler to toggle fullscreen
+struct FullScreenToggler : EventHandler {
+
+	///
+	FullScreenToggler(Window& w, int key_ = Key::Escape): win(w), key(key_){}
+
+	bool onEvent(View& v, GLV& g){
+		if(g.keyboard().key() == key){
+			win.fullScreenToggle();
+			return false;
+		}
+		return true;
+	}
+
+	Window& win;
+	int key;
+};
 
 } // glv::
 
