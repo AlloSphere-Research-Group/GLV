@@ -8,14 +8,14 @@ namespace glv{
 
 Texture2::Texture2(GLsizei w_, GLsizei h_, GLenum format, GLenum type)
 :	mID(0), w(0), h(0), mPixels(0), mBuffer(0),
-	mFormat(format), mType(type), mMagFilter(GL_LINEAR)
+	mFormat(format), mType(type), mMagFilter(GL_LINEAR), mWrapMode(GL_CLAMP)
 {
 	alloc(w,h);
 }
 
 Texture2::Texture2(GLsizei w, GLsizei h, GLvoid * pixs, GLenum format, GLenum type, bool doesLoad)
 :	mID(0), w(w), h(h), mPixels(pixs), mBuffer(0),
-	mFormat(format), mType(type), mMagFilter(GL_LINEAR)
+	mFormat(format), mType(type), mMagFilter(GL_LINEAR), mWrapMode(GL_CLAMP)
 {
 	if(doesLoad) create(w, h, mPixels);
 }
@@ -116,27 +116,28 @@ void Texture2::destroy(){
 
 
 Texture2& Texture2::draw(
-	float ql, float qt, float qr, float qb,
+	double ql, double qt, double qr, double qb,
 	float tl, float tt, float tr, float tb
 ){
 	int Nv=4;
-	float verts[] = { ql,qt, ql,qb, qr,qt, qr,qb };
+	double verts[] = { ql,qt, ql,qb, qr,qt, qr,qb };
 	float texcs[] = { tl,tt, tl,tb, tr,tt, tr,tb };
 
 	// note: vertex arrays enabled at start of GLV draw loop
 //	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glVertexPointer(2, GL_FLOAT, 0, verts);
+	glVertexPointer(2, GL_DOUBLE, 0, verts);
 	glTexCoordPointer(2, GL_FLOAT, 0, texcs);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, Nv);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 //	glDisableClientState(GL_VERTEX_ARRAY);
 	return *this;
+
 }
 
 Texture2& Texture2::format(GLenum v){ mFormat=v; return *this; }
-
 Texture2& Texture2::magFilter(GLenum v){ mMagFilter=v; return *this; } 
+Texture2& Texture2::wrapMode(GLenum v){ mWrapMode=v; return *this; } 
 
 Texture2& Texture2::send(){
 
@@ -155,6 +156,8 @@ void Texture2::sendParams(){
 //	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mMagFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mMagFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mWrapMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mWrapMode);
 }
 
 Texture2& Texture2::type(GLenum v){ mType=v; return *this; }

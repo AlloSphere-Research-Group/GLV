@@ -47,7 +47,7 @@ public:
 
 	Texture2& bind();										///< Bind self to current context
 	Texture2& draw(											///< Draw texture to rectangular quad
-		float ql, float qt, float qr, float qb,
+		double ql, double qt, double qr, double qb,
 		float tl=0, float tt=1, float tr=1, float tb=0
 	);
 	
@@ -59,7 +59,8 @@ public:
 
 	Texture2& format(GLenum v);								///< Set the color format
 	Texture2& type(GLenum v);								///< Set the color data type
-	Texture2& magFilter(GLenum v);
+	Texture2& magFilter(GLenum v);							///< Set mag filter
+	Texture2& wrapMode(GLenum v);							///< Set wrap mode
 
 private:
 	GLuint mID;
@@ -74,6 +75,7 @@ private:
 						//   GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_FLOAT
 
 	GLenum mMagFilter;	// GL_LINEAR, GL_NEAREST
+	GLenum mWrapMode;	// GL_CLAMP, GL_REPEAT
 
 	void sendParams();
 };
