@@ -193,6 +193,7 @@ void PlotDensity::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
 void PlotDensity::onContextCreate(){
 	// note: texture created in onPlot since we don't know the size
 	//mTex.create();
+	mTex.recreate();
 }
 
 void PlotDensity::onContextDestroy(){

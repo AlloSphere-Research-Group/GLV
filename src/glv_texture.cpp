@@ -94,18 +94,22 @@ Texture2& Texture2::create(GLsizei width, GLsizei height, GLvoid * pixs){
 		w = width;
 		h = height;
 		mPixels = pixs;
-
-		destroy();
-		glGenTextures(1, &mID); //printf("%i\n", mID);
-		bind();
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, mFormat, mType, mPixels);
-		glTexImage2D(GL_TEXTURE_2D, 0, mFormat, w, h, 0, mFormat, mType, mPixels);
-		sendParams();
+		recreate();
 	}
 	return *this;
 }
 
 Texture2& Texture2::create(){ create(w,h, mPixels); return *this; }
+
+Texture2& Texture2::recreate(){
+	destroy();
+	glGenTextures(1, &mID); //printf("%i\n", mID);
+	bind();
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, mFormat, mType, mPixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, mFormat, w, h, 0, mFormat, mType, mPixels);
+	sendParams();
+	return *this;
+}
 
 void Texture2::destroy(){
 	if(id()){

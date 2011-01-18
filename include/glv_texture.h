@@ -55,6 +55,9 @@ public:
 	
 	Texture2& create(GLsizei w, GLsizei h, GLvoid * pixels = 0);	///< Create new texture on graphics card
 	Texture2& create();										///< Reload texture onto GPU
+
+	Texture2& recreate();									///< Recreates texture on GPU using current settings
+
 	Texture2& send();										///< Send pointed to pixels to GPU
 
 	Texture2& format(GLenum v);								///< Set the color format
