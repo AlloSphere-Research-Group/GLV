@@ -11,10 +11,12 @@ struct Canvas : public Plot{
 	Canvas(const Rect& r): Plot(r), plotDensity(HSV(0.3,0.5,1), 1./16){
 		int N = 256;
 		data().resize(Data::FLOAT, 1, N,N);
-		plotDensity.interpolate(true).drawUnderGrid(true);
+		//plotDensity.interpolate(true).drawUnderGrid(true);
 		add(plotDensity);
 		equalizeAxes(true);
-		
+		showAxes(false);
+		showGrid(false);
+		disable(DrawBorder);
 	}
 
 	void onAnimate(double dt, GLV& g){
@@ -48,12 +50,14 @@ struct Canvas : public Plot{
 int main(){
 	GLV top;
 	Canvas v1(Rect(0));
-	
+	Window win(600,600, "Chladni Pattern", &top);
+
 	top.colors().set(StyleColor::WhiteOnBlack);
 	v1.stretch(1,1);
 	top << v1;
 
-	Window win(600,600, "Chladni Pattern", &top);
+	top.addHandler(Event::KeyDown, *new FullScreenToggler(win));
+
 	Application::run();
 	return 0;
 }
