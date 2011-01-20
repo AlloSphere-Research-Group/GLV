@@ -411,9 +411,36 @@ Data& Data::resize(const int * sizes, int n){
 
 Data& Data::resize(Data::Type t, const int * sizes, int n){
 PDEBUG;
-	if(t!=NONE && (type()!=t || size()!=product(sizes,n))){
-		realloc(t, sizes,n);
+//	if(t!=NONE && (type()!=t || size()!=product(sizes,n))){
+//		realloc(t, sizes,n);
+//	}
+
+	// only do allocation if valid type
+	if(NONE != t){
+	
+		int newsize = product(sizes,n);
+
+		if(size() == 0 && newsize == 0){		// no sizing, just change type
+			mType = t;
+		}
+		else if((type() != t) || (size() != newsize)){	// different type or size triggers realloc
+			realloc(t, sizes,n);
+		}
+	
+//		printf("resize: (%d %d) %d %d \t\t", t, type(), size(), product(sizes,n)); print();
+//		if(type()!=t || size()!=product(sizes,n)){
+//			printf("reallocing\n");
+//			realloc(t, sizes,n);
+//		}
+//		else if(size()==0){
+//			printf("size()==0\n");
+//			mType = t;
+//		}
+//		else{
+//			printf("else\n");
+//		}
 	}
+
 PDEBUG;
 	return *this;
 }
