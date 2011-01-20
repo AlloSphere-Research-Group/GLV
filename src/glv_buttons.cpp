@@ -43,7 +43,7 @@ void Buttons::onDraw(GLV& g){
 }
 
 bool Buttons::onEvent(Event::t e, GLV& g){
-	Widget::onEvent(e,g);
+	if(!Widget::onEvent(e,g)) return false;
 
 	switch(e){
 	case Event::MouseDrag:
