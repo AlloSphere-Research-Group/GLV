@@ -77,6 +77,15 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	draw::enable(draw::PointSmooth);
 	draw::enable(draw::LineSmooth);
 	
+	mLineStipple = 0x000000ff;
+	
+	bool doLineStipple = (-1 != mLineStipple);
+
+	if(doLineStipple){
+		draw::lineStipple(1, mLineStipple);
+		draw::enable(draw::LineStipple);
+	}
+
 	Indexer ind(d.shape()+1); // dimension 0 is non-spatial
 	onMap(gd, d, ind);
 
@@ -89,6 +98,8 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	}
 	
 	onDraw(gd, d);
+
+	if(doLineStipple) draw::disable(draw::LineStipple);
 }
 
 

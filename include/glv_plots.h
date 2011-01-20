@@ -39,7 +39,7 @@ public:
 	/// @param[in] stroke	width of lines or points
 	/// @param[in] col		color
 	Plottable(int prim=draw::Points, float stroke=1, const Color& col=Color(1,0,0))
-	:	mPrim(prim), mStroke(stroke), mColor(col), mDrawUnder(false)
+	:	mPrim(prim), mStroke(stroke), mColor(col), mLineStipple(-1), mDrawUnder(false)
 	{}
 
 	virtual ~Plottable(){}
@@ -63,13 +63,23 @@ public:
 	bool drawUnderGrid() const { return mDrawUnder; }
 	Plottable& drawUnderGrid(bool v){ mDrawUnder=v; return *this; }
 	
+	/// Get line stippling pattern
+	short lineStipple() const { return mLineStipple; }
+	
+	/// Set Line stippling pattern
+	Plottable& lineStipple(short v){ mLineStipple=v; return *this; }	
+	
 	/// Get geometric primitive
 	int prim() const { return mPrim; }	
+
+	/// Set geometric primitive
 	Plottable& prim(int v){ mPrim=v; return *this; }
 
-	/// Get stroke width (for lines and points)
-	int stroke() const { return mStroke; }	
-	Plottable& stroke(int v){ mStroke=v; return *this; }
+	/// Get line stroke width (for lines and points)
+	float stroke() const { return mStroke; }	
+
+	/// Set line stroke width (for lines and points)
+	Plottable& stroke(float v){ mStroke=v; return *this; }
 
 	/// Add a graphics map
 	Plottable& add(GraphicsMap& v);
@@ -87,6 +97,7 @@ protected:
 	Color mColor;
 	Data mData;
 	GraphicsMaps mGraphicsMaps;
+	short mLineStipple;
 	bool mDrawUnder;
 	
 	void doPlot(GraphicsData& gd, const Data& d);
