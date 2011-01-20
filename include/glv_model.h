@@ -258,19 +258,19 @@ public:
 	
 	Data& operator+= (const Data& v);
 
-	/// Get element at 1D index, performing type cast if necessary
+	/// Get element at 1D index, performing type conversion if necessary
 	template <class T> const T at(int ind) const;
 
-	/// Get element at 2D index, performing type cast if necessary
+	/// Get element at 2D index, performing type conversion if necessary
 	template <class T> const T at(int i1, int i2) const;
 
-	/// Get element at 3D index, performing type cast if necessary
+	/// Get element at 3D index, performing type conversion if necessary
 	template <class T> const T at(int i1, int i2, int i3) const;
 
-	/// Get element at 4D index, performing type cast if necessary
+	/// Get element at 4D index, performing type conversion if necessary
 	template <class T> const T at(int i1, int i2, int i3, int i4) const;
 
-	/// Get element at 1D index using pointer casting
+	/// Get element at 1D index using raw pointer casting
 	template <class T>
 	const T& elem(int i) const { return elems<T>()[i*stride()]; }
 
@@ -408,19 +408,19 @@ public:
 	/// Allocate internal memory and copy over previous data
 	void clone();
 
-	/// Get mutable reference to element at 1D index using pointer casting
+	/// Get mutable reference to element at 1D index using raw pointer casting
 	template <class T>
 	T& elem(int i){ return elems<T>()[i*stride()]; }
 
-	/// Get mutable reference to element at 2D index using pointer casting
+	/// Get mutable reference to element at 2D index using raw pointer casting
 	template <class T>
 	T& elem(int i1, int i2){ return elems<T>()[indexFlat(i1,i2)*stride()]; }
 
-	/// Get mutable reference to element at 3D index using pointer casting
+	/// Get mutable reference to element at 3D index using raw pointer casting
 	template <class T>
 	T& elem(int i1, int i2, int i3){ return elems<T>()[indexFlat(i1,i2,i3)*stride()]; }
 
-	/// Get mutable reference to element at 4D index using pointer casting
+	/// Get mutable reference to element at 4D index using raw pointer casting
 	template <class T>
 	T& elem(int i1, int i2, int i3, int i4){ return elems<T>()[indexFlat(i1,i2,i3,i4)*stride()]; }
 
