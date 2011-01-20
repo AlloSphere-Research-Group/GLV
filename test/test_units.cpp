@@ -540,6 +540,12 @@ int main(){
 			for(int i=0; i<d.size(); ++i) d.assign(i, i);
 			for(int i=0; i<d.size(); ++i) assert(d.elem<int>(i) == i);
 			
+			// resizing
+			{
+				//Data e(Data::INT, 3,3);
+			}
+			
+			// cloning data
 			{
 				Data e = d;
 				assert(e == d);
@@ -549,6 +555,7 @@ int main(){
 				assert(e == d);
 			}
 			
+			// reversed slice
 			{				
 				Data e = d.reversed();
 				for(int i=0; i<e.size(); ++i)
@@ -561,7 +568,6 @@ int main(){
 				e += d;
 				for(int i=0; i<e.size(); ++i)
 					assert(e.elem<int>(i) == e.size()-1);
-
 			}
 		}
 
