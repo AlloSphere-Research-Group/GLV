@@ -14,7 +14,7 @@ struct Glyph{
 	static float cap()		{ return 0; }
 	static float median()	{ return 3; }
 	static float baseline()	{ return 8; }
-	static float descent()	{ return 12; }
+	static float descent()	{ return 11; }
 	static float width()	{ return 8; }
 	
 	unsigned char dots() const { return (field & MaskDots) >> 5; }
