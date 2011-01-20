@@ -77,8 +77,6 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	draw::enable(draw::PointSmooth);
 	draw::enable(draw::LineSmooth);
 	
-	mLineStipple = 0x000000ff;
-	
 	bool doLineStipple = (-1 != mLineStipple);
 
 	if(doLineStipple){
