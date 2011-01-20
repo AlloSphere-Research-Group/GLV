@@ -86,7 +86,7 @@ void Label::fitExtent(){
 
 	float tw, th;
 	font().getBounds(tw,th, data().toString().c_str());
-	th -= font().descent();
+	//th -= font().descent();
 
 	space_t dw = tw - w;
 	space_t dh = th - h;
