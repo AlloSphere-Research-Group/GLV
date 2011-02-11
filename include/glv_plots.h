@@ -153,14 +153,37 @@ protected:
 class PlotFunction1D : public Plottable{
 public:
 
-	/// @param[in] color	plot color
-	PlotFunction1D(const Color& color=Color(0));
-
-	static GraphicsMap& defaultVertexMap();
-
-	struct DefaultVertexMap : public GraphicsMap{
-		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+	enum PathStyle{
+		DIRECT,			/**< Function values are vertices */
+		ZIGZAG,			/**< Zig-zag between domain axis and function values */
+//		SPIKE,
+//		STEP
 	};
+
+
+	/// @param[in] color	plot color
+	/// @param[in] stroke	stroke width
+	/// @param[in] prim		drawing primitive
+	/// @param[in] path		path style
+	PlotFunction1D(
+		const Color& color = Color(0),
+		float stroke = 1,
+		int prim = draw::LineStrip,
+		PathStyle path = DIRECT
+	);
+
+	PlotFunction1D& pathStyle(PathStyle v){ mPathStyle=v; return *this; }
+
+	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+
+//	static GraphicsMap& defaultVertexMap();
+//
+//	struct DefaultVertexMap : public GraphicsMap{
+//		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+//	};
+
+protected:
+	PathStyle mPathStyle;
 };
 
 
@@ -171,11 +194,13 @@ public:
 	/// @param[in] color	plot color
 	PlotFunction2D(const Color& color=Color(0));
 
-	static GraphicsMap& defaultVertexMap();
+	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
 
-	struct DefaultVertexMap : public GraphicsMap{
-		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
-	};
+//	static GraphicsMap& defaultVertexMap();
+//
+//	struct DefaultVertexMap : public GraphicsMap{
+//		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+//	};
 };
 
 
@@ -185,23 +210,25 @@ class Plot : public Grid {
 public:
 	typedef std::vector<Plottable *> Plottables;
 
+	/// @param[in] r	geometry
 	Plot(const Rect& r=Rect(0));
 
+	/// @param[in] r	geometry
+	/// @param[in] p	plottable
 	Plot(const Rect& r, Plottable& p);
+	
+	/// @param[in] r	geometry
+	/// @param[in] p1	first plottable
+	/// @param[in] p2	second plottable
+	Plot(const Rect& r, Plottable& p1, Plottable& p2);
 
 	Plottables& plottables(){ return mPlottables; }
 	const Plottables& plottables() const { return mPlottables; }
-
-	int valueIndex(int i) const { return mValInd[i]; }
 
 	/// Add new plotting routine
 	Plot& add(Plottable& v);
 
 	Plot& remove(Plottable& v);
-
-	Plot& valueIndex(int from, int to){
-		mValInd[from] = to; return *this;
-	}
 
 	virtual const char * className() const { return "Plot"; }
 	virtual void onDraw(GLV& g);
@@ -209,11 +236,17 @@ public:
 
 protected:
 	Plottables mPlottables;
-	int mValInd[4];
-	
-	void resetValInd(){
-		for(int i=0; i<4; ++i) mValInd[i]=i;
-	}
+//	int mValInd[4];
+//	
+//	void resetValInd(){
+//		for(int i=0; i<4; ++i) mValInd[i]=i;
+//	}
+
+//	int valueIndex(int i) const { return mValInd[i]; }
+
+//	Plot& valueIndex(int from, int to){
+//		mValInd[from] = to; return *this;
+//	}
 };
 
 

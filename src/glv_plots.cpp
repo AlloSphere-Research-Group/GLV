@@ -72,7 +72,7 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	if(!d.hasData()) return;
 	draw::color(mColor);
 	draw::stroke(stroke());
-//	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 //	glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
 	draw::enable(draw::PointSmooth);
 	draw::enable(draw::LineSmooth);
@@ -240,8 +240,14 @@ void PlotDensity::onDraw(GraphicsData& b, const Data& d){
 }
 
 
+PlotFunction1D::PlotFunction1D(const Color& c, float stroke, int prim, PathStyle path)
+:	Plottable(prim, stroke,c), mPathStyle(path)
+{
+//	add(defaultVertexMap());
+}
 
-void PlotFunction1D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, const Indexer& i){
+//void PlotFunction1D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, const Indexer& i){
+void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 //	Indexer j(i.size());
 //	while(j()){
 //		double x = j[0];
@@ -259,37 +265,82 @@ void PlotFunction1D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, con
 	//int N0 = d.size(0);
 	int N1 = d.size(1);
 	int N2 = d.size(2);
+	
+	// N1 == 1,	domain along y, f(y) = ...
+	// N2 == 1,	domain along x, f(x) = ...
 
-	if(N2==1){
-		while(i()){
-			double x = i[0];
-			double y = d.at<double>(0, i[0]);
-			g.addVertex(x, y);
+	struct getFX{
+		getFX(double& x, double& y, const Data& d, const Indexer& i){
+			x = i[0];
+			y = d.at<double>(0, i[0]);
 		}
-	}
-	else if(N1==1){
-		while(i()){
-			double x = d.at<double>(0, 0, i[1]);
-			double y = i[1];
-			g.addVertex(x, y);
-		}	
+	};
+
+	struct getFY{
+		getFY(double& x, double& y, const Data& d, const Indexer& i){
+			x = d.at<double>(0, 0, i[1]);
+			y = i[1];
+		}
+	};
+
+	switch(mPathStyle){
+		case PlotFunction1D::DIRECT:
+			if(1==N2){
+				while(i()){
+					double x,y; getFX(x,y, d,i);
+					g.addVertex(x, y);
+				}
+			}
+			else if(1==N1){
+				while(i()){
+					double x,y; getFY(x,y, d,i);
+					g.addVertex(x, y);
+				}	
+			}
+			break;
+		case PlotFunction1D::ZIGZAG:
+			if(1==N2){
+				while(i()){
+					double x,y; getFX(x,y, d,i);
+					g.addVertex(x, 0);
+					g.addVertex(x, y);
+				}
+			}
+			else if(1==N1){
+				while(i()){
+					double x,y; getFY(x,y, d,i);
+					g.addVertex(0, y);
+					g.addVertex(x, y);
+				}	
+			}			
+			break;
+		default:;
 	}
 }
 
-PlotFunction1D::PlotFunction1D(const Color& c)
+//GraphicsMap& PlotFunction1D::defaultVertexMap(){
+//	static GraphicsMap * m = new DefaultVertexMap; return *m;
+//}
+
+
+
+
+//void PlotFunction2D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, const Indexer& i){
+//	if(d.size(0) < 2) return;
+//	while(i()){
+//		double x = d.at<double>(0, i[0], i[1]);
+//		double y = d.at<double>(1, i[0], i[1]);
+//		g.addVertex(x, y);
+//	}
+//}
+
+PlotFunction2D::PlotFunction2D(const Color& c)
 :	Plottable(draw::LineStrip, 1,c)
 {
-	add(defaultVertexMap());
+//	add(defaultVertexMap());
 }
 
-GraphicsMap& PlotFunction1D::defaultVertexMap(){
-	static GraphicsMap * m = new DefaultVertexMap; return *m;
-}
-
-
-
-
-void PlotFunction2D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, const Indexer& i){
+void PlotFunction2D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	if(d.size(0) < 2) return;
 	while(i()){
 		double x = d.at<double>(0, i[0], i[1]);
@@ -298,15 +349,11 @@ void PlotFunction2D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, con
 	}
 }
 
-PlotFunction2D::PlotFunction2D(const Color& c)
-:	Plottable(draw::LineStrip, 1,c)
-{
-	add(defaultVertexMap());
-}
+//GraphicsMap& PlotFunction2D::defaultVertexMap(){
+//	static GraphicsMap * m = new DefaultVertexMap; return *m;
+//}
 
-GraphicsMap& PlotFunction2D::defaultVertexMap(){
-	static GraphicsMap * m = new DefaultVertexMap; return *m;
-}
+
 
 
 struct EvPlotCreateContext : public EventHandler{
@@ -334,21 +381,30 @@ struct EvPlotDestroyContext : public EventHandler{
 	}
 } evPlotDestroyContext;
 
+void Plot_addEvents(Plot& p){
+	p.addHandler(Event::WindowCreate, evPlotCreateContext);
+	p.addHandler(Event::WindowDestroy, evPlotDestroyContext);
+	p.addHandler(Event::Quit, evPlotDestroyContext);
+}
+
 Plot::Plot(const Rect& r)
 :	Grid(r)
-{	resetValInd();
-	addHandler(Event::WindowCreate, evPlotCreateContext);
-	addHandler(Event::WindowDestroy, evPlotDestroyContext);
-	addHandler(Event::Quit, evPlotDestroyContext);
+{
+	Plot_addEvents(*this);
 }
 
 Plot::Plot(const Rect& r, Plottable& p)
 :	Grid(r)
-{	resetValInd();
+{
 	add(p);
-	addHandler(Event::WindowCreate, evPlotCreateContext);
-	addHandler(Event::WindowDestroy, evPlotDestroyContext);
-	addHandler(Event::Quit, evPlotDestroyContext);
+	Plot_addEvents(*this);
+}
+
+Plot::Plot(const Rect& r, Plottable& p1, Plottable& p2)
+:	Grid(r)
+{
+	add(p1); add(p2);
+	Plot_addEvents(*this);
 }
 
 void Plot::onDraw(GLV& g){
@@ -393,10 +449,27 @@ bool Plot::onEvent(Event::t e, GLV& g){
 	return true;
 }
 
-Plot& Plot::add(Plottable& v){ mPlottables.push_back(&v); return *this; }
+Plot& Plot::add(Plottable& v){
+	if(std::find(mPlottables.begin(), mPlottables.end(), &v) == mPlottables.end()){
+		mPlottables.push_back(&v);
+	}
+	return *this;
+}
 
 Plot& Plot::remove(Plottable& v){
-	std::remove(mPlottables.begin(), mPlottables.end(), &v);
+	// why the f*!@ doesn't this work!
+	//std::remove(mPlottables.begin(), mPlottables.end(), &v);
+
+	Plottables::iterator i = mPlottables.begin();
+	while(i != mPlottables.end()){
+		Plottable* p = *i;
+		if(p == &v){
+			mPlottables.erase(i);
+			break;
+		}
+		++i;
+	}
+
 	return *this;
 }
 
