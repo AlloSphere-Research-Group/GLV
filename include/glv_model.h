@@ -574,13 +574,13 @@ public:
 //		return data().toToken();
 //	}
 //
-//	virtual int modelFromString(const std::string& v){
-//		Data d = data();
-//		d.clone();
-//		int r = d.fromToken(v);
-//		if(r) assignData(d);
-//		return r;
-//	}
+	int modelFromString(const std::string& v){
+		Data d = data();
+		d.clone();
+		int r = d.fromToken(v);
+		if(r) assignData(d);
+		return r;
+	}
 
 	const Data& data() const { return mData; }
 
