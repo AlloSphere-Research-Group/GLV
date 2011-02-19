@@ -135,10 +135,10 @@ class Sliders: public Widget{
 public:
 
 	/// @param[in] r			geometry
-	/// @param[in] nx			number along x (ignored by fixed size value types)
-	/// @param[in] ny			number along y (ignored by fixed size value types)
+	/// @param[in] nx			number along x
+	/// @param[in] ny			number along y
 	/// @param[in] dragSelect	whether new sliders are selected while dragging
-	Sliders(const Rect& r, int nx, int ny, bool dragSelect=false);
+	Sliders(const Rect& r=Rect(100, 20), int nx=1, int ny=1, bool dragSelect=false);
 
 	virtual ~Sliders(){}
 
