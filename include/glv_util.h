@@ -198,7 +198,7 @@ public:
 	}
 
 	/// Appends element to end of buffer growing its size if necessary
-	void append(const T &v, double growFactor=2){
+	void append(const T &v, int growFactor=2){
 		if(size() >= capacity()){
 			T vcopy = v; // 'v' may become invalidated after resize
 			mElems.resize(size() ? size()*growFactor : 4);

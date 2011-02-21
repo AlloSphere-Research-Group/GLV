@@ -81,6 +81,9 @@
 	#undef near
 	#endif
 
+	// note: return value of snprintf() and _snprintf() differ!
+	#define snprintf _snprintf
+
 	#include <GL/glew.h>
 	#include <gl/gl.h>
 	#include <gl/glu.h>

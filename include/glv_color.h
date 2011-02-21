@@ -9,7 +9,7 @@
 
 namespace glv {
 
-class HSV;
+struct HSV;
 
 /// Color represented by red, green, blue, and alpha components
 struct Color{
