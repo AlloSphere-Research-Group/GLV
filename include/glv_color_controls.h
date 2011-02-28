@@ -98,12 +98,41 @@ public:
 		setColor();
 		(*this) << mComp1 << mComp2 << mComp3 << mCompA;
 		mCompA.property(Visible, mControlsAlpha);
+
+		data().resize(Data::FLOAT, 4);
+		//data().set(mColor.components, 4);
 	}
 	
 	bool isHSV() const { return mIsHSV; }
 	const Color& getValue() const { return mColor; }
 	ColorSliders& setValue(const Color& v){ setColor(v); return *this; }
 	ColorSliders& setValue(const HSV& v){ setColor(v); return *this; }
+
+	virtual const glv::Data& getData() const {
+		glv::Data& md = const_cast<glv::Data&>(data());
+		if(isHSV()){
+			HSV h = mColor;
+			const float v[4] = {h.h, h.s, h.v, mColor.a};
+			md.assign(v, 4);
+		}
+		else{
+			md.assign(mColor.components, 4);
+		}		
+		
+		return data();
+	}
+
+	virtual void setData(const glv::Data& v){
+		Color c;
+		if(isHSV()){
+			c = HSV(v.at<float>(0), v.at<float>(1), v.at<float>(2));
+			c.a = v.at<float>(3);
+		}
+		else{
+			c = Color(v.at<float>(0), v.at<float>(1), v.at<float>(2), v.at<float>(3));
+		}
+		setColor(c);
+	}
 
 	virtual const char * className() const { return "ColorSliders"; }
 	
