@@ -200,7 +200,7 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 				// ctrl-key events are the printable character keys.
 
 				//Enter		=3
-				//BackSpace	=8
+				//Backspace	=8
 				//Tab		=9
 				//Return	=13
 				//Escape	=27
