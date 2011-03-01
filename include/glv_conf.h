@@ -38,6 +38,7 @@
 			CGLContextObj ctx = CGLGetCurrentContext();\
 			CGLSetParameter(ctx,  kCGLCPSwapInterval, &MacHackVBL); }
 
+
 #elif defined(__linux__)
 
 	#define GLV_PLATFORM		"UNIX"
@@ -56,9 +57,9 @@
   				fprintf(stderr, "GLEW Init Error: %s\n", glewGetErrorString(err));\
 			}\
 		}
-#endif
 
-#ifdef WIN32
+
+#elif defined(WIN32)
 	
 	#define GLV_PLATFORM		"WIN32"
 	#define GLV_PLATFORM_WIN
@@ -102,6 +103,5 @@
 
 #endif
 
+#endif /* include guard */
 
-
-#endif
