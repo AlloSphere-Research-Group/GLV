@@ -425,7 +425,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 			}
 			else{
 				switch(key){
-				case Key::Delete:
+				case Key::Backspace:
 					if(selected()) deleteSelected();
 					else if(validPos()){
 						deleteText(mPos-1, 1);
@@ -433,7 +433,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 					}
 					return false;
 					
-				case Key::BackSpace:
+				case Key::Delete:
 					if(selected()) deleteSelected();
 					else if(mText.size()){
 						deleteText(mPos, 1);

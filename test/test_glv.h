@@ -247,7 +247,8 @@ public:
 					case '7': mPrim = draw::Quads; return false;
 					case '8': mPrim = draw::QuadStrip; return false;
 					case 'g': toggle(DrawGrid); return false;
-					case Key::Delete: 
+					case Key::Delete:
+					case Key::Backspace:
 						if(isSelected()) mPoints.erase(mPoints.begin()+mSelected);
 						deselect();
 						return false;
