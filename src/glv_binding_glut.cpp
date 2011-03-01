@@ -5,18 +5,6 @@
 #include "glv_binding.h"
 #include "glv_core.h"
 
-/*
-#if defined (__APPLE__) || defined (OSX)
-	#include <GLUT/glut.h>
-#endif
-#if defined(__linux__)
-	#include <GL/glut.h>
-#endif
-#ifdef WIN32
-	#include <GL/glut.h>
-#endif
-*/
-
 #if defined(GLV_PLATFORM_OSX)
 	#include <GLUT/glut.h>
 #elif defined(GLV_PLATFORM_UNIX)
