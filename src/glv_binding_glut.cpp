@@ -5,6 +5,7 @@
 #include "glv_binding.h"
 #include "glv_core.h"
 
+/*
 #if defined (__APPLE__) || defined (OSX)
 	#include <GLUT/glut.h>
 #endif
@@ -12,6 +13,15 @@
 	#include <GL/glut.h>
 #endif
 #ifdef WIN32
+	#include <GL/glut.h>
+#endif
+*/
+
+#if defined(GLV_PLATFORM_OSX)
+	#include <GLUT/glut.h>
+#elif defined(GLV_PLATFORM_UNIX)
+	#include <GL/glut.h>
+#elif defined(GLV_PLATFORM_WIN)
 	#include <GL/glut.h>
 #endif
 
@@ -180,13 +190,12 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 
 			// Reassign keycodes when CTRL is down
 			#ifdef GLV_PLATFORM_OSX
-
 			bool ctrl = glutGetModifiers() & GLUT_ACTIVE_CTRL;
 
 			if(ctrl){
 				// All alphabetical keys get dropped to lower ASCII range.
 				// Some will conflict with standard non-printable characters.
-				// There is no way to detect this, since the control modified
+				// There is no way to detect this since the control modified
 				// keycode gets sent to the GLUT callback. We will assume that
 				// ctrl-key events are the printable character keys.
 
@@ -195,8 +204,17 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 				//Tab		=9
 				//Return	=13
 				//Escape	=27
+				//Delete	=127
 				
-				if(key <= 26){ key += 96; }
+				if(key == 8){
+					key = 127;
+				}
+				else if(key == 127){
+					key = 8;
+				}
+				else if(key <= 26){
+					key += 96;
+				}
 				
 				// only some non-alphabetic keys are wrong...
 				else{
@@ -210,12 +228,14 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 					
 				}
 			}
-			
 			#endif
-			
 			#undef MAP
 
-			//printf("GLUT o: %3d %c\n", key, key);
+			#ifdef GLV_PLATFORM_UNIX
+				
+			#endif
+
+			printf("GLUT o: %3d %c\n", key, key);
 		}
 		
 		down ? g->setKeyDown(key) : g->setKeyUp(key);
