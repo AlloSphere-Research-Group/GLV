@@ -206,28 +206,24 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 				//Escape	=27
 				//Delete	=127
 				
-				if(key == 8){
-					key = 127;
-				}
-				else if(key == 127){
-					key = 8;
-				}
-				else if(key <= 26){
-					key += 96;
-				}
+				if(key <= 26){ key += 96; }
 				
 				// only some non-alphabetic keys are wrong...
 				else{
-					
 					switch(key){
 						MAP(27, '[');
 						MAP(28, '\\');
 						MAP(29, ']');
 						MAP(31, '-');
 					};
-					
 				}
 			}
+
+			else{
+				if(8 == key){ key = 127; }
+				else if(127 == key){ key = 8; }
+			}
+
 			#endif
 			#undef MAP
 
