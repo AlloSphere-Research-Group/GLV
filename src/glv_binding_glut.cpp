@@ -219,6 +219,7 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 				}
 			}
 
+			// swap backspace and delete
 			else{
 				if(8 == key){ key = 127; }
 				else if(127 == key){ key = 8; }
@@ -227,11 +228,7 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 			#endif
 			#undef MAP
 
-			#ifdef GLV_PLATFORM_UNIX
-				
-			#endif
-
-			printf("GLUT o: %3d %c\n", key, key);
+//			printf("GLUT o: %3d %c\n", key, key);
 		}
 		
 		down ? g->setKeyDown(key) : g->setKeyUp(key);
