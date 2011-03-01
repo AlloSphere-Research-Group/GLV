@@ -61,6 +61,7 @@ struct MyGLV : public GLV{
 				case 'q': Application::quit(); break;
 				default:;
 			}
+			break;
 		
 		case Event::WindowResize: printf("Event::WindowResize\n"); break;
 		case Event::WindowCreate: printf("Event::WindowCreate\n"); break;
