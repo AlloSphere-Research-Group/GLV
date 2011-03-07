@@ -178,7 +178,7 @@ void push3D(float w, float h, float near, float far, float fovy){
 		gluPerspective(fovy, w/(GLfloat)h, near, far);
 	
 	push(ModelView); identity();
-		translate(0, 0, -2.42);
+		translate(0, 0, -2.42f);
 }
 
 
@@ -194,7 +194,7 @@ void text(const char * s, float l, float t, unsigned fontSize, float lineSpacing
 	f.size(fontSize);
 	f.lineSpacing(lineSpacing);
 	f.tabSpaces(tabSpaces);
-	f.render(s, l+0.375, t+0.375, 0);
+	f.render(s, l+0.375f, t+0.375f, 0);
 	//f.render(s, int(l)+0.5, int(t)+0.5,0);
 }
 

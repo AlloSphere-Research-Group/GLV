@@ -96,25 +96,25 @@ public:
 		addIndex(i1,i2,i3); addIndex(i4); }
 
 	/// Append 2D vertex
-	void addVertex(double x, double y){ addVertex2(x,y); }
+	void addVertex(float x, float y){ addVertex2(x,y); }
 
 	/// Append 3D vertex
-	void addVertex(double x, double y, double z){ addVertex3(x,y,z); }
+	void addVertex(float x, float y, float z){ addVertex3(x,y,z); }
 
 	/// Append 2D vertex
-	void addVertex2(double x, double y){
+	void addVertex2(float x, float y){
 		vertices2().append(Point2(x,y)); }
 
 	/// Append 2D vertices
-	void addVertex2(double x1, double y1, double x2, double y2){
+	void addVertex2(float x1, float y1, float x2, float y2){
 		addVertex2(x1,y1); addVertex2(x2,y2); }
 
 	/// Append 2D vertices
-	void addVertex2(double x1, double y1, double x2, double y2, double x3, double y3){
+	void addVertex2(float x1, float y1, float x2, float y2, float x3, float y3){
 		addVertex2(x1,y1,x2,y2); addVertex2(x3,y3); }
 
 	/// Append 2D vertices
-	void addVertex2(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4){
+	void addVertex2(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4){
 		addVertex2(x1,y1,x2,y2,x3,y3); addVertex2(x4,y4); }
 
 	/// Append 2D vertex
@@ -122,7 +122,7 @@ public:
 	void addVertex2(const VEC2& v){ addVertex2(v[0], v[1]); }
 
 	/// Append 3D vertex
-	void addVertex3(double x, double y, double z){ vertices3().append(Point3(x,y,z)); }
+	void addVertex3(float x, float y, float z){ vertices3().append(Point3(x,y,z)); }
 
 	/// Append 3D vertex
 	template <class VEC3>
@@ -387,7 +387,7 @@ static Enable enable;
 
 // Implementation ______________________________________________________________
 
-inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5*(t+b), l+(r-l)*0.3,b, r,t); }
+inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5f*(t+b), l+(r-l)*0.3f,b, r,t); }
 
 template<int N>
 inline void circle(float l, float t, float r, float b){ return polygon<N,1,1>(l,t,r,b); }
@@ -396,13 +396,13 @@ template <int N>
 void disc(float l, float t, float r, float b){
 	Point2 pts[N+2];
 	genEllipse(pts+1,N,1, 0, 1, l,t,r,b);
-	pts[0](0.5*(l+r), 0.5*(t+b));
+	pts[0](0.5f*(l+r), 0.5f*(t+b));
 	pts[N+1] = pts[1];
 	paint(TriangleFan, pts, GLV_ARRAY_SIZE(pts));
 }
 
 inline void frame(float l, float t, float r, float b){ shape(LineLoop, l, t, l, b, r, b, r, t); }
-inline void minus(float l, float t, float r, float b){ float my=0.5*(t+b); shape(Lines, l,my, r,my); }
+inline void minus(float l, float t, float r, float b){ float my=0.5f*(t+b); shape(Lines, l,my, r,my); }
 
 template <int N, int M, int A>
 void polygon(float l, float t, float r, float b){
@@ -484,8 +484,8 @@ inline void paint(int prim, Point3 * verts, Color * cols, unsigned * indices, in
 inline int pix(float v){ return v>=0 ? (int)(v+0.5) : (int)(v-0.5); }
 
 inline void plus(float l, float t, float r, float b){
-	float mx = 0.5*(l+r);
-	float my = 0.5*(t+b);
+	float mx = 0.5f*(l+r);
+	float my = 0.5f*(t+b);
 	shape(Lines, mx,t, mx,b, l,my, r,my);
 }
 
@@ -521,10 +521,10 @@ inline void shape(int prim, float x0, float y0, float x1, float y1, float x2, fl
 
 inline void rectangle(float l, float t, float r, float b){ shape(TriangleStrip, l,t, l,b, r,t, r,b); }
 inline void stroke(float w){ lineWidth(w); pointSize(w); }
-inline void triangleD(float l, float t, float r, float b){ shape(Triangles, 0.5*(l+r),b, r,t, l,t); }
-inline void triangleL(float l, float t, float r, float b){ shape(Triangles, l,0.5*(t+b), r,b, r,t); }
-inline void triangleR(float l, float t, float r, float b){ shape(Triangles, r,0.5*(t+b), l,t, l,b); }
-inline void triangleU(float l, float t, float r, float b){ shape(Triangles, 0.5*(l+r),t, l,b, r,b); }
+inline void triangleD(float l, float t, float r, float b){ shape(Triangles, 0.5f*(l+r),b, r,t, l,t); }
+inline void triangleL(float l, float t, float r, float b){ shape(Triangles, l,0.5f*(t+b), r,b, r,t); }
+inline void triangleR(float l, float t, float r, float b){ shape(Triangles, r,0.5f*(t+b), l,t, l,b); }
+inline void triangleU(float l, float t, float r, float b){ shape(Triangles, 0.5f*(l+r),t, l,b, r,b); }
 inline void x(float l, float t, float r, float b){ shape(Lines, l,t, r,b, l,b, r,t); }
 
 

@@ -136,7 +136,7 @@ static void drawContext(float tx, float ty, View * v, float& cx, float& cy, View
 
 	// these weird calls are necessary so that we draw on the center of pixels
 	// rather than on the boundaries
-	translate(pix(cx) + 0.5, pix(cy) + 0.5);	// offset to center of top-left pixel
+	translate(pix(cx) + 0.5f, pix(cy) + 0.5f);	// offset to center of top-left pixel
 	//scale(v->w/(v->w+1), v->h/(v->h+1));	// scale to lose 1 pixel on each edge
 
 	c = v;
@@ -224,7 +224,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 
 			// LJP: using some weird numbers here, seems to work right though...
 			//scissor(r.l, h - r.bottom() - 1, r.w+2, r.h+1);
-			scissor(pix(r.l), pix(h - r.bottom() - 1.499), pix(r.w+1), pix(r.h+1.499));
+			scissor(pix(r.l), pix(h - r.bottom() - 1.499f), pix(r.w+1), pix(r.h+1.499f));
 
 			graphicsData().reset();
 			if(cv->enabled(Animate)) cv->onAnimate(dsec, *this);

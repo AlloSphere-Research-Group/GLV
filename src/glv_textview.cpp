@@ -213,7 +213,7 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 	
 //		color(colors().fore, colors().fore.a*0.4);
 		color(colors().selection);
-		rectangle(bx + dig()*dxDig, by, bx + (dig()+1)*dxDig, by + dyCell-0.5);
+		rectangle(bx + dig()*dxDig, by, bx + (dig()+1)*dxDig, by + dyCell-0.5f);
 	}
 
 	drawSelectionBox();
@@ -266,7 +266,7 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 			color(colors().text);
 		//	printf("%s\n", str);
 			font().render(str, tx, ty);
-			if(mNF>0) font().render(".", dxDig*(mNI+numSignDigits()-0.5) + tx, ty);
+			if(mNF>0) font().render(".", dxDig*(mNI+numSignDigits()-0.5f) + tx, ty);
 		}
 	}
 }
@@ -295,7 +295,7 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 	
 	case Event::MouseDrag:
 		if(onNumber()){
-			mAcc += 0.25 * fabs(m.dy());
+			mAcc += 0.25f * fabs(m.dy());
 			if(mAcc > 1){
 				int mul = (int)mAcc;
 				valAdd((m.dy() > 0.f ? -mag() : mag())*mul);

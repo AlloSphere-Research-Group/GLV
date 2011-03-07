@@ -30,10 +30,10 @@ void Buttons::onDraw(GLV& g){
 	//draw::enable(PolygonSmooth);
 	
 	for(int i=0; i<sizeX(); ++i){
-		float x = xd*i + padx*0.5;
+		float x = xd*i + padx*0.5f;
 
 		for(int j=0; j<sizeY(); ++j){
-			float y = yd*j + pady*0.5;
+			float y = yd*j + pady*0.5f;
 			if(getValue(i,j)){	if(mIconOn ) mIconOn (x, y, x+xd-padx, y+yd-pady); }
 			else{				if(mIconOff) mIconOff(x, y, x+xd-padx, y+yd-pady); }
 		}		

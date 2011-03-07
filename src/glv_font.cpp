@@ -106,7 +106,7 @@ static Glyph glyphs[94] = {
 	{5, {1,1,6,6,1}, {11,3,3,7,8}},							// p
 	{5, {6,1,1,6,6}, {8,7,3,3,11}},							// q
 	{4, {1,1,3,6}, {8.5,4,3,3}},							// r
-	{6, {6.6,1,1,6,6,0.5}, {3,3,5,6,8,8}},					// s
+	{6, {6.6,1,1,6,6,0.5f}, {3,3,5,6,8,8}},					// s
 	{Glyph::Once | 4, {1,6,3,3}, {3,3,-0.5,8.5}},			// t
 	{4, {1,1.5,5.5,6}, {2.5,8,8,2.5}},						// u
 	{3, {1,4,7}, {2.5,8,2.5}},								// v
@@ -290,7 +290,7 @@ void Font::render(const char * v, float x, float y, float z){
 			return character(c, x, y, muly);
 		}
 		float muly;
-	} renderText(*this, v, 1./mScaleY);
+	} renderText(*this, v, 1.f/mScaleY);
 
 	renderText.run();
 
@@ -316,7 +316,7 @@ float Font::advance(const char *text) const {
 	//return Glyph::width() * mScaleX * strlen(text);
 }
 
-float Font::advance(char c) const { return Glyph::width() * mScaleX * (1. + letterSpacing()); }
+float Font::advance(char c) const { return Glyph::width() * mScaleX * (1.f + letterSpacing()); }
 
 void Font::getBounds(float& w, float& h, const char * text) const {
 	w=h=0;

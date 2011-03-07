@@ -18,7 +18,7 @@ void Sliders::onDraw(GLV& g){
 	Widget::onDraw(g);
 
 	using namespace glv::draw;
-	float x=paddingX()*0.5, xd=dx(), yd=dy();
+	float x=paddingX()*0.5f, xd=dx(), yd=dy();
 
 //	TODO: dial drawing code...
 //		for(int i=0; i<sizeX(); ++i){
@@ -46,12 +46,12 @@ void Sliders::onDraw(GLV& g){
 	if(isVertical()){
 		for(int i=0; i<sizeX(); ++i){
 		
-			float y=paddingY()*0.5;
+			float y=paddingY()*0.5f;
 		
 			for(int j=0; j<sizeY(); ++j){
 				int ind = index(i,j);
 				if(isSelected(i,j)) color(colors().fore);
-				else color(colors().fore, colors().fore.a*0.5);
+				else color(colors().fore, colors().fore.a*0.5f);
 
 				float v01 = to01(getValue(ind));
 				float y0 = to01(0)*yd;
@@ -73,12 +73,12 @@ void Sliders::onDraw(GLV& g){
 	else{
 		for(int i=0; i<sizeX(); ++i){
 		
-			float y=paddingY()*0.5;
+			float y=paddingY()*0.5f;
 		
 			for(int j=0; j<sizeY(); ++j){
 				int ind = index(i,j);
 				if(isSelected(i,j)) color(colors().fore);
-				else color(colors().fore, colors().fore.a*0.5);
+				else color(colors().fore, colors().fore.a*0.5f);
 
 				float v01 = to01(getValue(ind));
 				float x0 = to01(0)*xd;
@@ -505,7 +505,7 @@ void FunctionGraph::calcCurves()
 
 void FunctionGraph::eval(int n, float *vals)
 {
-	float dx = 1./(n-1);
+	float dx = 1.f/(n-1);
 	float x = 0;
 	int idx = 0;
 	int k = 0;
@@ -575,14 +575,14 @@ void FunctionGraph::onDraw(GLV& g){
 		float dx = (mKnots[i+1].x - mKnots[i].x)/(c.size()-1);
 		float x = mKnots[i].x;
 		for(int t = 0; t < c.size(); t++) {
-			gd.addVertex(x*w, (1.-c[t])*h);
+			gd.addVertex(x*w, (1.f-c[t])*h);
 			x += dx;
 		}
 		i++;
 	}
 	draw::paint(LineStrip, gd);
 	
-	color(mStyle->color.fore, mStyle->color.fore.a*0.5);
+	color(mStyle->color.fore, mStyle->color.fore.a*0.5f);
 
 	gd.reset();
 	i=0;
@@ -593,7 +593,7 @@ void FunctionGraph::onDraw(GLV& g){
 		float dx = (mKnots[i+1].x - mKnots[i].x)/(c.size()-1);
 		float x = mKnots[i].x;
 		for(int t = 0; t < c.size(); t++) {
-			gd.addVertex(x*w, (1.-c[t])*h);
+			gd.addVertex(x*w, (1.f-c[t])*h);
 			gd.addVertex(x*w, h);
 			x += dx;
 		}
@@ -603,7 +603,7 @@ void FunctionGraph::onDraw(GLV& g){
 	
 	for(int k = 0; k < mNKnots; k++) {
 		int cx = mKnots[k].x*w;
-		int cy = (1.-mKnots[k].y)*h;
+		int cy = (1.f-mKnots[k].y)*h;
 		frame(cx-mKnobSize, cy-mKnobSize, cx+mKnobSize, cy+mKnobSize);
 	}
 }
@@ -614,19 +614,19 @@ bool FunctionGraph::onEvent(Event::t e, GLV& glv)
 	case Event::MouseDrag: {
 		if(glv.mouse().left() && mCurrentKnot >= 0) {
 			if(mCurrentKnot == 0 || mCurrentKnot == (mNKnots-1)) {
-				mKnots[mCurrentKnot].y = 1.-(glv.mouse().yRel()/h);
-				mKnots[mCurrentKnot].y = (mKnots[mCurrentKnot].y < 0.) ? 0. : 
-												((mKnots[mCurrentKnot].y > 1.) ? 1. : mKnots[mCurrentKnot].y);
+				mKnots[mCurrentKnot].y = 1.f-(glv.mouse().yRel()/h);
+				mKnots[mCurrentKnot].y = (mKnots[mCurrentKnot].y < 0.f) ? 0.f : 
+												((mKnots[mCurrentKnot].y > 1.f) ? 1.f : mKnots[mCurrentKnot].y);
 			}
 			else {
 				mKnots[mCurrentKnot].x = (glv.mouse().xRel()/w);
-				mKnots[mCurrentKnot].y = 1.-(glv.mouse().yRel()/h);
+				mKnots[mCurrentKnot].y = 1.f-(glv.mouse().yRel()/h);
 				
 				mKnots[mCurrentKnot].x = (mKnots[mCurrentKnot].x < 0) ? 0 : 
 											((mKnots[mCurrentKnot].x > 1.) ? 1 : mKnots[mCurrentKnot].x);
 				
-				mKnots[mCurrentKnot].y = (mKnots[mCurrentKnot].y < 0.) ? 0. : 
-												((mKnots[mCurrentKnot].y > 1.) ? 1. : mKnots[mCurrentKnot].y);
+				mKnots[mCurrentKnot].y = (mKnots[mCurrentKnot].y < 0.) ? 0.f : 
+												((mKnots[mCurrentKnot].y > 1.f) ? 1.f : mKnots[mCurrentKnot].y);
 				
 				//check if we went beyond neighboring knots
 				if(mKnots[mCurrentKnot].x < mKnots[mCurrentKnot-1].x && mCurrentKnot != mCurrentKnot+1) {
@@ -679,11 +679,11 @@ bool FunctionGraph::onEvent(Event::t e, GLV& glv)
 int FunctionGraph::knotHitTest(space_t x, space_t y)
 {
 	int idx = -1;
-	float min_dsq = mKnobSize*mKnobSize*2.5;
+	float min_dsq = mKnobSize*mKnobSize*2.5f;
 	
 	for(int k = 0; k < mNKnots; k++) {
 		float dx = mKnots[k].x*w - x;
-		float dy =(1.-mKnots[k].y)*h - y;
+		float dy =(1.f-mKnots[k].y)*h - y;
 		float dsq = dx*dx+dy*dy;
 		if(dsq < min_dsq) {
 			min_dsq = dsq;

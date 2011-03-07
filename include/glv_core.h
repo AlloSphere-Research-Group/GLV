@@ -265,7 +265,7 @@ public:
 	bool middle() const;			///< Whether middle button is currently down
 	bool right() const;				///< Whether right button is currently down
 	
-	float sens() const { return (left() && right()) ? 0.25 : 1; }
+	float sens() const { return (left() && right()) ? 0.25f : 1; }
 
 	void print() const;				///< Print out information about Mouse to stdout
 

@@ -22,7 +22,7 @@ struct Icon{
 
 struct Check : public Icon {
 	void draw(float l, float t, float r, float b){
-		draw::shape(draw::LineStrip, l,0.5*(t+b), l+(r-l)*0.3,b, r,t);
+		draw::shape(draw::LineStrip, l,0.5f*(t+b), l+(r-l)*0.3f,b, r,t);
 	}
 };
 
