@@ -35,12 +35,28 @@ public:
 class Plottable : public GraphicsMap{
 public:
 
+	enum BlendMode {
+		ADDITIVE = 0,
+		SUBTRACTIVE = 1
+	};
+
+
+	/// @param[in] prim		drawing primitive
+	/// @param[in] stroke	width of lines or points
+	Plottable(int prim=draw::Points, float stroke=1)
+	:	mPrim(prim), mStroke(stroke), mBlendMode(ADDITIVE), mLineStipple(-1),
+		mDrawUnder(false), mUseStyleColor(true)
+	{}
+
 	/// @param[in] prim		drawing primitive
 	/// @param[in] stroke	width of lines or points
 	/// @param[in] col		color
-	Plottable(int prim=draw::Points, float stroke=1, const Color& col=Color(1,0,0))
-	:	mPrim(prim), mStroke(stroke), mColor(col), mLineStipple(-1), mDrawUnder(false)
-	{}
+	Plottable(int prim, float stroke, const Color& col)
+	:	mPrim(prim), mStroke(stroke), mBlendMode(ADDITIVE), mLineStipple(-1),
+		mDrawUnder(false)
+	{
+		color(col);
+	}
 
 	virtual ~Plottable(){}
 
@@ -52,9 +68,18 @@ public:
 
 	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind){}
 
+
+	/// Set blend mode
+	Plottable& blendMode(BlendMode v){ mBlendMode=v; return *this; }
+
+	/// Get blend mode
+	BlendMode blendMode() const { return mBlendMode; }
+
 	/// Get color
-	const Color& color() const { return mColor; }
-	Plottable& color(const Color& v){ mColor=v; return *this; }
+	const Color& color() const { return mUseStyleColor ? Style::standard().color.fore : mColor; }
+	Plottable& color(const Color& v){ mUseStyleColor=false; mColor=v; return *this; }
+	
+	Plottable& useStyleColor(bool v){ mUseStyleColor=v; return *this; }
 
 	/// Get data
 	const Data& data() const { return mData; }
@@ -66,7 +91,7 @@ public:
 	/// Get line stippling pattern
 	short lineStipple() const { return mLineStipple; }
 	
-	/// Set Line stippling pattern
+	/// Set line stippling pattern
 	Plottable& lineStipple(short v){ mLineStipple=v; return *this; }	
 	
 	/// Get geometric primitive
@@ -94,11 +119,13 @@ protected:
 
 	int mPrim;
 	float mStroke;
+	BlendMode mBlendMode;
 	Color mColor;
 	Data mData;
 	GraphicsMaps mGraphicsMaps;
 	short mLineStipple;
 	bool mDrawUnder;
+	bool mUseStyleColor;
 	
 	void doPlot(GraphicsData& gd, const Data& d);
 	

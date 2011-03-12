@@ -70,7 +70,7 @@ Plottable& Plottable::remove(GraphicsMap& v){
 
 void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	if(!d.hasData()) return;
-	draw::color(mColor);
+	draw::color(color());
 	draw::stroke(stroke());
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 //	glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
@@ -94,8 +94,33 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 			++it;
 		}
 	}
-	
+
+	switch(mBlendMode){
+		case ADDITIVE: break;
+		case SUBTRACTIVE:
+			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+			glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
+			break;
+		default:;
+	}
+
+//	glBlendFuncSeparate(GL_SRC_COLOR, GL_DST_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+//	glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
+//	glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA)
+
 	onDraw(gd, d);
+
+	switch(mBlendMode){
+		case ADDITIVE: break;
+		case SUBTRACTIVE:
+			draw::blendTrans();
+			break;
+		default:;
+	}
+
+
 
 	if(doLineStipple) draw::disable(draw::LineStipple);
 }
