@@ -5,6 +5,7 @@
 	See COPYRIGHT file for authors and license information */
 
 #include <string>
+#include <ctype.h>
 #include <string.h>
 #include "glv_core.h"
 #include "glv_font.h"
@@ -267,19 +268,66 @@ protected:
 
 class ListSelect : public View {
 public:
+
+	/// @param[in] r		geometry
+	/// @param[in] pad		padding between items
 	ListSelect(const Rect& r=Rect(140,16), space_t pad=4)
 	:	View(r), mSelected(0), mPad(pad)
 	{}
 
+	/// @param[in] r		geometry
+	/// @param[in] item1	item 1
+	/// @param[in] item2	item 2
+	/// @param[in] pad		padding between items
+	ListSelect(
+		const Rect& r,
+		const std::string& item1, const std::string& item2,
+		space_t pad=4
+	)
+	:	View(r), mSelected(0), mPad(pad)
+	{	add(item1).add(item2); }
+
+	/// @param[in] r		geometry
+	/// @param[in] item1	item 1
+	/// @param[in] item2	item 2
+	/// @param[in] item3	item 3
+	/// @param[in] pad		padding between items
+	ListSelect(
+		const Rect& r,
+		const std::string& item1, const std::string& item2, const std::string& item3,
+		space_t pad=4
+	)
+	:	View(r), mSelected(0), mPad(pad)
+	{	add(item1).add(item2).add(item3); }
+
+	/// @param[in] r		geometry
+	/// @param[in] item1	item 1
+	/// @param[in] item2	item 2
+	/// @param[in] item3	item 3
+	/// @param[in] pad		padding between items
+	ListSelect(
+		const Rect& r,
+		const std::string& item1, const std::string& item2, const std::string& item3, const std::string& item4,
+		space_t pad=2
+	)
+	:	View(r), mSelected(0), mPad(pad)
+	{	add(item1).add(item2).add(item3).add(item4); }
+
+
+	/// Get selected item
+	int selected() const { return mSelected; }
+
+	const std::string& getValue() const { return mItems[selected()]; }
+
+	/// Add new item to list
 	ListSelect& add(const std::string& v){
 		mItems.push_back(v); return *this;
 	}
 
+	/// Select item
 	ListSelect& select(int i){
 		mSelected = glv::clip<int>(i,mItems.size()-1); return *this;
 	}
-
-	int selected() const { return mSelected; }
 
 	virtual const char * className() const { return "ListSelect"; }
 
@@ -300,10 +348,21 @@ public:
 	
 		switch(e){
 		case Event::KeyDown:
-			switch(k.key()){
-			case Key::Up:	select(selected()-1); return false;
-			case Key::Down:	select(selected()+1); return false;
-			default:;
+			if(!k.ctrl() && !k.alt() && isgraph(k.key())){
+				char c = tolower(k.key());
+				for(int i=0; i<mItems.size(); ++i){
+					if(mItems[i][0] == c){
+						select(i); break;
+					}
+				}
+				return false;
+			}
+			else{
+				switch(k.key()){
+				case Key::Up:	select(selected()-1); return false;
+				case Key::Down:	select(selected()+1); return false;
+				default:;
+				}
 			}
 			break;
 		case Event::MouseDown:
