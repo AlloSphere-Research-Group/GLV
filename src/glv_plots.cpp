@@ -96,7 +96,11 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	}
 
 	switch(mBlendMode){
-		case ADDITIVE: break;
+		case TRANSPARENT: break;
+		case ADDITIVE:
+			glBlendEquation(GL_FUNC_ADD);
+			glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
+			break;
 		case SUBTRACTIVE:
 			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 			glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
@@ -113,14 +117,13 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	onDraw(gd, d);
 
 	switch(mBlendMode){
-		case ADDITIVE: break;
+		case TRANSPARENT: break;
+		case ADDITIVE:
 		case SUBTRACTIVE:
 			draw::blendTrans();
 			break;
 		default:;
 	}
-
-
 
 	if(doLineStipple) draw::disable(draw::LineStipple);
 }

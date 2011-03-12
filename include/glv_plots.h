@@ -36,15 +36,16 @@ class Plottable : public GraphicsMap{
 public:
 
 	enum BlendMode {
-		ADDITIVE = 0,
-		SUBTRACTIVE = 1
+		TRANSPARENT = 0,
+		ADDITIVE,
+		SUBTRACTIVE
 	};
 
 
 	/// @param[in] prim		drawing primitive
 	/// @param[in] stroke	width of lines or points
 	Plottable(int prim=draw::Points, float stroke=1)
-	:	mPrim(prim), mStroke(stroke), mBlendMode(ADDITIVE), mLineStipple(-1),
+	:	mPrim(prim), mStroke(stroke), mBlendMode(TRANSPARENT), mLineStipple(-1),
 		mDrawUnder(false), mUseStyleColor(true)
 	{}
 
@@ -52,7 +53,7 @@ public:
 	/// @param[in] stroke	width of lines or points
 	/// @param[in] col		color
 	Plottable(int prim, float stroke, const Color& col)
-	:	mPrim(prim), mStroke(stroke), mBlendMode(ADDITIVE), mLineStipple(-1),
+	:	mPrim(prim), mStroke(stroke), mBlendMode(TRANSPARENT), mLineStipple(-1),
 		mDrawUnder(false)
 	{
 		color(col);
