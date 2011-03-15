@@ -350,7 +350,7 @@ public:
 		case Event::KeyDown:
 			if(!k.ctrl() && !k.alt() && isgraph(k.key())){
 				char c = tolower(k.key());
-				for(int i=0; i<mItems.size(); ++i){
+				for(unsigned i=0; i<mItems.size(); ++i){
 					if(mItems[i][0] == c){
 						select(i); break;
 					}
