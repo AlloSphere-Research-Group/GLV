@@ -168,7 +168,7 @@ enum{
 	Triangles     = GL_TRIANGLES,
 	TriangleStrip = GL_TRIANGLE_STRIP,
 	TriangleFan   = GL_TRIANGLE_FAN,
-#ifdef GLV_USE_OPENGL_ES
+#ifdef GLV_OPENGLES
 	Quads         = GL_POINTS,
 	QuadStrip     = GL_TRIANGLE_STRIP,
 #else
