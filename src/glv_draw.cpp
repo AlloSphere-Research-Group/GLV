@@ -40,8 +40,8 @@ void genEllipse(
 	float l, float t, float r, float b
 ){
 	const double theta = loops*C_2PI/num;
-	double px=cos(angle01*C_2PI);
-	double py=sin(angle01*C_2PI);
+	double px=cos(-angle01*C_2PI);
+	double py=sin(-angle01*C_2PI);
 	double rx=cos( theta);
 	double ry=sin(-theta); // negative to ensure CCW winding for front facing polygon
 	double mx=0.5*(l+r), my=0.5*(t+b), sx=(r-l)*0.5, sy=(b-t)*0.5;

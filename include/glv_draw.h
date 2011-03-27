@@ -301,13 +301,17 @@ void circle		(float l, float t, float r, float b);	///< Circle with N edges
 template<int N>
 void disc		(float l, float t, float r, float b);	///< Disc with N edges
 void frame		(float l, float t, float r, float b);	///< Rectangular frame
+template<int LT, int LB, int RB, int RT>
+void frameTrunc	(float l, float t, float r, float b);	///< Rectangular frame truncated at corners
 void minus		(float l, float t, float r, float b);	///< Minus
 template <int N, int M, int A>
 void polygon	(float l, float t, float r, float b);	///< Regular polygon with N edges, M loops, and angle A
+template<int N, int A>
+void polygonCut	(float l, float t, float r, float b);	///< Regular polygon with N edges at angle A cut through center
 void plus		(float l, float t, float r, float b);	///< Plus
 void rectangle	(float l, float t, float r, float b);	///< Solid rectangle
-template<int N, int M, int L>
-void rose		(float l, float t, float r, float b);	///< Rose curve with N edges and M+L loops
+template<int N, int M, int L, int A>
+void rose		(float l, float t, float r, float b);	///< Rose curve with N edges and M+L loops at angle A
 template<int N, int A>
 void spokes		(float l, float t, float r, float b);	///< N spokes rotated by angle A
 void triangleR	(float l, float t, float r, float b);	///< Right pointing triangle
@@ -402,13 +406,68 @@ void disc(float l, float t, float r, float b){
 }
 
 inline void frame(float l, float t, float r, float b){ shape(LineLoop, l, t, l, b, r, b, r, t); }
+
+template<int LT, int LB, int RB, int RT>
+void frameTrunc(float l, float t, float r, float b){
+	int NC = (LT?1:0) + (LB?1:0) + (RB?1:0) + (RT?1:0);
+	Point2 pts[4+NC];
+
+	int i=-1;
+	if(LT){	pts[++i](l+LT, t);
+			pts[++i](l  , t+LT);
+	} else	pts[++i](l,t);
+
+	if(LB){	pts[++i](l  , b-LB);
+			pts[++i](l+LB, b);
+	} else	pts[++i](l,b);
+
+	if(RB){	pts[++i](r-RB, b);
+			pts[++i](r  , b-RB);
+	} else	pts[++i](r,b);
+
+	if(RT){	pts[++i](r  , t+RT);
+			pts[++i](r-RT, t);
+	} else	pts[++i](r,t);
+
+	paint(LineLoop, pts, GLV_ARRAY_SIZE(pts));
+}
+
 inline void minus(float l, float t, float r, float b){ float my=0.5f*(t+b); shape(Lines, l,my, r,my); }
+
+inline void plus(float l, float t, float r, float b){
+	float mx = 0.5f*(l+r);
+	float my = 0.5f*(t+b);
+	shape(Lines, mx,t, mx,b, l,my, r,my);
+}
 
 template <int N, int M, int A>
 void polygon(float l, float t, float r, float b){
 	Point2 pts[N];
 	genEllipse(pts,N,1, A/360.,M, l,t,r,b);
 	paint(LineLoop, pts, GLV_ARRAY_SIZE(pts));
+}
+
+template<int N, int A>
+void polygonCut(float l, float t, float r, float b){
+	Point2 pts[N+2];
+	genEllipse(pts,N,1, A/360., 1, l,t,r,b);
+	pts[N]  = pts[0];
+	pts[N+1]= pts[N/2];
+	paint(LineStrip, pts, GLV_ARRAY_SIZE(pts));
+}
+
+inline void rectangle(float l, float t, float r, float b){ shape(TriangleStrip, l,t, l,b, r,t, r,b); }
+
+template<int N, int M, int L, int A>
+void rose(float l, float t, float r, float b){
+	Point2 pts1[N], pts2[N];
+	genEllipse(pts1,N,1, A/360., M, l,t,r,b);
+	genEllipse(pts2,N,1, A/360., L, l,t,r,b);
+	for(int i=0; i<N; ++i){
+		pts1[i].x = (pts1[i].x+pts2[i].x)*0.5;
+		pts1[i].y = (pts1[i].y+pts2[i].y)*0.5;
+	}
+	paint(LineLoop, pts1,N);
 }
 
 template<int N, int A>
@@ -421,6 +480,14 @@ void spokes(float l, float t, float r, float b){
 	for(int i=0; i<N2; i+=2) pts[i](cx,cy);
 	paint(Lines, pts, GLV_ARRAY_SIZE(pts));
 }
+
+inline void stroke(float w){ lineWidth(w); pointSize(w); }
+inline void triangleD(float l, float t, float r, float b){ shape(Triangles, 0.5f*(l+r),b, r,t, l,t); }
+inline void triangleL(float l, float t, float r, float b){ shape(Triangles, l,0.5f*(t+b), r,b, r,t); }
+inline void triangleR(float l, float t, float r, float b){ shape(Triangles, r,0.5f*(t+b), l,t, l,b); }
+inline void triangleU(float l, float t, float r, float b){ shape(Triangles, 0.5f*(l+r),t, l,b, r,b); }
+inline void x(float l, float t, float r, float b){ shape(Lines, l,t, r,b, l,b, r,t); }
+
 
 
 inline void paint(int prim, Point2 * verts, int numVerts){
@@ -483,24 +550,6 @@ inline void paint(int prim, Point3 * verts, Color * cols, unsigned * indices, in
 // [ 1, 2) ->  1.5
 inline int pix(float v){ return v>=0 ? (int)(v+0.5) : (int)(v-0.5); }
 
-inline void plus(float l, float t, float r, float b){
-	float mx = 0.5f*(l+r);
-	float my = 0.5f*(t+b);
-	shape(Lines, mx,t, mx,b, l,my, r,my);
-}
-
-template<int N, int M, int L>
-void rose(float l, float t, float r, float b){
-	Point2 pts1[N], pts2[N];
-	genEllipse(pts1,N,1, -0.25, M, l,t,r,b);
-	genEllipse(pts2,N,1, -0.25, L, l,t,r,b);
-	for(int i=0; i<N; ++i){
-		pts1[i].x = (pts1[i].x+pts2[i].x)*0.5;
-		pts1[i].y = (pts1[i].y+pts2[i].y)*0.5;
-	}
-	paint(LineLoop, pts1,N);
-}
-
 //template<int N, int M>
 //inline void star(float l, float t, float r, float b){ pgon(l,t,r-l,b-t,N,-0.25,M); }
 
@@ -518,14 +567,6 @@ inline void shape(int prim, float x0, float y0, float x1, float y1, float x2, fl
 	float v[] = {x0,y0,x1,y1,x2,y2,x3,y3};
 	paint(prim, (Point2 *)v, 4);
 }
-
-inline void rectangle(float l, float t, float r, float b){ shape(TriangleStrip, l,t, l,b, r,t, r,b); }
-inline void stroke(float w){ lineWidth(w); pointSize(w); }
-inline void triangleD(float l, float t, float r, float b){ shape(Triangles, 0.5f*(l+r),b, r,t, l,t); }
-inline void triangleL(float l, float t, float r, float b){ shape(Triangles, l,0.5f*(t+b), r,b, r,t); }
-inline void triangleR(float l, float t, float r, float b){ shape(Triangles, r,0.5f*(t+b), l,t, l,b); }
-inline void triangleU(float l, float t, float r, float b){ shape(Triangles, 0.5f*(l+r),t, l,b, r,b); }
-inline void x(float l, float t, float r, float b){ shape(Lines, l,t, r,b, l,b, r,t); }
 
 
 // core drawing routines
