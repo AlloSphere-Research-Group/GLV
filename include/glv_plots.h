@@ -264,6 +264,7 @@ public:
 
 protected:
 	Plottables mPlottables;
+	std::vector<char> mActive;
 //	int mValInd[4];
 //	
 //	void resetValInd(){

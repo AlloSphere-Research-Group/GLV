@@ -441,16 +441,15 @@ void Plot::onDraw(GLV& g){
 	draw::color(colors().fore);
 
 	{ pushGrid();
-		Plottables::iterator i = mPlottables.begin();
-		while(i != mPlottables.end()){
-			Plottable& p = **i;
-			if(p.drawUnderGrid()){
+		for(int i=0; i<plottables().size(); ++i){
+			Plottable& p = *plottables()[i];
+			if(mActive[i] && p.drawUnderGrid()){
 				gd.reset();
 				gd.colors()[0] = p.color();
 				p.doPlot(gd, p.data().hasData() ? p.data() : data());
 			}
-			++i;
 		}
+
 	popGrid(); }
 
 	Grid::onDraw(g);
@@ -459,27 +458,42 @@ void Plot::onDraw(GLV& g){
 
 	// push into grid space and call attached plottables
 	{ pushGrid();
-		Plottables::iterator i = mPlottables.begin();
-		while(i != mPlottables.end()){
-			Plottable& p = **i;
-			if(!p.drawUnderGrid()){
+		for(int i=0; i<plottables().size(); ++i){
+			Plottable& p = *plottables()[i];
+			if(mActive[i] && !p.drawUnderGrid()){
 				gd.reset();
 				gd.colors()[0] = p.color();
 				p.doPlot(gd, p.data().hasData() ? p.data() : data());
 			}
-			++i;
 		}
 	popGrid(); }
 }
 
 bool Plot::onEvent(Event::t e, GLV& g){
-	Grid::onEvent(e,g);
-	return true;
+	if(Grid::onEvent(e,g)){
+		
+		const Keyboard& k = g.keyboard();
+		
+		if(e == Event::KeyDown){
+			if(k.ctrl() && k.alt() && k.isNumber()){
+				int i = k.keyAsNumber();
+				i = i>0 ? i-1 : 10; 
+				if(i < plottables().size() && plottables()[i]){
+					mActive[i] ^= 1;
+				}
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	return false;
 }
 
 Plot& Plot::add(Plottable& v){
 	if(std::find(mPlottables.begin(), mPlottables.end(), &v) == mPlottables.end()){
 		mPlottables.push_back(&v);
+		mActive.push_back(1);
 	}
 	return *this;
 }
@@ -488,14 +502,13 @@ Plot& Plot::remove(Plottable& v){
 	// why the f*!@ doesn't this work!
 	//std::remove(mPlottables.begin(), mPlottables.end(), &v);
 
-	Plottables::iterator i = mPlottables.begin();
-	while(i != mPlottables.end()){
-		Plottable* p = *i;
+	for(int i=0; i<plottables().size(); ++i){
+		Plottable* p = plottables()[i];
 		if(p == &v){
-			mPlottables.erase(i);
+			mPlottables.erase(mPlottables.begin() + i);
+			mActive.erase(mActive.begin() + i);
 			break;
-		}
-		++i;
+		}		
 	}
 
 	return *this;
