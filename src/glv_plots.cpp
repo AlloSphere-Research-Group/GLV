@@ -441,7 +441,7 @@ void Plot::onDraw(GLV& g){
 	draw::color(colors().fore);
 
 	{ pushGrid();
-		for(int i=0; i<plottables().size(); ++i){
+		for(unsigned i=0; i<plottables().size(); ++i){
 			Plottable& p = *plottables()[i];
 			if(mActive[i] && p.drawUnderGrid()){
 				gd.reset();
@@ -458,7 +458,7 @@ void Plot::onDraw(GLV& g){
 
 	// push into grid space and call attached plottables
 	{ pushGrid();
-		for(int i=0; i<plottables().size(); ++i){
+		for(unsigned i=0; i<plottables().size(); ++i){
 			Plottable& p = *plottables()[i];
 			if(mActive[i] && !p.drawUnderGrid()){
 				gd.reset();
@@ -476,7 +476,7 @@ bool Plot::onEvent(Event::t e, GLV& g){
 		
 		if(e == Event::KeyDown){
 			if(k.ctrl() && k.alt() && k.isNumber()){
-				int i = k.keyAsNumber();
+				unsigned i = k.keyAsNumber();
 				i = i>0 ? i-1 : 10; 
 				if(i < plottables().size() && plottables()[i]){
 					mActive[i] ^= 1;
@@ -502,7 +502,7 @@ Plot& Plot::remove(Plottable& v){
 	// why the f*!@ doesn't this work!
 	//std::remove(mPlottables.begin(), mPlottables.end(), &v);
 
-	for(int i=0; i<plottables().size(); ++i){
+	for(unsigned i=0; i<plottables().size(); ++i){
 		Plottable* p = plottables()[i];
 		if(p == &v){
 			mPlottables.erase(mPlottables.begin() + i);
