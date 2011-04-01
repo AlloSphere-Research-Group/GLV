@@ -86,7 +86,9 @@ test: $(SLIB_PATH)
 	@$(MAKE) -C $(TEST_DIR)
 
 # Compile and run source files in example/ or test/ folder
-example/%.cpp test/%.cpp: $(SLIB_PATH)
+EXEC_TARGETS = example/%.cpp test/%.cpp
+.PRECIOUS: $(EXEC_TARGETS)
+$(EXEC_TARGETS): $(SLIB_PATH)
 	@$(CXX) $(CFLAGS) -o $(BIN_DIR)$(*F) $@ $(SLIB_PATH) $(LDFLAGS)
 ifneq ($(AUTORUN), 0)
 	@$(BIN_DIR)$(*F) &
