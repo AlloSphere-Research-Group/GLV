@@ -44,7 +44,10 @@ CFLAGS		:= $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS)
 # Build object file from C++ source
 $(OBJ_DIR)%.o: %.cpp
 	@echo CXX $< $@
-	@$(CXX) -c $(CFLAGS) $< -o $@
+	@$(CXX) -c $(CFLAGS) $< -o $@ -MMD -MF $(basename $@).dep
+
+include $(wildcard $(OBJ_DIR)*.dep)
+
 
 # Build static library
 $(SLIB_PATH): createFolders $(addprefix $(OBJ_DIR), $(OBJS))
@@ -53,16 +56,20 @@ $(SLIB_PATH): createFolders $(addprefix $(OBJ_DIR), $(OBJS))
 	@$(AR) $@ $(filter %.o, $^)
 	@$(RANLIB) $@
 
+
 all: $(SLIB_PATH) test
+
 
 # Remove build files
 clean:
 	@$(RM)r $(BUILD_DIR)
 
+
 createFolders:
 	@mkdir -p $(BIN_DIR)
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(BUILD_DIR)/lib
+
 
 # Create file with settings for linking to external libraries
 external:
@@ -70,6 +77,7 @@ external:
 CPPFLAGS += $(EXT_CPPFLAGS) \r\n\
 LDFLAGS += $(EXT_LDFLAGS) \
 '> Makefile.external
+
 
 # Install library into path specified by DESTDIR
 # Include files are copied into DESTDIR/include/LIB_NAME and
@@ -82,8 +90,10 @@ install: $(SLIB_PATH)
 	@$(INSTALL) -C -m 644 $(INC_DIR)/*.h $(DESTDIR)/include/$(LIB_NAME)
 	@$(RANLIB) $(DESTDIR)/lib/$(SLIB_FILE)
 
+
 test: $(SLIB_PATH)
 	@$(MAKE) -C $(TEST_DIR)
+
 
 # Compile and run source files in example/ or test/ folder
 EXEC_TARGETS = example/%.cpp test/%.cpp
@@ -93,3 +103,4 @@ $(EXEC_TARGETS): $(SLIB_PATH)
 ifneq ($(AUTORUN), 0)
 	@$(BIN_DIR)$(*F) &
 endif
+
