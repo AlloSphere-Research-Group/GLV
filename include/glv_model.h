@@ -678,21 +678,32 @@ public:
 	/// Get snapshots
 	const Snapshots& snapshots() const { return mSnapshots; }
 
-	/// Save all snapshots to a file. Returns number of characters written.
-	int snapshotsToFile(const std::string& path) const;
+	/// Save all snapshots to a file
 
+	/// @param[in] path		path to file; if empty, then uses "<name>.txt"
+	/// \returns			number of characters written
+	int snapshotsToFile(const std::string& path="") const;
+
+	/// Returns a string of all snapshots
 	std::string snapshotsToString() const {
 		std::string r; snapshotsToString(r); return r;
 	}
 
-	/// Convert all snapshots to a table string. Returns number of characters written.
+	/// Convert all snapshots to a table string
+
+	/// \returns number of characters written
+	///
 	int snapshotsToString(std::string& dst) const;
 
 	/// Set snapshot from a table string. If the snapshot does not exist, a new one will be created.
 	int snapshotFromString(const std::string& src);
 
-	/// Load snapshots from a file. Returns number of characters read.
-	int snapshotsFromFile(const std::string& path, bool addtoExisting=true);
+	/// Load snapshots from a file
+
+	/// @param[in] path				path to file; if empty, then uses "<name>.txt"
+	/// @param[in] addtoExisting	whether to add to or replace any existing snapshots
+	/// \returns					number of characters read
+	int snapshotsFromFile(const std::string& path="", bool addtoExisting=true);
 
 	/// Set snapshots from a table string. If a snapshot does not exist, a new one will be created.
 	int snapshotsFromString(const std::string& src);
@@ -735,6 +746,8 @@ protected:
 	
 //	// Convert string to model state
 //	int stateFromToken(const std::string& src);
+
+	bool defaultFilePath(std::string& s) const;
 
 	static std::string namedDataToString(const std::string& s, const Data& d){
 		std::string r;

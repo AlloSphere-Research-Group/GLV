@@ -522,6 +522,9 @@ std::string Data::typeToString(Type t){
 	}
 }
 
+
+
+
 // TODO:	need to delete allocated Models
 //			need to be able to remove Data
 //void ModelManager::add(const std::string& name, Data& v){
@@ -533,6 +536,14 @@ void ModelManager::add(const std::string& name, Model& v){
 }
 void ModelManager::add(const std::string& name, const Model& v){
 	if(isIdentifier(name)) mConstState[name] = &v;
+}
+
+bool ModelManager::defaultFilePath(std::string& s) const {
+	if(!name().empty()){
+		s = name() + ".txt";
+		return true;
+	}
+	return false;
 }
 
 void ModelManager::remove(const std::string& name){
@@ -576,9 +587,14 @@ void ModelManager::remove(const std::string& name){
 //};
 
 
-int ModelManager::snapshotsToFile(const std::string& path) const {
+int ModelManager::snapshotsToFile(const std::string& path_in) const {
 	std::string s;
 	if(!snapshotsToString(s)) return 0;
+
+	std::string path = path_in;
+	if(path.empty()){
+		if(!defaultFilePath(path)) return 0;
+	}
 
 	int r=0;
 	FILE * fp = fopen(path.c_str(), "w");
@@ -589,7 +605,12 @@ int ModelManager::snapshotsToFile(const std::string& path) const {
 	return r;
 }
 
-int ModelManager::snapshotsFromFile(const std::string& path, bool add){
+int ModelManager::snapshotsFromFile(const std::string& path_in, bool add){
+	std::string path = path_in;
+	if(path.empty()){
+		if(!defaultFilePath(path)) return 0;
+	}
+
 	int r=0;
 	FILE * fp = fopen(path.c_str(), "r");
 	if(fp){
@@ -637,7 +658,7 @@ int ModelManager::snapshotsToString(std::string& dst) const {
 	Snapshots::const_iterator it = mSnapshots.begin();
 	if(it == mSnapshots.end()) return 0;
 
-	if(name().size())	dst = name() + " = ";
+	if(!name().empty())	dst = name() + " = ";
 	else				dst = "";
 
 	dst += "{\r\n";
