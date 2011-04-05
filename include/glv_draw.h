@@ -298,6 +298,8 @@ void viewport(float x, float y, float w, float h);
 void check		(float l, float t, float r, float b);	///< Check mark
 template<int N>
 void circle		(float l, float t, float r, float b);	///< Circle with N edges
+template<int X, int Y>
+void crosshatch	(float l, float t, float r, float b);	///< Parallel lines across x and y axes
 template<int N>
 void disc		(float l, float t, float r, float b);	///< Disc with N edges
 void frame		(float l, float t, float r, float b);	///< Rectangular frame
@@ -429,6 +431,27 @@ inline void circle(float l, float t, float r, float b){ return polygon<N,1,1>(l,
 
 template <void (*Symbol1)(float,float,float,float), void (*Symbol2)(float,float,float,float)>
 void combo(float l, float t, float r, float b){ Symbol1(l,t,r,b); Symbol2(l,t,r,b); }
+
+template<int X, int Y>
+void crosshatch	(float l, float t, float r, float b){
+	Point2 pts[(X+Y)*2];
+	int j=-1;
+	for(int i=0; i<X; ++i){
+		float dx= (r-l)/(X+1);
+		float x = l+dx*(i+1);
+		pts[++j](x, t);
+		pts[++j](x, b);
+	}
+
+	for(int i=0; i<Y; ++i){
+		float dy= (b-t)/(Y+1);
+		float y = t+dy*(i+1);
+		pts[++j](l, y);
+		pts[++j](r, y);
+	}
+
+	paint(Lines, pts, GLV_ARRAY_SIZE(pts));
+}
 
 template <int N>
 void disc(float l, float t, float r, float b){
