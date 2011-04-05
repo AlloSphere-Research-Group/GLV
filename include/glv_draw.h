@@ -294,7 +294,7 @@ void viewport(float x, float y, float w, float h);
 
 
 
-// icons
+// symbols
 void check		(float l, float t, float r, float b);	///< Check mark
 template<int N>
 void circle		(float l, float t, float r, float b);	///< Circle with N edges
@@ -321,6 +321,10 @@ void triangleL	(float l, float t, float r, float b);	///< Left pointing triangle
 void triangleU	(float l, float t, float r, float b);	///< Upward pointing triangle
 void triangleD	(float l, float t, float r, float b);	///< Downward pointing triangle
 void x			(float l, float t, float r, float b);	///< X mark
+
+/// Combination of two symbols; can be used recursively
+template <void (*Symbol1)(float,float,float,float), void (*Symbol2)(float,float,float,float)>
+void combo		(float l, float t, float r, float b);
 
 
 /// Parallel horizontal and vertical lines
@@ -422,6 +426,9 @@ inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5f*(
 
 template<int N>
 inline void circle(float l, float t, float r, float b){ return polygon<N,1,1>(l,t,r,b); }
+
+template <void (*Symbol1)(float,float,float,float), void (*Symbol2)(float,float,float,float)>
+void combo(float l, float t, float r, float b){ Symbol1(l,t,r,b); Symbol2(l,t,r,b); }
 
 template <int N>
 void disc(float l, float t, float r, float b){
