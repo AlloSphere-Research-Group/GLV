@@ -874,7 +874,7 @@ void ModelManager::saveSnapshot(const std::string& name){
 }
 
 
-void ModelManager::loadSnapshot(const std::string& name){
+bool ModelManager::loadSnapshot(const std::string& name){
 	if(mSnapshots.count(name)){
 		Snapshot& snapshot = mSnapshots[name];
 
@@ -885,7 +885,9 @@ void ModelManager::loadSnapshot(const std::string& name){
 			}
 			++it;
 		}
+		return true;
 	}
+	return false;
 }
 
 } // glv::

@@ -733,7 +733,10 @@ public:
 	void saveSnapshot(const std::string& name);
 
 	/// Load snapshot with given name into current model state
-	void loadSnapshot(const std::string& name);
+	
+	/// \returns whether snapshot was loaded successfully
+	///
+	bool loadSnapshot(const std::string& name);
 
 protected:
 	std::string mName;				// name identifier
