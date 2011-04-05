@@ -200,6 +200,10 @@ public:
 		PathStyle path = DIRECT
 	);
 
+	/// Set offset from zero of plot domain
+	PlotFunction1D& domainOffset(int v){ mDomainOffset=v; return *this; }
+
+	/// Set drawing path style
 	PlotFunction1D& pathStyle(PathStyle v){ mPathStyle=v; return *this; }
 
 	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
@@ -212,6 +216,7 @@ public:
 
 protected:
 	PathStyle mPathStyle;
+	int mDomainOffset;
 };
 
 

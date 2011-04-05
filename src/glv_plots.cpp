@@ -269,7 +269,7 @@ void PlotDensity::onDraw(GraphicsData& b, const Data& d){
 
 
 PlotFunction1D::PlotFunction1D(const Color& c, float stroke, int prim, PathStyle path)
-:	Plottable(prim, stroke,c), mPathStyle(path)
+:	Plottable(prim, stroke,c), mPathStyle(path), mDomainOffset(0)
 {
 //	add(defaultVertexMap());
 }
@@ -298,16 +298,16 @@ void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	// N2 == 1,	domain along x, f(x) = ...
 
 	struct getFX{
-		getFX(double& x, double& y, const Data& d, const Indexer& i){
-			x = i[0];
+		getFX(double& x, double& y, const Data& d, const Indexer& i, int offset){
+			x = i[0] + offset;
 			y = d.at<double>(0, i[0]);
 		}
 	};
 
 	struct getFY{
-		getFY(double& x, double& y, const Data& d, const Indexer& i){
+		getFY(double& x, double& y, const Data& d, const Indexer& i, int offset){
 			x = d.at<double>(0, 0, i[1]);
-			y = i[1];
+			y = i[1] + offset;
 		}
 	};
 
@@ -315,13 +315,13 @@ void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 		case PlotFunction1D::DIRECT:
 			if(1==N2){
 				while(i()){
-					double x,y; getFX(x,y, d,i);
+					double x,y; getFX(x,y, d,i, mDomainOffset);
 					g.addVertex(x, y);
 				}
 			}
 			else if(1==N1){
 				while(i()){
-					double x,y; getFY(x,y, d,i);
+					double x,y; getFY(x,y, d,i, mDomainOffset);
 					g.addVertex(x, y);
 				}	
 			}
@@ -329,14 +329,14 @@ void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 		case PlotFunction1D::ZIGZAG:
 			if(1==N2){
 				while(i()){
-					double x,y; getFX(x,y, d,i);
+					double x,y; getFX(x,y, d,i, mDomainOffset);
 					g.addVertex(x, 0);
 					g.addVertex(x, y);
 				}
 			}
 			else if(1==N1){
 				while(i()){
-					double x,y; getFY(x,y, d,i);
+					double x,y; getFY(x,y, d,i, mDomainOffset);
 					g.addVertex(0, y);
 					g.addVertex(x, y);
 				}	
