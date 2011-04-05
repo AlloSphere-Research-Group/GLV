@@ -33,6 +33,9 @@ public:
 	/// Get on state icon
 	const iconFunc& iconOn () const { return mIconOn; }
 
+	/// Set on/off icons
+	Buttons& icon(const iconFunc& f){ iconOff(f); return iconOn(f); }
+
 	/// Set off state icon
 	Buttons& iconOff(const iconFunc& f){ mIconOff=f; return *this; }
 
