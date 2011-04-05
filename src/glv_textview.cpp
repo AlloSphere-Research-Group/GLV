@@ -454,9 +454,9 @@ bool TextView::onEvent(Event::t e, GLV& g){
 				case Key::Down:	setPos(mText.size()); return false;
 				case Key::Up:	setPos(0); return false;
 					
-				case Key::Enter:
-				case Key::Return:
-					return false;
+//				case Key::Enter:
+//				case Key::Return:
+//					return false;
 				}
 			}
 			break;
