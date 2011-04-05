@@ -343,7 +343,7 @@ TextView::TextView(const Rect& r, float textSize)
 :	Widget(r), mSpacing(1), mPadX(4), mSel(0), mBlink(0)
 {
 	data().resize(Data::STRING);
-	setPos(0);
+	cursorPos(0);
 	size(textSize);
 }
 
@@ -420,7 +420,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 			if(isprint(key)){
 				deleteSelected();
 				mText.insert(mPos, 1, k.key()); setValue(mText);
-				setPos(mPos+1);
+				cursorPos(mPos+1);
 				return false;
 			}
 			else{
@@ -429,7 +429,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 					if(selected()) deleteSelected();
 					else if(validPos()){
 						deleteText(mPos-1, 1);
-						setPos(mPos-1);
+						cursorPos(mPos-1);
 					}
 					return false;
 					
@@ -437,22 +437,22 @@ bool TextView::onEvent(Event::t e, GLV& g){
 					if(selected()) deleteSelected();
 					else if(mText.size()){
 						deleteText(mPos, 1);
-						setPos(mPos);
+						cursorPos(mPos);
 					}
 					return false;
 				
 				case Key::Left:
 					if(k.shift()) select(mSel-1);
-					else setPos(mPos-1);
+					else cursorPos(mPos-1);
 					return false;
 					
 				case Key::Right:
 					if(k.shift()) select(mSel+1);
-					else setPos(mPos+1);
+					else cursorPos(mPos+1);
 					return false;
 					
-				case Key::Down:	setPos(mText.size()); return false;
-				case Key::Up:	setPos(0); return false;
+				case Key::Down:	cursorPos(mText.size()); return false;
+				case Key::Up:	cursorPos(0); return false;
 					
 //				case Key::Enter:
 //				case Key::Return:
@@ -462,7 +462,7 @@ bool TextView::onEvent(Event::t e, GLV& g){
 			break;
 
 		case Event::MouseDown:
-			setPos(xToPos(mx));
+			cursorPos(xToPos(mx));
 		case Event::MouseUp:
 			return false;
 
@@ -485,11 +485,11 @@ bool TextView::onEvent(Event::t e, GLV& g){
 void TextView::deleteSelected(){
 	if(mSel>0){
 		deleteText(mPos, mSel);
-		setPos(mPos);
+		cursorPos(mPos);
 	}
 	else if(mSel<0){
 		deleteText(mPos+mSel, -mSel);
-		setPos(mPos+mSel);
+		cursorPos(mPos+mSel);
 	}
 }
 
@@ -507,7 +507,7 @@ void TextView::select(int v){
 	mSel = end-mPos;
 }
 
-void TextView::setPos(int v){
+void TextView::cursorPos(int v){
 	if(v<=int(mText.size()) && v>=0){
 		mPos=v;
 	}

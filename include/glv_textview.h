@@ -236,6 +236,15 @@ public:
 	/// Get value
 	const std::string& getValue() const { return data().elems<std::string>()[0]; }
 
+	/// Returns true if no text is present
+	bool empty() const { return getValue().empty(); }
+
+	/// Set cursor position
+	void cursorPos(int v);
+	
+	/// Put cursor past end of text
+	void cursorEnd(){ cursorPos(mText.size()); }
+
 	/// Set size of font in pixels
 	TextView& size(float pixels);
 
@@ -254,7 +263,6 @@ protected:
 	int mPos;
 	int mSel;	// selection range (0==none)
 	int mBlink;
-	void setPos(int v); // set cursor position
 	bool validPos(){ return mPos<=int(mText.size()) && mPos>0; }
 	int xToPos(float x); // convert x pixel position to character position
 	void deleteSelected();
@@ -317,16 +325,35 @@ public:
 	/// Get selected item
 	int selected() const { return mSelected; }
 
+	/// Get currently selected item's string
 	const std::string& getValue() const { return mItems[selected()]; }
+
+	/// Get index of an item
+	
+	/// \returns index of item or number of items if the item is not found
+	///
+	int indexOf(const std::string& item) const {
+		for(unsigned i=0; i<mItems.size(); ++i){
+			if(mItems[i] == item) return i;
+		}
+		return mItems.size();
+	}
 
 	/// Add new item to list
 	ListSelect& add(const std::string& v){
 		mItems.push_back(v); return *this;
 	}
 
-	/// Select item
+	/// Select item based on index
 	ListSelect& select(int i){
 		mSelected = glv::clip<int>(i,mItems.size()-1); return *this;
+	}
+
+	/// Select item based on name
+	ListSelect& select(const std::string& v){
+		int i = indexOf(v);
+		if(i < int(mItems.size())) select(i);
+		return *this;
 	}
 
 	virtual const char * className() const { return "ListSelect"; }
@@ -386,6 +413,19 @@ private:
 	int mSelected;
 	space_t mPad;
 	std::vector<std::string> mItems;
+	
+	/// Get data associated with the model, if any
+	virtual const Data& getData() const {
+		glv::Data& md = const_cast<glv::Data&>(data());
+		md.set(mItems[selected()]);
+		return data();
+	}
+
+	/// Set data associated with the model, if any
+	virtual void setData(const Data& d){
+		std::string s = d.at<std::string>(0);
+		select(s);
+	}
 };
 
 
