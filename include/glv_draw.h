@@ -310,6 +310,8 @@ template<int N, int A>
 void polygonCut	(float l, float t, float r, float b);	///< Regular polygon with N edges at angle A cut through center
 void plus		(float l, float t, float r, float b);	///< Plus
 void rectangle	(float l, float t, float r, float b);	///< Solid rectangle
+template<int LT, int LB, int RB, int RT>
+void rectTrunc	(float l, float t, float r, float b);	///< Rectangle truncated at corners
 template<int N, int M, int L, int A>
 void rose		(float l, float t, float r, float b);	///< Rose curve with N edges and M+L loops at angle A
 template<int N, int A>
@@ -391,24 +393,8 @@ static Enable enable;
 
 // Implementation ______________________________________________________________
 
-inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5f*(t+b), l+(r-l)*0.3f,b, r,t); }
-
-template<int N>
-inline void circle(float l, float t, float r, float b){ return polygon<N,1,1>(l,t,r,b); }
-
-template <int N>
-void disc(float l, float t, float r, float b){
-	Point2 pts[N+2];
-	genEllipse(pts+1,N,1, 0, 1, l,t,r,b);
-	pts[0](0.5f*(l+r), 0.5f*(t+b));
-	pts[N+1] = pts[1];
-	paint(TriangleFan, pts, GLV_ARRAY_SIZE(pts));
-}
-
-inline void frame(float l, float t, float r, float b){ shape(LineLoop, l, t, l, b, r, b, r, t); }
-
 template<int LT, int LB, int RB, int RT>
-void frameTrunc(float l, float t, float r, float b){
+inline void baseTrunc(float l, float t, float r, float b, int prim){
 	int NC = (LT?1:0) + (LB?1:0) + (RB?1:0) + (RT?1:0);
 	Point2 pts[4+NC];
 
@@ -429,7 +415,28 @@ void frameTrunc(float l, float t, float r, float b){
 			pts[++i](r-RT, t);
 	} else	pts[++i](r,t);
 
-	paint(LineLoop, pts, GLV_ARRAY_SIZE(pts));
+	paint(prim, pts, GLV_ARRAY_SIZE(pts));
+}
+
+inline void check(float l, float t, float r, float b){ shape(LineStrip, l,0.5f*(t+b), l+(r-l)*0.3f,b, r,t); }
+
+template<int N>
+inline void circle(float l, float t, float r, float b){ return polygon<N,1,1>(l,t,r,b); }
+
+template <int N>
+void disc(float l, float t, float r, float b){
+	Point2 pts[N+2];
+	genEllipse(pts+1,N,1, 0, 1, l,t,r,b);
+	pts[0](0.5f*(l+r), 0.5f*(t+b));
+	pts[N+1] = pts[1];
+	paint(TriangleFan, pts, GLV_ARRAY_SIZE(pts));
+}
+
+inline void frame(float l, float t, float r, float b){ shape(LineLoop, l, t, l, b, r, b, r, t); }
+
+template<int LT, int LB, int RB, int RT>
+void frameTrunc(float l, float t, float r, float b){
+	baseTrunc<LT,LB,RB,RT>(l,t,r,b, LineLoop);
 }
 
 inline void minus(float l, float t, float r, float b){ float my=0.5f*(t+b); shape(Lines, l,my, r,my); }
@@ -457,6 +464,11 @@ void polygonCut(float l, float t, float r, float b){
 }
 
 inline void rectangle(float l, float t, float r, float b){ shape(TriangleStrip, l,t, l,b, r,t, r,b); }
+
+template<int LT, int LB, int RB, int RT>
+void rectTrunc(float l, float t, float r, float b){
+	baseTrunc<LT,LB,RB,RT>(l,t,r,b, TriangleFan);
+}
 
 template<int N, int M, int L, int A>
 void rose(float l, float t, float r, float b){
