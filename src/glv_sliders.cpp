@@ -342,10 +342,10 @@ void SliderRange::onDraw(GLV& g){
 
 	color(colors().fore);
 	if(w>h){	// horizontal
-		rectangle(v1*w,0, v2*w,h);
+		rectTrunc<2,2,2,2>(v1*w,0, v2*w,h);
 	}
 	else{
-		rectangle(0,v1*h, w,v2*h);
+		rectTrunc<2,2,2,2>(0,v1*h, w,v2*h);
 	}
 }
 
