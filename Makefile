@@ -101,6 +101,6 @@ EXEC_TARGETS = example/%.cpp test/%.cpp
 $(EXEC_TARGETS): $(SLIB_PATH)
 	@$(CXX) $(CFLAGS) -o $(BIN_DIR)$(*F) $@ $(SLIB_PATH) $(LDFLAGS)
 ifneq ($(AUTORUN), 0)
-	@$(BIN_DIR)$(*F) &
+	@cd $(BIN_DIR) && ./$(*F) &
 endif
 
