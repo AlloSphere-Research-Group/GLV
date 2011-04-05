@@ -258,17 +258,8 @@ bool GLV::propagateEvent(){ //printf("GLV::propagateEvent(): %s\n", Event::getNa
 }
 
 void GLV::refreshModels(){
-	struct Add : TraversalAction{
-		Add(ModelManager& v): m(v){}
-		bool operator()(View * v, int depth){
-			if(v->hasName()) m.add(v->name(), *v);
-			return true;
-		}
-		ModelManager& m;	
-	} add(mMM);
-
 	mMM.clearModels();
-	traverseDepth(add);
+	addModels(mMM);
 }
 
 void GLV::setFocus(View * v){

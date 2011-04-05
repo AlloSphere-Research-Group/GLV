@@ -26,6 +26,7 @@ typedef float space_t;
 /// Type for View rectangle geometry
 typedef TRect<space_t> Rect;
 
+
 /// Draw handler
 struct DrawHandler{
 	virtual ~DrawHandler(){}
@@ -33,6 +34,7 @@ struct DrawHandler{
 	/// Drawing callback. Returns whether to execute subsequent handlers.
 	virtual bool onDraw(View& v, GLV& g) = 0;
 };
+
 
 /// Event handler
 struct EventHandler{
@@ -47,10 +49,13 @@ struct EventHandler{
 };
 
 
+/// Event handler that calls a pure function
 struct CEventHandler : public EventHandler{
 	typedef bool (* EventFunction)(View& v, GLV& g);
+
 	CEventHandler(EventFunction func): function(func){}
 	virtual bool onEvent(View& v, GLV& g){ return function(v,g); }
+
 	EventFunction function;
 };
 
@@ -135,6 +140,8 @@ namespace Event{
 		KeyDown,		/**< Keyboard key pressed*/
 		KeyUp,			/**< Keyboard key released */
 		KeyRepeat,		/**< Keyboard key auto-repeated */
+		
+//		ValueChanged,	TODO: not system event, but could replace notifications
 		
 		// window events
 	//	WindowActivated,	
@@ -432,7 +439,7 @@ public:
 	/// list get called first. Second, if a callback returns false (for 
 	/// bubbling), then it cancels execution of any subsequent callbacks in the
 	/// list. The return value of the last handler determines whether the 
-	/// virtual onDraw() should be called.
+	/// virtual onEvent() should be called.
 	View& addHandler(Event::t e, EventHandler& h);
 	
 	/// Remove draw handler
@@ -450,9 +457,6 @@ public:
 	/// Returns number of registered event handlers
 	int numEventHandlers(Event::t e) const;
 
-//	void on(Event::t e, eventCallback cb=0);	///< Set first callback for a specific event type.
-//	void removeCallback(Event::t e, eventCallback cb);	///< Remove a callback for a given event (if found)
-//	void removeAllCallbacks(Event::t e);		///< Detach all callbacks for a given event	
 	
 	bool absToRel(View * target, space_t& x, space_t& y) const;
 	StyleColor& colors() const;					///< Get style colors
@@ -490,7 +494,7 @@ public:
 
 	void fit();									///< Fit geometry so all children are visible
 	void focused(bool b);						///< Set whether I'm focused
-	void move(space_t x, space_t y);			///< Translate constraining within parent.
+	void move(space_t x, space_t y);			///< Translate constraining within parent
 
 	/// Set descriptor, e.g. tooltip text
 	View& descriptor(const std::string& v);
@@ -514,6 +518,9 @@ public:
 
 	void rectifyGeometry();						///< Correct geometry for proper display 
 
+	/// Add models of all named child Views to model manager
+	void addModels(ModelManager& m);
+
 protected:
 	friend class GLV;
 	typedef std::map<Event::t, EventHandlers> EventHandlersMap;
@@ -527,7 +534,6 @@ protected:
 	Rect mRestore;					// Restoration geometry
 	std::string mName;				// Settable name identifier
 	std::string mDescriptor;		// String describing view
-	Font * mFont;					// constructed on first use
 
 //	space_t mScale;
 //	space_t mTranslate[2];
@@ -543,8 +549,12 @@ protected:
 //	}
 
 	void doDraw(GLV& g);
+//	bool doEventHandlers(View& v, Event::t e);
 	bool hasName() const { return ""!=mName; }
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
+
+private:
+	Font * mFont;					// constructed on first use
 };
 
 

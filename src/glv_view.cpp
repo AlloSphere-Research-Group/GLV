@@ -254,6 +254,20 @@ int View::numEventHandlers(Event::t e) const {
 }
 
 
+void View::addModels(ModelManager& mm){
+	struct Add : TraversalAction{
+		Add(ModelManager& v): m(v){}
+		bool operator()(View * v, int depth){
+			if(v->hasName()) m.add(v->name(), *v);
+			return true;
+		}
+		ModelManager& m;	
+	} add(mm);
+
+	traverseDepth(add);
+}
+
+
 View& View::anchor(space_t mx, space_t my){
 	mAnchorX = mx; mAnchorY = my; return *this;
 }
@@ -352,6 +366,9 @@ void View::doDraw(GLV& g){
 
 		lineWidth(borderWidth);
 		frame(0, 0, pix(w), pix(h));
+		//draw::frameTrunc<2,1,1,1>(0, 0, pix(w), pix(h));
+		//draw::frameTrunc<1,1,1,1>(0, 0, pix(w), pix(h));
+		//draw::frameTrunc<2,2,2,2>(0, 0, pix(w), pix(h));
 	}
 }
 
@@ -441,7 +458,16 @@ void View::fit(){
 
 void View::focused(bool b){
 	property(Focused, b);
-	if(b && enabled(FocusToTop)) makeLastSibling(); // move to end of chain, so drawn last
+	if(b && enabled(FocusToTop)){
+		// move all nodes in branch to end of sibling chain so drawn last
+		View * v = this;
+		do{
+			v->makeLastSibling();
+			v = v->parent;
+		} while(v && v->parent);
+		
+		//makeLastSibling(); // move to end of chain, so drawn last
+	}
 	notify(this, Update::Focus);
 }
 
@@ -687,7 +713,5 @@ void View::traverseDepth(Qual##TraversalAction& action) qual {\
 }
 TRAVERSE_DEPTH(,)
 TRAVERSE_DEPTH(Const, const)
-
-//std::string View::valueString() const { std::string r; valueToString(r); return r; }
 
 } // glv::
