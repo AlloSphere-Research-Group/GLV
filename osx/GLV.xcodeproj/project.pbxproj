@@ -106,6 +106,8 @@
 		167F3474120EA5E40023A08C /* glv_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */; };
 		167F3477120EA5F10023A08C /* glv_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7540BA2434200E819AF /* glv_color.cpp */; };
 		167F3499120EA6260023A08C /* glv_font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 167F30F2120E1F1A0023A08C /* glv_font.cpp */; };
+		169DED99134BD76800E368B8 /* glv_preset_controls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169DED98134BD76800E368B8 /* glv_preset_controls.cpp */; };
+		169DED9A134BD76800E368B8 /* glv_preset_controls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169DED98134BD76800E368B8 /* glv_preset_controls.cpp */; };
 		16A93E5A1002BA4400F5404E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3657E5D30B7AC4D5005858EE /* OpenGL.framework */; };
 		16A93E5B1002BA4400F5404E /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E55D4C30CCE80FC00196525 /* GLUT.framework */; };
 		16A93E651002BA6E00F5404E /* glv_core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 160969BC0D8DDE98003B36BD /* glv_core.cpp */; };
@@ -295,6 +297,8 @@
 		162FAF8A124F1D0800C7C494 /* glv_icon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_icon.h; sourceTree = "<group>"; };
 		167F30B5120E05C80023A08C /* glv_font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_font.h; sourceTree = "<group>"; };
 		167F30F2120E1F1A0023A08C /* glv_font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_font.cpp; sourceTree = "<group>"; };
+		169DED97134BD75400E368B8 /* glv_preset_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_preset_controls.h; sourceTree = "<group>"; };
+		169DED98134BD76800E368B8 /* glv_preset_controls.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_preset_controls.cpp; sourceTree = "<group>"; };
 		16A93E5F1002BA4400F5404E /* TestWindowGLUT */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestWindowGLUT; sourceTree = BUILT_PRODUCTS_DIR; };
 		16A93E6C1002BAB600F5404E /* test_units.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_units.cpp; sourceTree = "<group>"; };
 		16B649001267CBCA00BFE768 /* glv_grid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_grid.h; sourceTree = "<group>"; };
@@ -530,6 +534,7 @@
 				16D5E7610D91F43B001153DA /* glv_layout.cpp */,
 				1610882B121DC37F00DC1DF1 /* glv_model.cpp */,
 				16DEEE3B0FC28A0C006B373C /* glv_plots.cpp */,
+				169DED98134BD76800E368B8 /* glv_preset_controls.cpp */,
 				B917A7580BA2434200E819AF /* glv_sliders.cpp */,
 				7E4DABDE0DAAEFC7009D2272 /* glv_texture.cpp */,
 				7E40B0030D92EB3A00219F2C /* glv_textview.cpp */,
@@ -559,6 +564,7 @@
 				1610882A121DC37F00DC1DF1 /* glv_model.h */,
 				B9183C9A0B9E36B100D8DA81 /* glv_observer_pattern.h */,
 				16DEEE260FC28359006B373C /* glv_plots.h */,
+				169DED97134BD75400E368B8 /* glv_preset_controls.h */,
 				B91841270BA125D600D8DA81 /* glv_rect.h */,
 				B9183C9C0B9E36B100D8DA81 /* glv_sliders.h */,
 				16096BF00D8E1FFB003B36BD /* glv_textview.h */,
@@ -1054,6 +1060,7 @@
 				16108835121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
 				16C96265123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 				16B649051267CE3C00BFE768 /* glv_grid.cpp in Sources */,
+				169DED99134BD76800E368B8 /* glv_preset_controls.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1112,6 +1119,7 @@
 				1610882D121DC37F00DC1DF1 /* glv_model.cpp in Sources */,
 				16C96266123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 				16B649041267CE3C00BFE768 /* glv_grid.cpp in Sources */,
+				169DED9A134BD76800E368B8 /* glv_preset_controls.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
