@@ -73,7 +73,7 @@ public:
 	
 	SliderRange& center(double v);							///< Set center of interval
 	SliderRange& centerRange(double center, double range);	///< Set center and range of interval
-	SliderRange& extrema(double min, double max);			///< Set extrema of interval
+	SliderRange& endpoints(double min, double max);			///< Set extrema of interval
 	
 	/// Sets how much the slider should move when an empty region is clicked.
 	

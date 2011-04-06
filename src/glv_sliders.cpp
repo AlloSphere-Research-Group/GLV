@@ -296,7 +296,7 @@ void Slider2D::onDraw(GLV& g){
 SliderRange::SliderRange(const Rect& r, double val1, double val2)
 :	SliderVector<2>(r), mDragMode(0), mJump(0.1)
 {
-	extrema(val1, val2);
+	endpoints(val1, val2);
 }
 
 double SliderRange::center() const { return (getValue(0) + getValue(1))*0.5; }
@@ -310,16 +310,16 @@ SliderRange& SliderRange::centerRange(double c, double r){
 //	double mx = mn+r;
 //	if(mn<0){ mx -= mn  ; mn=0; }
 //	if(mx>1){ mn -= mx-1; mx=1; }
-//	return extrema(mn,mx);
+//	return endpoints(mn,mx);
 	double mn = c-(r/2.);
 	double mx = mn+r;
 	// adjust min/max values to preserve range
 	if(mn<mMin){ mx += mMin-mn; mn=mMin; }
 	if(mx>mMax){ mn -= mx-mMax; mx=mMax; }
-	return extrema(mn,mx);
+	return endpoints(mn,mx);
 }
 
-SliderRange& SliderRange::extrema(double min, double max){
+SliderRange& SliderRange::endpoints(double min, double max){
 	glv::sort(min,max);
 	setValue(min,0);
 	setValue(max,1);

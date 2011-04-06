@@ -399,7 +399,7 @@ int main(){
 		assert(w.center() == 0.015f);
 		assert(w.range() == 0.01f);
 		
-		w.extrema(0,1);
+		w.endpoints(0,1);
 		assert(w.getValue(0) == 0);
 		assert(w.getValue(1) == 1);
 		
