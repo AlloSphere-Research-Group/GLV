@@ -336,6 +336,49 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 	return true;
 }
 
+// Old from NumberDialers:
+//	int mVal;				// current fixed-point value
+//	double mValMul;
+
+//	void setWidth(){ w = (h-2)*size(); }
+	
+//	int convert(double v) const { return (v/mValMul) + (v>0. ? 0.5:-0.5); }
+//	int mag() const { return pow(10., numDigits()-1-dig()); }
+
+//	void valAdd(int v){	valSet(v + mVal); }
+//	int valInt(int ix, int iy=0){ return convert(data().at<double>(ix,iy)); }
+//	void flipSign(){
+//		if((mVal>0 && -mVal>=convert(mMin)) || (mVal<0 && -mVal<=convert(mMax)))
+//			valSet(-mVal);
+//	}
+
+//	void valSet(int v){	// converts fixed point to floating point value
+////		mVal = glv::clip(v, convert(mMax), convert(mMin));
+////		double val = mVal * mValMul;
+////		Widget::setValue(val);
+//
+//		double val = v * mValMul;
+//		setValue(val);
+//	}
+
+//	NumberDialers& setValue(double v){ valSet(convert(v)); return *this; }
+
+//	virtual bool onAssignData(Data& d, int ind1, int ind2){
+//	
+////		double v = d.at<double>(ind1, ind2);		
+////		int vi = convert(v);
+//////		mVal = glv::clip(v, convert(mMax), convert(mMin));
+//////		double val = mVal * mValMul;		
+////		mVal = vi;
+//	
+//		if(Widget::onAssignData(d, ind1, ind2)){
+//			double v = d.at<double>(ind1, ind2);
+//			mVal = convert(v); //printf("%d\n", mVal);
+//			return true;
+//		}
+//		return false;
+//	}
+
 
 
 

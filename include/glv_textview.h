@@ -120,7 +120,10 @@ public:
 	
 	/// Get number of digits in integer part
 	int sizeInteger() const;
-	
+
+	/// Set size of font
+	NumberDialers& fontSize(float pixels){ font().size(pixels); fitExtent(); return *this; }
+
 	/// Set max and min output range. Values larger than displayable range will be clipped.
 	NumberDialers& interval(double max, double min=0);
 
@@ -139,16 +142,11 @@ public:
 
 protected:
 	int mNI, mNF, mPos;		// # digits in integer, # digits in fraction, selected digit position
-//	int mVal;				// current fixed-point value
 	float mAcc;
-//	double mValMul;
 	bool mShowSign;
 
 	void fitExtent();
-//	void setWidth(){ w = (h-2)*size(); }
-	
-//	int convert(double v) const { return (v/mValMul) + (v>0. ? 0.5:-0.5); }
-//	int mag() const { return pow(10., numDigits()-1-dig()); }
+
 	bool onNumber() const { return mPos!=signPos(); }
 	int dig() const { return mPos; }
 	void dig(int v){ mPos = v<0 ? 0 : v>=numDigits() ? numDigits()-1 : v; }
@@ -156,8 +154,6 @@ protected:
 	int numDigits() const { return mNI + mNF + numSignDigits(); }
 	int numSignDigits() const { return mShowSign ? 1:0; }
 	int signPos() const { return mShowSign ? 0 : -1; }
-//	void valAdd(int v){	valSet(v + mVal); }
-//	int valInt(int ix, int iy=0){ return convert(data().at<double>(ix,iy)); }
 	int valInt(int ix, int iy=0) const {
 		double v = data().at<double>(ix,iy);
 		return (int)(v * pow(10., mNF) + (v>0. ? 0.5:-0.5));
@@ -171,38 +167,6 @@ protected:
 		if((v>0 && -v>=mMin) || (v<0 && -v<=mMax))
 			setValue(-v);
 	}
-
-//	void flipSign(){
-//		if((mVal>0 && -mVal>=convert(mMin)) || (mVal<0 && -mVal<=convert(mMax)))
-//			valSet(-mVal);
-//	}
-
-//	void valSet(int v){	// converts fixed point to floating point value
-////		mVal = glv::clip(v, convert(mMax), convert(mMin));
-////		double val = mVal * mValMul;
-////		Widget::setValue(val);
-//
-//		double val = v * mValMul;
-//		setValue(val);
-//	}
-
-//	NumberDialers& setValue(double v){ valSet(convert(v)); return *this; }
-
-//	virtual bool onAssignData(Data& d, int ind1, int ind2){
-//	
-////		double v = d.at<double>(ind1, ind2);		
-////		int vi = convert(v);
-//////		mVal = glv::clip(v, convert(mMax), convert(mMin));
-//////		double val = mVal * mValMul;		
-////		mVal = vi;
-//	
-//		if(Widget::onAssignData(d, ind1, ind2)){
-//			double v = d.at<double>(ind1, ind2);
-//			mVal = convert(v); //printf("%d\n", mVal);
-//			return true;
-//		}
-//		return false;
-//	}
 };
 
 
