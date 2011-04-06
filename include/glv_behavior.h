@@ -24,20 +24,17 @@ namespace Behavior{
 		bool onEvent(View& v, GLV& g){
 			if(g.mouse().left()){
 
-				float mx = g.mouse().xRel();
-				float my = g.mouse().yRel();
+				float dx = g.mouse().dx();
+				float dy = g.mouse().dy();
+				float mx = g.mouse().xRel() - dx;	// subtract diff because position already updated
+				float my = g.mouse().yRel() - dy;
 
-				if(mx > (v.w-16) && my > (v.h-16)){
-
-					float dx = g.mouse().dx();
-					float dy = g.mouse().dy();
-
+				if(mx < v.w && mx > (v.w-16) && my < v.h && my > (v.h-16)){
 					v.resizeRightTo(v.right() + dx);
 					v.resizeBottomTo(v.bottom() + dy);
-					v.rectifyGeometry();		
-					
+					v.rectifyGeometry();
 					return false;
-				}			
+				}
 			}
 			return true;
 		}
