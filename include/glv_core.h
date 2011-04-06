@@ -397,8 +397,9 @@ public:
 	View * parent;				///< My parent view
 	View * child;				///< My first child (next to be drawn)
 	View * sibling;				///< My next sibling view (drawn after all my children)
-	void add(View& child);		///< Add a child view to myself, and update linked lists
-	void add(View* child);		///< Add a child view to myself, and update linked lists
+
+	View& add(View& child);		///< Add a child view to myself, and update linked lists
+	View& add(View* child);		///< Add a child view to myself, and update linked lists
 	void makeLastSibling();		///< Put self at end of sibling chain
 	void remove();				///< Remove myself from the parent view, and update linked lists
 

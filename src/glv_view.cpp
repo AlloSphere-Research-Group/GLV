@@ -56,7 +56,7 @@ View::~View(){
 }
 
 
-void View::add(View& newChild){
+View& View::add(View& newChild){
 
 	View * op = newChild.parent; // old parent
 	
@@ -82,13 +82,15 @@ void View::add(View& newChild){
 		while(lastChild->sibling) lastChild = lastChild->sibling;
 		lastChild->sibling = &newChild;
 	}
+	return *this;
 }
 
 
-void View::add(View * newChild){
+View& View::add(View * newChild){
 	if(newChild){	// valid address?
 		add(*newChild);
 	}
+	return *this;
 }
 
 
