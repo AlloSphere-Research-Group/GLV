@@ -147,7 +147,12 @@ static void computeCrop(std::vector<Rect>& cr, int lvl, space_t ax, space_t ay, 
 		cr[lvl].set(ax, ay, v->w, v->h);	// set absolute rect
 		
 		// get intersection with myself and previous level
-		if(lvl>0) cr[lvl].intersection(cr[lvl-1], cr[lvl]);
+		if(lvl>0){
+			Rect r = cr[lvl];
+			r.resizeEdgesBy(-1);	// shrink area to save the borders
+			r.intersection(cr[lvl-1], cr[lvl]);
+			//cr[lvl].intersection(cr[lvl-1], cr[lvl]);
+		}
 	}
 	
 	// if no child cropping, then inherit previous level's crop rect
@@ -224,6 +229,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 
 			// LJP: using some weird numbers here, seems to work right though...
 			//scissor(r.l, h - r.bottom() - 1, r.w+2, r.h+1);
+			//scissor(pix(r.l), pix(h - r.bottom() - 1.499f), pix(r.w+1), pix(r.h+1.499f));
 			scissor(pix(r.l), pix(h - r.bottom() - 1.499f), pix(r.w+1), pix(r.h+1.499f));
 
 			graphicsData().reset();
