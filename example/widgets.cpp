@@ -92,6 +92,7 @@ struct SubView3D : View3D{
 
 struct MyGLV : public GLV{
 	void onDraw(GLV& g){
+		tabs.bringToFront();
 		for(int i=0; i<tabs.size(); ++i) groups[i].property(Visible, tabs.getValue(i));
 	}
 };
@@ -111,8 +112,9 @@ int main(int argc, char ** argv){
 	slRH.interval(2,-2);
 	
 	glv::Style::standard().color.set(StyleColor::BlackOnWhite);
+	glv::Style::standard().color.fore.set(0.5);
 //	glv::Style::standard().color.set(StyleColor::WhiteOnBlack);
-//	glv::Style::standard().color.set(StyleColor::Gray);
+//	glv::Style::standard().color.set(StyleColor::SmokyGray);
 //	glv::Style::standard().color.hsv(0.5,0.5,0.2);
 	
 	for(int i=0; i<pages; ++i){
