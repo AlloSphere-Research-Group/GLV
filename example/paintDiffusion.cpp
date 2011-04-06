@@ -9,6 +9,7 @@ using namespace glv;
 
 struct Canvas : public Plot{
 	Canvas(const Rect& r): Plot(r){
+		disable(DrawBorder);
 		P.resize(Data::FLOAT, 64,64,2);
 		iz=0;
 	}
@@ -44,7 +45,7 @@ struct Canvas : public Plot{
 
 	bool onEvent(Event::t e, GLV& g){
 
-		Plot::onEvent(e,g);	// "inherit" mouse/keyboard controls
+		//Plot::onEvent(e,g);	// "inherit" mouse/keyboard controls
 
 		float gx = pixToGrid(0, g.mouse().xRel());	// convert mouse to grid position
 		float gy = pixToGrid(1, g.mouse().yRel());	// convert mouse to grid position

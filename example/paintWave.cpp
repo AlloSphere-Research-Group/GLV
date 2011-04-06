@@ -18,6 +18,7 @@ using namespace glv;
 
 struct Canvas : public Plot{
 	Canvas(const Rect& r): Plot(r), gui("><"), damp(1,4,1,0), vel(1,4,0,2){
+		disable(DrawBorder);
 		P.resize(Data::FLOAT, 64*1,64*1,3);
 		it0=0;
 		damp.setValue(0.99);
@@ -73,7 +74,7 @@ struct Canvas : public Plot{
 
 	bool onEvent(Event::t e, GLV& g){
 
-		Plot::onEvent(e,g);
+		//Plot::onEvent(e,g);
 
 		float gx = pixToGrid(0, g.mouse().xRel());	// convert mouse to grid position
 		float gy = pixToGrid(1, g.mouse().yRel());	// convert mouse to grid position
