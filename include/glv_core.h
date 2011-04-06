@@ -470,8 +470,11 @@ public:
 	bool showing() const;						///< Returns whether View is being shown
 	Style& style() const { return *mStyle; }	///< Get style object
 	const View * toAbs(space_t& x, space_t& y) const; ///< Converts relative View x-y coordinates to absolute. Returns topmost parent view.
+	Rect unionOfChildren() const;				///< Returns rectangular union of all children
 	std::string valueString() const;			/// Returns model value(s) as string
 	int visible() const;						///< Returns whether View visibility flag is set
+
+
 
 	View& anchor(space_t mx, space_t my);		///< Set translation factors relative to parent resize amount
 	View& anchor(Place::t parentPlace);			///< Set translation factors relative to parent resize amount

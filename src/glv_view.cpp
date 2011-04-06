@@ -442,15 +442,8 @@ View * View::findTarget(space_t &x, space_t &y){
 
 
 void View::fit(){
-	View * c = child;
-	if(c){			
-		Rect r(*c);
-		
-		while(c->sibling){
-			c = c->sibling;
-			r.unionOf(*c, r);
-		}
-
+	if(child){			
+		Rect r = unionOfChildren();
 		extent(r.right(), r.bottom());
 	}
 }
@@ -462,11 +455,9 @@ void View::focused(bool b){
 		// move all nodes in branch to end of sibling chain so drawn last
 		View * v = this;
 		do{
-			v->makeLastSibling();
+			v->bringToFront();
 			v = v->parent;
 		} while(v && v->parent);
-		
-		//makeLastSibling(); // move to end of chain, so drawn last
 	}
 	notify(this, Update::Focus);
 }
@@ -713,5 +704,22 @@ void View::traverseDepth(Qual##TraversalAction& action) qual {\
 }
 TRAVERSE_DEPTH(,)
 TRAVERSE_DEPTH(Const, const)
+
+
+Rect View::unionOfChildren() const{
+	View * c = child;
+	if(c){			
+		Rect r(*c);
+		
+		while(c->sibling){
+			c = c->sibling;
+			r.unionOf(*c, r);
+		}
+		return r;
+	}
+	else{
+		return Rect(0,0,0,0);
+	}	
+}
 
 } // glv::
