@@ -17,9 +17,9 @@ struct Scene : View3D{
 		freqX.setValue(1); freqY.setValue(2); freqZ.setValue(3);
 		stretch(1,1);
 		disable(DrawBorder);
-		freqX.font().size(20);
-		freqY.font().size(20);
-		freqZ.font().size(20);
+		freqX.fontSize(20);
+		freqY.fontSize(20);
+		freqZ.fontSize(20);
 		gui << freqX << freqY << freqZ;
 		gui.arrange();
 		
