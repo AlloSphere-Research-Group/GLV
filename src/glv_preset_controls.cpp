@@ -46,7 +46,7 @@ PresetControl::PresetControl(ModelManager& m)
 	
 	mBtnPanel.addHandler(Event::MouseDown, mPanelButtonClick);
 	mBtnPanel.extent(mTextEntry.h);
-	mBtnPanel.icon(draw::combo<draw::frameTrunc<1,1,1,1>, draw::crosshatch<2,2> >);
+	mBtnPanel.symbol(draw::combo<draw::frameTrunc<1,1,1,1>, draw::crosshatch<2,2> >);
 	mBtnPanel.enable(Momentary);
 	mBtnPanel.padding(4,0).padding(8,1);
 	(*this) << mBtn << mTextEntry << mBtnPanel;
@@ -140,8 +140,8 @@ void PresetControl::loadFile(){
 void PresetControl::onDraw(GLV& g){
 	using namespace glv::draw;
 
-	if(mOverwrite)	mBtn.icon(draw::polygonCut<16,45>);
-	else			mBtn.icon(0);
+	if(mOverwrite)	mBtn.symbol(draw::polygonCut<16,45>);
+	else			mBtn.symbol(0);
 	
 	//mPanel.property(Visible, mBtnPanel.getValue());
 }

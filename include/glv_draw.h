@@ -13,8 +13,8 @@
 
 namespace glv {
 
-/// Icon function type
-typedef void (* iconFunc)(float l, float t, float r, float b);
+/// Symbol function type
+typedef void (* SymbolFunc)(float l, float t, float r, float b);
 
 /// Two-dimensional point
 struct Point2{

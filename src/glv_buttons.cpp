@@ -6,9 +6,9 @@
 namespace glv {
 
 Buttons::Buttons(
-	const Rect& r, int nx, int ny, bool toggles, bool mutExc, iconFunc on, iconFunc off
+	const Rect& r, int nx, int ny, bool toggles, bool mutExc, SymbolFunc on, SymbolFunc off
 )
-:	Widget(r, 3, toggles, mutExc, true), mIconOff(off), mIconOn(on)
+:	Widget(r, 3, toggles, mutExc, true), mSymOff(off), mSymOn(on)
 {	
 	data().resize(Data::BOOL, nx,ny);
 	useInterval(false);
@@ -34,8 +34,8 @@ void Buttons::onDraw(GLV& g){
 
 		for(int j=0; j<sizeY(); ++j){
 			float y = yd*j + pady*0.5f;
-			if(getValue(i,j)){	if(mIconOn ) mIconOn (x, y, x+xd-padx, y+yd-pady); }
-			else{				if(mIconOff) mIconOff(x, y, x+xd-padx, y+yd-pady); }
+			if(getValue(i,j)){	if(mSymOn ) mSymOn (x, y, x+xd-padx, y+yd-pady); }
+			else{				if(mSymOff) mSymOff(x, y, x+xd-padx, y+yd-pady); }
 		}		
 	}
 	

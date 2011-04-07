@@ -19,28 +19,28 @@ public:
 	/// @param[in] ny			number along y
 	/// @param[in] momentary	whether the button state matches button press state
 	/// @param[in] mutExc		whether multiple buttons can be on
-	/// @param[in] on			the on state icon
-	/// @param[in] off			the off state icon
+	/// @param[in] on			the on state symbol
+	/// @param[in] off			the off state symbol
 	Buttons(
 		const Rect& r=Rect(), int nx=1, int ny=1,
 		bool momentary=false, bool mutExc=false,
-		iconFunc on=draw::rectangle, iconFunc off=0
+		SymbolFunc on=draw::rectangle, SymbolFunc off=0
 	);
 
-	/// Get off state icon
-	const iconFunc& iconOff() const { return mIconOff; }
+	/// Get off state symbol
+	const SymbolFunc& symbolOff() const { return mSymOff; }
 	
-	/// Get on state icon
-	const iconFunc& iconOn () const { return mIconOn; }
+	/// Get on state symbol
+	const SymbolFunc& symbolOn () const { return mSymOn; }
 
-	/// Set on/off icons
-	Buttons& icon(const iconFunc& f){ iconOff(f); return iconOn(f); }
+	/// Set on/off symbols
+	Buttons& symbol(const SymbolFunc& f){ symbolOff(f); return symbolOn(f); }
 
-	/// Set off state icon
-	Buttons& iconOff(const iconFunc& f){ mIconOff=f; return *this; }
+	/// Set off state symbol
+	Buttons& symbolOff(const SymbolFunc& f){ mSymOff=f; return *this; }
 
-	/// Set on state icon
-	Buttons& iconOn (const iconFunc& f){ mIconOn =f; return *this; }
+	/// Set on state symbol
+	Buttons& symbolOn (const SymbolFunc& f){ mSymOn =f; return *this; }
 
 	virtual const char * className() const { return "Buttons"; }
 	virtual void onDraw(GLV& g);
@@ -51,7 +51,7 @@ public:
 	bool getValue(int i1, int i2) const { return Widget::getValue<bool>(i1, i2); }
 
 protected:
-	iconFunc mIconOff, mIconOn;	// state icons
+	SymbolFunc mSymOff, mSymOn;	// state symbols
 //	Icon * mIconOff, mIconOn;
 };
 
@@ -62,9 +62,9 @@ class Button : public Buttons {
 public:
 	/// @param[in] r			geometry
 	/// @param[in] momentary	whether the button state matches button press state
-	/// @param[in] on			the on state icon
-	/// @param[in] off			the off state icon
-	Button(const Rect& r=Rect(20), bool momentary=false, iconFunc on=draw::rectangle, iconFunc off=0)
+	/// @param[in] on			the on state symbol
+	/// @param[in] off			the off state symbol
+	Button(const Rect& r=Rect(20), bool momentary=false, SymbolFunc on=draw::rectangle, SymbolFunc off=0)
 	:	Buttons(r, 1,1, momentary, false, on, off)
 	{}
 	
