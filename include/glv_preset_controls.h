@@ -23,6 +23,10 @@ public:
 
 protected:
 	ModelManager * mMM;
+
+private:
+	friend class PresetControl;
+	PresetView(){}
 };
 
 
@@ -32,6 +36,7 @@ public:
 	PresetControl(ModelManager& m);
 
 	void loadFile();
+	PresetControl& modelManager(ModelManager& v){ mMM = &v; return *this; }
 
 	virtual const char * className() const { return "PresetControl"; }
 	virtual void onDraw(GLV& g);
@@ -62,8 +67,10 @@ protected:
 	PresetView mPanel;
 
 	bool mOverwrite;
+
 private:
-	PresetControl(){}
+	// ensure that model manager is always set to valid object
+	PresetControl(): mPanelButtonClick(*this), mTextKeyDown(*this){}
 };
 
 } // glv::
