@@ -162,8 +162,8 @@ void Sliders::selectSlider(GLV& g, bool click){
 
 // Slider2D
 
-Slider2D::Slider2D(const Rect& r, double valX, double valY, space_t knobSize)
-:	SliderVector<2>(r), knobSize(knobSize)
+Slider2D::Slider2D(const Rect& r, double valX, double valY, space_t knobSize, SymbolFunc knobSym)
+:	SliderVector<2>(r), mKnobSize(knobSize), mKnobSym(knobSym)
 {
 	setValue(valX, 0);
 	setValue(valY, 1);
@@ -184,7 +184,9 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 			}
 			return false;
 			
-		case Event::MouseUp: clipAccs();
+		case Event::MouseUp:
+			clipAccs();
+			return false;
 		case Event::KeyUp: return false;
 		
 		case Event::KeyDown:
@@ -201,17 +203,6 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 	return true;
 }
 
-
-void Slider2D::drawKnob(const Slider2D& s){
-	using namespace glv::draw;
-	float sz = s.knobSize;	// size of indicator block
-	float sz2 = sz * 0.5f;
-	float posX = sz2 + (s.w - sz) * s.to01(s.getValue(0));
-	float posY = sz2 + (s.h - sz) * (1.f - s.to01(s.getValue(1)));
-	
-	color(s.colors().fore);
-	rectangle(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
-}
 
 /*
 static void drawQuad(const Slider2D& s){
@@ -235,7 +226,18 @@ static void drawQuad(const Slider2D& s){
 
 void Slider2D::onDraw(GLV& g){
 
-	drawKnob(*this);
+	if(!g.mouse().isDown() && enabled(Momentary)) setValueMid();
+
+	using namespace glv::draw;
+	float sz = knobSize();	// size of indicator block
+	float sz2 = sz * 0.5f;
+	float posX = sz2 + (w - sz) * to01(getValue(0));
+	float posY = sz2 + (h - sz) * (1.f - to01(getValue(1)));
+	
+	color(colors().fore);
+	mKnobSym(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
+
+	//drawKnob(*this);
 	//drawQuad(*this);
 	
 //	float hh = h * 0.5f;

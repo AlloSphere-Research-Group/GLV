@@ -49,15 +49,29 @@ public:
 	/// @param[in] valX			initial value along x
 	/// @param[in] valY			initial value along y
 	/// @param[in] knobSize		size of slider knob in pixels
-	Slider2D(const Rect& r=glv::Rect(100), double valX=0, double valY=0, space_t knobSize=12);
+	/// @param[in] knobSym		knob symbol
+	Slider2D(
+		const Rect& r=glv::Rect(100),
+		double valX=0, double valY=0,
+		space_t knobSize=12, SymbolFunc knobSym=draw::rectangle
+	);
 
-	space_t knobSize;	///< Size of slider knob
-	
+	/// Get size of slider knob
+	space_t knobSize() const { return mKnobSize; }
+
+	/// Set size of slider knob
+	Slider2D& knobSize(space_t v){ mKnobSize=v; return *this; }
+
+	/// Set knob symbol
+	Slider2D& knobSymbol(SymbolFunc f){ mKnobSym=f; return *this; }
+
 	virtual const char * className() const { return "Slider2D"; }
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
-	
-	static void drawKnob(const Slider2D& s);	
+
+protected:
+	space_t mKnobSize;
+	SymbolFunc mKnobSym;
 };
 
 
