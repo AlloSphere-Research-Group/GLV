@@ -62,6 +62,8 @@ protected:
 	PresetView mPanel;
 
 	bool mOverwrite;
+private:
+	PresetControl(){}
 };
 
 } // glv::
