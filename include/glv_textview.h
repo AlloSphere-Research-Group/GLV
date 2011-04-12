@@ -379,10 +379,9 @@ private:
 	std::vector<std::string> mItems;
 	
 	/// Get data associated with the model, if any
-	virtual const Data& getData() const {
-		glv::Data& md = const_cast<glv::Data&>(data());
-		md.set(mItems[selected()]);
-		return data();
+	virtual const Data& getData(Data& temp) const {
+		temp.set(mItems[selected()]);
+		return temp;
 	}
 
 	/// Set data associated with the model, if any

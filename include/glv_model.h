@@ -540,8 +540,17 @@ public:
 
 	virtual ~Model(){}
 
+//	/// Get data associated with the model, if any
+//	virtual const Data& getData() const { static Data d; return d; }
+
 	/// Get data associated with the model, if any
-	virtual const Data& getData() const { static Data d; return d; }
+	
+	/// @param[in] temp		Default constructed Data object passed in by callee.
+	///						This can be used as a return value in situations
+	///						where either the base class does not have its own 
+	///						Data object or when some kind of conversion of the
+	///						data in its Data object needs to occur.
+	virtual const Data& getData(Data& temp) const { return temp; }
 
 	/// Set data associated with the model, if any
 	virtual void setData(const Data& d){}
@@ -566,7 +575,7 @@ public:
 
 	virtual ~DataModel(){}
 
-	virtual const Data& getData() const { return data(); }
+	virtual const Data& getData(Data& temp) const { return data(); }
 
 	virtual void setData(const Data& d){ assignData(d); }
 

@@ -828,7 +828,8 @@ int ModelManager::snapshotFromString(const std::string& src){
 			NamedModels::const_iterator it = m.find(key);
 			if(it != m.end()){
 				Data& ds = s[key];
-				const Data& dm = it->second->getData();
+				Data temp;
+				const Data& dm = it->second->getData(temp);
 				
 				// Use main state as prototype
 				ds.resize(dm.type(), dm.shape(), dm.maxDim());
@@ -868,7 +869,8 @@ void ModelManager::saveSnapshot(const std::string& name){
 
 	NamedModels::iterator it = mState.begin();
 	while(it != mState.end()){
-		(snapshot[it->first] = it->second->getData()).clone();
+		Data temp;
+		(snapshot[it->first] = it->second->getData(temp)).clone();
 		++it;
 	}
 }
