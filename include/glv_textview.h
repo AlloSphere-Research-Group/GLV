@@ -164,7 +164,7 @@ protected:
 
 	void flipSign(){
 		double v = getValue();
-		if((v>0 && -v>=mMin) || (v<0 && -v<=mMax))
+		if((v>0 && -v>=min()) || (v<0 && -v<=max()))
 			setValue(-v);
 	}
 };

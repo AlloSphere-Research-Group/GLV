@@ -20,7 +20,7 @@ bool Widget::widgetKeyDown(View * v, GLV& g){
 Widget::Widget(
 	const Rect& r, space_t pad, bool moment, bool mutExc, bool drawGrid
 )
-:	View(r), sx(0), sy(0), mMin(0), mMax(1), mUseInterval(true)
+:	View(r), sx(0), sy(0), mInterval(0,1), mUseInterval(true)
 {
 	padding(pad);
 	property(DrawGrid, drawGrid);
@@ -102,7 +102,7 @@ bool Widget::onAssignData(Data& d, int ind1, int ind2){
 	if(data().isNumerical()){
 		if(enabled(MutualExc)){
 			double v = 0;
-			if(useInterval()) v = glv::clip(v, mMax, mMin);
+			if(useInterval()) v = glv::clip(v, max(), min());
 			data().assignAll(v);
 		}
 

@@ -60,7 +60,7 @@ void Sliders::onDraw(GLV& g){
 				rectangle(x, y+yd-v01*yd, x+xd-paddingX(), y+yd-y0);
 
 				// if zero line showing
-				if(mMax>0 && mMin<0){
+				if(max()>0 && min()<0){
 					color(colors().border);
 					float linePos = draw::pix(y+yd-y0);
 					shape(draw::Lines, x, linePos, x+xd, linePos);
@@ -85,7 +85,7 @@ void Sliders::onDraw(GLV& g){
 				rectangle(x + x0, y, v01*xd+x, y+yd-paddingY());
 
 				// if zero line showing
-				if(mMax>0 && mMin<0){
+				if(max()>0 && min()<0){
 					color(colors().border);
 					float linePos = draw::pix(x+x0);
 					shape(draw::Lines, linePos, y, linePos, y+yd);
@@ -316,8 +316,8 @@ SliderRange& SliderRange::centerRange(double c, double r){
 	double mn = c-(r/2.);
 	double mx = mn+r;
 	// adjust min/max values to preserve range
-	if(mn<mMin){ mx += mMin-mn; mn=mMin; }
-	if(mx>mMax){ mn -= mx-mMax; mx=mMax; }
+	if(mn<min()){ mx += min()-mn; mn=min(); }
+	if(mx>max()){ mn -= mx-max(); mx=max(); }
 	return endpoints(mn,mx);
 }
 
@@ -411,8 +411,8 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 	case Event::MouseDrag:
 		dv *= diam() * g.mouse().sens();
 		if(3==mDragMode){
-			valueAdd(dv, 0, mMin, mMax-rg);
-			valueAdd(dv, 1, mMin+rg, mMax);
+			valueAdd(dv, 0, min(), max()-rg);
+			valueAdd(dv, 1, min()+rg, max());
 		}
 		else if(1==mDragMode) valueAdd(dv, 0);
 		else if(2==mDragMode) valueAdd(dv, 1);
@@ -421,11 +421,11 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 
 	case Event::MouseUp:
 		if(3==mDragMode){
-			mAcc[0] = glv::clip(mAcc[0], mMax-rg, mMin);
-			mAcc[1] = glv::clip(mAcc[1], mMax, mMin+rg);
+			mAcc[0] = glv::clip(mAcc[0], max()-rg, min());
+			mAcc[1] = glv::clip(mAcc[1], max(), min()+rg);
 		}
-		else if(1==mDragMode) mAcc[0] = glv::clip(mAcc[0], mMax, mMin);
-		else if(2==mDragMode) mAcc[1] = glv::clip(mAcc[1], mMax, mMin);
+		else if(1==mDragMode) mAcc[0] = glv::clip(mAcc[0], max(), min());
+		else if(2==mDragMode) mAcc[1] = glv::clip(mAcc[1], max(), min());
 		return false;
 
 	default:;

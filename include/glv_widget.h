@@ -40,19 +40,20 @@ public:
 	/// Returns whether this element coordinate is selected
 	bool isSelected(int x, int y) const { return x == selectedX() && y == selectedY(); }
 
-	const double& max() const { return mMax; }		///< Get maximum of value interval
-	const double& min() const { return mMin; }		///< Get minimum of value interval
-	double mid() const { return (max()+min())/2; }	///< Get middle point of value interval
+	const Interval<double>& interval() const { return mInterval; } ///< Get value interval
+	const double& max() const { return mInterval.max(); }	///< Get maximum of value interval
+	const double& min() const { return mInterval.min(); }	///< Get minimum of value interval
+	double mid() const { return mInterval.center(); }		///< Get middle point of value interval
 
-	space_t paddingX() const { return mPadding[0]; }	///< Get element padding amount along x
-	space_t paddingY() const { return mPadding[1]; }	///< Get element padding amount along y
+	space_t paddingX() const { return mPadding[0]; }		///< Get element padding amount along x
+	space_t paddingY() const { return mPadding[1]; }		///< Get element padding amount along y
 
 	int selected() const { return data().indexFlat(sx, sy); }	///< Get selected element index
-	int selectedX() const { return sx; }			///< Get selected element x coordinate
-	int selectedY() const { return sy; }			///< Get selected element y coordinate
-	int size () const { return data().size(); }		///< Get total number of elements
-	int sizeX() const { return data().size(0); }	///< Get number of elements along x
-	int sizeY() const { return data().size(1); }	///< Get number of elements along y
+	int selectedX() const { return sx; }					///< Get selected element x coordinate
+	int selectedY() const { return sy; }					///< Get selected element y coordinate
+	int size () const { return data().size(); }				///< Get total number of elements
+	int sizeX() const { return data().size(0); }			///< Get number of elements along x
+	int sizeY() const { return data().size(1); }			///< Get number of elements along y
 	bool useInterval() const { return mUseInterval; }
 
 
@@ -64,7 +65,7 @@ public:
 
 	/// Set interval for numerical values
 	Widget& interval(const double& max, const double& min=0){
-		glv::sort(mMin=min, mMax=max); return *this;
+		mInterval.endpoints(min,max); return *this;
 	}
 
 	/// Set element padding amount
@@ -112,7 +113,7 @@ protected:
 	IndexDataMap mVariables;		// external variables to sync to, index-Data
 	space_t mPadding[DIMS];			// num pixels to inset icon
 	int sx, sy;						// last clicked position
-	double mMin, mMax;				// value interval for all elements
+	Interval<double> mInterval;		
 	double mPrevVal;				//
 	bool mUseInterval;
 
@@ -128,9 +129,9 @@ protected:
 	void clipIndices(){ clipIndices(sx,sy); }
 	bool validIndex(int i) const { return (i < size()) && (i >= 0); }
 
-	double diam() const { return max()-min(); }
-	double to01(const double& v) const { return (v-min())/diam(); }
-	double toInterval(const double& v) const { return v*diam() + min(); }
+	double diam() const { return mInterval.diameter(); }
+	double to01(const double& v) const { return mInterval.toUnit(v); }
+	double toInterval(const double& v) const { return mInterval.fromUnit(v); }
 
 	template <class T>
 	Widget& setValue(const T& v, int i, double mn, double mx){

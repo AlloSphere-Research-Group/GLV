@@ -162,14 +162,12 @@ void NumberDialers::fitExtent(){
 //	print();
 }
 
-NumberDialers& NumberDialers::interval(double max, double min){
-	glv::sort(min,max);
-	mMin = min;
-	mMax = max;
+NumberDialers& NumberDialers::interval(double mx, double mn){
+	mInterval.endpoints(mn, mx);
 	double m = maxVal();	// do not allow numbers larger than can be displayed
-	if(mMin < -m) mMin = -m;
-	if(mMax >  m) mMax =  m;
-	showSign(min < 0);
+	if(min() < -m) mInterval.min(-m);
+	if(max() >  m) mInterval.max( m);
+	showSign(mn < 0);
 //	valSet(mVal);
 	setValue(getValue());
 	return *this;

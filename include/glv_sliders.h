@@ -35,7 +35,7 @@ protected:
 	SliderVector& valueAdd(double val, int idx);
 	SliderVector& valueAdd(double val, int idx, double min, double max);
 
-	void clipAccs(){ for(int i=0; i<Dim; ++i) mAcc[i]=glv::clip(mAcc[i],mMax,mMin); }
+	void clipAccs(){ for(int i=0; i<Dim; ++i) mAcc[i]=glv::clip(mAcc[i],max(),min()); }
 	virtual bool onAssignData(Data& d, int ind1, int ind2);
 };
 
@@ -296,7 +296,7 @@ TEM inline bool SliderVector<Dim>::onAssignData(Data& d, int ind1, int ind2){
 }
 
 TEM inline SliderVector<Dim>& SliderVector<Dim>::valueAdd(double add, int dim){
-	return valueAdd(add,dim,mMin,mMax);
+	return valueAdd(add,dim,min(),max());
 }
 
 TEM inline SliderVector<Dim>& SliderVector<Dim>::valueAdd(double add, int dim, double min, double max){	
