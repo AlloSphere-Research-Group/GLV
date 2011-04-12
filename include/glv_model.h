@@ -378,7 +378,7 @@ public:
 
 	/// Assign value to element at 1D index
 	template <class T>
-	Data& assign(const T& v, int i){ slice(i).assign(v); return *this; }
+	Data& assign(const T& v, int idx){ slice(idx).assign(v); return *this; }
 
 	/// Assign value to element at 2D index
 	template <class T>

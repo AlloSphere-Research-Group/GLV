@@ -458,7 +458,8 @@ bool TextView::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 		case Event::KeyDown:
-			if(isprint(key)){
+			if(k.ctrl() || k.alt() || k.meta()){} // bubble if control key down
+			else if(isprint(key)){
 				deleteSelected();
 				mText.insert(mPos, 1, k.key()); setValue(mText);
 				cursorPos(mPos+1);
