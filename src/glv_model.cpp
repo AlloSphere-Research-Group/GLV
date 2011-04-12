@@ -269,15 +269,13 @@ Data& Data::operator+=(const Data& v){
 	#undef OPALL
 }
 
-Data& Data::assign(const Data& v, int ind1, int ind2){
-
+Data& Data::assign(const Data& v, int idx){
 	if(hasData() && v.hasData()){
-		int id= indexFlat(ind1,ind2);	// starting index of destination
-		int nd= size()-id;				// number of destination elements to assign
+		int nd= size()-idx;				// number of destination elements to assign
 		int n = nd < v.size() ? nd : v.size();
 
 		#define OP(t1, t2)\
-		for(int i=0; i<n; ++i){ elem<t1>(i+id) = v.elem<t2>(i); } break
+		for(int i=0; i<n; ++i){ elem<t1>(i+idx) = v.elem<t2>(i); } break
 
 		#define OPALL(t)\
 			switch(v.type()){\

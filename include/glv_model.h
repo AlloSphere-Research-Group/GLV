@@ -393,13 +393,27 @@ public:
 	Data& assign(const T& v, int i1, int i2, int i3, int i4){ return assign(v,indexFlat(i1,i2,i3,i4)); }
 
 	/// Assign elements from an external array
+	
+	/// @param[in] src		source array
+	/// @param[in] size		size of source array
+	/// @param[in] stride	amount to stride through source array
+	/// @param[in] idx		destination starting index
 	template <class T>
-	Data& assign(const T * src, int size, int stride=1){
-		return assign(Data(const_cast<T*>(src), size).stride(stride));
+	Data& assign(const T * src, int size, int stride=1, int idx=0){
+		return assign(Data(const_cast<T*>(src), size).stride(stride), idx);
 	}
 
 	/// Assign elements to elements from argument Data
-	Data& assign(const Data& v, int ind1=0, int ind2=0);
+	Data& assign(const Data& v, int i=0);
+
+	/// Assign elements to elements from argument Data
+	Data& assign(const Data& v, int i1, int i2){ return assign(v, indexFlat(i1,i2)); }
+
+	/// Assign elements to elements from argument Data
+	Data& assign(const Data& v, int i1, int i2, int i3){ return assign(v, indexFlat(i1,i2,i3)); }
+
+	/// Assign elements to elements from argument Data
+	Data& assign(const Data& v, int i1, int i2, int i3, int i4){ return assign(v, indexFlat(i1,i2,i3,i4)); }
 
 	/// Assign all elements to argument
 	template <class T>
