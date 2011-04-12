@@ -31,6 +31,195 @@ int main(){
 	#define SET4(x, a,b,c,d) x[0]=a; x[1]=b; x[2]=c; x[3]=d
 	#define EQ4(x, a,b,c,d) (x[0]==a && x[1]==b && x[2]==c && x[3]==d)
 
+	// Multidimensional data array
+	{
+	
+		// basics
+		{
+			const int s1=5, s2=4, s3=3, s4=2;
+			Data d(Data::INT, s1,s2,s3,s4);
+
+			assert(d.hasData());
+			assert(d.type() == Data::INT);
+			assert(d.sizeType() == sizeof(int));
+			assert(d.isNumerical());
+			assert(d.offset() == 0);
+			assert(d.order() == 4);
+			assert(d.stride() == 1);
+
+			assert(d.size(0) == s1);
+			assert(d.size(1) == s2);
+			assert(d.size(2) == s3);
+			assert(d.size(3) == s4);
+			assert(d.size(0,1) == s1*s2);
+			assert(d.size(0,1,2) == s1*s2*s3);
+			assert(d.size(0,1,2,3) == d.size());
+		
+			assert(d.indexFlat(0,0,0,0) ==          0);
+			assert(d.indexFlat(1,0,0,0) ==          1);
+			assert(d.indexFlat(0,1,0,0) ==       s1*1);
+			assert(d.indexFlat(0,2,0,0) ==       s1*2);
+			assert(d.indexFlat(0,0,1,0) ==    s2*s1*1);
+			assert(d.indexFlat(0,0,2,0) ==    s2*s1*2);
+			assert(d.indexFlat(0,0,0,1) == s3*s2*s1*1);
+			assert(d.indexFlat(0,0,0,2) == s3*s2*s1*2);
+			
+			for(int i=0; i<d.size(); ++i){
+				int i1,i2,i3,i4;
+				d.indexDim(i1,i2,i3,i4, i);
+				assert(d.inBounds(i1,i2,i3,i4));
+				assert(d.indexFlat(i1,i2,i3,i4) == i);
+			}
+			
+			for(int i=0; i<d.size(); ++i) d.assign(i, i);
+			for(int i=0; i<d.size(); ++i) assert(d.elem<int>(i) == i);
+			
+			// resizing
+			{
+				//Data e(Data::INT, 3,3);
+			}
+			
+			// cloning data
+			{
+				Data e = d;
+				assert(e == d);
+				
+				e.clone();
+				assert(d.elems<int>() != e.elems<int>());
+				assert(e == d);
+			}
+			
+			// reversed slice
+			{				
+				Data e = d.reversed();
+				for(int i=0; i<e.size(); ++i)
+					assert(d.elem<int>(d.size()-1-i) == e.elem<int>(i));
+
+				e.clone();
+				for(int i=0; i<e.size(); ++i)
+					assert(d.elem<int>(d.size()-1-i) == e.elem<int>(i));
+				
+				e += d;
+				for(int i=0; i<e.size(); ++i)
+					assert(e.elem<int>(i) == e.size()-1);
+			}
+		}
+
+
+		// reference counting
+		{
+			Data d1(Data::INT, 4,4);
+			assert(Data::references(d1.elems<int>()) == 1);
+
+			{
+				Data d2 = d1;
+				assert(d1.elems<int>() == d2.elems<int>());
+				assert(Data::references(d1.elems<int>()) == 2);
+			}
+			assert(Data::references(d1.elems<int>()) == 1);
+
+			{
+				Data d2 = d1.slice(1);
+				Data d3 = d2.slice(1);
+				assert(Data::references(d1.elems<int>()) == 3);
+			}
+			assert(Data::references(d1.elems<int>()) == 1);
+		}
+		
+	
+		const float cf = 10;
+		float f = 10;
+		std::string s = "hello";
+		
+		Data d(cf);
+
+		assert(d.hasData());
+		assert(d.size() == 1);
+		assert(d.type() == Data::FLOAT);
+		assert(d.at<float>(0) == cf);
+		assert(d.toString() == "10");
+		assert(d.at<std::string>(0) == "10");
+		
+//		d.put(std::string("8"));
+//		assert(d.at<float>(0) == 8);
+		
+		d.assign(11.f);
+		assert(d.at<float>(0) == 11.f);
+		
+		d.clone();
+		assert(d.hasData());
+		assert(d.size() == 1);
+		assert(d.type() == Data::FLOAT);
+
+		d.assign(11.f);
+		assert(d.at<float>(0) == 11.f);
+
+		d.assign(100);
+		assert(d.at<float>(0) == 100);
+		
+		d.set(f);
+		assert(d.elems<float>() == &f);
+		assert(d.at<float>(0) == f);
+		
+		d.set(s);
+		assert(d.type() == Data::STRING);
+		assert(d.size() == 1);
+		assert(d.elems<std::string>() == &s);
+		assert(d.at<std::string>(0) == s);
+		
+		d.clone();
+		assert(d.elems<std::string>() != &s);
+		assert(d.at<std::string>(0) == s);
+
+		d.set("hello");
+		assert(d.type() == Data::STRING);
+		assert(d.at<std::string>(0) == "hello");
+
+		{
+			std::string s = "d2";
+			Data d2(s);
+			
+			d.set("d");
+			d2.assign(d);
+			assert(d2.at<std::string>(0) == d.at<std::string>(0));
+		}
+		
+		// multiple element assignment
+		{
+			#define EQUALS(a,b,c,d,e)\
+				assert(d1.at<int>(0) == a);\
+				assert(d1.at<int>(1) == b);\
+				assert(d1.at<int>(2) == c);\
+				assert(d1.at<int>(3) == d);\
+				assert(d1.at<int>(4) == e)
+
+			Data d1(Data::INT, 5);
+			d1.assignAll(-1);
+			EQUALS(-1,-1,-1,-1,-1);
+			
+			d1.assignAll(0);
+			
+			{
+				float t[] = {1,2,3,4,5};
+				d1.assignFromArray(t,2);
+				EQUALS(1,2,0,0,0);
+				
+				d1.assignFromArray(t+2,2,1,2);
+				EQUALS(1,2,3,4,0);
+				
+				d1.assignAll(0);
+				d1.assignFromArray(t,5,2);
+				EQUALS(1,3,5,0,0);
+				
+				d1.assignFromArray(t+1,4,2,3);
+				EQUALS(1,3,5,2,4);
+			}
+			#undef EQUALS
+		}
+	}
+
+
+	// stringification
 	{	//for(int i=0;i<4;++i) printf("%g\n", f4[i]);
 		//printf("%s\n", s1.c_str());
 		bool b1;
@@ -497,159 +686,6 @@ int main(){
 	}
 
 
-	// Multidimensional array
-	{
-	
-		// basics
-		{
-			const int s1=5, s2=4, s3=3, s4=2;
-			Data d(Data::INT, s1,s2,s3,s4);
-
-			assert(d.hasData());
-			assert(d.type() == Data::INT);
-			assert(d.sizeType() == sizeof(int));
-			assert(d.isNumerical());
-			assert(d.offset() == 0);
-			assert(d.order() == 4);
-			assert(d.stride() == 1);
-
-			assert(d.size(0) == s1);
-			assert(d.size(1) == s2);
-			assert(d.size(2) == s3);
-			assert(d.size(3) == s4);
-			assert(d.size(0,1) == s1*s2);
-			assert(d.size(0,1,2) == s1*s2*s3);
-			assert(d.size(0,1,2,3) == d.size());
-		
-			assert(d.indexFlat(0,0,0,0) ==          0);
-			assert(d.indexFlat(1,0,0,0) ==          1);
-			assert(d.indexFlat(0,1,0,0) ==       s1*1);
-			assert(d.indexFlat(0,2,0,0) ==       s1*2);
-			assert(d.indexFlat(0,0,1,0) ==    s2*s1*1);
-			assert(d.indexFlat(0,0,2,0) ==    s2*s1*2);
-			assert(d.indexFlat(0,0,0,1) == s3*s2*s1*1);
-			assert(d.indexFlat(0,0,0,2) == s3*s2*s1*2);
-			
-			for(int i=0; i<d.size(); ++i){
-				int i1,i2,i3,i4;
-				d.indexDim(i1,i2,i3,i4, i);
-				assert(d.inBounds(i1,i2,i3,i4));
-				assert(d.indexFlat(i1,i2,i3,i4) == i);
-			}
-			
-			for(int i=0; i<d.size(); ++i) d.assign(i, i);
-			for(int i=0; i<d.size(); ++i) assert(d.elem<int>(i) == i);
-			
-			// resizing
-			{
-				//Data e(Data::INT, 3,3);
-			}
-			
-			// cloning data
-			{
-				Data e = d;
-				assert(e == d);
-				
-				e.clone();
-				assert(d.elems<int>() != e.elems<int>());
-				assert(e == d);
-			}
-			
-			// reversed slice
-			{				
-				Data e = d.reversed();
-				for(int i=0; i<e.size(); ++i)
-					assert(d.elem<int>(d.size()-1-i) == e.elem<int>(i));
-
-				e.clone();
-				for(int i=0; i<e.size(); ++i)
-					assert(d.elem<int>(d.size()-1-i) == e.elem<int>(i));
-				
-				e += d;
-				for(int i=0; i<e.size(); ++i)
-					assert(e.elem<int>(i) == e.size()-1);
-			}
-		}
-
-
-		// reference counting
-		{
-			Data d1(Data::INT, 4,4);
-			assert(Data::references(d1.elems<int>()) == 1);
-
-			{
-				Data d2 = d1;
-				assert(d1.elems<int>() == d2.elems<int>());
-				assert(Data::references(d1.elems<int>()) == 2);
-			}
-			assert(Data::references(d1.elems<int>()) == 1);
-
-			{
-				Data d2 = d1.slice(1);
-				Data d3 = d2.slice(1);
-				assert(Data::references(d1.elems<int>()) == 3);
-			}
-			assert(Data::references(d1.elems<int>()) == 1);
-		}
-		
-	
-		const float cf = 10;
-		float f = 10;
-		std::string s = "hello";
-		
-		Data d(cf);
-
-		assert(d.hasData());
-		assert(d.size() == 1);
-		assert(d.type() == Data::FLOAT);
-		assert(d.at<float>(0) == cf);
-		assert(d.toString() == "10");
-		assert(d.at<std::string>(0) == "10");
-		
-//		d.put(std::string("8"));
-//		assert(d.at<float>(0) == 8);
-		
-		d.assign(11.f);
-		assert(d.at<float>(0) == 11.f);
-		
-		d.clone();
-		assert(d.hasData());
-		assert(d.size() == 1);
-		assert(d.type() == Data::FLOAT);
-
-		d.assign(11.f);
-		assert(d.at<float>(0) == 11.f);
-
-		d.assign(100);
-		assert(d.at<float>(0) == 100);
-		
-		d.set(f);
-		assert(d.elems<float>() == &f);
-		assert(d.at<float>(0) == f);
-		
-		d.set(s);
-		assert(d.type() == Data::STRING);
-		assert(d.size() == 1);
-		assert(d.elems<std::string>() == &s);
-		assert(d.at<std::string>(0) == s);
-		
-		d.clone();
-		assert(d.elems<std::string>() != &s);
-		assert(d.at<std::string>(0) == s);
-
-		d.set("hello");
-		assert(d.type() == Data::STRING);
-		assert(d.at<std::string>(0) == "hello");
-
-		{
-			std::string s = "d2";
-			Data d2(s);
-			
-			d.set("d");
-			d2.assign(d);
-			assert(d2.at<std::string>(0) == d.at<std::string>(0));
-		}
-	}
 
 	// model to string conversion
 	{

@@ -374,7 +374,7 @@ public:
 
 	/// Assign value to first element
 	template <class T>
-	Data& assign(const T& v){ return assign(&v,1); }
+	Data& assign(const T& v){ return assignFromArray(&v,1); }
 
 	/// Assign value to element at 1D index
 	template <class T>
@@ -392,17 +392,6 @@ public:
 	template <class T>
 	Data& assign(const T& v, int i1, int i2, int i3, int i4){ return assign(v,indexFlat(i1,i2,i3,i4)); }
 
-	/// Assign elements from an external array
-	
-	/// @param[in] src		source array
-	/// @param[in] size		size of source array
-	/// @param[in] stride	amount to stride through source array
-	/// @param[in] idx		destination starting index
-	template <class T>
-	Data& assign(const T * src, int size, int stride=1, int idx=0){
-		return assign(Data(const_cast<T*>(src), size).stride(stride), idx);
-	}
-
 	/// Assign elements to elements from argument Data
 	Data& assign(const Data& v, int i=0);
 
@@ -418,6 +407,17 @@ public:
 	/// Assign all elements to argument
 	template <class T>
 	Data& assignAll(const T& v){ for(int i=0;i<size();++i){assign(v,i);} return *this; }
+
+	/// Assign elements from an external array
+	
+	/// @param[in] src		source array
+	/// @param[in] size		size of source array
+	/// @param[in] stride	amount to stride through source array
+	/// @param[in] idx		destination starting index
+	template <class T>
+	Data& assignFromArray(const T * src, int size, int stride=1, int idx=0){
+		return assign(Data(const_cast<T*>(src), size).stride(stride), idx);
+	}
 
 	/// Allocate internal memory and copy over previous data
 	void clone();
