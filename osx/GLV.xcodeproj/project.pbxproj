@@ -295,6 +295,7 @@
 		1610882B121DC37F00DC1DF1 /* glv_model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_model.cpp; sourceTree = "<group>"; };
 		161B38830DE359DD00936BA0 /* glv_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_widget.h; sourceTree = "<group>"; };
 		162FAF8A124F1D0800C7C494 /* glv_icon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_icon.h; sourceTree = "<group>"; };
+		163D5ABE1354182600E01F8A /* glv_color_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_color_controls.h; sourceTree = "<group>"; };
 		167F30B5120E05C80023A08C /* glv_font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_font.h; sourceTree = "<group>"; };
 		167F30F2120E1F1A0023A08C /* glv_font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_font.cpp; sourceTree = "<group>"; };
 		169DED97134BD75400E368B8 /* glv_preset_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_preset_controls.h; sourceTree = "<group>"; };
@@ -554,6 +555,7 @@
 				7E0A10ED0E47935300E2E2ED /* glv_binding.h */,
 				DFE898080DD4EE1B00D266E2 /* glv_buttons.h */,
 				B9183C970B9E36B100D8DA81 /* glv_color.h */,
+				163D5ABE1354182600E01F8A /* glv_color_controls.h */,
 				16D5B30D0D95925C005092B6 /* glv_conf.h */,
 				B9183C980B9E36B100D8DA81 /* glv_core.h */,
 				7E55D1DE0CCE5A4400196525 /* glv_draw.h */,

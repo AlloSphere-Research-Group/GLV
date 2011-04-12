@@ -91,8 +91,8 @@ public:
 	
 	/// Sets how much the slider should move when an empty region is clicked.
 	
+	/// @param[in] v	jump distance in [0, 1] of current value interval
 	/// The slider is constrained not jump past the click point.
-	///
 	SliderRange& jump(double v);
 	SliderRange& range(double v);	///< Set range
 	
