@@ -522,6 +522,10 @@ std::string Data::typeToString(Type t){
 
 
 
+/*	ModelManager TODO list: 
+		support for undo/redo
+		incremental snapshots, sequence numbers
+*/
 
 // TODO:	need to delete allocated Models
 //			need to be able to remove Data
@@ -537,8 +541,12 @@ void ModelManager::add(const std::string& name, const Model& v){
 }
 
 bool ModelManager::defaultFilePath(std::string& s) const {
-	if(!name().empty()){
-		s = name() + ".txt";
+	if(!mFileName.empty()){
+		s = mFileDir + mFileName;
+		return true;
+	}
+	else if(!name().empty()){
+		s = mFileDir + name() + ".txt";
 		return true;
 	}
 	return false;
@@ -551,6 +559,9 @@ void ModelManager::remove(const std::string& name){
 //		if(allocated(m)){
 //			delete m;
 //		}
+	}
+	if(mConstState.count(name)){
+		mConstState.erase(name);
 	}
 }
 
@@ -865,11 +876,22 @@ void ModelManager::saveSnapshot(const std::string& name){
 
 	Snapshot& snapshot = mSnapshots[name];
 
-	NamedModels::iterator it = mState.begin();
-	while(it != mState.end()){
-		Data temp;
-		(snapshot[it->first] = it->second->getData(temp)).clone();
-		++it;
+	{	// fetch read-write model values
+		NamedModels::const_iterator it = mState.begin();
+		while(it != mState.end()){
+			Data temp;
+			(snapshot[it->first] = it->second->getData(temp)).clone();
+			++it;
+		}
+	}
+
+	{	// fetch read-only model values
+		NamedConstModels::const_iterator it = mConstState.begin();
+		while(it != mConstState.end()){
+			Data temp;
+			(snapshot[it->first] = it->second->getData(temp)).clone();
+			++it;
+		}
 	}
 }
 
@@ -878,7 +900,7 @@ bool ModelManager::loadSnapshot(const std::string& name){
 	if(mSnapshots.count(name)){
 		Snapshot& snapshot = mSnapshots[name];
 
-		NamedModels::iterator it = mState.begin();
+		NamedModels::const_iterator it = mState.begin();
 		while(it != mState.end()){
 			if(snapshot.count(it->first)){
 				it->second->setData(snapshot[it->first]);

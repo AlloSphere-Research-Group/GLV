@@ -668,16 +668,14 @@ public:
 }
 */
 
+/// Manages the saving/restoring of model parameters to/from memory and disk.
+
 /// When a snapshot is loaded, only data having an identifier having an 
 /// identical identifier of an attached model is loaded. If an attached model 
 /// variable exists, but does not have a corresponding variable in a snapshot,
 /// then the model data will not be modified when the snapshot is loaded.
 class ModelManager{
 public:
-
-	/*	TODO: support undo/redo
-			incremental snapshots, sequence numbers
-	*/
 
 	template <class Key, class Val>
 	class Map : public std::map<Key, Val>{
@@ -723,7 +721,8 @@ public:
 
 	/// Load snapshots from a file
 
-	/// @param[in] path				path to file; if empty, then uses "<name>.txt"
+	/// @param[in] path				path to file; 
+	///								if empty, then uses model name with ".txt" extension
 	/// @param[in] addtoExisting	whether to add to or replace any existing snapshots
 	/// \returns					number of characters read
 	int snapshotsFromFile(const std::string& path="", bool addtoExisting=true);
@@ -732,16 +731,32 @@ public:
 	int snapshotsFromString(const std::string& src);
 
 
-	/// Add new name-value pair
+	/// Add reference to readable-writable model
 	
-	/// The added Data should have the same lifecycle as 'this'. This is because
-	/// pointers are stored internally.
-	//void add(const std::string& name, Data& v);
+	/// The added Model should have the same lifecycle as 'this' since it is
+	/// referenced through a pointer.
 	void add(const std::string& name, Model& v);
+
+	/// Add reference to read-only model
+	
+	/// The added Model should have the same lifecycle as 'this' since it is
+	/// referenced through a pointer.
 	void add(const std::string& name, const Model& v);
 
+	/// Remove all models
 	void clearModels(){ mState.clear(); mConstState.clear(); }
+
+	/// Clear all currently stored snapshots
 	void clearSnapshots(){ mSnapshots.clear(); }
+	
+	/// Set the default file directory and name
+	
+	/// @param[in] name		file name without directory; 
+	///						if empty, then uses model name with ".txt" extension
+	/// @param[in] dir		file directory
+	void filePath(const std::string& name, const std::string& dir=""){
+		mFileName=name; mFileDir=dir;
+	}
 
 	/// Set identifier name
 	void name(const std::string& v){ if(isIdentifier(v)) mName=v; }
@@ -763,8 +778,9 @@ public:
 
 protected:
 	std::string mName;				// name identifier
-	NamedModels mState;				// pointers to active mutable models
-	NamedConstModels mConstState;	// pointers to active immutable models
+	std::string mFileDir, mFileName;// directory and name of file
+	NamedModels mState;				// pointers to active readable/writable models
+	NamedConstModels mConstState;	// pointers to active read-only models
 	Snapshots mSnapshots;			// repository of saved model data
 
 //	// Convert current model state to string
