@@ -302,6 +302,8 @@ template<int X, int Y>
 void crosshatch	(float l, float t, float r, float b);	///< Parallel lines across x and y axes
 template<int N>
 void disc		(float l, float t, float r, float b);	///< Disc with N edges
+void fileLoad	(float l, float t, float r, float b);	///< Load file indicator
+void fileSave	(float l, float t, float r, float b);	///< Save file indicator
 void frame		(float l, float t, float r, float b);	///< Rectangular frame
 template<int LT, int LB, int RB, int RT>
 void frameTrunc	(float l, float t, float r, float b);	///< Rectangular frame truncated at corners
@@ -311,6 +313,7 @@ void polygon	(float l, float t, float r, float b);	///< Regular polygon with N e
 template<int N, int A>
 void polygonCut	(float l, float t, float r, float b);	///< Regular polygon with N edges at angle A cut through center
 void plus		(float l, float t, float r, float b);	///< Plus
+void magnifier	(float l, float t, float r, float b);	///< Magnifying glass
 void rectangle	(float l, float t, float r, float b);	///< Solid rectangle
 template<int LT, int LB, int RB, int RT>
 void rectTrunc	(float l, float t, float r, float b);	///< Rectangle truncated at corners
@@ -462,11 +465,62 @@ void disc(float l, float t, float r, float b){
 	paint(TriangleFan, pts, GLV_ARRAY_SIZE(pts));
 }
 
+inline void fileLoad(float l, float t, float r, float b){
+	float w=r-l, h=b-t;
+	float pts[] = {
+		l+w*0.2f, t+h*0.5f,
+		l+w*0.6f, t+h*0.5f,
+		l+w*0.6f, t+h*0.1f,
+		l+w*0.5f, t+h*0.0f,
+		l+w*0.0f, t+h*0.0f,
+		l+w*0.0f, t+h*1.0f,
+		l+w*0.6f, t+h*1.0f,
+		l+w*0.6f, t+h*0.5f,
+		l+w*1.0f, t+h*0.5f,
+		l+w*0.7f, t+h*0.7f
+	};
+	paint(LineStrip, (Point2*)pts, GLV_ARRAY_SIZE(pts)/2);
+}
+
+inline void fileSave(float l, float t, float r, float b){
+	float w=r-l, h=b-t;
+	float pts[] = {
+		l+w*0.5f, t+h*0.7f,
+		l+w*0.2f, t+h*0.5f,
+		l+w*0.6f, t+h*0.5f,
+		l+w*0.6f, t+h*0.1f,
+		l+w*0.5f, t+h*0.0f,
+		l+w*0.0f, t+h*0.0f,
+		l+w*0.0f, t+h*1.0f,
+		l+w*0.6f, t+h*1.0f,
+		l+w*0.6f, t+h*0.5f,
+		l+w*1.0f, t+h*0.5f
+	};
+	paint(LineStrip, (Point2*)pts, GLV_ARRAY_SIZE(pts)/2);
+}
+
 inline void frame(float l, float t, float r, float b){ shape(LineLoop, l, t, l, b, r, b, r, t); }
 
 template<int LT, int LB, int RB, int RT>
 void frameTrunc(float l, float t, float r, float b){
 	baseTrunc<LT,LB,RB,RT>(l,t,r,b, LineLoop);
+}
+
+inline void magnifier(float l, float t, float r, float b){
+	float w=r-l, h=b-t;
+	float pts[] = {
+		l+w*1.00f, t+h*1.00f,
+		l+w*0.55f, t+h*0.55f,
+		l+w*0.66f, t+h*0.33f,
+		l+w*0.55f, t+h*0.11f,
+		l+w*0.33f, t+h*0.00f,
+		l+w*0.11f, t+h*0.11f,
+		l+w*0.00f, t+h*0.33f,
+		l+w*0.11f, t+h*0.55f,
+		l+w*0.33f, t+h*0.66f,
+		l+w*0.55f, t+h*0.55f
+	};
+	paint(LineStrip, (Point2*)pts, GLV_ARRAY_SIZE(pts)/2);
 }
 
 inline void minus(float l, float t, float r, float b){ float my=0.5f*(t+b); shape(Lines, l,my, r,my); }

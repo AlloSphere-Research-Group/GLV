@@ -93,9 +93,13 @@ struct MyGLV : public GLV {
 		rose<60,-1,4,0>		(x,y, x+d,y+d); x+=inc;
 		rose<60, 1,6,0>		(x,y, x+d,y+d); x+=inc;
 
+		x = 20; y += d + 10;
+		fileLoad			(x,y, x+d,y+d); x+=inc;
+		fileSave			(x,y, x+d,y+d); x+=inc;
+		magnifier			(x,y, x+d,y+d); x+=inc;
+
 		//linesH(x,y,d,d, 5);				x += inc;
 		//linePattern(x,y,d,d, 9, "1 1");	x += inc;
-		
 		
 		x = 20; y += d + 10;
 		GraphicsData gd;
