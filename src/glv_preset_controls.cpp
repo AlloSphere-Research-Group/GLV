@@ -41,15 +41,16 @@ PresetControl::PresetControl(ModelManager& m)
 	mMM(&m), mPanel(m), mOverwrite(false)
 {
 	mTextEntry.addHandler(Event::KeyDown, mTextKeyDown);
-	mBtn.extent(mTextEntry.h);
-	mBtn.disable(Controllable | HitTest);
+	mStatus.extent(mTextEntry.h);
+	mStatus.disable(Controllable | HitTest | DrawBorder | DrawBack);
+	mStatus.symbol(draw::magnifier);
 	
 	mBtnPanel.addHandler(Event::MouseDown, mPanelButtonClick);
 	mBtnPanel.extent(mTextEntry.h);
 	mBtnPanel.symbol(draw::combo<draw::frameTrunc<1,1,1,1>, draw::crosshatch<2,2> >);
 	mBtnPanel.enable(Momentary);
 	mBtnPanel.padding(4,0).padding(8,1);
-	(*this) << mBtn << mTextEntry << mBtnPanel;
+	(*this) << mStatus << mTextEntry << mBtnPanel;
 	fit();
 }
 
@@ -76,13 +77,14 @@ bool PresetControl::PanelButtonClick::onEvent(View& v, GLV& g){
 bool PresetControl::TextKeyDown::onEvent(View& v, GLV& g){
 	ModelManager& mm = *pc.mMM;
 	TextView& te = pc.mTextEntry;
-
 	const Keyboard& k = g.keyboard();
+
+	pc.mStatus.symbol(draw::magnifier);
 	
 	if(k.key() != 's' || !k.ctrl()){
 		pc.mOverwrite=false;
 	}
-	
+
 	switch(k.key()){
 	case 's':
 		if(k.ctrl()){
@@ -90,9 +92,12 @@ bool PresetControl::TextKeyDown::onEvent(View& v, GLV& g){
 				const std::string& name = te.getValue();
 				if(!pc.mOverwrite && mm.snapshots().count(name)){
 					pc.mOverwrite = true;
+					pc.mStatus.symbol(draw::polygonCut<16,45>);
+					//pc.mStatus.symbol(draw::spokes<8,90>);
 				}
 				else{
 					pc.mOverwrite = false;
+					pc.mStatus.symbol(draw::fileSave);
 					mm.saveSnapshot(name);
 					mm.snapshotsToFile();
 				}
@@ -104,6 +109,9 @@ bool PresetControl::TextKeyDown::onEvent(View& v, GLV& g){
 	case Key::Return:
 		if(!mm.loadSnapshot(te.getValue())){
 			printf("Could not load snapshot \"%s\"\n", te.getValue().c_str());
+		}
+		else{
+			pc.mStatus.symbol(draw::fileLoad);
 		}
 		return false;
 	case Key::Tab:
@@ -140,8 +148,8 @@ void PresetControl::loadFile(){
 void PresetControl::onDraw(GLV& g){
 	using namespace glv::draw;
 
-	if(mOverwrite)	mBtn.symbol(draw::polygonCut<16,45>);
-	else			mBtn.symbol(0);
+//	if(mOverwrite)	mStatus.symbol(draw::polygonCut<16,45>);
+//	else			mStatus.symbol(0);
 	
 	//mPanel.property(Visible, mBtnPanel.getValue());
 }

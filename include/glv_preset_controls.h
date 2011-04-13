@@ -63,7 +63,7 @@ protected:
 	ModelManager * mMM;
 
 	TextView mTextEntry;
-	Button mBtn, mBtnPanel;
+	Button mStatus, mBtnPanel;
 	PresetView mPanel;
 
 	bool mOverwrite;
