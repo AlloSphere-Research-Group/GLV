@@ -692,7 +692,10 @@ public:
 	typedef Map<std::string, const Model*>	NamedConstModels;
 	typedef Map<std::string, Data>			Snapshot;
 	typedef Map<std::string, Snapshot>		Snapshots;
-	
+
+	/// Get default file path
+	std::string filePath() const { std::string s=""; defaultFilePath(s); return s; }
+
 	/// Get identifier name
 	const std::string& name() const { return mName; }
 	
