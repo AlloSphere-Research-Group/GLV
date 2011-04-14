@@ -125,7 +125,14 @@ public:
 	/// @param[in] knobSize		size of slider knob in pixels
 	SliderGrid(const Rect& r=glv::Rect(100), space_t knobSize=4);
 
-	space_t knobSize; ///< Knob size
+	/// Get size of slider knob
+	space_t knobSize() const { return mKnobSize; }
+
+	/// Set size of slider knob
+	SliderGrid& knobSize(space_t v){ mKnobSize=v; return *this; }
+
+	/// Set knob symbol
+	SliderGrid& knobSymbol(SymbolFunc f){ mKnobSym=f; return *this; }
 
 	virtual const char * className() const { return "SliderGrid"; }
 	virtual void onDraw(GLV& g);
@@ -140,6 +147,8 @@ public:
 	using SliderVector<Dim>::toInterval;
 protected:
 	int cx, cy;
+	space_t mKnobSize;
+	SymbolFunc mKnobSym;
 };
 
 
@@ -311,7 +320,7 @@ TEM inline SliderVector<Dim>& SliderVector<Dim>::valueAdd(double add, int dim, d
 
 
 TEM SliderGrid<Dim>::SliderGrid(const Rect& r, space_t knobSize)
-:	SliderVector<Dim>(r), knobSize(knobSize), cx(0), cy(0)
+:	SliderVector<Dim>(r), cx(0), cy(0), mKnobSize(knobSize), mKnobSym(draw::rectangle)
 {
 	//this->cropSelf = false;
 	this->disable(CropSelf);
@@ -362,19 +371,35 @@ TEM void SliderGrid<Dim>::onDraw(GLV& g){
 	glEnd();
 
 	glColor4f(1, 1, 1, 1.);*/
-	pointSize(knobSize);
+//	pointSize(knobSize);
+//
+//	Point2 pts[Dim*Dim];
+//	for(int i=0; i<Dim; ++i){
+//		float f = (i+to01(getValue(i))) * rDim;
+//		float x = f*w;
+//		
+//		for(int j=0; j<Dim; ++j){
+//			pts[i*Dim+j](x, (1.-(j+to01(getValue(j))) * rDim) * h);
+//		}
+//	}
+//	paint(Points, pts, GLV_ARRAY_SIZE(pts));
 
-	Point2 pts[Dim*Dim];
+	float sz = knobSize();	// size of indicator block
+	float sz2 = sz * 0.5f;
+	color(colors().fore);
+
 	for(int i=0; i<Dim; ++i){
-		float f = (i+to01(getValue(i))) * rDim;
-		float x = f*w;
+		float xmin = i*w*rDim + sz2;
+		float xdia = w*rDim-sz;
+		float x = xmin + to01(getValue(i))*xdia;
 		
 		for(int j=0; j<Dim; ++j){
-			pts[i*Dim+j](x, (1.-(j+to01(getValue(j))) * rDim) * h);
+			float ymin = (j+1)*h*rDim - sz2;
+			float ydia = -(h*rDim-sz);
+			float y = ymin + to01(getValue(Dim-1-j))*ydia;
+			mKnobSym(pix(x - sz2), pix(y - sz2), pix(x + sz2), pix(y + sz2));
 		}
 	}
-	paint(Points, pts, GLV_ARRAY_SIZE(pts));
-
 }
 
 TEM bool SliderGrid<Dim>::onEvent(Event::t e, GLV& g){
