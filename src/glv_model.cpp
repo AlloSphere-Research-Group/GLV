@@ -698,7 +698,7 @@ struct KeyValueParser{
 	
 	int operator()(const std::string& src){
 
-		unsigned p = src.find_first_of("{");
+		size_t p = src.find_first_of("{");
 		if(std::string::npos == p) return 0;		// no table found, so return
 		
 		std::string key, val;
@@ -764,7 +764,7 @@ struct KeyValueParser{
 
 
 static bool goToNext(unsigned& p, char c, const std::string& str){
-	unsigned n = str.substr(p).find_first_of(c);
+	size_t n = str.substr(p).find_first_of(c);
 //	printf("%c: %d %d (%.5s ...)\n", c, p, n, str.substr(p).c_str());
 	if(std::string::npos != n){
 		p += n;
@@ -774,7 +774,7 @@ static bool goToNext(unsigned& p, char c, const std::string& str){
 }
 
 static bool goToNextPrintablePast(unsigned& p, char c, const std::string& str){
-	unsigned n = str.substr(p).find_first_not_of(" \t\r\n");
+	size_t n = str.substr(p).find_first_not_of(" \t\r\n");
 //	printf("%c: %d %d (%.5s ...)\n", c, p, n, str.substr(p).c_str());
 	if(std::string::npos != n){
 		p += n;
