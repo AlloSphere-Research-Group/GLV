@@ -328,8 +328,45 @@ void triangleD	(float l, float t, float r, float b);	///< Downward pointing tria
 void x			(float l, float t, float r, float b);	///< X mark
 
 /// Combination of two symbols; can be used recursively
-template <void (*Symbol1)(float,float,float,float), void (*Symbol2)(float,float,float,float)>
-void combo		(float l, float t, float r, float b);
+template<
+	void (*Symbol1)(float,float,float,float),
+	void (*Symbol2)(float,float,float,float)
+>
+void combo(float l, float t, float r, float b);
+
+/// Combination of three symbols
+template<
+	void (*Symbol1)(float,float,float,float),
+	void (*Symbol2)(float,float,float,float),
+	void (*Symbol3)(float,float,float,float)
+>
+void combo(float l, float t, float r, float b){
+	combo<combo<Symbol1, Symbol2>, Symbol3>(l,t,r,b);
+}
+
+/// Combination of four symbols
+template<
+	void (*Symbol1)(float,float,float,float),
+	void (*Symbol2)(float,float,float,float),
+	void (*Symbol3)(float,float,float,float),
+	void (*Symbol4)(float,float,float,float)
+>
+void combo(float l, float t, float r, float b){
+	combo<combo<Symbol1, Symbol2, Symbol3>, Symbol4>(l,t,r,b);
+}
+
+/// Scale and translate symbol from top-left corner
+template<void (*Symbol)(float,float,float,float), int Sx, int Sy, int Tx, int Ty>
+void scaleTranslate(float l, float t, float r, float b){
+	float w = r-l, h = b-t;
+	float tx = Tx/120. * w;
+	float ty = Ty/120. * h;
+	l += tx;
+	t += ty;
+	r = l + Sx/120. * w;
+	b = t + Sy/120. * h;
+	Symbol(l,t,r,b);
+}
 
 
 /// Parallel horizontal and vertical lines

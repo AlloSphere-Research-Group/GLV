@@ -98,6 +98,22 @@ struct MyGLV : public GLV {
 		fileSave			(x,y, x+d,y+d); x+=inc;
 		magnifier			(x,y, x+d,y+d); x+=inc;
 
+		draw::lineWidth(1);
+		x = 20; y += d + 10;
+		combo<
+			plus,
+			scaleTranslate<circle<16>, 50,50,70,0>,
+			scaleTranslate<circle<3>, 50,50,0,70>,
+			scaleTranslate<draw::x, 50,50,70,70>	
+		>(x,y, x+d,y+d); x+=inc;
+		
+		combo<
+			circle<16>,
+			scaleTranslate<circle<16>, 90,90, 15,15>,
+			scaleTranslate<circle<16>, 60,60, 30,30>,
+			scaleTranslate<circle<16>, 30,30, 45,45>
+		>(x,y, x+d,y+d); x+=inc;
+
 		//linesH(x,y,d,d, 5);				x += inc;
 		//linePattern(x,y,d,d, 9, "1 1");	x += inc;
 		
