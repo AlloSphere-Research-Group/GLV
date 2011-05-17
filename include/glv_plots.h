@@ -67,6 +67,11 @@ public:
 	/// Called when the current graphics context is destroyed
 	virtual void onContextDestroy(){}
 
+	/// Defines how graphics data should be drawn
+	virtual void onDraw(GraphicsData& gd, const Data& d){
+		draw::paint(prim(), gd);
+	}
+
 	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind){}
 
 
@@ -129,11 +134,6 @@ protected:
 	bool mUseStyleColor;
 	
 	void doPlot(GraphicsData& gd, const Data& d);
-	
-	// defines how graphics data should be drawn
-	virtual void onDraw(GraphicsData& gd, const Data& d){
-		draw::paint(prim(), gd);
-	}
 };
 
 
