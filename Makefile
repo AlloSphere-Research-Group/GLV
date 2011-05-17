@@ -60,6 +60,16 @@ $(SLIB_PATH): createFolders $(addprefix $(OBJ_DIR), $(OBJS))
 
 all: $(SLIB_PATH) test
 
+# Archive repository
+archive:
+	$(eval $@_TMP := $(shell mktemp -d tmp.XXXXXXXXXX))
+	@echo Creating archive, this may take some time...
+	@echo Creating temporary export...
+	@svn export --force . $($@_TMP)
+	@echo Compressing...
+	@cd $($@_TMP) && tar -czf ../$(LIB_NAME).tar.gz .
+	@echo Compression complete.
+	@rm -R $($@_TMP)
 
 # Remove build files
 clean:
