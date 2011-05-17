@@ -441,7 +441,7 @@ static Enable enable;
 
 template<int LT, int LB, int RB, int RT>
 inline void baseTrunc(float l, float t, float r, float b, int prim){
-	int NC = (LT?1:0) + (LB?1:0) + (RB?1:0) + (RT?1:0);
+	const int NC = (LT?1:0) + (LB?1:0) + (RB?1:0) + (RT?1:0);
 	Point2 pts[4+NC];
 
 	int i=-1;
@@ -473,7 +473,7 @@ template <void (*Symbol1)(float,float,float,float), void (*Symbol2)(float,float,
 void combo(float l, float t, float r, float b){ Symbol1(l,t,r,b); Symbol2(l,t,r,b); }
 
 template<int X, int Y>
-void crosshatch	(float l, float t, float r, float b){
+void crosshatch(float l, float t, float r, float b){
 	Point2 pts[(X+Y)*2];
 	int j=-1;
 	for(int i=0; i<X; ++i){
@@ -605,7 +605,7 @@ void rose(float l, float t, float r, float b){
 
 template<int N, int A>
 void spokes(float l, float t, float r, float b){
-	int N2 = N<<1;
+	const int N2 = N<<1;
 	Point2 pts[N2];
 	float cx = (l+r)/2;
 	float cy = (t+b)/2;
