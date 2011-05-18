@@ -38,6 +38,10 @@ struct MyGLV : public GLV {
 				case '`': toggle(Visible); return false;
 			}
 		}
+		if (e == Event::MouseDrag){
+			if (g.keyboard().ctrl()) printf("ctrl");
+			if (g.keyboard().shift()) printf("shift");
+		}
 		return true;
 	}
 };

@@ -39,7 +39,8 @@ endif
 # Mac OS X version: '10_6' or '10_5'
 UNAME := $(shell uname -r)
 ifeq ($(UNAME), $(findstring $(UNAME), 10.6.0 10.7.0))
-    OSX_VERSION = 10_6
+#    OSX_VERSION = 10_6
+	OSX_VERSION = 10_5
 else
     OSX_VERSION = 10_5
 endif
