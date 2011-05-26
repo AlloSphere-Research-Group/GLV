@@ -37,6 +37,11 @@ LDFLAGS		:= $(addprefix -L, $(LIB_DIRS)) $(LDFLAGS)
 
 CFLAGS		:= $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS)
 
+DEPFLAGS	=
+ifneq ($(DEP_TRACK), 0)
+	DEPFLAGS = -MMD -MF $(basename $@).dep
+endif
+
 #--------------------------------------------------------------------------
 # Rules
 #--------------------------------------------------------------------------
@@ -45,9 +50,9 @@ CFLAGS		:= $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS)
 # Build object file from C++ source
 $(OBJ_DIR)%.o: %.cpp
 	@echo CXX $< $@
-	@$(CXX) -c $(CFLAGS) $< -o $@ -MMD -MF $(basename $@).dep
+	@$(CXX) -c $(CFLAGS) $< -o $@ $(DEPFLAGS)
 
-include $(wildcard $(OBJ_DIR)*.dep)
+-include $(wildcard $(OBJ_DIR)*.dep)
 
 
 # Build static library

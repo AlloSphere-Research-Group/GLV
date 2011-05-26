@@ -26,12 +26,7 @@ endif
 # Architecture: '32' or '64'
 UNAMEM := $(shell uname -m)
 ifeq ($(UNAMEM), $(findstring $(UNAMEM), x86_64 ia86 amd64))
-	ifeq ($(PLATFORM), macosx)
-#		ARCH = 32_64
-		ARCH = 64
-	else
-		ARCH = 64
-	endif
+	ARCH = 64
 else
 	ARCH = 32
 endif
@@ -61,6 +56,13 @@ AUTORUN		= 1
 SLIB_EXT	= a
 DLIB_EXT	= so
 DLIB_OPT	= shared
+
+# Whether Make should determine the dependencies of each C or C++ file as
+# it compiles it. This will be automatically disabled for universal builds # on Mac OSX.
+DEP_TRACK = 1
+ifeq ($(ARCH), 32_64)
+	DEP_TRACK = 0
+endif
 
 # Flags required for including and linking against library
 EXT_CPPFLAGS	?=
@@ -114,18 +116,19 @@ else ifeq ($(PLATFORM), macosx)
 		CFLAGS += -arch i386 -arch x86_64
 	endif
 
+	CFLAGS += -isysroot
+
     ifeq ($(OSX_VERSION), 10_6)
-    	CFLAGS += -isysroot /Developer/SDKs/MacOSX10.6.sdk -mmacosx-version-min=10.6
+    	CFLAGS += /Developer/SDKs/MacOSX10.6.sdk -mmacosx-version-min=10.6
 	else ifeq ($(OSX_VERSION), 10_5)
-		CFLAGS += -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
+		CFLAGS += /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5
 #		LDFLAGS += -syslibroot /Developer/SDKs/MacOSX10.5.sdk
 	else ifeq ($(OSX_VERSION), 10_4)
-		CFLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4
+		CFLAGS += /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4
 #		LDFLAGS += -syslibroot /Developer/SDKs/MacOSX10.4u.sdk
 	endif
 
 	DLIB_EXT = dylib
-
 	DLIB_OPT = dynamiclib
 
 # Windows:
