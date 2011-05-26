@@ -71,14 +71,14 @@ private:
 	GLvoid * mPixels;	// pointer to the client-side pixel data (0 if none)
 	GLvoid * mBuffer;	// internally allocated pixel buffer
 	GLenum mFormat;		// format of the pixel data:
-						//   GL_COLOR_INDEX, GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA, 
+						//   GL_COLOR_INDEX, GL_ALPHA, 
 						//   GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_LUMINANCE, and GL_LUMINANCE_ALPHA.
 					
 	GLenum mType;		// type of the pixel data:
-						//   GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_FLOAT
+						//   GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_FLOAT
 
 	GLenum mMagFilter;	// GL_LINEAR, GL_NEAREST
-	GLenum mWrapMode;	// GL_CLAMP, GL_REPEAT
+	GLenum mWrapMode;	// GL_CLAMP_TO_EDGE, GL_REPEAT
 
 	void sendParams();
 };

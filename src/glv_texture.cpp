@@ -8,14 +8,14 @@ namespace glv{
 
 Texture2::Texture2(GLsizei w_, GLsizei h_, GLenum format, GLenum type)
 :	mID(0), w(0), h(0), mPixels(0), mBuffer(0),
-	mFormat(format), mType(type), mMagFilter(GL_LINEAR), mWrapMode(GL_CLAMP)
+	mFormat(format), mType(type), mMagFilter(GL_LINEAR), mWrapMode(GL_CLAMP_TO_EDGE)
 {
 	alloc(w,h);
 }
 
 Texture2::Texture2(GLsizei w, GLsizei h, GLvoid * pixs, GLenum format, GLenum type, bool doesLoad)
 :	mID(0), w(w), h(h), mPixels(pixs), mBuffer(0),
-	mFormat(format), mType(type), mMagFilter(GL_LINEAR), mWrapMode(GL_CLAMP)
+	mFormat(format), mType(type), mMagFilter(GL_LINEAR), mWrapMode(GL_CLAMP_TO_EDGE)
 {
 	if(doesLoad) create(w, h, mPixels);
 }
@@ -38,9 +38,11 @@ int Texture2::alloc(int w_, int h_){
 			case GL_RGB:				N=3; break;
 			case GL_RGBA:				N=4; break;
 			case GL_LUMINANCE:	
+        /* not ES compatible
 			case GL_RED:
 			case GL_GREEN:
 			case GL_BLUE:
+         */
 			case GL_ALPHA:				N=1; break;
 			case GL_LUMINANCE_ALPHA:	N=2; break;
 		};
@@ -53,10 +55,12 @@ int Texture2::alloc(int w_, int h_){
 			CS(GL_UNSIGNED_BYTE, unsigned char)
 			CS(GL_SHORT, short)
 			CS(GL_UNSIGNED_SHORT, unsigned short)
+        /* not ES compatible
 			CS(GL_INT, int)
 			CS(GL_UNSIGNED_INT, unsigned int)
-			CS(GL_FLOAT, float)
 			CS(GL_DOUBLE, double)
+         */
+			CS(GL_FLOAT, float)
 			default:;
 		};
 		#undef CS
@@ -83,8 +87,8 @@ void Texture2::dealloc(){
 		w=h=0;
 	}
 }
-
-void Texture2::begin() const { glBindTexture(GL_TEXTURE_2D, id()); }
+  
+void Texture2::begin() const { glBindTexture(GL_TEXTURE_2D, (GLuint)id()); }
 void Texture2::end() const { glBindTexture(GL_TEXTURE_2D, 0); }
 
 Texture2& Texture2::bind(){ begin(); return *this; }
@@ -124,13 +128,13 @@ Texture2& Texture2::draw(
 	float tl, float tt, float tr, float tb
 ){
 	int Nv=4;
-	double verts[] = { ql,qt, ql,qb, qr,qt, qr,qb };
+	float verts[] = { ql,qt, ql,qb, qr,qt, qr,qb };
 	float texcs[] = { tl,tt, tl,tb, tr,tt, tr,tb };
 
 	// note: vertex arrays enabled at start of GLV draw loop
 //	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glVertexPointer(2, GL_DOUBLE, 0, verts);
+	glVertexPointer(2, GL_FLOAT, 0, verts);
 	glTexCoordPointer(2, GL_FLOAT, 0, texcs);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, Nv);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
