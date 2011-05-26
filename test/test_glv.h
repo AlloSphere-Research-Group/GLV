@@ -244,8 +244,6 @@ public:
 					case '4': mPrim = draw::Triangles; return false;
 					case '5': mPrim = draw::TriangleStrip; return false;
 					case '6': mPrim = draw::TriangleFan; return false;
-					case '7': mPrim = draw::Quads; return false;
-					case '8': mPrim = draw::QuadStrip; return false;
 					case 'g': toggle(DrawGrid); return false;
 					case Key::Delete:
 					case Key::Backspace:

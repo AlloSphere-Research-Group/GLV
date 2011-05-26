@@ -7,35 +7,38 @@ using namespace glv;
 
 Window win(320, 240);
 
-struct MyGLV : public GLV{
+struct MyView3D : public View3D{
 
-	MyGLV(): count(0){}
+	MyView3D(): count(0){
+		stretch(1,1);
+		disable(DrawBorder);
+	}
 
-	void onDraw(GLV& g){
-
+	virtual void onDraw3D(GLV& g){
 		using namespace draw;
 
 		if(100==count) win.show(); ++count;
 
-		push3D(width(), height());
-			static float ang=0;
-			translate(0,0,-1);
-			rotate(0,ang,ang*0.31); ++ang;
-			
-			GraphicsData& gr = g.graphicsData();
-			gr.addColor(Color(1));
-			gr.addColor(Color(0.7,0.3,0));
-			gr.addColor(Color(0.7,0.3,0));
-			gr.addColor(Color(0.7,0.3,0));
+		static float ang=0;
+		translate(0,0,-3);
+		rotate(0,ang,ang*0.31); ++ang;
+		
+		GraphicsData& gr = g.graphicsData();
+		gr.addColor(Color(1));
+		gr.addColor(Color(0.7,0.3,0));
+		gr.addColor(Color(0.7,0.3,0));
+		gr.addColor(Color(0.7,0.3,0));
 
-			gr.addVertex3(-1,-1, 0);
-			gr.addVertex3(-1, 1, 0);
-			gr.addVertex3( 1,-1, 0);
-			gr.addVertex3( 1, 1, 0);
+		gr.addVertex3(-1,-1, 0);
+		gr.addVertex3(-1, 1, 0);
+		gr.addVertex3( 1,-1, 0);
+		gr.addVertex3( 1, 1, 0);
 
-			paint(TriangleStrip, gr);
-		pop3D();
-
+		paint(TriangleStrip, gr);
+	}
+	
+	virtual void onDraw2D(GLV& g){
+		using namespace draw;
 		color(0);
 		text(
 			"esc  toggle full screen\n"
@@ -81,13 +84,16 @@ bool evWinDestroy(View * v, GLV& g){ printf("Event::WindowDestroy\n"); return fa
 bool evQuit(View * v, GLV& g){ printf("Event::Quit\n"); return false; }
 
 int main(){
-	MyGLV glv;
-	glv.colors().set(StyleColor::Gray);
+	GLV glv;
+	MyView3D v3D;
+	v3D.colors().set(StyleColor::Gray);
 //	glv(Event::KeyDown, evKeyDown);
 //	glv(Event::WindowResize, evWinResize);
 //	glv(Event::WindowCreate, evWinCreate);
 //	glv(Event::WindowDestroy, evWinDestroy);
 //	glv(Event::Quit, evQuit);
+
+	glv << v3D;
 	win.setGLV(glv);
 	Application::run();
 }

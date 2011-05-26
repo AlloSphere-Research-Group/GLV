@@ -13,24 +13,29 @@ Button btn3(Rect(20, 20), false, draw::check);
 SliderGrid<3> sg31(Rect(100)), sg32(Rect(100)), sg33(Rect(100));
 SliderGrid<2> sg21(Rect(100));
 
-struct MyGLV : public GLV {
-	void onDraw(GLV& g){
-		using namespace draw;
-		
-		push3D(width(), height());
+struct MyView3D : public View3D{
 
+	MyView3D(): View3D(){
+		stretch(1,1);
+		disable(DrawBorder);
+	}
+
+	virtual void onDraw3D(GLV& g){
+		using namespace draw;
 		Color c;
 		c.setHSV(sg31.getValue(0), sg31.getValue(1), sg31.getValue(2)*sg31.getValue(2));
 		color(c);
 
-		translate(sg32.getValue(0)*2-1, sg32.getValue(1)*2-1, -sg32.getValue(2)*2);
+		translate(sg32.getValue(0)*2-1, sg32.getValue(1)*2-1, -sg32.getValue(2)*2 -2.42);
 		rotate(sg33.getValue(0)*360, sg33.getValue(1)*360, sg33.getValue(2)*360);
 		scale(sg21.getValue(0), sg21.getValue(1));
 		
-		rectangle(-1, -1, 1, 1);
-
-		pop3D();
+		rectangle(-1, -1, 1, 1);	
 	}
+
+} v3D;
+
+struct MyGLV : public GLV {
 	
 	bool onEvent(Event::t e, GLV& g){
 		if(e == Event::KeyDown){
@@ -62,8 +67,9 @@ int main (int argc, char ** argv){
 	//top.colors().back.set(0);
 	//glv::Style::standard().color.hsv(0, 0, 0.5);
 
-	Window win(800, 600, "GLV Widgets", &top);
+	top << v3D;
 
+	Window win(800, 600, "GLV Widgets", &top);
 
 	//---- Add labels
 	sg31 << (new Label("Color"))->anchor(Place::CR).pos(Place::CL, 4,0);
@@ -98,7 +104,7 @@ int main (int argc, char ** argv){
 
 	// Define south-bound layout. Views added to top GLV view.
 	//Layout layout(Direction::S, 10, 30, 4, top);
-	Placer layout(top, Direction::S, Place::TL, 10, 30, 4);
+	Placer layout(v3D, Direction::S, Place::TL, 10, 30, 4);
 	
 	layout << sg31 << sg32 << sg33 << sg21;
 	
