@@ -27,7 +27,7 @@ int printError(const char * pre, bool verbose, FILE * out){
 
 
 void fog(float end, float start, const Color& c){
-	glFogi(GL_FOG_MODE, GL_LINEAR); 
+	glFogf(GL_FOG_MODE, GL_LINEAR);  // ky was glFogi??
 	glFogf(GL_FOG_START, start); glFogf(GL_FOG_END, end);
 	float fogColor[4] = {c.r, c.g, c.b, c.a};
 	glFogfv(GL_FOG_COLOR, fogColor);
@@ -138,17 +138,51 @@ void paint(int prim, const GraphicsData& b){
 	if(Nv3)	glVertexPointer(3, GL_FLOAT, 0, &b.vertices3()[0]);
 	else	glVertexPointer(2, GL_FLOAT, 0, &b.vertices2()[0]);
 	
-	if(Ni)	glDrawElements(prim, b.indices().size(), GL_UNSIGNED_INT, &b.indices()[0]);
+	if(Ni)	glDrawElements(prim, b.indices().size(), GLV_INDEX, &b.indices()[0]);
 	else	glDrawArrays(prim, 0, Nv3 ? Nv3 : Nv2);
 
 	if(Ec)	glDisableClientState(GL_COLOR_ARRAY);
 }
 
+void enter2D(float w, float h) {
+	disable(DepthTest);
+	enable(LineSmooth);
+	enable(Blend);
+	blendTrans();
+
+	viewport(0, 0, w, h);
+	matrixMode(Projection);
+	identity();
+
+	ortho(0, w, h, 0);		// flat 2D world dimension L,R,B,T
+	matrixMode(ModelView);
+	identity();
+}
+
+/*
+void enter3D(float x, float y, float w, float h, float near=0.1, float far=100, float fovy=45);
+void enter3D(float x, float y, float w, float h, float near, float far, float fovy) {
+	enable(DepthTest);
+	disable(Blend);
+	enable(ScissorTest);
+
+	matrixMode(Projection);
+	identity();
+	viewport(x, y, w, h);
+	perspective(fovy, w/(GLfloat)h, near, far);
+
+	matrixMode(ModelView);
+	identity();
+	translate(0, 0, -2.42f);
+}
+*/
+
+/* ky
 
 // we need to push and pop matrices and viewport bit
 void push2D(float w, float h){
 							// to ensure polygon edges blend properly
-	disable << DepthTest << PolygonSmooth;
+	disable << DepthTest; // ky << PolygonSmooth;
 	enable << Blend << LineSmooth;
 	blendTrans();
 
@@ -162,32 +196,31 @@ void push2D(float w, float h){
 	//translate(0.375, 0.375);
 }
 
-
 void pop2D(){
 	popAttrib();					// for popping GL_VIEWPORT_BIT
 	pop(Projection);
 	pop(ModelView);
 }
 
-
-void push3D(float w, float h, float near, float far, float fovy){
-	pushAttrib(ColorBufferBit | DepthBufferBit | EnableBit | ViewPortBit);
-	enable(DepthTest);
+void push3D(float w, float h, float near, float far, float fovy) {
+  // ky pushAttrib(ColorBufferBit | DepthBufferBit | EnableBit | ViewPortBit);
+  enable(DepthTest);
+  disable(Blend);
 	
-	push(Projection); identity();
-		gluPerspective(fovy, w/(GLfloat)h, near, far);
-	
-	push(ModelView); identity();
-		translate(0, 0, -2.42f);
+  push(Projection);
+  identity();
+  perspective(fovy, w/(GLfloat)h, near, far);
+  push(ModelView);
+  identity();
+  translate(0, 0, -2.42f);
 }
-
 
 void pop3D(){
 	popAttrib();					// for popping GL_DEPTH_BUFFER_BIT
 	pop(Projection);
 	pop(ModelView);
 }
-
+*/
 
 void text(const char * s, float l, float t, unsigned fontSize, float lineSpacing, unsigned tabSpaces){
 	Font f;

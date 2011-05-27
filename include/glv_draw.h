@@ -13,6 +13,15 @@
 
 namespace glv {
 
+#ifdef GLV_OPENGL_ES1
+	#define GLV_INDEX GL_UNSIGNED_SHORT
+	typedef unsigned short index_t;
+#else
+	#define GLV_INDEX GL_UNSIGNED_INT
+	typedef unsigned int index_t;
+#endif
+
+  
 /// Symbol function type
 typedef void (* SymbolFunc)(float l, float t, float r, float b);
 
@@ -49,7 +58,7 @@ public:
 	const Buffer<Color>& colors() const { return mColors; }
 	
 	/// Get index buffer
-	const Buffer<unsigned>& indices() const { return mIndices; }
+	const Buffer<index_t>& indices() const { return mIndices; }
 	
 	/// Get 2D vertex buffer
 	const Buffer<Point2>& vertices2() const { return mVertices2; }
@@ -80,19 +89,19 @@ public:
 		addColor(c1,c2,c3); addColor(c4); }
 
 	/// Append index
-	void addIndex(unsigned i){
+	void addIndex(index_t i){
 		indices().append(i); }
-
+  
 	/// Append indices
-	void addIndex(unsigned i1, unsigned i2){
+	void addIndex(index_t i1, index_t i2){
 		addIndex(i1); addIndex(i2); }
-
+  
 	/// Append indices
-	void addIndex(unsigned i1, unsigned i2, unsigned i3){
+	void addIndex(index_t i1, index_t i2, index_t i3){
 		addIndex(i1,i2); addIndex(i3); }
-
+  
 	/// Append indices
-	void addIndex(unsigned i1, unsigned i2, unsigned i3, unsigned i4){
+	void addIndex(index_t i1, index_t i2, index_t i3, index_t i4){
 		addIndex(i1,i2,i3); addIndex(i4); }
 
 	/// Append 2D vertex
@@ -132,7 +141,7 @@ public:
 	Buffer<Color>& colors(){ return mColors; }
 
 	/// Get mutable index buffer
-	Buffer<unsigned>& indices(){ return mIndices; }
+	Buffer<index_t>& indices(){ return mIndices; }
 
 	/// Get mutable 2D vertex buffer
 	Buffer<Point2>& vertices2(){ return mVertices2; }
@@ -144,7 +153,7 @@ protected:
 	Buffer<Point2> mVertices2;
 	Buffer<Point3> mVertices3;
 	Buffer<Color> mColors;
-	Buffer<unsigned> mIndices;
+	Buffer<index_t> mIndices;
 };
 
 
@@ -168,36 +177,21 @@ enum{
 	Triangles     = GL_TRIANGLES,
 	TriangleStrip = GL_TRIANGLE_STRIP,
 	TriangleFan   = GL_TRIANGLE_FAN,
-#ifdef GLV_OPENGLES
-	Quads         = GL_POINTS,
-	QuadStrip     = GL_TRIANGLE_STRIP,
-#else
-	Quads         = GL_QUADS,
-	QuadStrip     = GL_QUAD_STRIP,
-#endif
 };
 
+  
 /// Capabilities (for disable() and enable())
 enum{
 	Blend			= GL_BLEND,
 	DepthTest		= GL_DEPTH_TEST,
 	Fog				= GL_FOG,
 	LineSmooth		= GL_LINE_SMOOTH,
-	LineStipple		= GL_LINE_STIPPLE,
-	PolygonSmooth	= GL_POLYGON_SMOOTH,
 	PointSmooth		= GL_POINT_SMOOTH,
 	ScissorTest		= GL_SCISSOR_TEST,
 	Texture2D		= GL_TEXTURE_2D
 };
 
-/// Attribute masks
-enum{
-	ColorBufferBit	= GL_COLOR_BUFFER_BIT,
-	DepthBufferBit	= GL_DEPTH_BUFFER_BIT,
-	EnableBit		= GL_ENABLE_BIT,
-	ViewPortBit		= GL_VIEWPORT_BIT
-};
-
+  
 /// Transform matrices
 enum{
 	ModelView		= GL_MODELVIEW,
@@ -248,13 +242,15 @@ void color(float gray, float a=1);					///< Set current draw color
 void color(float r, float g, float b, float a=1);		///< Set current draw color
 void color(const Color& c);							///< Set current draw color
 void color(const Color& c, float a);				///< Set current draw color, but override alpha component
+void enter2D(float w, float h);						///< Enter 2D drawing mode
 void fog(float end, float start, const Color& c=Color(0));	///< Set linear fog parameters
 void genEllipse(Point2 * pts, int num, int stride, double ang01, double loops, float l, float t, float r, float b);
 void identity();									///< Load identity transform matrix
 void lineStipple(char factor, short pattern);		///< Specify line stipple pattern
+void lineStippling(bool v);							///< Enable/disable line stippling
 void lineWidth(float val);							///< Set width of lines
 void matrixMode(int mode);							///< Set current transform matrix
-void ortho(float l, float r, float b, float t);		///< Set orthographic projection mode
+void ortho(float l, float r, float b, float t, float n = -1.0f, float f = 1.0f);		///< Set orthographic projection mode
 void paint(int prim, Point2 * verts, int numVerts);	///< Draw array of 2D vertices
 void paint(int prim, const GraphicsData& gb);		///< Render graphics data
 void paint(int prim, Point2 * verts, Color * cols, int numVerts);
@@ -268,15 +264,9 @@ void pointSize(float val);							///< Set size of points
 void pointAtten(float c2=0, float c1=0, float c0=1); ///< Set distance attenuation of points. The scaling formula is clamp(size * sqrt(1/(c0 + c1*d + c2*d^2)))
 void pop();											///< Pop current transform matrix stack
 void pop(int matrixMode);							///< Pop a transform matrix stack also setting as current matrix
-void pop2D();										///< Pop 2-D pixel space
-void pop3D();										///< Pop 3-D signed normalized cartesian space
-void popAttrib();									///< Pop last pushed attributes from stack
 int printError(const char * pre="", bool verbose=true, FILE * out=stdout); ///< Print rendering errors to file
 void push();										///< Push current transform matrix stack 
 void push(int matrixMode);							///< Push a transform matrix stack also setting as current matrix
-void push2D(float w, float h);						///< Push 2-D pixel space
-void push3D(float w, float h, float near=0.1, float far=100, float fovy=45);	///< Push 3-D signed normalized cartesian space
-void pushAttrib(int attribs);						///< Push current attributes onto stack
 void rotate(float degx, float degy, float degz);
 void rotateX(float deg);
 void rotateY(float deg);
@@ -367,6 +357,8 @@ void scaleTranslate(float l, float t, float r, float b){
 	b = t + Sy/120. * h;
 	Symbol(l,t,r,b);
 }
+
+
 
 
 /// Parallel horizontal and vertical lines
@@ -637,17 +629,16 @@ inline void paint(int prim, Point2 * verts, Color * cols, int numVerts){
 	glDrawArrays(prim, 0, numVerts);
 	glDisableClientState(GL_COLOR_ARRAY);
 }
-
-inline void paint(int prim, Point2 * verts, unsigned * indices, int numIndices){
+inline void paint(int prim, Point2 * verts, index_t * indices, int numIndices){
 	glVertexPointer(2, GL_FLOAT, 0, verts);
-	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
+	glDrawElements(prim, numIndices, GLV_INDEX, indices);
 }
 
-inline void paint(int prim, Point2 * verts, Color * cols, unsigned * indices, int numIndices){
+inline void paint(int prim, Point2 * verts, Color * cols, index_t * indices, int numIndices){
 	glEnableClientState(GL_COLOR_ARRAY);
 	glVertexPointer(2, GL_FLOAT, 0, verts);
 	glColorPointer(4, GL_FLOAT, 0, cols);
-	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
+	glDrawElements(prim, numIndices, GLV_INDEX, indices);
 	glDisableClientState(GL_COLOR_ARRAY);
 }
 
@@ -664,16 +655,16 @@ inline void paint(int prim, Point3 * verts, Color * cols, int numVerts){
 	glDisableClientState(GL_COLOR_ARRAY);
 }
 
-inline void paint(int prim, Point3 * verts, unsigned * indices, int numIndices){
+inline void paint(int prim, Point3 * verts, index_t * indices, int numIndices){
 	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
+	glDrawElements(prim, numIndices, GLV_INDEX, indices);
 }
 
-inline void paint(int prim, Point3 * verts, Color * cols, unsigned * indices, int numIndices){
+inline void paint(int prim, Point3 * verts, Color * cols, index_t * indices, int numIndices){
 	glEnableClientState(GL_COLOR_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, verts);
 	glColorPointer(4, GL_FLOAT, 0, cols);
-	glDrawElements(prim, numIndices, GL_UNSIGNED_INT, indices);
+	glDrawElements(prim, numIndices, GLV_INDEX, indices);
 	glDisableClientState(GL_COLOR_ARRAY);
 }
 
@@ -724,25 +715,63 @@ inline void clear(int mask){ glClear(mask); }
 inline void clearColor(float r, float g, float b, float a){ glClearColor(r,g,b,a); }
 inline void color(float r, float g, float b, float a){ glColor4f(r,g,b,a); }
 inline void identity(){ glLoadIdentity(); }
-inline void lineStipple(char factor, short pattern){ glLineStipple(factor, pattern); }
+inline void lineStipple(char factor, short pattern){ 
+#ifndef GLV_OPENGL_ES1
+	glLineStipple(factor, pattern);
+#endif
+}
+#ifdef GLV_OPENGL_ES1
+inline void lineStippling(bool v){}
+#else
+inline void lineStippling(bool v){
+	v ? glEnable(GL_LINE_STIPPLE) : glDisable(GL_LINE_STIPPLE);
+}
+#endif
 inline void lineWidth(float v){ glLineWidth(v); UserCommands::get()->lineWidth(v); }
 inline void matrixMode(int mode){ glMatrixMode(mode); }
-inline void ortho(float l, float r, float b, float t){ gluOrtho2D(l,r,b,t); }
+inline void ortho(float l, float r, float b, float t, float n, float f){ 
+	float W = r-l; float W2 = r+l;
+	float H = t-b; float H2 = t+b;
+	float D = f-n; float D2 = f+n;
+	float m[] = {
+		2/W,	0,		0,		0,
+		0,		2/H,	0,		0,
+		0,		0,		-2/D,	0,
+		-W2/W,	-H2/H,	-D2/D,	1
+	};
+
+// TODO: support shader-only rendering (ES2)
+#if 0
+    GLint loc = glGetUniformLocation(draw::shaderProgram(), "Projection");
+    glUniformMatrix4fv(loc, 1, 0, m);
+#else
+	glMultMatrixf(m);
+#endif
+}
+
+inline void perspective(float fovy, float aspect, float near, float far) {
+	float f = 1.f/tanf(fovy*(M_PI/180.f)/2.f);
+	float m[] = {
+		f/aspect, 0, 0, 0, 
+		0, f, 0, 0, 
+		0, 0, (far+near)/(near-far), -1, 
+		0, 0, (2*far*near)/(near-far), 0 
+	};
+	glMultMatrixf(m);
+}
+
 inline void pointSize(float v){ glPointSize(v); UserCommands::get()->pointSize(v); }
 inline void pointAtten(float c2, float c1, float c0){
 	GLfloat att[3] = {c0, c1, c2};
 	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, att);
 }
 inline void push(){ glPushMatrix(); }
-inline void pushAttrib(int attribs){ glPushAttrib(attribs); }
 inline void pop() { glPopMatrix(); }
-inline void popAttrib(){ glPopAttrib(); }
 inline void rotateX(float deg){ glRotatef(deg, 1.f, 0.f, 0.f); }
 inline void rotateY(float deg){ glRotatef(deg, 0.f, 1.f, 0.f); }
 inline void rotateZ(float deg){ glRotatef(deg, 0.f, 0.f, 1.f); }
 inline void scale(float x, float y, float z){ glScalef(x,y,z); }
 inline void scissor(float x, float y, float w, float h){ glScissor((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h); }
-inline void texCoord(float x, float y){ glTexCoord2f(x,y); }
 inline void translate(float x, float y, float z){ glTranslatef(x,y,z); }
 inline void viewport(float x, float y, float w, float h){ glViewport((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h); }
 

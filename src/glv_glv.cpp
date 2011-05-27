@@ -122,7 +122,11 @@ void GLV::doFocusCallback(bool get){
 }
 
 void GLV::drawGLV(unsigned int w, unsigned int h, double dsec){
+#ifdef GLV_OPENGL_ES1
+	// glDrawBuffer is not necessary according to opengles v1.1 spec
+#else
 	glDrawBuffer(GL_BACK);
+#endif
 	drawWidgets(w, h, dsec);
 }
 
@@ -134,7 +138,7 @@ static void drawContext(float tx, float ty, View * v, float& cx, float& cy, View
 
 	identity();								// clear model matrix (assumed set already)
 
-	// these weird calls are necessary so that we draw on the center of pixels
+	// The offsets are necessary so that we draw on the center of pixels
 	// rather than on the boundaries
 	translate(pix(cx) + 0.5f, pix(cy) + 0.5f);	// offset to center of top-left pixel
 	//scale(v->w/(v->w+1), v->h/(v->h+1));	// scale to lose 1 pixel on each edge
@@ -163,6 +167,11 @@ static void computeCrop(std::vector<Rect>& cr, int lvl, space_t ax, space_t ay, 
 void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 	using namespace draw;
 
+	enter2D(w, h);		// initialise the OpenGL renderer for our 2D GUI world
+  
+	// render all primitives at integer positions, ref: OpenGL Redbook
+	//translate(0.375, 0.375);
+  
 	float cx = 0, cy = 0; // drawing context absolute position
 	View * const root = this;
 	View * cv = root;
@@ -173,17 +182,12 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 	int lvl = 0;	// start at root = 0
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_INDEX_ARRAY);
 	//glEnableClientState(GL_COLOR_ARRAY); // note: enabling this messes up glColor, so leave it off
 	//glColorPointer(4, GL_FLOAT, 0, 0);
-
-	push2D(w, h);	// initialise the OpenGL renderer for our 2D GUI world
-
+  
 	graphicsData().reset();
 	if(enabled(Animate)) onAnimate(dsec, *this);
 	doDraw(*this);
-
-	push(ModelView);			// push model matrix because of transformations in drawContext()
 	
 	draw::enable(ScissorTest);
 
@@ -223,7 +227,6 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 		
 		// draw the current view
 		if(cv->visible()){
-
 			Rect r = cropRects[lvl-1];	// cropping region comes from parent context
 			if(cv->enabled(CropSelf)) r.intersection(Rect(cx, cy, cv->w, cv->h), r); // crop my own draw?
 
@@ -237,18 +240,13 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 			cv->doDraw(*this);
 		}
 	}
-	
-	glDisableClientState(GL_INDEX_ARRAY);
+
 	glDisableClientState(GL_VERTEX_ARRAY);
 	//glDisableClientState(GL_COLOR_ARRAY);
-	
-	pop(ModelView);
 	
 	// this weird call is necessary so that raster calls get scissored properly
 	// not entirely sure why this works, but it does.
 	scissor(0,0,(GLint)w,(GLint)h);
-
-	pop2D();
 }
 
 std::vector<GLV *>& GLV::instances(){

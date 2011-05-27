@@ -319,4 +319,133 @@ class View{
 
 
 
+OpenGL Compatibility
+--------------------------------------------------------------------------------
+It's possible to support both ES1 and ES2 in the same app, but two entirely 
+independent rendering code paths are required. To switch renderers at run-time
+we would need to make a draw::renderer(GLV_ES1 / GLV_ES2) call.
+
+Some GL calls are supported by both ES1 and ES2, but in general, ES1 cannot use 
+shaders while ES2 must use them (ugh!). Here is a brief compatibility list:
+
+						ES 1.1		ES 2
+Clear					x			x
+ClearColor				x			x
+Viewport				x			x
+DrawArrays				x			x
+GL_COLOR_BUFFER_BIT		x			x
+
+PushMatrix				x
+PopMatrix				x
+MatrixMode				x
+Frustum					x
+Ortho					x
+EnableClientState		x
+
+UseProgram							x
+EnableVertexAttribArray				x
+VertexAttribPointer					x
+GetAttribLocation					x
+GetUniformLocation					x
+UniformMatrix4fv					x
+
+
+GLV could have two renderers: FIXED and PROG
+
+FIXED would support both ES1 and OGL1.5
+PROG  would support both ES2 and OGL2.0
+
+Pseudo-code:
+	/*
+		GLV_PIPE_MODE is one of
+
+			GLV_FIX_PIPE, GLV_PRG_PIPE, GLV_DUO_PIPE
+
+		and will be known at compile time.
+	*/
+
+	template<int PIPE>
+	struct Renderer{
+
+		enum Mode{ FIXED, PROGRAMMABLE };
+
+		// Setup on context initialization (load main shaders, textures, etc.)
+		void contextCreate();
+
+		// Clean-up on context destruction
+		void contextDestroy();
+
+		// Set rendering mode (GLV_DUO_PIPE only!)
+		void mode(Mode v);
+	};
+
+
+	// Singleton renderer
+	Renderer<GLV_PIPE_MODE> renderer;
+
+
+
+
+Shader setup code (courtesy of Apple, Inc.):
+
+GLuint RenderingEngine2::BuildShader(const char* source, GLenum shaderType) const
+{
+    GLuint shaderHandle = glCreateShader(shaderType);
+    glShaderSource(shaderHandle, 1, &source, 0);
+    glCompileShader(shaderHandle);
+    
+    GLint compileSuccess;
+    glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &compileSuccess);
+    
+    if (compileSuccess == GL_FALSE) {
+        GLchar messages[256];
+        glGetShaderInfoLog(shaderHandle, sizeof(messages), 0, &messages[0]);
+        std::cout << messages;
+        exit(1);
+    }
+    
+    return shaderHandle;
+}
+
+GLuint RenderingEngine2::BuildProgram(const char* vertexShaderSource,
+                                      const char* fragmentShaderSource) const
+{
+    GLuint vertexShader = BuildShader(vertexShaderSource, GL_VERTEX_SHADER);
+    GLuint fragmentShader = BuildShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
+    
+    GLuint programHandle = glCreateProgram();
+    glAttachShader(programHandle, vertexShader);
+    glAttachShader(programHandle, fragmentShader);
+    glLinkProgram(programHandle);
+    
+    GLint linkSuccess;
+    glGetProgramiv(programHandle, GL_LINK_STATUS, &linkSuccess);
+    if (linkSuccess == GL_FALSE) {
+        GLchar messages[256];
+        glGetProgramInfoLog(programHandle, sizeof(messages), 0, &messages[0]);
+        std::cout << messages;
+        exit(1);
+    }
+    
+    return programHandle;
+}
+
+
+Vertex shader:
+	varying lowp vec4 DestinationColor;
+	void main(){
+		gl_FragColor = DestinationColor;
+	}
+
+Fragment shader:
+	attribute vec4 Position;
+	attribute vec4 SourceColor;
+	varying vec4 DestinationColor;
+	uniform mat4 Projection;
+	uniform mat4 Modelview;
+
+	void main(){
+		DestinationColor = SourceColor;
+		gl_Position = Projection * Modelview * Position;
+	}
 

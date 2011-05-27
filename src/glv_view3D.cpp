@@ -35,55 +35,56 @@ void View3D::onDraw(GLV& g){
 	// y starts at top in GLV, but at bottom in screen coords, so need to flip
 	ay = top->h - (ay + h);
 	
-	// View is outside window, so just return...
+	// If View is outside window, just return...
 	if(ax > top->w || ay > top->h) return;
 
-	// create viewport just at widget location
-	glViewport((int)ax, (int)ay, (int)w, (int)h);
-	
-	// save OpenGL state
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+	// Create viewport just at widget location
+	viewport((int)ax, (int)ay, (int)w, (int)h);
 
 	draw::enable(DepthTest);
 	draw::disable(Blend);
-	draw::enable(ScissorTest);
+
+	// Set up scissor region
+	/* Use same scissor region set by 2D renderer.
 	{
 		space_t sl=ax, sb=ay, sr=w+sl, st=h+sb;		
 		if(sl<0) sl=0;
 		if(sr>top->w) sr=top->w;
 		if(sb<0) sb=0;
 		if(st>top->h) st=top->h;
-		scissor(sl, sb, sr-sl, st-sb);
+		scissor(sl, sb, sr-sl, st-sb); // use scissor set by main GUI renderer
 	}
+	*/
 
 	clearColor(colors().back);
-	clear(ColorBufferBit | DepthBufferBit);
+	clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	gluPerspective(mFOVY, (GLfloat)w/(GLfloat)h, mNear, mFar);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glMultMatrixd(mMatrix);
+	// Push 3D transforms
+	push(Projection);
+	identity();
+	perspective(mFOVY, (GLfloat)w/(GLfloat)h, mNear, mFar);
+	
+	push(ModelView);
+	identity();
+	glMultMatrixf(mMatrix);
 
 	// Do all 3D drawing
 	onDraw3D(g);
 
-	// return OpenGL state
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	
-	glPopAttrib();
-	
-	// return viewport to being entire top-level rect
-	glViewport(0, 0, (int)top->w, (int)top->h);
-	
-	// do 2D drawing
+	// Restore GUI transforms
+	pop(Projection);
+	pop(ModelView);
+
+
+	// Set 2D attributes
+	// TODO: factor into draw::attrib2D(w,h)
+	draw::disable(DepthTest);
+	draw::enable(LineSmooth, Blend);
+	blendTrans();
+	viewport(0, 0, top->w, top->h);
+
+	// Do 2D drawing
 	onDraw2D(g);
 }
 

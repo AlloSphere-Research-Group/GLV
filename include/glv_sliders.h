@@ -333,12 +333,13 @@ TEM void SliderGrid<Dim>::onDraw(GLV& g){
 	color(colors().fore);
 	lineWidth(1);
 	frame(cx * w * rDim, (Dim-cy-1) * h * rDim, (cx+1) * w * rDim, (Dim-cy) * h * rDim);
-	draw::enable(LineStipple);
+
+	lineStippling(true);
 	lineStipple(1, 0xAAAA);
 	grid(g.graphicsData(), 0,0,w,h,Dim,Dim, false);
 	shape(Lines,0,h,w,0);
-	draw::disable(LineStipple);
 
+	lineStippling(false);
 	/*
 	float dx = rDim*w;
 	float dy = rDim*h;

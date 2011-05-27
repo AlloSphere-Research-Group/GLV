@@ -81,7 +81,7 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 
 	if(doLineStipple){
 		draw::lineStipple(1, mLineStipple);
-		draw::enable(draw::LineStipple);
+		draw::lineStippling(true);
 	}
 
 	Indexer ind(d.shape()+1); // dimension 0 is non-spatial
@@ -125,7 +125,7 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 		default:;
 	}
 
-	if(doLineStipple) draw::disable(draw::LineStipple);
+    if(doLineStipple) draw::lineStippling(false);
 }
 
 
