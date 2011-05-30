@@ -22,7 +22,7 @@
 #endif
 
 // OpenGL platform-dependent includes
-#if defined(IPHONE)
+ #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 //#if defined(__IPHONE_3_0)
 
 	#define GLV_PLATFORM		"IPHONE"
