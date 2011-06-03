@@ -115,6 +115,12 @@ public:
 	/// Get value
 	double getValue() const { return Widget::getValue<double>(); }
 
+	/// Get value at 1D index
+	double getValue(int i) const { return Widget::getValue<double>(i); }
+	
+	/// Get value at 2D index
+	double getValue(int i1, int i2) const { return Widget::getValue<double>(i1,i2); }
+
 	/// Get number of digits in fraction part
 	int sizeFraction() const;
 	
