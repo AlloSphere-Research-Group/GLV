@@ -203,27 +203,14 @@ public:
 //there must be at least 3 points
 class FunctionGraph : public View{
 public:
-	class Curve : public Array<float>{
-	public:
-		Curve(int res)
-		: Array<float>(res)
-		{}
-		
-		~Curve() {}
+	struct Curve : public Array<float>{
+		Curve(int res): Array<float>(res){}
 	};
 	
 	struct Knot {
-	public:
-		Knot() : x(0), y(0)
-		{}
-		
-		~Knot() {}
-		
-		Knot(const Knot& k) : x(k.x), y(k.y)
-		{}
-		
-		float x;
-		float y;
+		Knot(): x(0), y(0){}
+		Knot(const Knot& k) : x(k.x), y(k.y){}
+		float x,y;
 	};
 
 public:
