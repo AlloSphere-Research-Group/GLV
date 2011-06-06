@@ -369,6 +369,7 @@ public:
 	int toToken(std::string& dst) const { return glv::toToken(dst, *this); }
 
 
+
 	/// Perform shallow copy from another Data
 	Data& operator= (const Data& v);
 
@@ -447,7 +448,17 @@ public:
 	template <class T>
 	const T * elems() const { return (const T *)mElems; }
 
-	/// Resize array, allocating new memory if necessary
+	// TODO: insert elements
+//	// src			source array
+//	// count		number of source elements
+//	// idx			destination start index
+//	// stride		destination stride
+//	template <class T>
+//	Data& insert(const T* src, int count, int idx, int stride){
+//		return *this;
+//	}
+
+	/// Resize array allocating new memory if necessary
 	Data& resize(const int * sizes, int numDims);
 
 	/// Resize array, allocating new memory if necessary
@@ -456,10 +467,10 @@ public:
 		return resize(s,4);
 	}
 
-	/// Resize array, allocating new memory if necessary
+	/// Resize array allocating new memory if necessary
 	Data& resize(Data::Type type, const int * sizes, int numDims);
 
-	/// Resize array allocating new memory, if necessary
+	/// Resize array allocating new memory if necessary
 	Data& resize(Data::Type type, int size1=1, int size2=1, int size3=1, int size4=1){
 		int s[]={size1,size2,size3,size4}; return resize(type, s,4);
 	}
@@ -553,9 +564,6 @@ class Model{
 public:
 
 	virtual ~Model(){}
-
-//	/// Get data associated with the model, if any
-//	virtual const Data& getData() const { static Data d; return d; }
 
 	/// Get data associated with the model, if any
 	

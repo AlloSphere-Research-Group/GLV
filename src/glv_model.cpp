@@ -373,15 +373,17 @@ void Data::print() const{
 	printf("):%+d, %s %s\n", stride(), typeToString(type()).c_str(), toToken().c_str());
 }
 
-// TODO: copy over as much of the previous values as possible
+
 // if sizes==0, then keep current shape
 void Data::realloc(Data::Type t, const int * sizes, int n){
+	Data old(*this); // REV0
+
 	if(sizes){
 		free();
 		shape(sizes, n);
 	}
 	else{
-		Data old(*this);
+//		Data old(*this); // REV0
 		free();
 		shape(old.mSizes, old.maxDim());
 	}	
@@ -399,7 +401,17 @@ void Data::realloc(Data::Type t, const int * sizes, int n){
 		}
 		acquire(mData);
 		offset(0);
-		if(hasData() && isNumerical()) assignAll(0);
+//		if(hasData() && isNumerical()) assignAll(0); // REV0
+
+		if(hasData() && isNumerical()){
+			if(old.hasData()){
+				assign(old);	// copy over as many old elements as possible
+				if(size() > old.size()) slice(old.size()).assignAll(0);
+			}
+			else{
+				assignAll(0);
+			}
+		}
 	}
 }
 

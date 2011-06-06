@@ -76,7 +76,19 @@ int main(){
 			
 			// resizing
 			{
-				//Data e(Data::INT, 3,3);
+				Data e(Data::INT, 8);
+				for(int i=0; i<e.size(); ++i) e.assign(i,i);
+				
+				e.resize(16);
+				
+				// old elements should be copied over; extras should be zero
+				for(int i=0; i<8 ; ++i) assert(e.at<int>(i) == i);
+				for(int i=8; i<16; ++i) assert(e.at<int>(i) == 0);
+				
+				//
+				e.resize(0);
+				e.resize(8);
+				for(int i=0; i<e.size(); ++i) assert(e.at<int>(i) == 0);
 			}
 			
 			// cloning data
