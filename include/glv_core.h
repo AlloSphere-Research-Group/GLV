@@ -534,8 +534,7 @@ protected:
 	Property::t mFlags;				// Property flags
 	Style * mStyle;					// Visual appearance
 	space_t mAnchorX, mAnchorY;		// Position anchoring factors when parent is resized
-	space_t mStretchX, mStretchY;	// Stretch factors when parent is resized
-	Rect mRestore;					// Restoration geometry
+	space_t mStretchX, mStretchY;	// Stretch factors when parent is resized				
 	std::string mName;				// Settable name identifier
 	std::string mDescriptor;		// String describing view
 
@@ -557,7 +556,13 @@ protected:
 	bool hasName() const { return ""!=mName; }
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
 
+	Rect& restoreRect(){
+		if(!mRestoreRect){ mRestoreRect = new Rect; }
+		return *mRestoreRect;
+	}
+
 private:
+	Rect * mRestoreRect;			// Restoration geometry, constructed on first use
 	Font * mFont;					// constructed on first use
 };
 

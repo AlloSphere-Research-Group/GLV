@@ -12,7 +12,7 @@ namespace glv{
 	parent(0), child(0), sibling(0), \
 	mFlags(Visible | DrawBack | DrawBorder | CropSelf | FocusHighlight | FocusToTop | HitTest | Controllable | Animate), \
 	mStyle(&(Style::standard())), mAnchorX(0), mAnchorY(0), mStretchX(0), mStretchY(0), \
-	mFont(0)
+	mRestoreRect(0), mFont(0)
 
 View::View(const Rect& rect, Place::t anch)
 :	Rect(rect), VIEW_INIT
@@ -53,6 +53,7 @@ View::~View(){
 	}
 
 	delete mFont;
+	delete mRestoreRect;
 }
 
 
@@ -474,7 +475,7 @@ Font& View::font(){
 View& View::maximize(){
 	if(!enabled(Maximized)){
 		enable(Maximized);
-		mRestore.set(*this);
+		restoreRect().set(*this);
 		reanchor(0,0);
 	}
 	return *this;
@@ -614,8 +615,9 @@ void View::reanchor(space_t dx, space_t dy){
 //		//printf("%s (%p): % g % g d(% g, % g) s(% g, % g)\n", className(), this, w,h, dx,dy, mStretchX, mStretchY);
 	}
 	else{
-		mRestore.posAdd(dx * mAnchorX, dy * mAnchorY);
-		mRestore.extent(mRestore.w + dx * mStretchX, mRestore.h + dy * mStretchY);
+		Rect& RR = restoreRect();
+		RR.posAdd(dx * mAnchorX, dy * mAnchorY);
+		RR.extent(RR.w + dx * mStretchX, RR.h + dy * mStretchY);
 		if(parent) set(0,0, parent->w, parent->h);
 	}
 }
@@ -641,7 +643,7 @@ void View::rectifyGeometry(){
 View& View::restore(){
 	if(enabled(Maximized)){
 		disable(Maximized);
-		set(mRestore);
+		set(restoreRect());
 	}
 	return *this;
 }
