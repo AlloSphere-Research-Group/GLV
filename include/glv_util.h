@@ -28,6 +28,24 @@ template<class T> inline void sort(T& a, T& b){ if(a>b){ T t=a; a=b; b=t; }  }
 
 
 
+/// Lazy initialization wrapper
+template<class T>
+class Lazy{
+public:
+	Lazy(): mValue(0){}
+	~Lazy(){ clear(); }
+
+	const T& operator()() const { return (*this)(); }
+	T& operator()(){ init(); return *mValue; }
+	
+	void clear(){ delete mValue; mValue=0; }
+
+protected:
+	void init(){ if(!mValue) mValue = new T(); }
+	T * mValue;
+};
+
+
 /// Smart pointer functionality to avoid deleting references.
 
 ///	When a class contains pointers to other objects, sometimes it is not clear
@@ -610,49 +628,6 @@ bool SmartObject<T>::withinFootPrint(void * m){
 //	bool mHasPoint;
 //	#undef BUFSIZE
 //};
-
-//template <class T, int Nx=1, int Ny=1>
-//class RangedValues : public Values<T, Nx, Ny>{
-//public:
-//
-//	T& operator[](int i){ return mVal[i]; }
-//	const T& operator[](int i) const { return mVal[i]; }
-//
-//	RangedValues& range(T max, T min=0){ mMax=max; mMin=min; return *this; }
-//
-//	
-//
-//protected:
-//	T mMin, mMax;
-//	
-//	void valueSet(T v){
-//		v>mMax ? v=mMax : v<mMin ? v=mMin : 0;
-//		value()[selected()] = v;
-//	}
-//	
-//};
-
-//template <class V>
-//class ValuesRef{
-//public:
-//	ValuesRef(): mVal(0){}
-//
-//	V& data(){ return *mVal; }
-//	const V& data() const { return *mVal; }
-//
-//	// interface methods
-//	void resize(int nx, int ny){}
-//	
-//	void ref(V& r){ mVal = &r; }
-//	
-//protected:
-//	V * mVal;
-//};
-
-
-// We something that wraps around more atomic types to give them all a common
-// interface. However, if the atomic type has the interface methods already,
-// they should be used. Otherwise, the wrapper's default methods should be called.
 
 
 }	// glv::
