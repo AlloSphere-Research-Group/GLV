@@ -35,14 +35,15 @@ public:
 	Lazy(): mValue(0){}
 	~Lazy(){ clear(); }
 
-	const T& operator()() const { return (*this)(); }
-	T& operator()(){ init(); return *mValue; }
-	
+	const T& operator()() const { return create(); }
+	T& operator()(){ return create(); }
+
+	bool created() const { return 0!=mValue; }
 	void clear(){ delete mValue; mValue=0; }
 
 protected:
-	void init(){ if(!mValue) mValue = new T(); }
-	T * mValue;
+	T& create() const { if(!mValue){ mValue = new T(); } return *mValue; }
+	mutable T * mValue;
 };
 
 
