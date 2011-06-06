@@ -58,10 +58,14 @@ bool Widget::onEvent(Event::t e, GLV& g){
 	switch(e){
 		case Event::KeyDown:
 			switch(g.keyboard().key()){
-				case Key::Down:	if(sizeY()>1){ ++sy; clipIndices(); return false; }
-				case Key::Up:	if(sizeY()>1){ --sy; clipIndices(); return false; }
-				case Key::Right:if(sizeX()>1){ ++sx; clipIndices(); return false; }
-				case Key::Left:	if(sizeX()>1){ --sx; clipIndices(); return false; }
+//				case Key::Down:	if(sizeY()>1){ ++sy; clipIndices(); return false; }
+//				case Key::Up:	if(sizeY()>1){ --sy; clipIndices(); return false; }
+//				case Key::Right:if(sizeX()>1){ ++sx; clipIndices(); return false; }
+//				case Key::Left:	if(sizeX()>1){ --sx; clipIndices(); return false; }
+				case Key::Down:	if(sizeY()>1){ select(sx, sy+1); return false; }
+				case Key::Up:	if(sizeY()>1){ select(sx, sy-1); return false; }
+				case Key::Right:if(sizeX()>1){ select(sx+1, sy); return false; }
+				case Key::Left:	if(sizeX()>1){ select(sx-1, sy); return false; }
 				default:;
 			}
 			break;
@@ -82,6 +86,7 @@ bool Widget::onEvent(Event::t e, GLV& g){
 }
 
 void Widget::onDataModelSync(){
+	if(!hasVariables()) return;
 	IndexDataMap::iterator it = variables().begin();
 
 	for(; it!=variables().end(); ++it){
@@ -118,25 +123,27 @@ bool Widget::onAssignData(Data& d, int ind1, int ind2){
 	int idx = data().indexFlat(ind1,ind2);	// starting index of model
 
 	// Update any attached variables containing this index
-	IndexDataMap::iterator it = variables().begin();
-	for(; it != variables().end(); ++it){
-		Data& v = it->second;
-		
-		// get destination/source intervals in terms of model indices
-		int id0 = it->first;
-		int id1 = id0 + v.size();
-		int is0 = idx;
-		int is1 = is0 + d.size();
-		
-		// the intersection
-		int i0 = glv::max(id0, is0);
-		int i1 = glv::min(id1, is1);
-		
-		if(i0 < i1){
-//			printf("[%d, %d), [%d, %d), [%d, %d)\n", id0, id1, is0, is1, i0, i1);
-			v.slice(i0-id0, i1-i0).assign(
-				d.slice(i0-is0, i1-i0)
-			);
+	if(hasVariables()){
+		IndexDataMap::iterator it = variables().begin();
+		for(; it != variables().end(); ++it){
+			Data& v = it->second;
+			
+			// get destination/source intervals in terms of model indices
+			int id0 = it->first;
+			int id1 = id0 + v.size();
+			int is0 = idx;
+			int is1 = is0 + d.size();
+			
+			// the intersection
+			int i0 = glv::max(id0, is0);
+			int i1 = glv::min(id1, is1);
+			
+			if(i0 < i1){
+//printf("[%d, %d), [%d, %d), [%d, %d)\n", id0, id1, is0, is1, i0, i1);
+				v.slice(i0-id0, i1-i0).assign(
+					d.slice(i0-is0, i1-i0)
+				);
+			}
 		}
 	}
 	

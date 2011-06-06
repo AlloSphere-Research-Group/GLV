@@ -110,15 +110,16 @@ protected:
 	enum{ DIMS=2 };
 	typedef std::map<int, glv::Data> IndexDataMap;
 
-	IndexDataMap mVariables;		// external variables to sync to, index-Data
+	Lazy<IndexDataMap> mVariables;	// external variables to sync to, index-Data
 	space_t mPadding[DIMS];			// num pixels to inset icon
 	int sx, sy;						// last clicked position
 	Interval<double> mInterval;		
-	double mPrevVal;				//
+	double mPrevVal;				// used for momentary value
 	bool mUseInterval;
 
-	IndexDataMap& variables(){ return mVariables; }
-	const IndexDataMap& variables() const { return mVariables; }
+	bool hasVariables() const { return mVariables.created(); }
+	IndexDataMap& variables(){ return mVariables(); }
+	const IndexDataMap& variables() const { return mVariables(); }
 
 	float dx(int dim=0) const { return w/data().size(dim); } // width, in pixels, per element
 	float dy(int dim=1) const { return h/data().size(dim); } // height, in pixels, per element
