@@ -11,8 +11,7 @@ namespace glv{
 	Notifier(), SmartObject<View>(),\
 	parent(0), child(0), sibling(0), \
 	mFlags(Visible | DrawBack | DrawBorder | CropSelf | FocusHighlight | FocusToTop | HitTest | Controllable | Animate), \
-	mStyle(&(Style::standard())), mAnchorX(0), mAnchorY(0), mStretchX(0), mStretchY(0), \
-	mRestoreRect(0), mFont(0)
+	mStyle(&(Style::standard())), mAnchorX(0), mAnchorY(0), mStretchX(0), mStretchY(0)
 
 View::View(const Rect& rect, Place::t anch)
 :	Rect(rect), VIEW_INIT
@@ -51,9 +50,6 @@ View::~View(){
 		if(child->dynamicAlloc()) delete child;
 		else child->remove();
 	}
-
-	delete mFont;
-	delete mRestoreRect;
 }
 
 
@@ -215,7 +211,7 @@ View& View::addHandler(DrawHandler& v){
 
 View& View::addHandler(Event::t e, EventHandler& h){
 	if(!hasEventHandler(e, h)){
-		mEventHandlersMap[e].push_back(&h);
+		mEventHandlersMap()[e].push_back(&h);
 	}
 	return *this;
 }
@@ -230,7 +226,7 @@ void View::removeHandler(DrawHandler& v){
 
 void View::removeHandler(Event::t e, EventHandler& h){
 	if(hasEventHandlers(e)){
-		EventHandlers& hs = mEventHandlersMap[e];
+		EventHandlers& hs = mEventHandlersMap()[e];
 		EventHandlers::iterator it = hs.begin();
 		while(it != hs.end()){
 			if(*it == &h) hs.erase(it++);
@@ -241,19 +237,23 @@ void View::removeHandler(Event::t e, EventHandler& h){
 
 bool View::hasEventHandler(Event::t e, const EventHandler& h) const {
 	if(hasEventHandlers(e)){
-		const EventHandlers& hs = mEventHandlersMap.find(e)->second;
+		const EventHandlers& hs = mEventHandlersMap().find(e)->second;
 		return find(hs.begin(), hs.end(), &h) != hs.end();
 	}
 	return false;
 }
 
 bool View::hasEventHandlers(Event::t e) const {
-	return 0!=mEventHandlersMap.count(e);
+	return mEventHandlersMap.created() && 0!=mEventHandlersMap().count(e);
 }
 
 int View::numEventHandlers(Event::t e) const {
-	const EventHandlersMap::const_iterator it = mEventHandlersMap.find(e);
-	return it != mEventHandlersMap.end() ? it->second.size() : 0;
+	if(hasEventHandlers(e)){
+		const EventHandlersMap& handlers = mEventHandlersMap();
+		const EventHandlersMap::const_iterator it = handlers.find(e);
+		return it != handlers.end() ? it->second.size() : 0;
+	}
+	return 0;
 }
 
 
@@ -467,15 +467,14 @@ void View::focused(bool b){
 
 
 Font& View::font(){
-	if(!mFont){	mFont = new Font; }
-	return *mFont;
+	return mFont();
 }
 
 
 View& View::maximize(){
 	if(!enabled(Maximized)){
 		enable(Maximized);
-		restoreRect().set(*this);
+		mRestoreRect().set(*this);
 		reanchor(0,0);
 	}
 	return *this;
@@ -615,7 +614,7 @@ void View::reanchor(space_t dx, space_t dy){
 //		//printf("%s (%p): % g % g d(% g, % g) s(% g, % g)\n", className(), this, w,h, dx,dy, mStretchX, mStretchY);
 	}
 	else{
-		Rect& RR = restoreRect();
+		Rect& RR = mRestoreRect();
 		RR.posAdd(dx * mAnchorX, dy * mAnchorY);
 		RR.extent(RR.w + dx * mStretchX, RR.h + dy * mStretchY);
 		if(parent) set(0,0, parent->w, parent->h);
@@ -643,7 +642,7 @@ void View::rectifyGeometry(){
 View& View::restore(){
 	if(enabled(Maximized)){
 		disable(Maximized);
-		set(restoreRect());
+		set(mRestoreRect());
 	}
 	return *this;
 }

@@ -530,7 +530,7 @@ protected:
 	typedef std::map<Event::t, EventHandlers> EventHandlersMap;
 	
 	DrawHandlers mDrawHandlers;
-	EventHandlersMap mEventHandlersMap;
+	Lazy<EventHandlersMap> mEventHandlersMap;
 	Property::t mFlags;				// Property flags
 	Style * mStyle;					// Visual appearance
 	space_t mAnchorX, mAnchorY;		// Position anchoring factors when parent is resized
@@ -556,14 +556,9 @@ protected:
 	bool hasName() const { return ""!=mName; }
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
 
-	Rect& restoreRect(){
-		if(!mRestoreRect){ mRestoreRect = new Rect; }
-		return *mRestoreRect;
-	}
-
 private:
-	Rect * mRestoreRect;			// Restoration geometry, constructed on first use
-	Font * mFont;					// constructed on first use
+	Lazy<Rect> mRestoreRect;		// Restoration geometry
+	Lazy<Font> mFont;
 };
 
 

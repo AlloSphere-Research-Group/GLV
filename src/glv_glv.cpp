@@ -91,7 +91,7 @@ bool GLV::doEventCallbacks(View& v, Event::t e){
 	bool bubble = true;
 
 	if(v.hasEventHandlers(e)){
-		const EventHandlers& hs = v.mEventHandlersMap[e];
+		const EventHandlers& hs = v.mEventHandlersMap()[e];
 
 		// Execute callbacks in list
 		for(EventHandlers::const_iterator it = hs.begin(); it != hs.end(); ++it){
