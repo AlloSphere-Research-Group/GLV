@@ -386,10 +386,12 @@ public:
 	virtual ~View();
 
 	virtual const char * className() const { return "View"; } ///< Get class name
+
+	// User-defined callbacks
 	virtual void onAnimate(double dsec, GLV& g){}	///< Animation callback
-	virtual void onDraw(GLV& g);					///< Drawing callback
-	virtual bool onEvent(Event::t e, GLV& g);		///< Event callback to be called after those in callback list
-	virtual void onResize(space_t dx, space_t dy);	///< Resize callback
+	virtual void onDraw(GLV& g){}					///< Drawing callback
+	virtual bool onEvent(Event::t e, GLV& g){return true;} ///< Event callback to be called after those in callback list
+	virtual void onResize(space_t dx, space_t dy){}	///< Resize callback
 	virtual void onDataModelSync(){}				///< Update internal values if different from attached model variables
 
 	// Doubly linked tree list of views
@@ -402,6 +404,7 @@ public:
 	View& add(View* child);		///< Add a child view to myself, and update linked lists
 	void makeLastSibling();		///< Put self at end of sibling chain
 	void remove();				///< Remove myself from the parent view, and update linked lists
+	View& root();				///< Returns topmost View, possibly self
 
 	/// An action to be called when traversing the node tree
 	struct TraversalAction{
@@ -559,6 +562,7 @@ protected:
 private:
 	Lazy<Rect> mRestoreRect;		// Restoration geometry
 	Lazy<Font> mFont;
+	virtual void onResizeRect(space_t dx, space_t dy);
 };
 
 

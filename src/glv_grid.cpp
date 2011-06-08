@@ -179,17 +179,11 @@ bool Grid::onEvent(Event::t e, GLV& g){
 }
 
 void Grid::onResize(space_t dx, space_t dy){
-
-	View::onResize(dx,dy);
-
 	if(mEqualize){
-
 		// always adjust x interval, unless there is a better way...
 		interval(0).diameter(interval(1).diameter()*(h>0 ? w/h : 1));
-
 //		w>=h	? interval(0).diameter(interval(1).diameter()*w/h)
 //				: interval(1).diameter(interval(0).diameter()*h/w);
-
 //		float pw = w-dx;
 //		float ph = h-dy;
 	}

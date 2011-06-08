@@ -118,13 +118,13 @@ public:
 	bool withinYBounds(T ymin, T ymax) const;	///< Returns whether the TRect is within the y range.
 
 	/// Called when the width or height change.  Changes in extent are passed in.
-	virtual void onResize(T dx, T dy){}
+	virtual void onResizeRect(T dx, T dy){}
 	
 	void print(FILE * fp=stdout);	///< write about TRect to a file
 	
 private:
 	void onResizeProxy(T dx, T dy){	// calls onResize if at least 1 dimension has changed
-		if(dx!=T(0) || dy!=T(0)) onResize(dx,dy);
+		if(dx!=T(0) || dy!=T(0)) onResizeRect(dx,dy);
 	}
 };
 

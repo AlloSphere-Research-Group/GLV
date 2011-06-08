@@ -539,16 +539,10 @@ View& View::name(const std::string& v){
 }
 
 
-void View::onDraw(GLV& g){
-//	if(draw) draw(this, g);
-}
-
-bool View::onEvent(Event::t e, GLV& g){ return true; }
-
-
-void View::onResize(space_t dx, space_t dy){
+void View::onResizeRect(space_t dx, space_t dy){
+	onResize(dx,dy);
 	// Move/resize anchored children
-	// This will recursively call onResize's through the entire tree
+	// This will recursively call onResize's through the entire descendency tree
 	View * v = child;	
 	while(v){
 		v->reanchor(dx, dy);
@@ -677,6 +671,12 @@ const View * View::toAbs(space_t& x, space_t& y) const {
 		v = v->parent;
  	}
  	return v;
+}
+
+View& View::root(){
+	View * v = this;
+	while(v->parent) v = v->parent;
+	return *v;
 }
 
 
