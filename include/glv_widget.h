@@ -63,6 +63,8 @@ public:
 		variables()[i] = Data(val);
 	}
 
+	void clipIndices(){ clipIndices(sx,sy); }
+
 	/// Set interval for numerical values
 	Widget& interval(const double& max, const double& min=0){
 		mInterval.endpoints(min,max); return *this;
@@ -127,7 +129,6 @@ protected:
 
 	static void clip(int& i, int max){ i<0 ? i=0 : i>=max ? i=max-1 : 0; }
 	void clipIndices(int& x, int& y){ clip(x, sizeX()); clip(y, sizeY()); }
-	void clipIndices(){ clipIndices(sx,sy); }
 	bool validIndex(int i) const { return (i < size()) && (i >= 0); }
 
 	double diam() const { return mInterval.diameter(); }
