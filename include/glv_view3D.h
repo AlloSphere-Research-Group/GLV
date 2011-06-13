@@ -34,17 +34,19 @@ public:
 
 	/// Set 4x4 model transform matrix (column-major)
 	template <class T>
-	void matrix(T * mat4x4){
-		for(int i=0; i<16; ++i) mMatrix[i]=mat4x4[i];
+	void modelview(T * mat4x4){
+		for(int i=0; i<16; ++i) mModelview[i]=mat4x4[i];
 	}
 	
 	/// Get 4x4 model transform matrix
-	float * matrix(){ return mMatrix; }
+	float * modelview(){ return mModelview; }
+
+	void resetModelview();
 
 protected:
 	virtual void onDraw(GLV& g);
 	float mNear, mFar, mFOVY;
-	float mMatrix[16];
+	float mModelview[16];
 	
 //	struct ViewModel : public Model{
 //		ViewModel(View3D& self): v(self){}
