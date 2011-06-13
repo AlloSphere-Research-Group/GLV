@@ -73,6 +73,10 @@ public:
 	}
 
 	/// Append color
+	void addColor(float r, float g, float b, float a=1){
+		addColor(Color(r,g,b,a)); }
+
+	/// Append color
 	void addColor(const Color& c){
 		colors().append(c); }
 
