@@ -453,7 +453,7 @@ void View::fit(){
 
 
 void View::focused(bool b){
-	property(Focused, b);
+//	property(Focused, b);
 	if(b && enabled(FocusToTop)){
 		// move all nodes in branch to end of sibling chain so drawn last
 		View * v = this;

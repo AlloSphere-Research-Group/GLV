@@ -114,10 +114,11 @@ void GLV::doFocusCallback(bool get){
 	if(mFocusedView){
 		mFocusedView->focused(get);
 		
-		if(mFocusedView->numEventHandlers(e)){
-			eventType(e);
+//		if(mFocusedView->numEventHandlers(e)){
+//			printf("GLV::doFocusCallback(%d) on a %s\n", get, mFocusedView->className());
+//			eventType(e);
 			doEventCallbacks(*mFocusedView, e);
-		}
+//		}
 	}
 }
 
@@ -166,6 +167,11 @@ static void computeCrop(std::vector<Rect>& cr, int lvl, space_t ax, space_t ay, 
 // Views are drawn depth-first from leftmost to rightmost sibling
 void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 	using namespace draw;
+
+	// TODO: Perhaps the View tree should be serialized into a separate list
+	//		used for rendering?
+	//		This will permit a user to change the graph structure during a draw 
+	//		callback. Currently if this is attempted, we crash and burn.
 
 	enter2D(w, h);		// initialise the OpenGL renderer for our 2D GUI world
   
@@ -269,13 +275,17 @@ void GLV::refreshModels(){
 void GLV::setFocus(View * v){
 
 	// save current event since we do not want to propagate GetFocus and LoseFocus
-	Event::t currentEvent = eventType();	
-											
+//	Event::t currentEvent = eventType();	
+
+	// update states before calling event callbacks
+	if(mFocusedView)	mFocusedView->disable(Focused);
+	if(v)				v->enable(Focused);
+
 	doFocusCallback(false);	// Call current focused View's LoseFocus callback
 	mFocusedView = v;		// Set the currently focused View
 	doFocusCallback(true);	// Call newly focused View's GetFocus callback
 
-	eventType(currentEvent);
+//	eventType(currentEvent);
 }
 
 void GLV::setKeyDown(int keycode){

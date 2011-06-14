@@ -500,7 +500,6 @@ public:
 	View * findTarget(space_t& x, space_t& y);
 
 	void fit();									///< Fit geometry so all children are visible
-	void focused(bool b);						///< Set whether I'm focused
 	void move(space_t x, space_t y);			///< Translate constraining within parent
 
 	/// Set descriptor, e.g. tooltip text
@@ -558,7 +557,8 @@ protected:
 //	bool doEventHandlers(View& v, Event::t e);
 	bool hasName() const { return ""!=mName; }
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
-
+	void focused(bool b);					// Set whether I'm focused
+	
 private:
 	Lazy<Rect> mRestoreRect;		// Restoration geometry
 	Lazy<Font> mFont;
