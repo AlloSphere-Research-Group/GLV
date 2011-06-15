@@ -277,6 +277,9 @@ void GLV::setFocus(View * v){
 	// save current event since we do not want to propagate GetFocus and LoseFocus
 //	Event::t currentEvent = eventType();	
 
+	// do nothing if already focused
+	if(v == mFocusedView) return;
+
 	// update states before calling event callbacks
 	if(mFocusedView)	mFocusedView->disable(Focused);
 	if(v)				v->enable(Focused);
