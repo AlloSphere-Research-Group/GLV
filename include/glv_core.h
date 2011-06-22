@@ -85,9 +85,10 @@ namespace Property{
 		MutualExc		=1<<30,	/**< Whether only one element of a widget can be non-zero */
 		SelectOnDrag	=1<<31,	/**< Whether a new element of a widget is selected while dragging */
 	};
-	inline t operator| (const t& a, const t& b){ return t(int(a) | int(b)); }
-	inline t operator& (const t& a, const t& b){ return t(int(a) & int(b)); }
-	inline t operator^ (const t& a, const t& b){ return t(int(a) ^ int(b)); }
+
+	inline t operator| (const t& a, const t& b){ return static_cast<t>(+a | +b); }
+	inline t operator& (const t& a, const t& b){ return static_cast<t>(+a & +b); }
+	inline t operator^ (const t& a, const t& b){ return static_cast<t>(+a ^ +b); }
 };
 
 using namespace Property;
@@ -211,6 +212,7 @@ public:
 	bool shift() const;		///< Whether a shift key is down
 	bool isDown() const;	///< Whether last event was button down
 	bool isNumber() const;	///< Whether key is a number key
+	bool isPrint() const;	///< Whether key is a printable character
 	bool key(int k) const;	///< Whether the last key was 'k'
 
 	void alt  (bool v);		///< Set alt key state
@@ -717,7 +719,8 @@ inline View& View::descriptor(const std::string& v){ mDescriptor=v; return *this
 inline int Keyboard::key() const { return mKeycode; }
 inline int Keyboard::keyAsNumber() const { return key() - 48; }
 inline bool Keyboard::isDown() const { return mIsDown; }
-inline bool Keyboard::isNumber() const { return (key() >= '0') && (key() <= '9'); }
+inline bool Keyboard::isNumber() const {return (key() >= '0') && (key() <= '9'); }
+inline bool Keyboard::isPrint() const { return (key() >= ' ') && (key() <= '~'); }
 inline bool Keyboard::alt()   const { return mModifiers[1]; }
 inline bool Keyboard::caps()  const { return mModifiers[3]; }
 inline bool Keyboard::ctrl()  const { return mModifiers[2]; }
