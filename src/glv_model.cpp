@@ -193,7 +193,7 @@ Data::Data(Data::Type type, int n1, int n2, int n3, int n4)
 }
 
 Data::~Data(){
-	free();
+	clear();
 }
 
 Data& Data::operator= (const Data& v){
@@ -308,6 +308,60 @@ Data& Data::assign(const Data& v, int idx){
 	#undef OPALL
 }
 
+
+int Data::indexOf(const Data& v) const {
+	if(hasData() && v.hasData()){
+
+		#define OP(t1, t2)\
+			for(int i=0; i<size(); ++i){\
+				if(elem<t1>(i) == v.elem<t2>(0)) return i;\
+			} break
+
+		#define OPALL(t)\
+			switch(v.type()){\
+			case Data::BOOL:	OP(t, bool);\
+			case Data::INT:		OP(t, int);\
+			case Data::FLOAT:	OP(t, float);\
+			case Data::DOUBLE:	OP(t, double);\
+			default:;\
+			} break
+
+		switch(type()){
+		case Data::BOOL:	OPALL(bool);
+		case Data::INT:		OPALL(int);
+		case Data::FLOAT:	OPALL(float);
+		case Data::DOUBLE:	OPALL(double);
+		case Data::STRING:	OP(std::string, std::string);
+		default:;
+		}
+	}
+	return npos;
+	#undef OP
+	#undef OPALL
+}
+
+
+void Data::clear(){
+PDEBUG;
+	if(release(mData)){
+		switch(type()){
+		case Data::BOOL:	delete[] data<bool>(); break;
+		case Data::INT:		delete[] data<int>(); break;
+		case Data::FLOAT:	delete[] data<float>(); break;
+		case Data::DOUBLE:	delete[] data<double>(); break;
+		case Data::STRING:	delete[] data<std::string>(); break;
+		default:;
+		}
+//		::free(mData);
+	}
+	mData=0;
+	mElems=0;
+	mStride=1;
+	shapeAll(0);
+//	mType=Data::NONE;	// LJP: leave type unchanged
+PDEBUG;
+}
+
 void Data::clone(){
 	if(hasData()){
 		int cnt = references(mData);
@@ -325,27 +379,6 @@ void Data::clone(){
 	else{
 		realloc(type());
 	}
-}
-
-void Data::free(){
-PDEBUG;
-	if(release(mData)){
-		switch(type()){
-		case Data::BOOL:	delete[] data<bool>(); break;
-		case Data::INT:		delete[] data<int>(); break;
-		case Data::FLOAT:	delete[] data<float>(); break;
-		case Data::DOUBLE:	delete[] data<double>(); break;
-		case Data::STRING:	delete[] data<std::string>(); break;
-		default:;
-		}
-//		::free(mData);
-	}
-	mData=0;
-	mElems=0;
-	mStride=1;
-	shapeAll(0);
-	mType=Data::NONE;
-PDEBUG;
 }
 
 int Data::order() const {
@@ -375,16 +408,16 @@ void Data::print() const{
 
 
 // if sizes==0, then keep current shape
-void Data::realloc(Data::Type t, const int * sizes, int n){
+int Data::realloc(Data::Type t, const int * sizes, int n){
 	Data old(*this); // REV0
 
-	if(sizes){
-		free();
+	if(sizes){		// new shape requested
+		clear();
 		shape(sizes, n);
 	}
-	else{
+	else{			// just changing type, leave shape unchanged
 //		Data old(*this); // REV0
-		free();
+		clear();
 		shape(old.mSizes, old.maxDim());
 	}	
 
@@ -397,7 +430,7 @@ void Data::realloc(Data::Type t, const int * sizes, int n){
 		case Data::FLOAT:	mData = pointer(new float[size()]); break;
 		case Data::DOUBLE:	mData = pointer(new double[size()]); break;
 		case Data::STRING:	mData = pointer(new std::string[size()]); break;
-		default:			return;
+		default:			goto end;
 		}
 		acquire(mData);
 		offset(0);
@@ -413,14 +446,17 @@ void Data::realloc(Data::Type t, const int * sizes, int n){
 			}
 		}
 	}
+
+	end:
+	return sizeBytes() - old.sizeBytes();
 }
 
-Data& Data::resize(const int * sizes, int n){
-	return resize(type(), sizes, n);
-}
 
-Data& Data::resize(Data::Type t, const int * sizes, int n){
+int Data::resize(Data::Type t, const int * sizes, int n){
 PDEBUG;
+
+	int numBytes = 0;
+
 //	if(t!=NONE && (type()!=t || size()!=product(sizes,n))){
 //		realloc(t, sizes,n);
 //	}
@@ -430,11 +466,11 @@ PDEBUG;
 	
 		int newsize = product(sizes,n);
 
-		if(size() == 0 && newsize == 0){		// no sizing, just change type
+		if(size() == 0 && newsize == 0){		// no sizes, just change type
 			mType = t;
 		}
 		else if((type() != t) || (size() != newsize)){	// different type or size triggers realloc
-			realloc(t, sizes,n);
+			numBytes = realloc(t, sizes,n);
 		}
 	
 //		printf("resize: (%d %d) %d %d \t\t", t, type(), size(), product(sizes,n)); print();
@@ -450,15 +486,18 @@ PDEBUG;
 //			printf("else\n");
 //		}
 	}
+	else{
+		// should we free previous memory?
+	}
 
 PDEBUG;
-	return *this;
+	return numBytes;
 }
 
 void Data::setRaw(void * dt, int off, int stride, Type ty){
 	// increment reference count first to avoid problems when dt == mData
 	incrementCount(pointer(dt));
-	free();
+	clear();
 	mData  = pointer(dt);
 	mStride= stride;
 	mType  = ty;
@@ -909,18 +948,24 @@ void ModelManager::saveSnapshot(const std::string& name){
 
 
 bool ModelManager::loadSnapshot(const std::string& name){
-	if(mSnapshots.count(name)){
-		Snapshot& snapshot = mSnapshots[name];
+	Snapshots::const_iterator ssit = mSnapshots.find(name);
+	if(mSnapshots.end() != ssit){
+		const Snapshot& snapshot = ssit->second;
 
 		NamedModels::const_iterator it = mState.begin();
-		while(it != mState.end()){
-			if(snapshot.count(it->first)){
-				it->second->setData(snapshot[it->first]);
+		while(mState.end() != it){
+			Snapshot::const_iterator sit = snapshot.find(it->first);
+			if(snapshot.end() != sit){
+				it->second->setData(sit->second);
 			}
 			++it;
 		}
 		return true;
 	}
+	return false;
+}
+
+bool ModelManager::loadSnapshot(float frac, const std::string& name1, const std::string& name2){
 	return false;
 }
 

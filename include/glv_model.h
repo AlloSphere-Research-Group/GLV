@@ -200,14 +200,17 @@ public:
 
 	/// Data types
 	enum Type{
-		NONE=0,		/**< */
-		BOOL,		/**< */
+		BOOL=0,		/**< */
 		INT,		/**< */
 		FLOAT,		/**< */
 		DOUBLE,		/**< */
-		STRING		/**< */
+		STRING,		/**< */
+		NONE		/**< */
 	};
 	static std::string typeToString(Type t);
+
+	/// Value returned by various member functions when they fail
+	static const int npos = static_cast<int>(-1);
 
 	/// This sets the data type to void and does not allocate memory
 	Data();
@@ -316,8 +319,14 @@ public:
 		indexDim(i1,i2,i3,i); i3%=size(2); i4=i/(size(0,1,2));
 	}
 	
+	/// Get index of an element
+	int indexOf(const Data& v) const;
+
+	template <class T>
+	int indexOf(const T& v) const { return indexOf(Data(v)); }
+	
 	/// Returns whether type is numerical, i.e., int, float, or double
-	bool isNumerical() const { return type() != Data::STRING; }
+	bool isNumerical() const { return type() < Data::STRING; }
 
 	/// Get maximum allowable dimensions
 	static int maxDim(){ return DATA_MAXDIM; }
@@ -420,6 +429,9 @@ public:
 		return assign(Data(const_cast<T*>(src), size).stride(stride), idx);
 	}
 
+	/// Clear contents, leaving the size equal to 0
+	void clear();
+
 	/// Allocate internal memory and copy over previous data
 	void clone();
 
@@ -459,19 +471,21 @@ public:
 //	}
 
 	/// Resize array allocating new memory if necessary
-	Data& resize(const int * sizes, int numDims);
+	int resize(const int * sizes, int numDims){
+		return resize(type(), sizes, numDims);
+	}
 
-	/// Resize array, allocating new memory if necessary
-	Data& resize(int size1, int size2=1, int size3=1, int size4=1){
+	/// Resize array allocating new memory if necessary
+	int resize(int size1, int size2=1, int size3=1, int size4=1){
 		int s[]={size1,size2,size3,size4};
 		return resize(s,4);
 	}
 
 	/// Resize array allocating new memory if necessary
-	Data& resize(Data::Type type, const int * sizes, int numDims);
+	int resize(Data::Type type, const int * sizes, int numDims);
 
 	/// Resize array allocating new memory if necessary
-	Data& resize(Data::Type type, int size1=1, int size2=1, int size3=1, int size4=1){
+	int resize(Data::Type type, int size1=1, int size2=1, int size3=1, int size4=1){
 		int s[]={size1,size2,size3,size4}; return resize(type, s,4);
 	}
 
@@ -543,12 +557,13 @@ protected:
 	template <class T>
 	const T * data() const { return (const T *)mData; }
 
-	void free();
 	void init(){ // zeros all attributes (used in c'tor)
 		mData=0; mElems=0; mStride=1; mType=NONE;
 		shapeAll(0);
 	}
-	void realloc(Data::Type type, const int * sizes=0, int n=0);
+	
+	// Reallocate memory; returns size change, in bytes
+	int realloc(Data::Type type, const int * sizes=0, int n=0);
 	void setRaw(void * data, int offset, int stride, Type type);
 	int sizeBytes() const { return size()*sizeType(); }
 	
@@ -787,6 +802,8 @@ public:
 	///
 	bool loadSnapshot(const std::string& name);
 
+	bool loadSnapshot(float frac, const std::string& name1, const std::string& name2);
+
 protected:
 	std::string mName;				// name identifier
 	std::string mFileDir, mFileName;// directory and name of file
@@ -815,15 +832,18 @@ protected:
 //------------------------------------------------------------------------------
 
 template<class T>
-int toString(std::string& dst, const T * src, int size, int stride){
-	if(1==size){ return toString(dst, *src); }
+inline int stringifyArray(
+	std::string& dst, const T * src, int size, int stride,
+	int (*stringifyElem)(std::string&, const T&)
+){
+	if(1==size){ return stringifyElem(dst, *src); }
 	
 	else{
 		dst = "";
 		std::string temp;
 		int count=0;
 		for(int i=0; i<size; ++i){
-			count += toString(temp, src[i*stride]);
+			count += stringifyElem(temp, src[i*stride]);
 			dst += temp;
 			if(i != (size-1)) dst += ", ";
 		}
@@ -832,16 +852,15 @@ int toString(std::string& dst, const T * src, int size, int stride){
 }
 
 template<class T>
+int toString(std::string& dst, const T * src, int size, int stride){
+	return stringifyArray(dst,src,size,stride, toString);
+}
+
+template<class T>
 int toToken(std::string& dst, const T * src, int size, int stride){
-	if(1==size){ return toToken(dst, *src); }
-	
-	else{
-		dst = "{";
-		std::string temp;
-		int count = toString(temp, src, size, stride);
-		dst += (temp += "}");
-		return count;
-	}
+	int res = stringifyArray(dst,src,size,stride, toToken);
+	if(1!=size) dst = "{" + dst + "}";
+	return res;
 }
 
 template <class T>
@@ -892,6 +911,9 @@ DATA_SET(int, INT)
 DATA_SET(float, FLOAT)
 DATA_SET(double, DOUBLE)
 DATA_SET(std::string, STRING)
+//template<> inline Data& Data::set<char *>(char* * src, const int * sizes, int n){
+//	setRaw(src,0,1,Data::STRING); shape(sizes,n); return *this;
+//}
 #undef DATA_SET
 
 } // glv::
