@@ -77,17 +77,18 @@ int main(){
 			// resizing
 			{
 				Data e(Data::INT, 8);
+				int N; // resize change, in bytes
+
 				for(int i=0; i<e.size(); ++i) e.assign(i,i);
 				
-				e.resize(16);
+				N=e.resize(16);			assert(e.sizeType()*8==N);
 				
 				// old elements should be copied over; extras should be zero
 				for(int i=0; i<8 ; ++i) assert(e.at<int>(i) == i);
 				for(int i=8; i<16; ++i) assert(e.at<int>(i) == 0);
-				
-				//
-				e.resize(0);
-				e.resize(8);
+
+				N=e.resize(0);			assert(e.sizeType()*-16==N);
+				N=e.resize(8);			assert(e.sizeType()*  8==N);
 				for(int i=0; i<e.size(); ++i) assert(e.at<int>(i) == 0);
 			}
 			
@@ -154,7 +155,8 @@ int main(){
 		
 //		d.put(std::string("8"));
 //		assert(d.at<float>(0) == 8);
-		
+
+		// Getting/setting values
 		d.assign(11.f);
 		assert(d.at<float>(0) == 11.f);
 		
@@ -194,6 +196,20 @@ int main(){
 			d.set("d");
 			d2.assign(d);
 			assert(d2.at<std::string>(0) == d.at<std::string>(0));
+		}
+		
+		// searching
+		{
+			Data e(Data::STRING, 3);
+			std::string s1 = "test1", s2 = "test2", s3 = "test3";
+			e.assign(s1, 0);
+			e.assign(s2, 1);
+			e.assign(s3, 2);
+			
+			assert(e.indexOf(s1) == 0);
+			assert(e.indexOf(s2) == 1);
+			assert(e.indexOf(s3) == 2);
+			assert(e.indexOf(std::string("invalid")) == Data::npos);
 		}
 		
 		// multiple element assignment
@@ -242,31 +258,36 @@ int main(){
 		bool b4[4];
 		float f4[4];
 		double d4[4];
+		std::string s4[4];
 		
-		fromToken(f1, "1e-2");		assert(f1 == float(1e-2));
-		fromToken(f1, "1000");		assert(f1 == float(1000));
-		fromToken(d1, "1e-2");		assert(d1 == double(1e-2));
-		fromToken(d1, "1000");		assert(d1 == double(1000));
-		fromToken(b1, "0");			assert(b1 == 0);
-		fromToken(b1, "1");			assert(b1 == 1);
-		fromToken(s1, "\"test\"");	assert(s1 == "test");
-		
-		fromToken(b4,4,1, "{1,0,1,1}");				assert(EQ4(b4, 1,0,1,1));
-		fromToken(b4,4,1, "{0,  1, 0,0}");			assert(EQ4(b4, 0,1,0,0));
-		fromToken(f4,4,1, "{1, -1.2, 1e10, +.1}");	assert(EQ4(f4, 1.f,-1.2f,1e10f,+.1f));
-		fromToken(d4,4,1, "{1, -1.2, 1e10, +.1}");	assert(EQ4(d4, 1,-1.2,1e10,+.1));
+		int N;	// number of elements converted
 
-		toToken(s1, 1000.f);		assert(s1 == "1000");
-		toToken(s1, 2000.0);		assert(s1 == "2000");
-		//toToken(rs, -2.1e100);		printf("%s\n", rs.c_str()); //assert(rs == "2e100");
-		//toToken(rs, (float)-2.1e38);		printf("%s\n", rs.c_str()); //assert(rs == "2e100");
-		toToken(s1, true);			assert(s1 == "1");
-		toToken(s1, false);			assert(s1 == "0");
-		toToken(s1, "test");		assert(s1 == "\"test\"");
+		N=fromToken(f1, "1e-2");		assert(1==N && f1 == float(1e-2));
+		N=fromToken(f1, "1000");		assert(1==N && f1 == float(1000));
+		N=fromToken(d1, "1e-2");		assert(1==N && d1 == double(1e-2));
+		N=fromToken(d1, "1000");		assert(1==N && d1 == double(1000));
+		N=fromToken(b1, "0");			assert(1==N && b1 == 0);
+		N=fromToken(b1, "1");			assert(1==N && b1 == 1);
+		N=fromToken(s1, "\"test\"");	assert(1==N && s1 == "test");
 		
-		SET4(b4, 1,0,1,1);		toToken(s1, b4,4,1);	assert(s1 == "{1, 0, 1, 1}");
-		SET4(f4,-1,0.1,3,1e10);	toToken(s1, f4,4,1);	assert(s1 == "{-1, 0.1, 3, 1e+10}");
-		SET4(d4,-1,0.1,3,1e10);	toToken(s1, d4,4,1);	assert(s1 == "{-1, 0.1, 3, 1e+10}");
+		N=fromToken(b4,4,1, "{1,0,1,1}");				assert(4==N && EQ4(b4, 1,0,1,1));
+		N=fromToken(b4,4,1, "{0,  1, 0,0}");			assert(4==N && EQ4(b4, 0,1,0,0));
+		N=fromToken(f4,4,1, "{1, -1.2, 1e10, +.1}");	assert(4==N && EQ4(f4, 1.f,-1.2f,1e10f,+.1f));
+		N=fromToken(d4,4,1, "{1, -1.2, 1e10, +.1}");	assert(4==N && EQ4(d4, 1,-1.2,1e10,+.1));
+		N=fromToken(s4,4,1, "{\"one\", \"two\", \"three\", \"four\"}");
+														assert(4==N && EQ4(s4, "one","two","three","four"));
+
+		N=toToken(s1, 1000.f);			assert(1==N && s1 == "1000");
+		N=toToken(s1, 2000.0);			assert(1==N && s1 == "2000");
+		N=toToken(s1, true);			assert(1==N && s1 == "1");
+		N=toToken(s1, false);			assert(1==N && s1 == "0");
+		N=toToken(s1, "test");			assert(1==N && s1 == "\"test\"");
+		
+		SET4(b4, 1,0,1,1);		N=toToken(s1, b4,4,1);	assert(4==N && s1 == "{1, 0, 1, 1}");
+		SET4(f4,-1,0.1,3,1e10);	N=toToken(s1, f4,4,1);	assert(4==N && s1 == "{-1, 0.1, 3, 1e+10}");
+		SET4(d4,-1,0.1,3,1e10);	N=toToken(s1, d4,4,1);	assert(4==N && s1 == "{-1, 0.1, 3, 1e+10}");
+		SET4(s4,"one","two","three","four"); N=toToken(s1,s4,4,1); //printf("%s\n", s1.c_str());
+														assert(4==N && s1 == "{\"one\", \"two\", \"three\", \"four\"}");
 	}
 
 
