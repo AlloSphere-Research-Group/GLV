@@ -14,9 +14,11 @@ class Notifier;
 /// Notification update types
 namespace Update{
 	enum t{
-		Focus=0,	/**< Focus update */
-		Value,		/**< Value update */
-		NumTypes
+		Focus		=    0,	/**< Focus update */
+		Value,				/**< Value update */
+		Action,				/**< Perform an action based on current value */
+		NumTypes,			/**< Number of predefined notification types */
+		User		= 1000	/**< Start of user-defined notification types */
 	};
 }
 
@@ -133,6 +135,8 @@ public:
 		}
 	}
 
+// LJP: These can lead to unexpected results when casting since the void *
+//		points to a Notifier.
 	/// Notify observers of a specific update type
 	void notify(Update::t n, void * data=0){ notify(this, n, data); }
 	
