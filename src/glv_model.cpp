@@ -4,9 +4,9 @@
 #include <stdio.h>	// sscanf, FILE
 #include <string.h>	// strchr, strpbrk
 
-#ifndef WIN32
-#define	sprintf_s(buffer, buffer_size, stringbuffer, ...) (snprintf(buffer, buffer_size, stringbuffer, __VA_ARGS__))
-#endif
+//#ifndef WIN32
+//#define	sprintf_s(buffer, buffer_size, stringbuffer, ...) (snprintf(buffer, buffer_size, stringbuffer, __VA_ARGS__))
+//#endif
 
 namespace glv{
 
@@ -30,25 +30,21 @@ template<> int toString<bool>(std::string& dst, const bool& src){
 	dst = src ? "1" : "0";
 	return 1;
 }
-template<> int toString<int>(std::string& dst, const int& src){
-	char buf[20]; sprintf_s(buf, sizeof(buf), "%i", src);
-	dst = buf;
-	return 1;
+template<> int toString<int>(std::string& dst, const int& src){//
+	return toString(dst, src, "%i");
 }
 template<> int toString<float>(std::string& dst, const float& src){
-	char buf[32]; sprintf_s(buf, sizeof(buf), "%g", src); // "%.24g"
-	dst = buf;
-	return 1;
+	return toString(dst, src, "%g");
 }
 template<> int toString<double>(std::string& dst, const double& src){
-	char buf[40]; sprintf_s(buf, sizeof(buf), "%lg", src); // "%.32lg"
-	dst = buf;
-	return 1;
+	return toString(dst, src, "%lg");
 }
 template<> int toString<std::string>(std::string& dst, const std::string& src){
 	dst = src; return 1;
 }
 int toString(std::string& dst, const char * src){ return toString(dst, std::string(src)); }
+
+
 
 template<> int fromToken<bool>(bool& dst, const std::string& src){
 	char v = dst;

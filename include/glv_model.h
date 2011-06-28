@@ -21,6 +21,10 @@ template<class T>
 int toString(std::string& dst, const T& src);
 int toString(std::string& dst, const char * src);
 
+/// Convert value to a string with user-defined formatting
+template<class T>
+int toString(std::string& dst, const T& src, const char * format);
+
 /// Convert objects to a string. Returns number of elements converted.
 template<class T>
 int toString(std::string& dst, const T * src, int size, int stride=1);
@@ -836,6 +840,20 @@ protected:
 
 // Implementation
 //------------------------------------------------------------------------------
+
+template<class T>
+int toString(std::string& dst, const T& src, const char * format){
+	#ifdef WIN32
+		#define TO_STRING_FUNC sprintf_s
+	#else
+		#define TO_STRING_FUNC snprintf
+	#endif
+	char buf[32]; 
+	TO_STRING_FUNC(buf, sizeof(buf), format, src);
+	dst = buf;
+	#undef TO_STRING_FUNC
+	return 1;
+}
 
 template<class T>
 inline int stringifyArray(
