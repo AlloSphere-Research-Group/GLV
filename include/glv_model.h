@@ -654,7 +654,10 @@ public:
 protected:
 	Data mData;
 	
-	virtual bool onAssignData(Data& d, int ind1, int ind2){ return false; }
+	virtual bool onAssignData(Data& d, int ind1, int ind2){
+		data().assign(d, ind1, ind2);
+		return true;
+	}
 };
 
 
@@ -715,6 +718,9 @@ public:
 	typedef Map<std::string, const Model*>	NamedConstModels;
 	typedef Map<std::string, Data>			Snapshot;
 	typedef Map<std::string, Snapshot>		Snapshots;
+
+	/// Prints currently stored snapshots
+	void printSnapshots() const;
 
 	/// Get default file path
 	std::string filePath() const { std::string s=""; defaultFilePath(s); return s; }

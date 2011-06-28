@@ -617,6 +617,25 @@ void ModelManager::remove(const std::string& name){
 }
 
 
+void ModelManager::printSnapshots() const {
+	Snapshots::const_iterator it = snapshots().begin();
+	while(it != snapshots().end()){
+		const Snapshot& s = it->second;
+		
+		printf("%s\n", it->first.c_str());
+		
+		Snapshot::const_iterator it2 = s.begin();
+		
+		while(it2 != s.end()){
+			printf("\t%s = ", it2->first.c_str());
+			it2->second.print();
+			++it2;
+		}
+		
+		++it;
+	}
+}
+
 
 //struct TableWriter{
 //
@@ -887,13 +906,14 @@ int ModelManager::snapshotFromString(const std::string& src){
 			// with same name.
 			NamedModels::const_iterator it = m.find(key);
 			if(it != m.end()){
-				Data& ds = s[key];
+				Data& ds = s[key]; //ds.print();
 				Data temp;
 				const Data& dm = it->second->getData(temp);
 				
 				// Use main state as prototype
 				ds.resize(dm.type(), dm.shape(), dm.maxDim());
 				ds.fromToken(val);
+//				ds.print();
 			}
 		}
 		Snapshot& s;
@@ -957,6 +977,10 @@ bool ModelManager::loadSnapshot(const std::string& name){
 			Snapshot::const_iterator sit = snapshot.find(it->first);
 			if(snapshot.end() != sit){
 				it->second->setData(sit->second);
+//				printf("set state: \"%s\" = ", it->first.c_str());
+//				sit->second.print();
+//				Data temp;
+//				printf("\tstate is now "); it->second->getData(temp).print();
 			}
 			++it;
 		}
