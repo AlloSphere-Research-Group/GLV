@@ -252,7 +252,7 @@ struct TextIterator{
 
 
 
-Font::Font(unsigned size_)
+Font::Font(float size_)
 :	mLetterSpacing(0), mLineSpacing(1), mTabSpaces(4)
 {
 	size(size_);
@@ -302,7 +302,7 @@ Font& Font::letterSpacing(float v){ mLetterSpacing=v; return *this; }
 
 Font& Font::lineSpacing(float v){ mLineSpacing=v; return *this; }
 
-Font& Font::size(unsigned v){
+Font& Font::size(float v){
 	mSize = v;
 	mScaleX = v/Glyph::width();
 	mScaleY = v/Glyph::width();

@@ -9,7 +9,7 @@ namespace glv{
 /// Font
 class Font{
 public:
-	Font(unsigned size=8);
+	Font(float size=8);
 	
 	virtual ~Font();
 
@@ -33,7 +33,7 @@ public:
 	Font& lineSpacing(float v);
 
 	/// Set the font size in pixels
-	Font& size(unsigned size);
+	Font& size(float size);
 	
 	/// Set number of spaces per tab
 	Font& tabSpaces(unsigned spaces);
@@ -53,13 +53,13 @@ public:
 	float scaleX() const { return mScaleX; }
 	
 	/// Get font size, in pixels
-	unsigned size() const { return mSize; }
+	float size() const { return mSize; }
 	
 	/// Get number of spaces per tab
 	unsigned tabSpaces() const { return mTabSpaces; }
 
 private:
-	unsigned mSize;
+	float mSize;
 	float mScaleX, mScaleY;
 	float mLetterSpacing;
 	float mLineSpacing;
