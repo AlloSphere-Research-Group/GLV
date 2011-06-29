@@ -1,6 +1,8 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include <time.h>
+
 #include <stdio.h>
 #include "glv_binding.h"
 #include "glv_core.h"
@@ -13,6 +15,34 @@
 	#include <GL/glut.h>
 #endif
 
+#if 1
+static double time_sec(){ return glutGet(GLUT_ELAPSED_TIME) * 1.e-3; }
+
+#else
+// NOTE: platform independent timing code in case glutGet(GLUT_ELAPSED_TIME)
+//			gives us problems...
+	#if defined(GLV_PLATFORM_WIN)
+		#include <windows.h>
+
+		static double time_sec(){ return timeGetTime() * 1.0e-3; }
+
+		static struct TimeSingleton{
+			TimeSingleton(){ timeBeginPeriod(1); }
+			~TimeSingleton(){ timeEndPeriod(1); }
+		} timeSingleton;
+
+	#else
+		#include <sys/time.h>
+		#include <time.h>
+
+		static double time_sec(){
+			timeval t;
+			gettimeofday(&t, NULL);
+			return (double)t.tv_sec + (((double)t.tv_usec) * 1.0e-6);
+		}
+	#endif
+#endif
+
 #include <map>
 
 namespace glv {
@@ -21,9 +51,9 @@ namespace glv {
 class Window::Impl{
 public:
 	Impl(Window *window, int winID)
-	: mWindow(window)
-	, mID(winID)
-	, mInGameMode(false){
+	:	mWindow(window), mID(winID),
+		mInGameMode(false)
+	{
 		windows()[mID] = this;
 	}
 	
@@ -35,13 +65,21 @@ public:
 
 	void draw(){
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		if(mWindow->shouldDraw()){
-			mWindow->mGLV->drawGLV(mWindow->width(), mWindow->height(), mWindow->fps());
+		Window& win = *mWindow;
+		if(win.shouldDraw()){
+
+			double t = time_sec();
+			win.mFPSActual = 1./(t - mPrevFrameTime);
+			mPrevFrameTime = t;			
+//			printf("%g\n", win.mFPSActual);
+
+			win.mGLV->drawGLV(win.width(), win.height(), 1./win.fpsActual());
 			glutSwapBuffers();
 		}
 	}
 	
 	void scheduleDraw(){
+		mPrevFrameTime = time_sec();
 		scheduleDrawStatic(mInGameMode ? mIDGameMode : mID);
 	}
 	
@@ -52,8 +90,9 @@ public:
 	
 	
 	static Impl * getWindowImpl(int id){
-		if(windows().count(id) > 0){
-			return windows()[id];
+		WindowsMap::iterator it = windows().find(id);
+		if(windows().end() != it){
+			return it->second;
 		}
 		return 0;
 	}
@@ -78,15 +117,17 @@ private:
 
 	// schedule draws of a specific window
 	static void scheduleDrawStatic(int winID){
-		Impl *impl = getWindowImpl(winID);
+		Impl * impl = getWindowImpl(winID);
 		
 		// If there is a valid implementation, then draw and schedule next draw...
 		if(impl){
-			int current = glutGetWindow();
-			if(winID != current) glutSetWindow(winID);
+			Window& win = *(impl->mWindow);
+
+			const int currentID = glutGetWindow();
+			if(winID != currentID) glutSetWindow(winID);
 			impl->draw();
-			glutTimerFunc((unsigned int)(1000.0/getWindow()->fps()), scheduleDrawStatic, winID);
-			if(current) glutSetWindow(current);
+			glutTimerFunc((unsigned int)(1000.0/win.fps()), scheduleDrawStatic, winID);
+			if(currentID) glutSetWindow(currentID);
 		}
 	}
 
@@ -100,6 +141,7 @@ private:
 	Window *mWindow;
 	int mID;
 	int mIDGameMode;
+	double mPrevFrameTime;
 	bool mInGameMode;
 	bool mShowing;
     

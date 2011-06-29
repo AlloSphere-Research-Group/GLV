@@ -55,6 +55,7 @@ public:
 	Dimensions dimensions() const;						///< Returns dimensions of window
 	int enabled(int dispMode) const { return mDispMode & dispMode; } ///< Get a display mode status
 	double fps() const { return mFPS; }					///< Returns requested frames/sec
+	double fpsActual() const { return mFPSActual; }		///< Returns actual frames/sec
 	bool fullScreen() const { return mFullScreen; }		///< Returns full screen enabled
 	bool gameMode() const { return mGameMode; }			///< Returns game mode enabled
 	const GLV * glv() const { return mGLV; }			///< Returns pointer to top-level GLV view
@@ -90,7 +91,7 @@ protected:
 
 	GLV * mGLV;
 	Dimensions mWinDims;	// backup for when going fullscreen
-	double mFPS;
+	double mFPS, mFPSActual;
 	std::string mTitle;
 	int mDispMode;			// display mode bit field
 	bool mFullScreen;
