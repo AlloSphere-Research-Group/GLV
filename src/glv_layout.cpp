@@ -355,4 +355,94 @@ void Table::onDraw(GLV& g){
 }
 
 
+
+Scroll::Scroll(const Rect& r, float scrollBarWidth)
+:	View(r),
+	mSliderX(Rect(-scrollBarWidth, scrollBarWidth)), 
+	mSliderY(Rect( scrollBarWidth,-scrollBarWidth)),
+	mSliderXY(Rect(-scrollBarWidth,-scrollBarWidth, scrollBarWidth, scrollBarWidth)),
+	mMode(HORIZONTAL | VERTICAL)
+{
+	enable(CropChildren);
+	mSliderX.anchor(0,1).stretch(1,0).pos(Place::BL);
+	mSliderY.anchor(1,0).stretch(0,1).pos(Place::TR);
+	mSliderXY.anchor(1,1).pos(Place::BR);
+	mSliderX.disable(FocusHighlight);
+	mSliderY.disable(FocusHighlight);
+	mSliderXY.disable(FocusHighlight);
+	
+	mSliderXY.knobSize(0);
+	mSliderXY.knobSymbol(draw::circle<8>);
+	mSliderXY.enable(Momentary);
+	
+	(*this) << mSliderX << mSliderY;// << mSliderXY;
+}
+
+
+void Scroll::onDraw(GLV& g){
+	using namespace glv::draw;
+	mSliderX.bringToFront();	// do not change order of these!
+	mSliderY.bringToFront();
+	mSliderXY.bringToFront();
+
+	// hide overlayed Views by default
+	mSliderX.disable(Visible);
+	mSliderY.disable(Visible);
+	mSliderXY.disable(Visible);
+
+	if(child == &mSliderX) return;
+
+	Rect r = child->rect();
+
+//		Rect r(0,0,0,0);
+//		
+//		{
+//			View * c = child;
+//			while(c){
+//				if(c != &mSliderX && c != &mSliderY){
+//					r.unionOf(*c, r);
+//				}
+//				c = c->sibling;
+//			}
+//		}
+////		r.print();
+
+	float xpos = mSliderX.getValue(0);
+	float ypos = mSliderY.getValue(0);
+
+	child->pos(-xpos, -ypos);
+	mSliderX.interval(0, r.width());
+	mSliderY.interval(r.height(),0);
+
+	if(r.width() > width()){
+		if(mMode & HORIZONTAL){
+			mSliderX.enable(Visible);
+			mSliderXY.enable(Visible);
+		}
+		float sr = width();
+		mSliderX.endpoints(xpos, xpos+sr);
+		mSliderX.jump(sr/(mSliderX.max()-mSliderX.min()));
+	}
+
+	if(r.height() > height()){
+		if(mMode & VERTICAL){
+			mSliderY.enable(Visible);
+			mSliderXY.enable(Visible);
+		}
+		float sr = height();
+		mSliderY.endpoints(ypos+sr, ypos);
+		mSliderY.jump(sr/(mSliderY.max()-mSliderY.min()));
+	}
+	
+	if(mMode & ALWAYS){
+		if(mMode & HORIZONTAL) mSliderX.enable(Visible);
+		if(mMode & VERTICAL  ) mSliderY.enable(Visible);
+	}
+}
+
+bool Scroll::onEvent(Event::t e, GLV& g){
+	return true;
+}
+
+
 } // glv::

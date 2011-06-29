@@ -5,7 +5,7 @@
 	See COPYRIGHT file for authors and license information */
 
 #include "glv_core.h"
-
+#include "glv_sliders.h"
 
 namespace glv{
 
@@ -260,6 +260,39 @@ protected:
 		return r;
 	}
 };
+
+
+
+/// Scrollable view of a single child view
+class Scroll : public View{
+public:
+
+	/// Scrollbar mode flags; default is HORIZONTAL | VERTICAL
+	enum Mode{
+		HORIZONTAL	= 1<<0,		/**< Show horizontal scrollbar */
+		VERTICAL	= 1<<1,		/**< Show vertical scrollbar */
+		ALWAYS		= 1<<2,		/**< Always show activated scrollbars */
+	};
+
+
+	Scroll(const Rect& r=Rect(200), float scrollBarWidth=12);
+
+	Mode mode() const { return mMode; }
+	Scroll& mode(Mode v){ mMode=v; return *this; }
+
+	virtual const char * className() const { return "Scroll"; }
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
+
+protected:
+	SliderRange mSliderX, mSliderY;
+	Slider2D mSliderXY;
+	Mode mMode;
+};
+
+inline Scroll::Mode operator| (const Scroll::Mode& a, const Scroll::Mode& b){
+	return static_cast<Scroll::Mode>(+a|+b);
+}
 
 
 
