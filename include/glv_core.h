@@ -479,7 +479,7 @@ public:
 	Rect unionOfChildren() const;				///< Returns rectangular union of all children
 	std::string valueString() const;			/// Returns model value(s) as string
 	int visible() const;						///< Returns whether View visibility flag is set
-
+	Rect visibleRegion() const;					///< Returns visible region in relative coordinates
 
 
 	View& anchor(space_t mx, space_t my);		///< Set translation factors relative to parent resize amount

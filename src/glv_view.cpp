@@ -725,4 +725,39 @@ Rect View::unionOfChildren() const{
 	}	
 }
 
+
+Rect View::visibleRegion() const {
+
+	const View * v = this;
+	Rect r(0,0,w,h);
+	space_t lr=0, tr=0; // relative coords as we go towards root
+	
+	while(true){
+		if(v->enabled(Visible)){
+
+			lr -= v->left();
+			tr -= v->top();
+
+			if(v->parent){
+
+				v = v->parent;
+				
+				if(v->enabled(CropChildren) || !v->parent){
+					r.intersection(Rect(lr, tr, v->w, v->h), r);
+					if(r.w <= 0 || r.h <= 0){
+						return Rect(0);
+					}
+				}
+			}
+			else{
+				break;
+			}
+		}
+		else{
+			return Rect(0);
+		}
+	}
+	return r;
+}
+
 } // glv::
