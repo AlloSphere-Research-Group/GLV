@@ -308,6 +308,7 @@ template<int N, int A>
 void polygonCut	(float l, float t, float r, float b);	///< Regular polygon with N edges at angle A cut through center
 void plus		(float l, float t, float r, float b);	///< Plus
 void magnifier	(float l, float t, float r, float b);	///< Magnifying glass
+void question	(float l, float t, float r, float b);	///< Question mark
 void rectangle	(float l, float t, float r, float b);	///< Solid rectangle
 template<int LT, int LB, int RB, int RT>
 void rectTrunc	(float l, float t, float r, float b);	///< Rectangle truncated at corners
@@ -580,6 +581,25 @@ void polygonCut(float l, float t, float r, float b){
 	paint(LineStrip, pts, GLV_ARRAY_SIZE(pts));
 }
 
+inline void question(float l, float t, float r, float b){
+	float w=r-l, h=b-t;
+	float pts[] = {
+		l+w*0.1f, t+h*0.2f,
+		l+w*0.3f, t+h*0.0f,
+		l+w*0.7f, t+h*0.0f,
+		l+w*0.9f, t+h*0.2f,
+//		l+w*0.8f, t+h*0.5f,
+		l+w*0.9f, t+h*0.4f,
+		l+w*0.5f, t+h*0.6f,
+		l+w*0.5f, t+h*0.8f,
+		l+w*0.6f, t+h*0.9f,
+		l+w*0.5f, t+h*1.0f,
+		l+w*0.4f, t+h*0.9f,
+		l+w*0.5f, t+h*0.8f		
+	};
+	paint(LineStrip, (Point2*)pts, GLV_ARRAY_SIZE(pts)/2);	
+}
+
 inline void rectangle(float l, float t, float r, float b){ shape(TriangleStrip, l,t, l,b, r,t, r,b); }
 
 template<int LT, int LB, int RB, int RT>
@@ -719,18 +739,22 @@ inline void clear(int mask){ glClear(mask); }
 inline void clearColor(float r, float g, float b, float a){ glClearColor(r,g,b,a); }
 inline void color(float r, float g, float b, float a){ glColor4f(r,g,b,a); }
 inline void identity(){ glLoadIdentity(); }
-inline void lineStipple(char factor, short pattern){ 
+inline void lineStipple(char factor, short pattern){
 #ifndef GLV_OPENGL_ES1
 	glLineStipple(factor, pattern);
 #endif
 }
+
 #ifdef GLV_OPENGL_ES1
 inline void lineStippling(bool v){}
 #else
 inline void lineStippling(bool v){
-	v ? glEnable(GL_LINE_STIPPLE) : glDisable(GL_LINE_STIPPLE);
+	if(v) enable(GL_LINE_STIPPLE);
+	else  disable(GL_LINE_STIPPLE);
+//	(v ? glEnable : glDisable)(GL_LINE_STIPPLE);
 }
 #endif
+
 inline void lineWidth(float v){ glLineWidth(v); UserCommands::get()->lineWidth(v); }
 inline void matrixMode(int mode){ glMatrixMode(mode); }
 inline void ortho(float l, float r, float b, float t, float n, float f){ 
