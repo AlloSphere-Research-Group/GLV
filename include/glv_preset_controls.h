@@ -31,12 +31,18 @@ private:
 
 
 
+
 class PresetControl : public Box {
 public:
+	PresetControl();
 	PresetControl(ModelManager& m);
 
-	void loadFile();
+	virtual ~PresetControl();
+
+	bool loadFile();
 	PresetControl& modelManager(ModelManager& v){ mMM = &v; return *this; }
+
+	SearchBox& searchBox(){ return mSearchBox; }
 
 	virtual const char * className() const { return "PresetControl"; }
 	virtual void onDraw(GLV& g);
@@ -44,33 +50,44 @@ public:
 
 protected:
 
-	struct PanelButtonClick : public EventHandler{
-		PanelButtonClick(PresetControl& p): pc(p){}
+//	struct PanelButtonClick : public EventHandler{
+//		PanelButtonClick(PresetControl& p): pc(p){}
+//
+//		virtual bool onEvent(View& v, GLV& g);
+//
+//		PresetControl& pc;
+//	} mPanelButtonClick;
 
-		virtual bool onEvent(View& v, GLV& g);
 
+//	struct SearchBox : public TextView{
+//		SearchBox(PresetControl& p): pc(p), mSearchList(*this){}
+//
+//		virtual ~SearchBox(){ mSearchList.remove(); }
+//
+//		virtual bool onEvent(Event::t e, GLV& g);
+//
+//		PresetControl& pc;
+//
+//		struct SearchList : public ListView{
+//			SearchList(SearchBox& v): sb(v){}
+//			virtual bool onEvent(Event::t e, GLV& g);
+//			SearchBox& sb;
+//		} mSearchList;
+//	} mSearchBox;
+
+	struct PresetSearchBox : public SearchBox{
+		PresetSearchBox(PresetControl& p): pc(p){}
+		virtual bool onEvent(Event::t e, GLV& g);
 		PresetControl& pc;
-	} mPanelButtonClick;
-
-	struct TextKeyDown : public EventHandler{
-		TextKeyDown(PresetControl& p): pc(p){}
-
-		virtual bool onEvent(View& v, GLV& g);
-
-		PresetControl& pc;
-	} mTextKeyDown;
+	} mSearchBox;
 
 	ModelManager * mMM;
-
-	TextView mTextEntry;
 	Button mStatus, mBtnPanel;
-	PresetView mPanel;
-
-	bool mOverwrite;
+//	PresetView mPanel;
+	bool mPrompt;
 
 private:
-	// ensure that model manager is always set to valid object
-	PresetControl(): mPanelButtonClick(*this), mTextKeyDown(*this){}
+	void init();
 };
 
 } // glv::
