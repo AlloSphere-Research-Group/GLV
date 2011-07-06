@@ -274,6 +274,23 @@ PlotFunction1D::PlotFunction1D(const Color& c, float stroke, int prim, PathStyle
 //	add(defaultVertexMap());
 }
 
+
+template<class R>
+struct getFX{
+	getFX(float& x, float& y, const Data& d, const Indexer& i, int offset){
+		x = i[0] + offset;
+		y = d.elem<R>(0, i[0]);
+	}
+};
+
+template<class R>
+struct getFY{
+	getFY(float& x, float& y, const Data& d, const Indexer& i, int offset){
+		x = d.elem<R>(0, 0, i[1]);
+		y = i[1] + offset;
+	}
+};
+
 //void PlotFunction1D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 //	Indexer j(i.size());
@@ -297,52 +314,46 @@ void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	// N1 == 1,	domain along y, f(y) = ...
 	// N2 == 1,	domain along x, f(x) = ...
 
-	struct getFX{
-		getFX(double& x, double& y, const Data& d, const Indexer& i, int offset){
-			x = i[0] + offset;
-			y = d.at<double>(0, i[0]);
-		}
-	};
-
-	struct getFY{
-		getFY(double& x, double& y, const Data& d, const Indexer& i, int offset){
-			x = d.at<double>(0, 0, i[1]);
-			y = i[1] + offset;
-		}
-	};
-
-	switch(mPathStyle){
-		case PlotFunction1D::DIRECT:
-			if(1==N2){
-				while(i()){
-					double x,y; getFX(x,y, d,i, mDomainOffset);
-					g.addVertex(x, y);
-				}
-			}
-			else if(1==N1){
-				while(i()){
-					double x,y; getFY(x,y, d,i, mDomainOffset);
-					g.addVertex(x, y);
-				}	
-			}
-			break;
-		case PlotFunction1D::ZIGZAG:
-			if(1==N2){
-				while(i()){
-					double x,y; getFX(x,y, d,i, mDomainOffset);
-					g.addVertex(x, 0);
-					g.addVertex(x, y);
-				}
-			}
-			else if(1==N1){
-				while(i()){
-					double x,y; getFY(x,y, d,i, mDomainOffset);
-					g.addVertex(0, y);
-					g.addVertex(x, y);
-				}	
-			}			
-			break;
-		default:;
+	#define PLOT(Type)\
+	switch(mPathStyle){\
+		case PlotFunction1D::DIRECT:\
+			if(1==N2){\
+				while(i()){\
+					float x,y; getFX<Type>(x,y, d,i, mDomainOffset);\
+					g.addVertex(x, y);\
+				}\
+			}\
+			else if(1==N1){\
+				while(i()){\
+					float x,y; getFY<Type>(x,y, d,i, mDomainOffset);\
+					g.addVertex(x, y);\
+				}\
+			}\
+			break;\
+		case PlotFunction1D::ZIGZAG:\
+			if(1==N2){\
+				while(i()){\
+					float x,y; getFX<Type>(x,y, d,i, mDomainOffset);\
+					g.addVertex(x, 0);\
+					g.addVertex(x, y);\
+				}\
+			}\
+			else if(1==N1){\
+				while(i()){\
+					float x,y; getFY<Type>(x,y, d,i, mDomainOffset);\
+					g.addVertex(0, y);\
+					g.addVertex(x, y);\
+				}\
+			}\
+			break;\
+		default:;\
+	}\
+	
+	switch(d.type()){
+	case Data::FLOAT:	PLOT(float);	break;
+	case Data::DOUBLE:	PLOT(double);	break;
+	case Data::INT:		PLOT(int);		break;
+	default:;
 	}
 }
 
@@ -371,8 +382,8 @@ PlotFunction2D::PlotFunction2D(const Color& c)
 void PlotFunction2D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	if(d.size(0) < 2) return;
 	while(i()){
-		double x = d.at<double>(0, i[0], i[1]);
-		double y = d.at<double>(1, i[0], i[1]);
+		float x = d.at<float>(0, i[0], i[1]);
+		float y = d.at<float>(1, i[0], i[1]);
 		g.addVertex(x, y);
 	}
 }
