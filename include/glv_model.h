@@ -277,9 +277,21 @@ public:
 	/// Get element at 4D index, performing type conversion if necessary
 	template <class T> const T at(int i1, int i2, int i3, int i4) const;
 
-	/// Get element at 1D index using raw pointer casting
+	/// Get reference to element at 1D index using raw pointer casting
 	template <class T>
 	const T& elem(int i) const { return elems<T>()[i*stride()]; }
+
+	/// Get reference to element at 2D index using raw pointer casting
+	template <class T>
+	const T& elem(int i1, int i2) const { return elems<T>()[indexFlat(i1,i2)*stride()]; }
+
+	/// Get reference to element at 3D index using raw pointer casting
+	template <class T>
+	const T& elem(int i1, int i2, int i3) const { return elems<T>()[indexFlat(i1,i2,i3)*stride()]; }
+
+	/// Get reference to element at 4D index using raw pointer casting
+	template <class T>
+	const T& elem(int i1, int i2, int i3, int i4) const { return elems<T>()[indexFlat(i1,i2,i3,i4)*stride()]; }
 
 	/// Returns whether there is valid data that can be accessed
 	bool hasData() const { return mData!=0; }
@@ -473,6 +485,9 @@ public:
 //	Data& insert(const T* src, int count, int idx, int stride){
 //		return *this;
 //	}
+
+	/// Assign contents from mixture
+	void mix(const Data& d1, const Data& d2, double c1, double c2);
 
 	/// Resize array allocating new memory if necessary
 	int resize(const int * sizes, int numDims){
@@ -734,6 +749,7 @@ public:
 	
 	/// Get snapshots
 	const Snapshots& snapshots() const { return mSnapshots; }
+	Snapshots& snapshots(){ return mSnapshots; }
 
 	/// Save all snapshots to a file
 
@@ -812,7 +828,11 @@ public:
 	///
 	bool loadSnapshot(const std::string& name);
 
-	bool loadSnapshot(float frac, const std::string& name1, const std::string& name2);
+	/// Load linear mixture of two snapshots
+	
+	/// \returns whether snapshot mixture was loaded successfully
+	///
+	bool loadSnapshot(const std::string& name1, const std::string& name2, double c1, double c2);
 
 protected:
 	std::string mName;				// name identifier

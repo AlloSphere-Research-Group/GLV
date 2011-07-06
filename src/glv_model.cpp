@@ -985,8 +985,73 @@ bool ModelManager::loadSnapshot(const std::string& name){
 	return false;
 }
 
-bool ModelManager::loadSnapshot(float frac, const std::string& name1, const std::string& name2){
-	return false;
+void Data::mix(const Data& d1, const Data& d2, double c1, double c2){
+	
+	int N = size();
+	
+	if(d1.size() < N) N = d1.size();
+	if(d2.size() < N) N = d2.size();
+
+	if(isNumerical() && d1.isNumerical() && d2.isNumerical()){
+		for(int i=0; i<N; ++i){
+			double v1 = d1.at<double>(i);
+			double v2 = d2.at<double>(i);
+			assign(v1*c1 + v2*c2, i);
+		}
+	}
+	else{	// strings, yuck...
+
+	}
+}
+
+bool ModelManager::loadSnapshot(const std::string& name1, const std::string& name2, double c1, double c2){
+
+	Snapshots::const_iterator it1 = mSnapshots.find(name1);
+	if(mSnapshots.end() == it1) return false;
+	
+	Snapshots::const_iterator it2 = mSnapshots.find(name2);
+	if(mSnapshots.end() == it2) return false;
+
+	const Snapshot& ss1 = it1->second;
+	const Snapshot& ss2 = it2->second;
+
+	{
+		Snapshot::const_iterator it1 = ss1.begin();
+		Snapshot::const_iterator it2 = ss2.begin();
+		
+		while(ss1.end() != it1 && ss2.end() != it2){
+			
+			const std::string& id1 = it1->first;
+			const std::string& id2 = it2->first;
+
+			int cmp = id1.compare(id2);
+			
+			if(0 == cmp){		// ids match, attempt interpolation
+				
+				NamedModels::const_iterator itState = mState.find(id1);
+				if(mState.end() != itState){	// found model with this id, lock and load!
+					const Data& data1 = it1->second;
+					const Data& data2 = it2->second;
+					
+					Data temp = data1;
+					temp.clone();
+					temp.mix(data1, data2, c1, c2);
+					itState->second->setData(temp);
+				}
+				
+				++it1;
+				++it2;
+			}
+			else if(cmp < 0){	// first id less than second id
+				++it1;			// let first iterator catch up with second
+			}
+			else{				// first id greater than second id
+				++it2;			// let second iterator catch up with first
+			}
+		}
+	}
+
+	return true;
 }
 
 } // glv::
