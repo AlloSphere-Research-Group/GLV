@@ -176,7 +176,7 @@ Widget& Widget::select(int ix, int iy){
 	clipIndices(ix,iy);
 	int iold = selected();
 	int inew = data().indexFlat(ix,iy);
-	if(iold != inew){
+	if(iold != inew && data().size()){
 		onCellChange(iold, inew);
 		sx=ix; sy=iy;
 		mPrevVal = data().at<double>(selected());
