@@ -42,7 +42,7 @@ int main(){
 
 	Label l;
 	TextView tv;
-	ListSelect ls;
+	DropDown dd;
 	Button b;
 	Buttons bs(Rect(), 2, 2);
 	Slider s;
@@ -58,7 +58,7 @@ int main(){
 
 	l.setValue("Hello Label!").name("l");
 	tv.setValue("Hello TextView!").name("tv");
-	ls.add("apple").add("orange").name("ls");
+	dd.addItem("apple").addItem("orange").name("dd");
 	b.setValue(true).name("b");
 	bs.setValue(true, 0,1).name("bs");
 	s.setValue(0.5).name("s");
@@ -67,7 +67,7 @@ int main(){
 	sr.centerRange(0.5, 0.1).name("sr");
 	nd.setValue(-0.5494).name("nd");
 
-	View * views[] = {&l, &tv, &ls, &b, &bs, &s, &ss, &s2D, &sr, &nd};
+	View * views[] = {&l, &tv, &dd, &b, &bs, &s, &ss, &s2D, &sr, &nd};
 	for(unsigned i=0; i<sizeof(views)/sizeof(View *); ++i){
 		gui << views[i];
 //		const Data& d = views[i]->model();

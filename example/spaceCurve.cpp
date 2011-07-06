@@ -25,7 +25,7 @@ struct Scene : View3D{
 		
 		tz.extent(gui.width() - 2*gui.padX(), 20);
 
-		prim.add("Points").add("LineLoop").add("Triangles").add("TriangleStrip");
+		prim.addItem("Points").addItem("LineLoop").addItem("Triangles").addItem("TriangleStrip");
 
 		gui << tz << prim;
 		gui.arrange();
@@ -59,7 +59,7 @@ struct Scene : View3D{
 		stroke(2);
 		
 		int prims[] = {Points, LineLoop, Triangles, TriangleStrip};
-		paint(prims[prim.selected()], vertices, colors, N);
+		paint(prims[prim.selectedItem()], vertices, colors, N);
 		//paint(draw::Triangles, vertices, colors, N);
 	}
 	
@@ -70,7 +70,7 @@ struct Scene : View3D{
 	Table gui;
 	NumberDialer freqX, freqY, freqZ;
 	Slider tz;
-	ListSelect prim;
+	DropDown prim;
 };
 
 Scene scene;
