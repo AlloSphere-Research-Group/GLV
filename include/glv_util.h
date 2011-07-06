@@ -184,6 +184,8 @@ public:
 
 	/// Returns number of elements
 	int size() const { return mSize; }
+	
+	const T& last() const { return mElems[size()-1]; }
 
 	/// Assign value to elements
 
