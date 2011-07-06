@@ -109,7 +109,8 @@ public:
 	TRect<T> extent() const;
 	
 	/// Calculates the intersection of the two Rects.
-	void intersection(const TRect<T>& check, TRect<T>& intersection) const;
+	void intersection(const TRect<T>& with, TRect<T>& intersection) const;
+	TRect intersection(const TRect<T>& with) const { TRect r; intersection(with,r); return r; }
 	
 	bool intersects(const TRect<T>& rect) const;///< Returns whether the two Rects intersect.
 	bool isVertical() const;					///< Returns true if h > w, false otherwise.
