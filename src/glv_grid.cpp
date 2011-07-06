@@ -153,6 +153,7 @@ bool Grid::onEvent(Event::t e, GLV& g){
 					case 'g': mShowGrid ^= 1; break;
 					case 'b': mShowAxes ^= 1; break;
 					case 'n': mShowNumbering ^= 1; break;
+//					case 'p': mPolarGrid ^= 1; break;
 					default: return true;
 				}
 				return false;
