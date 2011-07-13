@@ -12,7 +12,7 @@ namespace glv {
 class ColorSliders : public View{
 public:
 
-	ColorSliders(const Rect& r, bool isHSV=true, bool controlsAlpha=false)
+	ColorSliders(const Rect& r=Rect(100, 10*3), bool isHSV=true, bool controlsAlpha=false)
 	: View(r), mSliderStyle(false), mIsHSV(isHSV), mControlsAlpha(controlsAlpha)
 	{
 		int num = mControlsAlpha ? 4 : 3;
@@ -42,10 +42,10 @@ public:
 		if(isHSV()){
 			HSV h = mColor;
 			const float v[4] = {h.h, h.s, h.v, mColor.a};
-			md.assign(v, 4);
+			md.assignFromArray(v, 4);
 		}
 		else{
-			md.assign(mColor.components, 4);
+			md.assignFromArray(mColor.components, 4);
 		}		
 		
 		return data();
