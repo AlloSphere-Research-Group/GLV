@@ -55,6 +55,9 @@ public:
 
 	const TRect& operator= (const TRect& r);
 
+	/// Get a Rect with dimensions offset from arguments
+	TRect getOffset(T dl, T dt, T dw=0, T dh=0) const { return TRect(l+dl,t+dt,w+dw,h+dh); }
+
 	void copyUnder(const TRect<T>& from, T by=0);
 	void extent(T v);				///< Set extent to be square.
 	void extent(T w, T h);			///< Set extent.
