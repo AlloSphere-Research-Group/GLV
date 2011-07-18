@@ -70,10 +70,10 @@ public:
 		mInterval.endpoints(min,max); return *this;
 	}
 
-	/// Set element padding amount
+	/// Set padding around elements
 	Widget& padding(space_t v){ for(int i=0; i<DIMS; ++i){ mPadding[i]=v; } return *this; }
 
-	/// Set element padding amount
+	/// Set padding around elements
 	Widget& padding(space_t v, int dim){ mPadding[dim]=v; return *this; }
 
 	/// Select element at 1D index
@@ -126,6 +126,7 @@ protected:
 	float dx(int dim=0) const { return w/data().size(dim); } // width, in pixels, per element
 	float dy(int dim=1) const { return h/data().size(dim); } // height, in pixels, per element
 	int index(int ix, int iy) const { return ix + iy*sizeX(); }
+	bool tallElems() const { return dy() > dx(); }
 
 	static void clip(int& i, int max){ i<0 ? i=0 : i>=max ? i=max-1 : 0; }
 	void clipIndices(int& x, int& y){ clip(x, sizeX()); clip(y, sizeY()); }
