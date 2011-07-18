@@ -43,7 +43,7 @@ void Sliders::onDraw(GLV& g){
 //		}
 
 
-	if(isVertical()){
+	if(vertOri()){
 		for(int i=0; i<sizeX(); ++i){
 		
 			float y=paddingY()*0.5f;
@@ -108,7 +108,7 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 			}
 			if(g.mouse().right() || g.mouse().left()) {
 				// accumulate differences
-				mAcc += diam()*(isVertical() ? -g.mouse().dy()/h*sizeY() : g.mouse().dx()/w*sizeX()) * g.mouse().sens();
+				mAcc += diam()*(vertOri() ? -g.mouse().dy()/h*sizeY() : g.mouse().dx()/w*sizeX()) * g.mouse().sens();
 				setValue(mAcc);
 			}
 			return false;
@@ -139,12 +139,12 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 void Sliders::selectSlider(GLV& g, bool click){
 
 	const Mouse& m = g.mouse();
-	
+
 	int oldIdx = selected();
 	selectFromMousePos(g);
 	int idx = selected();
 	
-	float val = isVertical() ? (1-(m.yRel()/h*sizeY() - selectedY())) : (m.xRel()/w*sizeX() - selectedX());
+	float val = vertOri() ? (1-(m.yRel()/h*sizeY() - selectedY())) : (m.xRel()/w*sizeX() - selectedX());
 	val = toInterval(val);
 	
 	// if left-button, set value

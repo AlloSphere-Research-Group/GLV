@@ -157,6 +157,13 @@ protected:
 class Sliders: public Widget{
 public:
 
+	enum Orientation{
+		HORIZONTAL = 0,		/**< Display horizontally */
+		VERTICAL,			/**< Display vertically */
+		AUTO				/**< Orient in direction of largest dimension */
+	};
+
+
 	/// @param[in] r			geometry
 	/// @param[in] nx			number along x
 	/// @param[in] ny			number along y
@@ -164,6 +171,13 @@ public:
 	Sliders(const Rect& r=Rect(100, 20), int nx=1, int ny=1, bool dragSelect=false);
 
 	virtual ~Sliders(){}
+
+	/// Get orientation
+	Orientation orientation() const { return mOri; }
+	
+	/// Set orientation
+	Sliders& orientation(Orientation v){ mOri=v; return *this; }
+
 
 	/// Get value at selected index
 	double getValue() const { return Widget::getValue<double>(); }
@@ -179,10 +193,11 @@ public:
 	virtual const char * className() const { return "Sliders"; }
 	
 protected:
+	Orientation mOri;
 	double mAcc;
 
 	void selectSlider(GLV& g, bool click);
-	bool isVertical() const { return dy() > dx(); }
+	bool vertOri() const { return VERTICAL==mOri || (AUTO==mOri && tallElems()); }
 };
 
 
