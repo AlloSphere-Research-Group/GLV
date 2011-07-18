@@ -23,7 +23,7 @@ public:
 	virtual void getBounds(float& w, float& h, const char * text) const;
 
 	/// Render text string
-	virtual void render(const char * text, float x=0, float y=0, float z=0);
+	virtual void render(const char * text, float x=0, float y=0, float z=0) const;
 
 
 	/// Set spacing, in ems, between the left and right edges of successive letters

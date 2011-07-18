@@ -260,7 +260,7 @@ Font::Font(float size_)
 
 Font::~Font(){}
 
-void Font::render(const char * v, float x, float y, float z){
+void Font::render(const char * v, float x, float y, float z) const{
 	using namespace glv::draw;
 	draw::push(ModelView);
 //	identity();
@@ -295,7 +295,7 @@ void Font::render(const char * v, float x, float y, float z){
 	renderText.run();
 
 //	glv::text(v, 0,0, lineSpacing(), tabSpaces(), mScaleY);
-	draw::pop(ModelView);
+	draw::pop(); // ModelView
 }
 
 Font& Font::letterSpacing(float v){ mLetterSpacing=v; return *this; }
