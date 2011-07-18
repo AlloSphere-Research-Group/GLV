@@ -153,8 +153,8 @@ void enter2D(float w, float h) {
 	viewport(0, 0, w, h);
 	matrixMode(Projection);
 	identity();
-
 	ortho(0, w, h, 0);		// flat 2D world dimension L,R,B,T
+
 	matrixMode(ModelView);
 	identity();
 }
