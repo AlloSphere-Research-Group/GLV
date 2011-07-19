@@ -275,6 +275,7 @@ bool PresetControl::PresetSearchBox::onEvent(Event::t e, GLV& g){
 				return false;
 			}
 			break;
+		case Key::Backspace:
 		case Key::Delete:
 			if(k.ctrl()){
 				if(!empty()){
