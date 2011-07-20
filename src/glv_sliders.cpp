@@ -7,8 +7,8 @@
 namespace glv{
 
 Sliders::Sliders(const Rect& r, int nx, int ny, bool dragSelect)
-:	Widget(r, 1, false, false, false),
-	mAcc(0)
+:	Widget(r, 0.5, false, false, false),
+	mOri(AUTO), mAcc(0)
 {
 	data().resize(Data::DOUBLE, nx,ny);
 	property(SelectOnDrag, dragSelect);
@@ -18,7 +18,7 @@ void Sliders::onDraw(GLV& g){
 	Widget::onDraw(g);
 
 	using namespace glv::draw;
-	float x=paddingX()*0.5f, xd=dx(), yd=dy();
+	float x=paddingX(), xd=dx(), yd=dy();
 
 //	TODO: dial drawing code...
 //		for(int i=0; i<sizeX(); ++i){
@@ -42,11 +42,12 @@ void Sliders::onDraw(GLV& g){
 //			x += xd;	
 //		}
 
+	// TODO: fix padding in orientation direction
 
 	if(vertOri()){
 		for(int i=0; i<sizeX(); ++i){
 		
-			float y=paddingY()*0.5f;
+			float y=paddingY();
 		
 			for(int j=0; j<sizeY(); ++j){
 				int ind = index(i,j);
@@ -54,15 +55,16 @@ void Sliders::onDraw(GLV& g){
 				else color(colors().fore, colors().fore.a*0.5f);
 
 				float v01 = to01(getValue(ind));
+				//float y0 = to01(0)*(yd - paddingY()*2);
 				float y0 = to01(0)*yd;
 				//rect(x + x0, y, f*xd+x, y+yd-padding());
 				
-				rectangle(x, y+yd-v01*yd, x+xd-paddingX(), y+yd-y0);
+				rectangle(x, y + (yd-v01*yd), x+xd-paddingX()*2, y + (yd-y0));
 
 				// if zero line showing
 				if(max()>0 && min()<0){
 					color(colors().border);
-					float linePos = draw::pix(y+yd-y0);
+					float linePos = draw::pixc(y+yd-y0);
 					shape(draw::Lines, x, linePos, x+xd, linePos);
 				}
 				y += yd;
@@ -73,7 +75,7 @@ void Sliders::onDraw(GLV& g){
 	else{
 		for(int i=0; i<sizeX(); ++i){
 		
-			float y=paddingY()*0.5f;
+			float y=paddingY();
 		
 			for(int j=0; j<sizeY(); ++j){
 				int ind = index(i,j);
@@ -82,12 +84,12 @@ void Sliders::onDraw(GLV& g){
 
 				float v01 = to01(getValue(ind));
 				float x0 = to01(0)*xd;
-				rectangle(x + x0, y, v01*xd+x, y+yd-paddingY());
+				rectangle(x + x0, y, v01*xd+x, y+yd-paddingY()*2);
 
 				// if zero line showing
 				if(max()>0 && min()<0){
 					color(colors().border);
-					float linePos = draw::pix(x+x0);
+					float linePos = draw::pixc(x+x0);
 					shape(draw::Lines, linePos, y, linePos, y+yd);
 				}
 				y += yd;
@@ -139,7 +141,7 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 void Sliders::selectSlider(GLV& g, bool click){
 
 	const Mouse& m = g.mouse();
-
+	
 	int oldIdx = selected();
 	selectFromMousePos(g);
 	int idx = selected();
@@ -235,7 +237,8 @@ void Slider2D::onDraw(GLV& g){
 	float posY = sz2 + (h - sz) * (1.f - to01(getValue(1)));
 	
 	color(colors().fore);
-	mKnobSym(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
+//	mKnobSym(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
+	mKnobSym((posX - sz2), (posY - sz2), (posX + sz2), (posY + sz2));
 
 	//drawKnob(*this);
 	//drawQuad(*this);

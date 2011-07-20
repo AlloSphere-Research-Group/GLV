@@ -76,7 +76,7 @@ void Label::onDraw(GLV& g){
 	color(colors().text);
 	if(mVertical){ translate(0,h); rotate(0,0,-90); }
 	//font().render(value().c_str());
-	font().render(data().toString().c_str());
+	font().render(data().toString().c_str(), 0.5f, 0.5f);
 	//scale(mSize, mSize);
 	//text(value().c_str());
 }
@@ -141,7 +141,7 @@ NumberDialers::NumberDialers(int numInt, int numFrac, double max, double min, in
 } 
 
 NumberDialers::NumberDialers(const NumberDialers& v)
-:	Widget(v,6, false,false,true), CTOR_LIST
+:	Widget(v,3, false,false,true), CTOR_LIST
 {
 	CTOR_BODY;
 	data() = v.data();
@@ -156,8 +156,8 @@ NumberDialers::NumberDialers(const NumberDialers& v)
 
 void NumberDialers::fitExtent(){
 	extent(
-		sizeX() * (paddingX()*2 + (numDigits() * font().advance('M'))),
-		sizeY() * (paddingY()*2 + font().cap())
+		draw::pix(sizeX() * (paddingX()*2 + (numDigits() * font().advance('M'))) + 1),
+		draw::pix(sizeY() * (paddingY()*2 + font().cap()) + 1)
 	);
 //	print();
 }
@@ -206,7 +206,7 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 	// draw box at position (only if focused)
 	if(enabled(Focused)){
 	
-		float bx = dxCell*selectedX() + paddingX()/1;
+		float bx = dxCell*selectedX() + paddingX()/1 - 1;
 		float by = dyCell*selectedY();// + paddingY()/2;
 	
 //		color(colors().fore, colors().fore.a*0.4);
@@ -263,8 +263,8 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 
 			color(colors().text);
 		//	printf("%s\n", str);
-			font().render(str, tx, ty);
-			if(mNF>0) font().render(".", dxDig*(mNI+numSignDigits()-0.5f) + tx, ty);
+			font().render(str, pixc(tx), pixc(ty));
+			if(mNF>0) font().render(".", pixc(dxDig*(mNI+numSignDigits()-0.5f) + tx), pixc(ty));
 		}
 	}
 }
@@ -446,12 +446,12 @@ void TextView::onDraw(GLV& g){
 	if(mBlink<0.5 && enabled(Focused)){
 		stroke(1);
 		color(colors().text);
-		shape(Lines, tl, tt, tl, tb);
+		shape(Lines, pixc(tl), tt, pixc(tl), tb);
 	}
 
 	draw::lineWidth(strokeWidth);
 	color(colors().text);
-	font().render(mText.c_str(), padX, padY);
+	font().render(mText.c_str(), pixc(padX), pixc(padY));
 }
 
 bool TextView::onEvent(Event::t e, GLV& g){
@@ -604,8 +604,8 @@ ListView& ListView::fitExtent(){
 		if(x > maxw) maxw = x;
 	}
 	extent(
-		data().size(0) * (maxw + paddingX()*2),
-		data().size(1) * (font().cap() + font().descent() + paddingY()*2)
+		draw::pix(data().size(0) * (maxw + paddingX()*2)),
+		draw::pix(data().size(1) * (font().cap() + font().descent() + paddingY()*2))
 	);
 	return *this;
 }
@@ -653,7 +653,7 @@ void ListView::onDraw(GLV& g){
 		
 		color(colors().text);
 		lineWidth(1);
-		font().render(data().at<std::string>(ix,iy).c_str(), px+paddingX(), py+paddingY());
+		font().render(data().at<std::string>(ix,iy).c_str(), pixc(px+paddingX()), pixc(py+paddingY()));
 	}
 	
 	Widget::onDraw(g);

@@ -328,7 +328,8 @@ void View::doDraw(GLV& g){
 //	drawPre();
 	if(enabled(DrawBack)){
 		color(colors().back);
-		rectangle(0, 0, pix(w), pix(h));
+//		rectangle(0, -0.5, iw+1, ih+0.5);
+		rectangle(0, 0, w, h);
 	}
 
 	bool drawNext = true;
@@ -368,10 +369,7 @@ void View::doDraw(GLV& g){
 		}
 
 		lineWidth(borderWidth);
-		frame(0, 0, pix(w), pix(h));
-		//draw::frameTrunc<2,1,1,1>(0, 0, pix(w), pix(h));
-		//draw::frameTrunc<1,1,1,1>(0, 0, pix(w), pix(h));
-		//draw::frameTrunc<2,2,2,2>(0, 0, pix(w), pix(h));
+		frame(0.5f, 0.5f, w-0.5f, h-0.5f);
 	}
 }
 
@@ -566,6 +564,7 @@ View& View::pos(Place::t p, space_t x, space_t y){
 		case BL: Rect::pos(x	, y-h  ); break;
 		case BC: Rect::pos(x-w/2, y-h  ); break;
 		case BR: Rect::pos(x-w	, y-h  ); break;
+		default:;
 	}
 	
 	return *this;

@@ -141,8 +141,9 @@ static void drawContext(float tx, float ty, View * v, float& cx, float& cy, View
 
 	// The offsets are necessary so that we draw on the center of pixels
 	// rather than on the boundaries
-	translate(pix(cx) + 0.5f, pix(cy) + 0.5f);	// offset to center of top-left pixel
-	//scale(v->w/(v->w+1), v->h/(v->h+1));	// scale to lose 1 pixel on each edge
+//	translate(pixc(cx), pixc(cy));	// offset to center of top-left pixel
+	translate(pix(cx), pix(cy));	// round position to nearest pixel coordinates
+//	translate(cx, cy);
 
 	c = v;
 }
@@ -175,8 +176,11 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 
 	enter2D(w, h);		// initialise the OpenGL renderer for our 2D GUI world
   
-	// render all primitives at integer positions, ref: OpenGL Redbook
-	//translate(0.375, 0.375);
+	// Render all primitives at integer positions, ref: OpenGL Redbook
+	// NOTE: This is a comprise to get almost pixel-perfection for both lines 
+	// (half-integers) and polygons (integers). We'll do it "by hand" due to all
+	// the exceptions and to get exact pixel-perfect accuracy.
+//	translate(0.375f, 0.375f);
   
 	float cx = 0, cy = 0; // drawing context absolute position
 	View * const root = this;
@@ -237,9 +241,12 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 			if(cv->enabled(CropSelf)) r.intersection(Rect(cx, cy, cv->w, cv->h), r); // crop my own draw?
 
 			// LJP: using some weird numbers here, seems to work right though...
-			//scissor(r.l, h - r.bottom() - 1, r.w+2, r.h+1);
-			//scissor(pix(r.l), pix(h - r.bottom() - 1.499f), pix(r.w+1), pix(r.h+1.499f));
-			scissor(pix(r.l), pix(h - r.bottom() - 1.499f), pix(r.w+1), pix(r.h+1.499f));
+//			scissor(pix(r.l), pix(h - r.bottom() - 1.499f), pix(r.w+1), pix(r.h+1.499f));
+
+//			scissor(pix(r.l), h - (pix(r.t) + pix(r.h)), pix(r.w), pix(r.h));
+			scissor(pix(r.l), h - (pix(r.t) + pix(r.h)) + 0.99, r.w, r.h + 0.5);
+//			scissor(pix(r.l), h - (pix(r.t) + pix(r.h)) + 0, r.w, r.h + 0);
+//			scissorGUI(pix(r.l-0.019)-0.0, pix(r.t-0.019), pix(r.w), pix(r.h), h);
 
 			graphicsData().reset();
 			if(cv->enabled(Animate)) cv->onAnimate(dsec, *this);

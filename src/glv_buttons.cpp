@@ -8,7 +8,7 @@ namespace glv {
 Buttons::Buttons(
 	const Rect& r, int nx, int ny, bool toggles, bool mutExc, SymbolFunc on, SymbolFunc off
 )
-:	Widget(r, 3, toggles, mutExc, true), mSymOff(off), mSymOn(on)
+:	Widget(r, 2, toggles, mutExc, true), mSymOff(off), mSymOn(on)
 {	
 	data().resize(Data::BOOL, nx,ny);
 	useInterval(false);
@@ -21,21 +21,21 @@ void Buttons::onDraw(GLV& g){
 
 	float xd = dx();
 	float yd = dy();
-	float padx  = paddingX();
-	float pady  = paddingY();
+	float padx = paddingX();
+	float pady = paddingY();
 	color(colors().fore);
 	
 	// TODO: small buttons hard to see when not antialiased
 	//glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 	//draw::enable(PolygonSmooth);
-	
+
 	for(int i=0; i<sizeX(); ++i){
-		float x = xd*i + padx*0.5f;
+		float x = xd*i + padx;
 
 		for(int j=0; j<sizeY(); ++j){
-			float y = yd*j + pady*0.5f;
-			if(getValue(i,j)){	if(mSymOn ) mSymOn (x, y, x+xd-padx, y+yd-pady); }
-			else{				if(mSymOff) mSymOff(x, y, x+xd-padx, y+yd-pady); }
+			float y = yd*j + pady;
+			if(getValue(i,j)){	if(mSymOn ) mSymOn (x, y, x+xd-padx*2, y+yd-pady*2); }
+			else{				if(mSymOff) mSymOff(x, y, x+xd-padx*2, y+yd-pady*2); }
 		}		
 	}
 	

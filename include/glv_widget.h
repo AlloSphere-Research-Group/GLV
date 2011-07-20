@@ -76,6 +76,12 @@ public:
 	/// Set padding around elements
 	Widget& padding(space_t v, int dim){ mPadding[dim]=v; return *this; }
 
+	/// Set padding around elements in x direction
+	Widget& paddingX(space_t v){ return padding(v,0); }
+
+	/// Set padding around elements in x direction
+	Widget& paddingY(space_t v){ return padding(v,1); }
+
 	/// Select element at 1D index
 	Widget& select(int i){ int i1,i2; data().indexDim(i1,i2,i); return select(i1,i2); }
 

@@ -145,6 +145,7 @@ Table::Table(const char * a, space_t padX, space_t padY, const Rect& r)
 
 
 Table& Table::arrange(){
+
 	View * vp = child;
 	int ind = 0;
 
@@ -263,6 +264,7 @@ Table& Table::arrange(){
 		CS('q', TR, pr,		pt)
 		CS('b', BL, pl,		pb)
 		CS('d', BR, pr,		pb)
+		default:;
 		};
 		#undef CS
 	}

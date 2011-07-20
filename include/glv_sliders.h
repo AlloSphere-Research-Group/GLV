@@ -22,6 +22,7 @@ public:
 	/// Constructor
 	SliderVector(const Rect& r);
 
+
 	/// Get value at selected index
 	double getValue() const { return Widget::getValue<double>(); }
 	
@@ -163,7 +164,6 @@ public:
 		AUTO				/**< Orient in direction of largest dimension */
 	};
 
-
 	/// @param[in] r			geometry
 	/// @param[in] nx			number along x
 	/// @param[in] ny			number along y
@@ -172,12 +172,8 @@ public:
 
 	virtual ~Sliders(){}
 
-	/// Get orientation
 	Orientation orientation() const { return mOri; }
-	
-	/// Set orientation
 	Sliders& orientation(Orientation v){ mOri=v; return *this; }
-
 
 	/// Get value at selected index
 	double getValue() const { return Widget::getValue<double>(); }
@@ -196,8 +192,8 @@ protected:
 	Orientation mOri;
 	double mAcc;
 
-	void selectSlider(GLV& g, bool click);
 	bool vertOri() const { return VERTICAL==mOri || (AUTO==mOri && tallElems()); }
+	void selectSlider(GLV& g, bool click);
 };
 
 
@@ -400,7 +396,7 @@ TEM void SliderGrid<Dim>::onDraw(GLV& g){
 			float ymin = (j+1)*h*rDim - sz2;
 			float ydia = -(h*rDim-sz);
 			float y = ymin + to01(getValue(Dim-1-j))*ydia;
-			mKnobSym(pix(x - sz2), pix(y - sz2), pix(x + sz2), pix(y + sz2));
+			mKnobSym((x - sz2), (y - sz2), (x + sz2), (y + sz2));
 		}
 	}
 }

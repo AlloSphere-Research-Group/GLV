@@ -191,7 +191,7 @@ public:
 	/// @param[in] padX			Padding in x-direction between cells
 	/// @param[in] padY			Padding in y-direction between cells
 	/// @param[in] r			Geometry
-	Table(const char * arrangement, space_t padX=4, space_t padY=4, const Rect& r=Rect(0));
+	Table(const char * arrangement, space_t padX=3, space_t padY=3, const Rect& r=Rect(0));
 
 	/// Arrange child Views according to cell arrangement specification.
 	

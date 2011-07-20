@@ -171,14 +171,14 @@ int main(int argc, char ** argv){
 	groups[++i]<< bts14.pos(Place::BR, -4,0).anchor(Place::CC);
 	groups[  i]<< bts41.pos(Place::TL, 0, 4).anchor(Place::CC);
 	groups[  i]<< bts44.pos(Place::BL).anchor(Place::CC);
-	groups[  i]<< btsLED.padding(3).pos(Place::BL, bts44.w+4,0).anchor(Place::CC).enable(SelectOnDrag).disable(DrawGrid);
+	groups[  i]<< btsLED.padding(2).pos(Place::BL, bts44.w+4,0).anchor(Place::CC).enable(SelectOnDrag).disable(DrawGrid);
 	groups[++i]<< fg.pos(Place::BL).anchor(Place::CC);
 //	groups[++i]<< fontView.stretch(1,1);
 	groups[++i]<< (new Label("Horizontal"))->pos(Place::BL).anchor(Place::CC);
 	groups[  i]<< (new Label("Vertical", true))->pos(Place::BR,-16,0).anchor(Place::CC);
 	groups[++i]<< nd1.pos(Place::BR).anchor(Place::CC);
 	groups[  i]<< nd2.showSign(false).pos(Place::TL, 4, 4).anchor(Place::CC); nd2.font().size(14);
-	groups[  i]<< nds.padding(6).pos(Place::BL, 4, 0).anchor(Place::CC);
+	groups[  i]<< nds.padding(3).pos(Place::BL, 4, 0).anchor(Place::CC);
 	groups[++i]<< sl1H.pos(Place::BL).anchor(Place::CC);
 	groups[  i]<< sl1V.pos(Place::BR, -4,0).anchor(Place::CC);
 	groups[  i]<< sl1HS.pos(Place::BL).anchor(Place::CC); sl1HS.top(sl1H.bottom()+4);
