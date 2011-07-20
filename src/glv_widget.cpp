@@ -34,7 +34,8 @@ void Widget::drawGrid(GraphicsData& g){
 	if(enabled(DrawGrid) && size()>1){
 		using namespace glv::draw;
 		lineWidth(1);
-		color(colors().border); lineWidth(1);
+		color(colors().border);
+//		draw::grid(g, 0.5,0.5,w-0.5,h-0.5, sizeX(), sizeY(), false);
 		draw::grid(g, 0,0,w,h, sizeX(), sizeY(), false);
 	}
 }
