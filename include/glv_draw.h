@@ -277,7 +277,8 @@ void rotateY(float deg);
 void rotateZ(float deg);
 void scale(float v);								///< Scale all dimensions by amount
 void scale(float x, float y, float z=1.f);
-void scissor(float x, float y, float w, float h);
+void scissor(float x, float y, float w, float h);	///< Set scissor region using window coordinate system
+void scissorGUI(float l, float t, float w, float h, float windowH);	///< Set scissor region using GUI coordinate system
 void stroke(float w);								///< Sets width of lines and points
 void texCoord(float x, float y);
 void translate(float x, float y, float z=0.f);
@@ -369,8 +370,11 @@ void scaleTranslate(float l, float t, float r, float b){
 /// Parallel horizontal and vertical lines
 void grid(GraphicsData& g, float l, float t, float w, float h, float divx, float divy, bool incEnds=true);
 
-/// Converts a float to its pixel value.
+/// Returns closest pixel coordinate
 inline int pix(float v);
+
+/// Returns center of closest pixel coordinate
+inline float pixc(float v);
 
 /// Draw vertices using primitive
 void shape(int prim, float x0, float y0, float x1, float y1);
@@ -696,7 +700,9 @@ inline void paint(int prim, Point3 * verts, Color * cols, index_t * indices, int
 // [-1, 0) -> -0.5
 // [ 0, 1) ->  0.5
 // [ 1, 2) ->  1.5
-inline int pix(float v){ return v>=0 ? (int)(v+0.5) : (int)(v-0.5); }
+//inline int pix(float v){ return v>=0 ? (int)(v+0.5) : (int)(v-0.5); }
+inline int pix(float v){ return lrintf(v); }
+inline float pixc(float v){ return rintf(v) + 0.5f; }
 
 //template<int N, int M>
 //inline void star(float l, float t, float r, float b){ pgon(l,t,r-l,b-t,N,-0.25,M); }
@@ -729,6 +735,9 @@ inline void scale(float v){ scale(v,v,v); }
 inline void translateX(float x){ translate(x, 0, 0); }
 inline void translateY(float y){ translate(0, y, 0); }
 inline void translateZ(float z){ translate(0, 0, z); }
+inline void scissorGUI(float l, float t, float w, float h, float windowH){
+	scissor(l, windowH-t-h, w, h);
+}
 
 
 // platform dependent
