@@ -227,7 +227,8 @@ void text(const char * s, float l, float t, unsigned fontSize, float lineSpacing
 	f.size(fontSize);
 	f.lineSpacing(lineSpacing);
 	f.tabSpaces(tabSpaces);
-	f.render(s, l+0.375f, t+0.375f, 0);
+	f.render(s, pixc(l), pixc(t), 0);	// force position to be centered on pixel
+//	f.render(s, l, t, 0);
 	//f.render(s, int(l)+0.5, int(t)+0.5,0);
 }
 
