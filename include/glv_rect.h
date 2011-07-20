@@ -124,7 +124,7 @@ public:
 	/// Called when the width or height change.  Changes in extent are passed in.
 	virtual void onResizeRect(T dx, T dy){}
 	
-	void print(FILE * fp=stdout);	///< write about TRect to a file
+	void print(FILE * fp=stdout) const;	///< write about TRect to a file
 	
 private:
 	void onResizeProxy(T dx, T dy){	// calls onResize if at least 1 dimension has changed
@@ -269,7 +269,7 @@ TEM void TRect<T>::intersection(const TRect<T> & check, TRect<T> & inter) const{
 }
 
 
-TEM void TRect<T>::print(FILE * fp){
+TEM void TRect<T>::print(FILE * fp) const {
 	fprintf(fp, "[%.2f, %.2f, %.2f, %.2f]\n", l, t, w, h);
 }
 

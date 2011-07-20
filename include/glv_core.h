@@ -560,7 +560,7 @@ protected:
 	bool hasName() const { return ""!=mName; }
 	void reanchor(space_t dx, space_t dy);	// Reanchor when parent resizes
 	void focused(bool b);					// Set whether I'm focused
-	
+
 private:
 	Lazy<Rect> mRestoreRect;		// Restoration geometry
 	Lazy<Font> mFont;
