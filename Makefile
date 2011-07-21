@@ -32,7 +32,7 @@ OBJS		= $(addsuffix .o, $(basename $(notdir $(SRCS))))
 CPPFLAGS	+= $(EXT_CPPFLAGS)
 LDFLAGS		+= $(EXT_LDFLAGS)
 
-CFLAGS		+= $(addprefix -I, $(INC_DIRS))
+CFLAGS		+= $(addprefix -I, $(INC_DIR))
 LDFLAGS		:= $(addprefix -L, $(LIB_DIRS)) $(LDFLAGS)
 
 CFLAGS		:= $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS)
