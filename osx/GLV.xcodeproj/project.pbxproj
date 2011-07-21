@@ -479,7 +479,7 @@
 			isa = PBXGroup;
 			children = (
 				B9183CA90B9E36B100D8DA81 /* test */,
-				B9183C940B9E36B100D8DA81 /* include */,
+				B9183C940B9E36B100D8DA81 /* GLV */,
 				B917A7430BA2434200E819AF /* src */,
 				16BE815E0F5E40A200204A3D /* resources */,
 				3657E5D10B7AC4B9005858EE /* Libraries & Frameworks */,
@@ -549,7 +549,7 @@
 			path = ../src;
 			sourceTree = SOURCE_ROOT;
 		};
-		B9183C940B9E36B100D8DA81 /* include */ = {
+		B9183C940B9E36B100D8DA81 /* GLV */ = {
 			isa = PBXGroup;
 			children = (
 				B9183C950B9E36B100D8DA81 /* glv.h */,
@@ -577,8 +577,8 @@
 				16BC401D114AFAFD001246DB /* glv_view3D.h */,
 				161B38830DE359DD00936BA0 /* glv_widget.h */,
 			);
-			name = include;
-			path = ../include;
+			name = GLV;
+			path = ../GLV;
 			sourceTree = SOURCE_ROOT;
 		};
 		B9183CA90B9E36B100D8DA81 /* test */ = {
