@@ -98,7 +98,7 @@ GLV requires only OpenGL, GLU, and GLEW (Linux only). There are no other depende
 3. File Organization
 ========================================
 
-include/	GLV headers
+GLV/		GLV headers
 src/		GLV source
 
 example/	example source demonstrating various features of GLV
