@@ -13,31 +13,15 @@
 namespace glv{
 
 
-class PresetView : public View {
-public:
-	PresetView(ModelManager& mm);
-
-	virtual const char * className() const { return "PresetView"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
-
-protected:
-	ModelManager * mMM;
-
-private:
-	friend class PresetControl;
-	PresetView(){}
-};
-
-
-
-
+/// Control for searching, saving and loading presets
 class PresetControl : public Box {
 public:
 	PresetControl();
 	PresetControl(ModelManager& m);
 
 	virtual ~PresetControl();
+
+	bool setPreset(const std::string& v);
 
 	bool loadFile();
 	PresetControl& modelManager(ModelManager& v){ mMM = &v; return *this; }
@@ -89,6 +73,24 @@ protected:
 private:
 	void init();
 };
+
+
+class PresetView : public View {
+public:
+	PresetView(ModelManager& mm);
+
+	virtual const char * className() const { return "PresetView"; }
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
+
+protected:
+	ModelManager * mMM;
+
+private:
+	friend class PresetControl;
+	PresetView(){}
+};
+
 
 } // glv::
 #endif

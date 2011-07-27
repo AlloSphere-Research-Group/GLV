@@ -321,6 +321,17 @@ bool PresetControl::PresetSearchBox::onEvent(Event::t e, GLV& g){
 }
 
 
+bool PresetControl::setPreset(const std::string& v){
+	if(NULL != mMM && mMM->snapshots().count(v)){
+		mMM->loadSnapshot(v);
+		mSearchBox.setValue(v);
+		mSearchBox.cursorEnd();
+		return true;		
+	}
+	return false;
+}
+
+
 bool PresetControl::loadFile(){
 	if(NULL == mMM){
 		fprintf(stderr, "From PresetControl::loadFile: Attempt to load file without a ModelManager\n");
