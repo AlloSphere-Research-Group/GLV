@@ -49,7 +49,7 @@ void Grid::onAnimate(double dt, GLV& g){
 void Grid::onDraw(GLV& g){
 
 	for(int i=0; i<DIM; ++i){
-		if(mVel[i] != 0) interval(i).translate(mVel[i]);
+		if(!lockScroll(i) && mVel[i] != 0) interval(i).translate(mVel[i]);
 	}
 	if(mVelW != 0) zoomOnMousePos(mVelW, g.mouse());
 
