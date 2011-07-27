@@ -40,6 +40,12 @@ public:
 		return interval(0).contains(x) && interval(1).contains(y);
 	}
 
+	/// Returns whether interactive scrolling is locked for a dimension
+	bool lockScroll(int dim) const { return mLockScroll[dim]; }
+
+	/// Returns whether zooming is locked for a dimension
+	bool lockZoom(int dim) const { return mLockZoom[dim]; }
+
 	/// Returns whether axes are showing
 	bool showAxes() const { return mShowAxes; }
 
@@ -50,6 +56,13 @@ public:
 	bool showNumbering() const { return mShowNumbering; }
 
 	#define LOOP for(int i=0;i<DIM;++i)
+
+
+	/// Set whether to lock interactive scrolling for a dimension
+	Grid& lockScroll(bool v, int dim){ mLockScroll[dim]=v; return *this; }
+
+	/// Set whether to lock zooming for a dimension
+	Grid& lockZoom(bool v, int dim){ mLockZoom[dim]=v; return *this; }
 	
 	/// Set whether grid line numbering is active for all dimensions
 	Grid& numbering(bool v){ LOOP{ numbering(v,i); } return *this; }
@@ -111,6 +124,8 @@ protected:
 	float mVel[DIM], mVelW;
 	bool mNumbering[DIM];
 	bool mShowAxes, mShowGrid, mShowNumbering, mEqualize;
+	bool mLockZoom[DIM];
+	bool mLockScroll[DIM];
 
 	int addGridLines(int i, double dist, GraphicsData& gb);
 

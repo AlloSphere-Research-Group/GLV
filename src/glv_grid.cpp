@@ -11,6 +11,8 @@ Grid::Grid(const Rect& r, double rangeMin, double rangeMax, double majorDist, in
 	range(rangeMin, rangeMax);
 	major(majorDist); minor(minorDiv);
 	numbering(true);
+	lockScroll(false);
+	lockZoom(false);
 	for(int i=0; i<DIM; ++i) mVel[i]=0;
 	mVelW=0;
 }
@@ -131,8 +133,8 @@ bool Grid::onEvent(Event::t e, GLV& g){
 
 		case Event::MouseDrag:
 			if(m.left()){
-				interval(0).translate(-pixToGridMul(0, m.dx()));
-				interval(1).translate( pixToGridMul(1, m.dy()));
+				if(!lockScroll(0)) interval(0).translate(-pixToGridMul(0, m.dx()));
+				if(!lockScroll(1)) interval(1).translate( pixToGridMul(1, m.dy()));
 			}
 			if(m.right()){
 				zoomOnMousePos(m.dy()*0.01, m);			
@@ -199,6 +201,8 @@ Grid& Grid::zoom(double amt, double x, double y){
 	float gs[] = { x, y };
 	
 	for(int i=0; i<DIM; ++i){
+		if(lockZoom(i)) continue;
+
 		interval_t iv = interval(i);
 		float t = gs[i] - iv.center();
 		iv.translate(t);
