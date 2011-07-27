@@ -11,9 +11,11 @@ Grid::Grid(const Rect& r, double rangeMin, double rangeMax, double majorDist, in
 	range(rangeMin, rangeMax);
 	major(majorDist); minor(minorDiv);
 	numbering(true);
-	lockScroll(false);
-	lockZoom(false);
-	for(int i=0; i<DIM; ++i) mVel[i]=0;
+	for(int i=0; i<DIM; ++i){
+		mVel[i]=0;
+		lockScroll(false, i);
+		lockZoom(false, i);
+	}
 	mVelW=0;
 }
 
