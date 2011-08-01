@@ -82,18 +82,20 @@ class SliderRange : public SliderVector<2>{
 public:
 
 	/// @param[in] r			geometry
-	/// @param[in] val1			initial value on left or top
-	/// @param[in] val2			initial value on right or bottom
+	/// @param[in] valMin		initial minimum value (on left or bottom)
+	/// @param[in] valMax		initial maximum value (on right or top)
 	SliderRange(const Rect& r=glv::Rect(100,20), double val1=0.25, double val2=0.5);
 	
 	SliderRange& center(double v);							///< Set center of interval
 	SliderRange& centerRange(double center, double range);	///< Set center and range of interval
 	SliderRange& endpoints(double min, double max);			///< Set extrema of interval
-	
+
+	SliderRange& jumpBy(float v);
+
 	/// Sets how much the slider should move when an empty region is clicked.
 	
 	/// @param[in] v	jump distance in [0, 1] of current value interval
-	/// The slider is constrained not jump past the click point.
+	/// The slider is constrained to not jump past the click point.
 	SliderRange& jump(double v);
 	SliderRange& range(double v);	///< Set range
 	

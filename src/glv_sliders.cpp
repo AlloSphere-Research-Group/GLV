@@ -350,8 +350,14 @@ void SliderRange::onDraw(GLV& g){
 		rectTrunc<2,2,2,2>(v1*w,0, v2*w,h);
 	}
 	else{
-		rectTrunc<2,2,2,2>(0,v1*h, w,v2*h);
+//		rectTrunc<2,2,2,2>(0,v1*h, w,v2*h);
+		rectTrunc<2,2,2,2>(0,h - v2*h, w, h - v1*h); // REV: flip y
+		//printf("v1: %g   v2: %g\n", v1*h, v2*h);
 	}
+}
+
+SliderRange& SliderRange::jumpBy(float v){
+	return center(center() + jump()*v*interval().diameter());
 }
 
 bool SliderRange::onEvent(Event::t e, GLV& g){
@@ -361,8 +367,10 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 	
 	//printf("%f %f\n", value0, value1);
 
-	float dv = (w>h) ? g.mouse().dx()/w : g.mouse().dy()/h;
-	float mp = (w>h) ? g.mouse().xRel()/w : g.mouse().yRel()/h;
+//	float dv = (w>h) ? g.mouse().dx()/w : g.mouse().dy()/h;
+//	float mp = (w>h) ? g.mouse().xRel()/w : g.mouse().yRel()/h;
+	float dv = (w>h) ? g.mouse().dx()/w : -g.mouse().dy()/h; // REV: flip y
+	float mp = (w>h) ? g.mouse().xRel()/w : 1.f - g.mouse().yRel()/h; // REV: flip y
 	float d1 = mp-value0; if(d1<0) d1=-d1;
 	float d2 = mp-value1; if(d2<0) d2=-d2;
 	float rg = range();
@@ -382,14 +390,15 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 			
 			// click outside of range
 			if(mp<(v1-endRegion) || mp>(v2+endRegion)){
-				float dc = mp - center_;
-				float dcAbs = dc<0 ? -dc : dc;
-				if(jump() > dcAbs){
-					center(toInterval(mp));
-				}
-				else{
-					center(toInterval(center_ + (dc<0 ? -jump() : jump())));
-				}
+				float dc = mp - center_;		// signed distance from click to center of slider
+//				float dcAbs = dc<0 ? -dc : dc;
+//				if(jump() > dcAbs){
+//					center(toInterval(mp));
+//				}
+//				else{
+//					center(toInterval(center_ + (dc<0 ? -jump() : jump())));
+//				}
+				jumpBy(dc<0 ? -1 : 1);
 				mDragMode=0;
 			}
 			
@@ -413,7 +422,7 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 	
 	case Event::MouseDrag:
 		dv *= diam() * g.mouse().sens();
-		if(3==mDragMode){
+		if(3==mDragMode){	// clicked on edge of bar
 			valueAdd(dv, 0, min(), max()-rg);
 			valueAdd(dv, 1, min()+rg, max());
 		}
