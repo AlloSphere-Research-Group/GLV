@@ -179,6 +179,8 @@ Widget& Widget::select(int ix, int iy){
 	int inew = data().indexFlat(ix,iy);
 	if(iold != inew && data().size()){
 		onCellChange(iold, inew);
+		ChangedSelection csel = {iold, inew};
+		notify(this, Update::Selection, &csel);
 		sx=ix; sy=iy;
 		mPrevVal = data().at<double>(selected());
 	}

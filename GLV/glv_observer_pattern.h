@@ -17,6 +17,7 @@ namespace Update{
 		Focus		=    0,	/**< Focus update */
 		Value,				/**< Value update */
 		Action,				/**< Perform an action based on current value */
+		Selection,
 		NumTypes,			/**< Number of predefined notification types */
 		User		= 1000	/**< Start of user-defined notification types */
 	};
@@ -44,6 +45,12 @@ private:
 	T mValue;
 };
 
+
+/// Data passed with selection change notification
+struct ChangedSelection{
+	int oldIndex;
+	int newIndex;
+};
 
 
 /// Notification object
@@ -79,7 +86,7 @@ public:
 
 	/// Get pointer to data object
 	template <class T>
-	const T * data() const { return static_cast<T *>(data()); }
+	const T * data() const { return static_cast<const T *>(data()); }
 
 protected:
 	void * mSender;

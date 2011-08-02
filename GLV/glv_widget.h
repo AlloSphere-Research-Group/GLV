@@ -25,6 +25,8 @@ public:
 		bool momentary=false, bool mutExc=false, bool drawGrid=true
 	);
 
+
+
 	/// Get selected element value type-casted to template parameter
 	template <class T>
 	T getValue() const { return getValue<T>(selectedX(), selectedY()); }
@@ -36,6 +38,7 @@ public:
 	/// Get element value at 2D index type-casted to template parameter
 	template <class T>
 	T getValue(int i1, int i2) const { return data().Data::at<T>(i1, i2); }
+
 
 	/// Returns whether this element coordinate is selected
 	bool isSelected(int x, int y) const { return x == selectedX() && y == selectedY(); }
@@ -55,6 +58,11 @@ public:
 	int sizeX() const { return data().size(0); }			///< Get number of elements along x
 	int sizeY() const { return data().size(1); }			///< Get number of elements along y
 	bool useInterval() const { return mUseInterval; }
+
+	
+	float dx(int dim=0) const { return w/data().size(dim); } ///< Get width, in pixels, per element
+	float dy(int dim=1) const { return h/data().size(dim); } ///< Get height, in pixels, per element
+
 
 
 	/// Attach a single variable at a specified index
@@ -129,8 +137,6 @@ protected:
 	IndexDataMap& variables(){ return mVariables(); }
 	const IndexDataMap& variables() const { return mVariables(); }
 
-	float dx(int dim=0) const { return w/data().size(dim); } // width, in pixels, per element
-	float dy(int dim=1) const { return h/data().size(dim); } // height, in pixels, per element
 	int index(int ix, int iy) const { return ix + iy*sizeX(); }
 	bool tallElems() const { return dy() > dx(); }
 
