@@ -311,16 +311,12 @@ double SliderRange::range() const { return getValue(1)-getValue(0); }
 SliderRange& SliderRange::center(double v){ return centerRange(v, range()); }
 
 SliderRange& SliderRange::centerRange(double c, double r){
-//	double mn = c-(r/2.);
-//	double mx = mn+r;
-//	if(mn<0){ mx -= mn  ; mn=0; }
-//	if(mx>1){ mn -= mx-1; mx=1; }
-//	return endpoints(mn,mx);
 	double mn = c-(r/2.);
 	double mx = mn+r;
 	// adjust min/max values to preserve range
-	if(mn<min()){ mx += min()-mn; mn=min(); }
-	if(mx>max()){ mn -= mx-max(); mx=max(); }
+	if(mn<min()){ mn=min(); mx = mn+r; }
+	if(mx>max()){ mx=max(); mn = mx-r; }
+
 	return endpoints(mn,mx);
 }
 
