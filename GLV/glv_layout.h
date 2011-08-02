@@ -280,12 +280,21 @@ public:
 	Mode mode() const { return mMode; }
 	Scroll& mode(Mode v){ mMode=v; return *this; }
 
+	Scroll& scrollTopTo(float v){
+		mSliderY.center(-v - mSliderY.range()/2);
+		return *this;
+	}
+
+	Scroll& pageX(float v){ mSliderX.jumpBy(v); return *this; }
+	Scroll& pageY(float v){	mSliderY.jumpBy(v); return *this; }
+
 	virtual const char * className() const { return "Scroll"; }
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
-	SliderRange mSliderX, mSliderY;
+	SliderRange mSliderX, mSliderY; // intervals dimensions of child view
+									// bar intervals dimensions of child subregion
 	Slider2D mSliderXY;
 	Mode mMode;
 };

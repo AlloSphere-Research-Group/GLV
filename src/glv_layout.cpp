@@ -409,12 +409,14 @@ void Scroll::onDraw(GLV& g){
 //		}
 ////		r.print();
 
-	float xpos = mSliderX.getValue(0);
-	float ypos = mSliderY.getValue(0);
 
-	child->pos(-xpos, -ypos);
+	// slider units are in pixels
+
+	float xpos = mSliderX.getValue(0);
+	float ypos = mSliderY.getValue(1);
+	child->pos(-xpos, ypos);
 	mSliderX.interval(0, r.width());
-	mSliderY.interval(r.height(),0);
+	mSliderY.interval(0,-r.height()); // use negative range so 0 is at top
 
 	if(r.width() > width()){
 		if(mMode & HORIZONTAL){
@@ -432,8 +434,9 @@ void Scroll::onDraw(GLV& g){
 			mSliderXY.enable(Visible);
 		}
 		float sr = height();
-		mSliderY.endpoints(ypos+sr, ypos);
+		mSliderY.endpoints(ypos, ypos-sr);
 		mSliderY.jump(sr/(mSliderY.max()-mSliderY.min()));
+//		printf("%g %g\n", mSliderY.getValue(0), mSliderY.getValue(1));
 	}
 	
 	if(mMode & ALWAYS){
@@ -443,6 +446,20 @@ void Scroll::onDraw(GLV& g){
 }
 
 bool Scroll::onEvent(Event::t e, GLV& g){
+		
+	const Keyboard& k = g.keyboard();
+//	const Mouse& m = g.mouse();
+	
+	switch(e){
+	case Event::KeyDown:
+		switch(k.key()){
+		case Key::PageDown:	pageY(-1); return false;
+		case Key::PageUp:	pageY( 1); return false;
+		default:;
+		}
+		break;
+	default:;
+	}
 	return true;
 }
 
