@@ -169,7 +169,7 @@ NumberDialers& NumberDialers::interval(double mx, double mn){
 	if(max() >  m) mInterval.max( m);
 	showSign(mn < 0);
 //	valSet(mVal);
-	setValue(getValue());
+	for(int i=0; i<data().size(); ++i) setValue(getValue(i), i);
 	return *this;
 }
 
