@@ -377,4 +377,456 @@ bool PresetControl::onEvent(Event::t e, GLV& g){
 	return true;
 }
 
+
+
+
+template <class T>
+static void insertCopy(std::vector<T>& src, int to, int from){
+	if(src.empty()){
+		src.push_back(T());
+	}
+	else{
+		src.insert(src.begin() + to, src[from]);
+	}
+}
+
+PathView::PathView()
+:	Widget(Rect(400, 20)),
+	mStates(0),
+	mDur(2,4,80,0), mCrv(3,3, 800, -800), mSmt(1,0,1,0), // mName(Rect(200,12), 6)
+	mPos(0), mPlaying(false)
+{
+//	data().resize(Data::STRING);
+//	data().resize(Data::NONE).shape(1,8);
+//	data().print();
+	disable(DrawSelectionBox);
+//	enable(DrawSelectionBox);
+	enable(CropChildren);
+	disable(DrawGrid);
+
+	mDur.l = seqRight();
+	mCrv.l = mDur.right();
+	mSmt.l = mCrv.right();
+	mName.l= mSmt.right()+8;
+	
+	mDur.disable(DrawBorder | DrawBack);
+	mCrv.disable(DrawBorder);
+	mSmt.disable(DrawBorder);
+	mName.disable(DrawBorder);
+	mName.searchBox().disable(DrawBorder);
+	
+//	mPathMM.add("dur", mDur);
+//	mPathMM.add("crv", mCrv);
+//	mPathMM.add("smt", mSmt);
+//	mPathMM.add("name", mName);
+
+	(*this) << mDur << mCrv << mSmt << mName;
+}
+
+
+PathView& PathView::modelManager(ModelManager& v){
+	mStates = &v;
+	mName.modelManager(v);
+	return *this;
+}
+
+
+void PathView::onAnimate(double dsec, GLV& g){
+	if(mPlaying && mPath.size()>0){
+
+		double max = mPath.size()-1;
+
+		if(mPos >= max){		// clip current position
+			mPos = max;
+		}
+		else if(mStates){		// are there presets assigned?				
+			int idx0 = loadCurrentPos();
+			float dur = mPath[idx0].dur;
+//			printf("dur = %g, dt = %g\n", dur, dsec);
+			if(dur > dsec){
+				mPos += dsec/dur;
+			}
+			else{
+				++mPos;
+				onAnimate(dsec, g);
+			}
+		}
+	}
+}
+
+void PathView::drawHeader(float x, float y){
+//	float y =-10 + 0.;
+//	float x = 0.;
+	float textSize = 6;
+	draw::text("dur" , mDur.l + x, y, textSize);
+	draw::text("crv" , mCrv.l + x, y, textSize);
+	draw::text("s" , mSmt.l + x, y, textSize);
+	draw::text("name", mName.l+ x, y, textSize);
+}
+
+template <int D>
+static void pointerLine(float l, float t, float r, float b){
+	float h2 = (t+b)/2;
+	float pts[] = {
+		D, h2,
+		0, h2-D,
+		0, h2+D,
+		D, h2,
+		r, h2
+	};
+	draw::paint(draw::LineStrip, (Point2*)pts, GLV_ARRAY_SIZE(pts)/2);
+}
+
+void PathView::onDraw(GLV& g){
+
+	if(NULL == mStates) return;
+
+	int Nk = mPath.size();
+
+	data().shape(1,Nk);
+	
+	{
+		//drawHeader(0, 0);
+
+		// draw selected row highlight
+		draw::color(Color(colors().text, 0.1));
+		draw::frame(0, selected()*dy(), right(), (selected()+1)*dy());
+			
+		// draw start cursor
+		draw::color(colors().selection);
+		float pixStart = draw::pixc(mStart*dy());
+		pointerLine<6>(l,pixStart-8, right(),pixStart+8);
+	
+		// draw position indicator
+		draw::color(colors().selection);
+		draw::rectTrunc<2,2,2,2>(2, dy()*mPos, seqRight()-2, dy()*(mPos+1));
+
+		Rect vrect = visibleRegion();
+//		vrect.print();
+
+		int jbeg = vrect.top()   /dy();
+		int jend = (vrect.bottom()/dy()) + 1;
+		if(jend > sizeY()) jend = sizeY();
+		
+//		draw::color(1,0,0);
+//		draw::x(vrect.left(), vrect.top(), vrect.right(), vrect.bottom());			
+//		printf("%d %d\n", jbeg, jend);
+
+		draw::color(colors().text);
+		draw::stroke(1);
+		std::string s;
+//		float px = 0.375, py = 0.375;
+		float px = 0.5, py = 0.5;
+		
+		for(int j=jbeg; j<jend; ++j){
+			float y = getY(j) + py;
+			toString(s, j, "%03i");	draw::text(s.c_str(), px+startRight(), y+2, 6);
+
+			if(selected() != j){
+				Keyframe& kf = mPath[j];
+				toString(s, kf.dur);		draw::text(s.c_str(), mDur.l + px, y);
+				toString(s, kf.crv, "% g");	draw::text(s.c_str(), mCrv.l + px, y);
+				toString(s, kf.smt);		draw::text(s.c_str(), mSmt.l + px, y);
+				draw::text(kf.name.c_str(), mName.l, y);
+			}
+		}
+	}
+	
+//	int numBytes = data().resize(1, Nk);
+//	if(0 != numBytes){
+//		
+//	}
+
+//	const ModelManager::Snapshots& keys = mPathMM.snapshots();
+//	int Ns = keys.size();
+//	
+//	int numBytes = data().resize(Data::STRING, 1, Ns);
+//	if(0 != numBytes){
+//		
+//		ModelManager::Snapshots::const_iterator it = keys.begin();
+//		int idx=0; // local array index
+//		
+//		while(keys.end() != it){
+//			data().assign<std::string>(it->first, 0, idx);
+//			++idx;
+//			++it;
+//		}
+//	}
+	
+	//printf("resize: %d\n", numBytes);
+
+	fitExtent();
+
+	Widget::onDraw(g);
+}
+
+bool PathView::onEvent(Event::t e, GLV& g){
+	//if(Event::MouseDown == e) selectFromMousePos(g);
+	
+	const Keyboard& k = g.keyboard();
+	const Mouse& m = g.mouse();
+	
+	switch(e){
+	case Event::KeyDown:
+		switch(k.key()){
+		case 'd':
+			if(k.ctrl()){
+				// duplicate currently selected frame
+				insertCopy(mPath, selected()+1, selected());
+				return false;
+			}
+			break;
+		case 's':
+			if(k.ctrl()){
+				saveFile();
+				return false;
+			}
+			break;
+
+		case 'l':
+			if(k.ctrl()){
+				loadFile();
+				return false;
+			}
+			break;
+		case ' ':	// toggle playback
+			mPlaying ^= 1;
+			break;
+		case Key::Enter:
+		case Key::Return:
+			mPos = mStart;
+			break;
+			
+		default:;
+		}
+		break;
+
+	case Event::MouseDown:
+	case Event::MouseDrag:
+		{
+			float mx = m.xRel();
+			float my = m.yRel();
+			//printf("%d\n", yi);
+			if(e == Event::MouseDown && mx >= seqRight()){
+				selectFromMousePos(g);
+			}
+			else if(mx <= startRight()){
+				int yi = my / dy();
+				mStart = glv::clip<int>(yi, mPath.size()-1);
+			}
+			else{
+				float y = my / dy();
+				mPos = glv::clip<float>(y, mPath.size()-1);
+				loadCurrentPos();			
+			}
+		}
+		break;
+	default:;
+	}
+	
+	bool res = Widget::onEvent(e,g);
+	return res;
+}
+
+void PathView::onCellChange(int iOld, int iNew){
+	float y = iNew * dy();
+	mDur.t = getY(iNew);
+	mCrv.t = getY(iNew);
+	mSmt.t = getY(iNew);
+	mName.t= y;
+
+	Keyframe& kf = mPath[iNew];
+	
+	mDur.data().set(kf.dur);
+	mCrv.data().set(kf.crv);
+	mSmt.data().set(kf.smt);
+	mName.searchBox().data().set(kf.name);
+	mName.searchBox().setValue(mName.searchBox().getValue());
+	mName.searchBox().selectAll();
+}
+
+std::string PathView::pathsName() const {
+	return (mStates ? mStates->name() : "") + "Paths";
+}
+
+void PathView::loadFile(){
+	ModelManager& mm = mPathMM;
+
+	mm.clearModels();
+	mm.clearSnapshots();
+	mm.name(pathsName());
+
+	DataModel len, dur, crv, smt, name;
+	
+	len.data().resize(Data::INT, 1);	
+	
+	mm.add("len", len);
+	
+	//len.data().elem<int>(0) = 5;
+	//len.data().print();
+
+	mm.snapshotsFromFile();
+//	printf("num snapshots = %d\n", mm.snapshots().size());
+
+//	mm.printSnapshots();
+
+	//(mm.snapshots()["path"]["len"])->data().print();
+	if(!mm.loadSnapshot("path")) printf("error loading path snapshot\n");
+
+//	len.data().print();
+
+	int N = len.data().elem<int>(0);
+
+//	printf("%s\n", mm.snapshotsToString().c_str());
+//	printf("%d\n", N);
+
+	mm.add("dur", dur);
+	mm.add("crv", crv);
+	mm.add("smt", smt);
+	mm.add("name", name);
+	
+	dur.data().resize(Data::FLOAT, N);
+	crv.data().resize(Data::FLOAT, N);
+	smt.data().resize(Data::FLOAT, N);
+	name.data().resize(Data::STRING, N);
+	
+	mm.snapshotsFromFile();
+	mm.loadSnapshot("path");
+//	mm.printSnapshots();
+
+	mPath.resize(N);
+	for(int i=0; i<N; ++i){
+		Keyframe& kf = mPath[i];
+		kf.dur = dur.data().elem<float>(i);
+		kf.crv = crv.data().elem<float>(i);
+		kf.smt = smt.data().elem<float>(i);
+		kf.name=name.data().elem<std::string>(i);
+	}
+}
+
+void PathView::saveFile(){
+	ModelManager& mm = mPathMM;
+
+	mm.name(pathsName());
+
+	DataModel len, dur, crv, smt, name;
+	
+	int N = mPath.size();
+	
+	len.data().resize(Data::INT, 1);
+	dur.data().resize(Data::FLOAT, N);
+	crv.data().resize(Data::FLOAT, N);
+	smt.data().resize(Data::FLOAT, N);
+	name.data().resize(Data::STRING, N);
+	
+	len.data().assign(N);
+	for(int i=0; i<N; ++i){
+		const Keyframe& kf = mPath[i];
+		dur.data().assign(kf.dur, i);
+		crv.data().assign(kf.crv, i);
+		smt.data().assign(kf.smt, i);
+		name.data().assign(kf.name, i);
+	}
+	
+	mm.clearModels();
+	mm.clearSnapshots();
+	
+	mm.add("len", len);
+	mm.add("dur", dur);
+	mm.add("crv", crv);
+	mm.add("smt", smt);
+	mm.add("name", name);
+	
+	mm.saveSnapshot("path");
+	mm.snapshotsToFile();
+}
+
+
+void PathView::fitExtent(){
+	int N = mPath.size();
+	if(!N) N=1;
+	extent(w, N*mName.h);
+}
+
+
+int PathView::loadCurrentPos(){
+	int idx0 = int(mPos);
+	
+	if(idx0 >= int(mPath.size()-1)){
+		mStates->loadSnapshot(mPath[idx0].name);
+	}
+	else{		
+		int idx1 = idx0 + 1;
+		float frac = mPos - idx0;
+		
+		// warp fraction
+		float crv = mPath[idx0].crv;
+		float smt = mPath[idx0].smt;
+		frac = warp(frac, crv, smt);
+	
+		const std::string& name0 = mPath[idx0].name;
+		const std::string& name1 = mPath[idx1].name;
+//		printf("%s -> %s, %g\n", name0.c_str(), name1.c_str(), frac);
+		mStates->loadSnapshot(name0, name1, 1-frac, frac);
+	}
+	return idx0;
+}
+
+float PathView::warp(float x, float crv, float smt){
+	static const float eps = 1e-8;
+	if(crv>eps || crv<-eps){	// avoid divide by zero when c is near 0
+		x = (1.f - exp(-crv*x))/(1.f - exp(-crv));
+	}
+	if(smt>0){
+		x = x*x*(3.f - 2.f*x);
+	}
+	return x;
+}
+
+
+
+
+PathEditor::PathEditor(space_t hei)
+:	Table("<")
+{
+	mPathView.attach(ntSelection, Update::Selection, this);
+	
+	mPathPresetControl.modelManager(mPathView.mPathMM);
+	
+	mHeader.h = 10;
+	mScroll.extent(mPathView.w, hei);
+	mScroll.mode(Scroll::VERTICAL);
+	(*this) << mPathPresetControl << mHeader << (mScroll << mPathView);
+	arrange();
+}
+
+void PathEditor::onDraw(GLV& g){
+	draw::color(colors().text);
+	mPathView.drawHeader(0, mHeader.top()+2);
+}
+
+void PathEditor::ntSelection(const Notification& n){
+	PathView& S = *n.sender<PathView>();
+	PathEditor& R = *n.receiver<PathEditor>();
+	const ChangedSelection& D = *n.data<ChangedSelection>();
+
+	Rect vrect = S.visibleRegion();
+	int itop = vrect.top() / S.dy();
+	int ibot = vrect.bottom() / S.dy();
+	//int isel = snd.selected();
+
+//	printf("%d %d\n", itop, ibot);
+
+	if(D.newIndex <= itop || D.newIndex >= ibot){
+		//mScroll.pageY(-1);
+		//rcv.mScroll.scrollY(-snd.dy());
+		R.mScroll.scrollTopTo(D.newIndex * S.dy());
+		R.mScroll.pageY(0.5);
+	}
+}
+
+
+
+
+
 } // glv::

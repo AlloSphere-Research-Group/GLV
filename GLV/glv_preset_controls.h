@@ -75,6 +75,91 @@ private:
 };
 
 
+
+
+
+class PathView : public Widget{
+public:
+
+	struct Keyframe{
+		Keyframe(): dur(1), crv(0), smt(0), name(""){}
+		float dur, crv, smt;
+		std::string name;
+	};
+
+
+	PathView();
+
+	PathView& modelManager(ModelManager& v);
+
+	void drawHeader(float x, float y);
+	void loadFile();
+	void saveFile();
+
+	virtual void onAnimate(double dsec, GLV& g);
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
+	virtual void onCellChange(int iOld, int iNew);
+	virtual const char * className() const { return "PathView"; }
+
+protected:
+	friend class PathEditor;
+	// Data is an array of preset names? or nothing, just dimensions?
+
+	ModelManager * mStates;		// States (from GUI)
+	ModelManager mPathMM;		// Animation path keyframes
+	
+	// Animation controls
+	NumberDialer mDur, mCrv, mSmt;
+	PresetControl mName;
+	std::vector<Keyframe> mPath;
+	double mPos;	// current sequence playback position
+	double mStart;	// sequence start
+	bool mPlaying;
+
+	void fitExtent();
+	
+	// Get y position of ith element
+	float getY(double i) const { return dy()*i + 2.; }
+	float seqRight() const { return 32; }
+	float startRight() const { return 8; }
+
+	int loadCurrentPos();
+
+	static float warp(float x, float crv, float smt);
+	std::string pathsName() const;
+};
+
+
+
+class PathEditor : public Table{
+public:
+	PathEditor(space_t height=180);
+	
+//	PathView& pathView(){ return mPathView; }
+//	PresetControl& presetControl(){ return mPresetControl; }
+
+	PathEditor& stateModelManager(ModelManager& v){
+		mPathView.modelManager(v); return *this;
+	}
+	
+	virtual void onDraw(GLV& g);
+	virtual const char * className() const { return "PathEditor"; }
+
+protected:
+	PresetControl mPathPresetControl;
+	Scroll mScroll;
+	Group mHeader;
+	PathView mPathView;
+	
+	static void ntSelection(const Notification& n);
+};
+
+
+
+
+
+
 class PresetView : public View {
 public:
 	PresetView(ModelManager& mm);
