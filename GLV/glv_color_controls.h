@@ -97,11 +97,13 @@ protected:
 		else{			mColor.set(c1,c2,c3);}
 		if(mControlsAlpha) mColor.a = mCompA.getValue();
 		mSliderStyle.color.fore = mColor;
+		mSliderStyle.color.back = Color(1-mColor.luminance());
+		//mSliderStyle.color.back = Color(mColor.luminance() > 0.5f ? 0:1);
 		//value().print();
 	}
 
 	static void updateComp(const Notification& n){
-		ColorSliders& c = *(ColorSliders *)n.receiver();
+		ColorSliders& c = *n.receiver<ColorSliders>();
 		c.setColor();
 	}
 };
