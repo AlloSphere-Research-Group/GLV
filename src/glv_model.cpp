@@ -996,11 +996,16 @@ void Data::mix(const Data& d1, const Data& d2, double c1, double c2){
 		for(int i=0; i<N; ++i){
 			double v1 = d1.at<double>(i);
 			double v2 = d2.at<double>(i);
-			assign(v1*c1 + v2*c2, i);
+			if(v1 != v2){	// avoid numerical error
+				assign(v1*c1 + v2*c2, i);
+			}
+			else{
+				assign(v1, i);
+			}
 		}
 	}
 	else{	// strings, yuck...
-
+		assign(d1);
 	}
 }
 
