@@ -130,7 +130,7 @@ void Label::rotateRect(){ t += w - h; transpose(); }
 	enable(DrawSelectionBox)
 
 NumberDialers::NumberDialers(int numInt, int numFrac, double max, double min, int nx, int ny)
-:	Widget(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 6, false,false,true), CTOR_LIST
+:	Widget(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 2, false,false,true), CTOR_LIST
 {
 	CTOR_BODY;
 	data().resize(Data::DOUBLE, nx, ny);
@@ -141,7 +141,7 @@ NumberDialers::NumberDialers(int numInt, int numFrac, double max, double min, in
 } 
 
 NumberDialers::NumberDialers(const NumberDialers& v)
-:	Widget(v,3, false,false,true), CTOR_LIST
+:	Widget(v,2, false,false,true), CTOR_LIST
 {
 	CTOR_BODY;
 	data() = v.data();
