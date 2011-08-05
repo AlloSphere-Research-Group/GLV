@@ -47,6 +47,8 @@ public:
 
 	/// Set the absolute increment amounts
 	Placer& abs(space_t vx, space_t vy);
+	Placer& absX(space_t v);
+	Placer& absY(space_t v);
 	
 	/// Set view alignment location
 	Placer& align(space_t vx, space_t vy);
@@ -111,6 +113,9 @@ struct Box : public Group{
 	
 	Box& operator<< (View* v){ p<<v; fit(); return *this; }
 	Box& operator<< (View& v){ p<<v; fit(); return *this; }
+
+	Box& padX(space_t v){ p.absX(v); return *this; }
+	Box& padY(space_t v){ p.absY(v); return *this; }
 
 	virtual const char * className() const { return "Box"; }
 private:
