@@ -20,17 +20,18 @@ public:
 	/// Prototype for constructor
 	struct Spec{
 		/// Constructor
-		Spec(Place::t posAnch, space_t dx, space_t dy, float size=8, bool vert=false)
-		:	posAnch(posAnch), dx(dx), dy(dy), size(size), vert(vert){}
+		Spec(Place::t posAnch=Place::TL, space_t dx=0, space_t dy=0, float size=8, bool vert=false)
+		:	posAnch(posAnch), dx(dx), dy(dy), size(size), stroke(1), vert(vert){}
 		
-		/// Set all members
-		Spec& set(Place::t posAnch_, space_t dx_, space_t dy_, float size_=8, bool vert_=false){
-			posAnch=posAnch_; dx=dx_; dy=dy_; size=size_; vert=vert_; return *this;
-		}
+//		/// Set all members
+//		Spec& set(Place::t posAnch_, space_t dx_, space_t dy_, float size_=8, bool vert_=false){
+//			posAnch=posAnch_; dx=dx_; dy=dy_; size=size_; vert=vert_; return *this;
+//		}
 		
 		Place::t posAnch;
 		space_t dx, dy;
 		float size;
+		float stroke;
 		bool vert;
 	};
 
@@ -59,8 +60,11 @@ public:
 	/// @param[in] vert		Whether to draw label vertically
 	Label(const std::string& text, Place::t posAnch, space_t px, space_t py, bool vert=false);
 
+	float stroke() const { return mStroke/256.; }
+
 	Label& align(float vx, float vy);		///< Set alignment factors for label area
 	Label& size(float pixels);				///< Set label size
+	Label& stroke(float pixels);			///< Set stroke width
 	Label& vertical(bool v);				///< Set whether label is displayed vertically
 
 	/// Get value
@@ -71,6 +75,7 @@ public:
 
 protected:
 	float mAlignX, mAlignY;
+	unsigned short mStroke;
 	bool mVertical;
 	
 	void fitExtent();
@@ -149,7 +154,7 @@ public:
 protected:
 	int mNI, mNF, mPos;		// # digits in integer, # digits in fraction, selected digit position
 	float mAcc;
-	bool mShowSign;
+	bool mShowSign, mOverwriteMode;
 
 	void fitExtent();
 

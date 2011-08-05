@@ -14,6 +14,7 @@ namespace glv{
 	useInterval(false);\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
 	setValue(str);\
+	stroke(1);\
 	vertical(vert)
 
 Label::Label(const std::string& str, const Spec& s)
@@ -23,6 +24,7 @@ Label::Label(const std::string& str, const Spec& s)
 	useInterval(false);
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);
 	setValue(str);
+	stroke(s.stroke);
 	vertical(s.vert);
 	size(s.size);
 	pos(s.posAnch, s.dx, s.dy).anchor(s.posAnch);
@@ -53,6 +55,11 @@ Label& Label::size(float pixels){
 	return *this;
 }
 
+Label& Label::stroke(float pixels){
+	mStroke = pixels*256.f;
+	return *this;
+}
+
 //Label& Label::setValue(const std::string& s){
 ////	model().set(s);
 ////	fitExtent();
@@ -72,7 +79,7 @@ Label& Label::vertical(bool v){
 
 void Label::onDraw(GLV& g){
 	using namespace glv::draw;
-	lineWidth(1);
+	lineWidth(stroke());
 	color(colors().text);
 	if(mVertical){ translate(0,h); rotate(0,0,-90); }
 	//font().render(value().c_str());
@@ -124,7 +131,7 @@ void Label::rotateRect(){ t += w - h; transpose(); }
 
 
 
-#define CTOR_LIST mNI(0), mNF(0), mAcc(0), mShowSign(true)
+#define CTOR_LIST mNI(0), mNF(0), mAcc(0), mShowSign(true), mOverwriteMode(true)
 #define CTOR_BODY\
 	font().letterSpacing(1./4);\
 	enable(DrawSelectionBox)
@@ -311,6 +318,7 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 			v += (k.keyAsNumber() - ((v / p) % 10)) * p;
 			v = vali < 0 ? -v : v;
 			setValue(v * pow(10., -mNF));
+			if(!mOverwriteMode) dig(dig()+1);
 			return false;
 		}
 		else{
@@ -324,6 +332,7 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 			case 's': dig(dig()-1); return false;
 			case Key::Right:
 			case 'd': dig(dig()+1); return false;
+			case 'o': mOverwriteMode^=true; return false;
 			}
 		}
 		break;
