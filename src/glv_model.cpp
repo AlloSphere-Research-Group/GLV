@@ -304,6 +304,41 @@ Data& Data::assign(const Data& v, int idx){
 	#undef OPALL
 }
 
+void Data::mix(const Data& d1, const Data& d2, double c1, double c2){
+	
+	int N = size();
+	
+	if(d1.size() < N) N = d1.size();
+	if(d2.size() < N) N = d2.size();
+
+	// TODO: make this more efficient...
+	if(isNumerical() && d1.isNumerical() && d2.isNumerical()){
+		for(int i=0; i<N; ++i){
+			double v1 = d1.at<double>(i);
+			double v2 = d2.at<double>(i);
+			
+			if(v1 != v2){	// avoid numerical error
+				if(type() == Data::BOOL){	// for booleans, we truncate first
+					assign(int(v1*c1 + v2*c2), i);
+				}
+				else{
+					assign(v1*c1 + v2*c2, i);			
+				}
+			}
+			else{
+				assign(v1, i);
+			}
+			
+//			if(type() == Data::BOOL){
+//				printf("%g -> %g = %g\n", v1, v2, v1*c1 + v2*c2);
+//				print();
+//			}
+		}
+	}
+	else{	// strings, yuck...
+		assign(d1);
+	}
+}
 
 int Data::indexOf(const Data& v) const {
 	if(hasData() && v.hasData()){
@@ -983,30 +1018,6 @@ bool ModelManager::loadSnapshot(const std::string& name){
 		return true;
 	}
 	return false;
-}
-
-void Data::mix(const Data& d1, const Data& d2, double c1, double c2){
-	
-	int N = size();
-	
-	if(d1.size() < N) N = d1.size();
-	if(d2.size() < N) N = d2.size();
-
-	if(isNumerical() && d1.isNumerical() && d2.isNumerical()){
-		for(int i=0; i<N; ++i){
-			double v1 = d1.at<double>(i);
-			double v2 = d2.at<double>(i);
-			if(v1 != v2){	// avoid numerical error
-				assign(v1*c1 + v2*c2, i);
-			}
-			else{
-				assign(v1, i);
-			}
-		}
-	}
-	else{	// strings, yuck...
-		assign(d1);
-	}
 }
 
 bool ModelManager::loadSnapshot(const std::string& name1, const std::string& name2, double c1, double c2){
