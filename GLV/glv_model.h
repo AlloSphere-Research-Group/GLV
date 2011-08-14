@@ -798,6 +798,13 @@ public:
 	/// Remove all models
 	void clearModels(){ mState.clear(); mConstState.clear(); }
 
+	/// Copy over models from another manager; replaces existing models
+	ModelManager& copyModels(const ModelManager& m){
+		mState = m.mState;
+		mConstState = m.mConstState;
+		return *this;
+	}
+
 	/// Clear all currently stored snapshots
 	void clearSnapshots(){ mSnapshots.clear(); }
 	
