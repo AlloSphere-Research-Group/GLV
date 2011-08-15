@@ -11,7 +11,7 @@ Keyboard::Keyboard()
 	for(int i=0; i<5; ++i) mModifiers[i] = false;
 }
 
-void Keyboard::print(){
+void Keyboard::print() const{
 	printf("code:%3d (%c) down:%d a:%d C:%d c:%d m:%d s:%d\n", 
 		key(), key(), isDown(), alt(), caps(), ctrl(), meta(), shift());
 }
@@ -31,7 +31,7 @@ Mouse::Mouse()
 
 void Mouse :: print() const {
 	printf("abspos: [%i, %i]\n", (int)x(), (int)y());
-	printf("relpos: [%f, %f]\n", (float)xRel(), (float)yRel());
+	printf("relpos: [%i, %i]\n", (int)xRel(), (int)yRel());
 	printf("dpos:   [%i, %i]\n", (int)dx(), (int)dy());
 	printf("ddpos:  [%i, %i]\n", (int)ddx(), (int)ddy());
 	printf("button: ");
