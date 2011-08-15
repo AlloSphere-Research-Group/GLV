@@ -277,8 +277,8 @@ void rotateY(float deg);
 void rotateZ(float deg);
 void scale(float v);								///< Scale all dimensions by amount
 void scale(float x, float y, float z=1.f);
-void scissor(float x, float y, float w, float h);	///< Set scissor region using window coordinate system
-void scissorGUI(float l, float t, float w, float h, float windowH);	///< Set scissor region using GUI coordinate system
+void scissor(int x, int y, int w, int h);			///< Set scissor region using window coordinate system
+void scissorGUI(int l, int t, int w, int h, int windowH);	///< Set scissor region using GUI coordinate system
 void stroke(float w);								///< Sets width of lines and points
 void texCoord(float x, float y);
 void translate(float x, float y, float z=0.f);
@@ -735,7 +735,7 @@ inline void scale(float v){ scale(v,v,v); }
 inline void translateX(float x){ translate(x, 0, 0); }
 inline void translateY(float y){ translate(0, y, 0); }
 inline void translateZ(float z){ translate(0, 0, z); }
-inline void scissorGUI(float l, float t, float w, float h, float windowH){
+inline void scissorGUI(int l, int t, int w, int h, int windowH){
 	scissor(l, windowH-t-h, w, h);
 }
 
@@ -808,7 +808,7 @@ inline void rotateX(float deg){ glRotatef(deg, 1.f, 0.f, 0.f); }
 inline void rotateY(float deg){ glRotatef(deg, 0.f, 1.f, 0.f); }
 inline void rotateZ(float deg){ glRotatef(deg, 0.f, 0.f, 1.f); }
 inline void scale(float x, float y, float z){ glScalef(x,y,z); }
-inline void scissor(float x, float y, float w, float h){ glScissor((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h); }
+inline void scissor(int x, int y, int w, int h){ glScissor(x,y,w,h); }
 inline void translate(float x, float y, float z){ glTranslatef(x,y,z); }
 inline void viewport(float x, float y, float w, float h){ glViewport((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h); }
 
