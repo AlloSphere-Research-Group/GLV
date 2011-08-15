@@ -342,6 +342,16 @@ void GLV::setMouseDown(space_t& x, space_t& y, int button, int clicks){
 	mMouse.updateButton(button, true, clicks);
 }
 
+void GLV::setMouseUp(space_t& x, space_t& y, int button, int clicks){
+	eventType(Event::MouseUp);
+	if(absToRel(mFocusedView, x, y)){
+		x -= mFocusedView->l;
+		y -= mFocusedView->t;
+	}
+	mMouse.posRel(x,y);
+	mMouse.updateButton(button, false, clicks);
+}
+
 void GLV::setMouseMotion(space_t& x, space_t& y, Event::t e){
 	eventType(e);
 	if(absToRel(mFocusedView, x, y)){
@@ -361,11 +371,6 @@ void GLV::setMouseDrag(space_t& x, space_t& y){
 void GLV::setMousePos(int x, int y, space_t relx, space_t rely){
 	mMouse.pos(x, y);
 	mMouse.posRel(relx, rely);
-}
-
-void GLV::setMouseUp(space_t& x, space_t& y, int button, int clicks){
-	eventType(Event::MouseUp);
-	mMouse.updateButton(button, false, clicks);
 }
 
 void GLV::setMouseWheel(int wheelDelta){
