@@ -28,6 +28,8 @@ void Buttons::onDraw(GLV& g){
 	// TODO: small buttons hard to see when not antialiased
 	//glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 	//draw::enable(PolygonSmooth);
+	
+	draw::stroke(1);
 
 	for(int i=0; i<sizeX(); ++i){
 		float x = xd*i + padx;
