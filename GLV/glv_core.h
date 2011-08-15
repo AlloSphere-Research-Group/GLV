@@ -221,7 +221,7 @@ public:
 	void meta (bool v);		///< Set meta key state
 	void shift(bool v);		///< Set shift key state
 
-	void print();			///< Print keyboard state to stdout
+	void print() const;		///< Print keyboard state to stdout
 
 protected:
 	int	mKeycode;			// last key event key number
