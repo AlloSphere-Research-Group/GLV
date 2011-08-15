@@ -122,13 +122,13 @@ void GLV::doFocusCallback(bool get){
 	}
 }
 
-void GLV::drawGLV(unsigned int w, unsigned int h, double dsec){
+void GLV::drawGLV(unsigned ww, unsigned wh, double dsec){
 #ifdef GLV_OPENGL_ES1
 	// glDrawBuffer is not necessary according to opengles v1.1 spec
 #else
 	glDrawBuffer(GL_BACK);
 #endif
-	drawWidgets(w, h, dsec);
+	drawWidgets(ww, wh, dsec);
 }
 
 
@@ -166,7 +166,7 @@ static void computeCrop(std::vector<Rect>& cr, int lvl, space_t ax, space_t ay, 
 }
 
 // Views are drawn depth-first from leftmost to rightmost sibling
-void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
+void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 	using namespace draw;
 
 	// TODO: Perhaps the View tree should be serialized into a separate list
@@ -174,7 +174,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 	//		This will permit a user to change the graph structure during a draw 
 	//		callback. Currently if this is attempted, we crash and burn.
 
-	enter2D(w, h);		// initialise the OpenGL renderer for our 2D GUI world
+	enter2D(ww, wh);		// initialise the OpenGL renderer for our 2D GUI world
   
 	// Render all primitives at integer positions, ref: OpenGL Redbook
 	// NOTE: This is a comprise to get almost pixel-perfection for both lines 
@@ -188,7 +188,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 
 	// The crop region is the intersection of all parent rects up to the top 
 	// view. The intersections also need to be done in absolute coordinates.	
-	std::vector<Rect> cropRects(16, Rect(w, h));	// index is hierarchy level
+	std::vector<Rect> cropRects(16, Rect(ww, wh));	// index is hierarchy level
 	int lvl = 0;	// start at root = 0
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -234,23 +234,39 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 			else break; // break the loop when the traversal returns to the root
 		}
 		
+		// animate current view
+		if(cv->enabled(Animate)) cv->onAnimate(dsec, *this);
 		
-		// draw the current view
+		// draw current view
 		if(cv->visible()){
 			Rect r = cropRects[lvl-1];	// cropping region comes from parent context
 			if(cv->enabled(CropSelf)) r.intersection(Rect(cx, cy, cv->w, cv->h), r); // crop my own draw?
 
-			// LJP: using some weird numbers here, seems to work right though...
-//			scissor(pix(r.l), pix(h - r.bottom() - 1.499f), pix(r.w+1), pix(r.h+1.499f));
+			// bypass if drawing area outside of crop region
+			if(r.h<=0.f || r.w <= 0.f) continue;
 
-//			scissor(pix(r.l), h - (pix(r.t) + pix(r.h)), pix(r.w), pix(r.h));
-			scissor(pix(r.l), h - (pix(r.t) + pix(r.h)) + 0.99, r.w, r.h + 0.5);
-//			scissor(pix(r.l), h - (pix(r.t) + pix(r.h)) + 0, r.w, r.h + 0);
-//			scissorGUI(pix(r.l-0.019)-0.0, pix(r.t-0.019), pix(r.w), pix(r.h), h);
+			int sx = pix(r.l);
+			int sy = wh - (pix(r.t) + pix(r.h)) + 0.99;
+			int sw = r.w;
+			int sh = r.h + 0.5;
+//			if(sx < int(ww) && sy < int(wh)){	// LJP: this might be too paranoid
+//				if(sx < 0) sx=0;
+//				if(sy < 0) sy=0;
+//				if(sx+sw > int(ww)) sw = ww - sx;
+//				if(sy+sh > int(wh)) sh = wh - sy;
+				//printf("[%d %d] -> %d %d %d %d\n", ww,wh, sx,sy,sw,sh);
+				scissor(sx, sy, sw, sh);
 
-			graphicsData().reset();
-			if(cv->enabled(Animate)) cv->onAnimate(dsec, *this);
-			cv->doDraw(*this);
+				// LJP: using some weird numbers here, seems to work right though...
+				//scissor(pix(r.l), pix(wh - r.bottom() - 1.499f), pix(r.w+1), pix(r.h+1.499f));
+				//scissor(pix(r.l), wh - (pix(r.t) + pix(r.h)), pix(r.w), pix(r.h));
+				//scissor(pix(r.l), wh - (pix(r.t) + pix(r.h)) + 0, r.w, r.h + 0);
+				//scissorGUI(pix(r.l-0.019)-0.0, pix(r.t-0.019), pix(r.w), pix(r.h), wh);
+
+				graphicsData().reset();
+				//if(cv->enabled(Animate)) cv->onAnimate(dsec, *this);
+				cv->doDraw(*this);
+//			}
 		}
 	}
 
@@ -259,7 +275,7 @@ void GLV::drawWidgets(unsigned int w, unsigned int h, double dsec){
 	
 	// this weird call is necessary so that raster calls get scissored properly
 	// not entirely sure why this works, but it does.
-	scissor(0,0,(GLint)w,(GLint)h);
+	scissor(0,0,(GLint)ww,(GLint)wh);
 }
 
 std::vector<GLV *>& GLV::instances(){
