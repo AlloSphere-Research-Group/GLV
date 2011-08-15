@@ -602,14 +602,19 @@ public:
 	/// Sends an event to everyone in tree (including self)
 	void broadcastEvent(Event::t e);
 	
-	/// GLV MAIN RENDER LOOP: draw all Views in the GLV
+	/// Draw all Views in the GLV
 
-	/// The assumption is that we are inside an OpenGL context of size [w, h]
-	/// dsec is the time, in seconds, from the last frame
-	virtual void drawGLV(unsigned int w, unsigned int h, double dsec);
+	/// @param[in] contextWidth		width of context, in pixels
+	/// @param[in] contextHeight	height of context, in pixels
+	/// @param[in] dsec				change in seconds from last call to this method
+	virtual void drawGLV(unsigned contextWidth, unsigned contextHeight, double dsec);
 	
-	/// Draws all acive widgest in the GLV
-	void drawWidgets(unsigned int w, unsigned int h, double dsec);
+	/// Draws all active widgets in the GLV
+	
+	/// @param[in] contextWidth		width of context, in pixels
+	/// @param[in] contextHeight	height of context, in pixels
+	/// @param[in] dsec				change in seconds from last call to this method
+	void drawWidgets(unsigned contextWidth, unsigned contextHeight, double dsec);
 	
 	/// Set event type to propagate
 	void eventType(Event::t e){ mEventType = e; }
