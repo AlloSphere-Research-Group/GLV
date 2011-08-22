@@ -488,6 +488,8 @@ public:
 
 	/// Assign contents from mixture
 	void mix(const Data& d1, const Data& d2, double c1, double c2);
+	void mix(const Data& d1, const Data& d2, const Data& d3, const Data& d4, double c1, double c2, double c3, double c4);
+	template <int N> void mix(const Data* D[], double c[]);
 
 	/// Resize array allocating new memory if necessary
 	int resize(const int * sizes, int numDims){
@@ -590,7 +592,14 @@ protected:
 		if(n){ int r=v[0]; for(int i=1;i<n;++i) r*=v[i]; return r; }
 		return 0;
 	}
+
+	template <int N, class T>
+	static bool notEqual(const T* v){
+		for(int i=1; i<N; ++i){ if(v[0] != v[i]) return true; }
+		return false;
+	}
 };
+
 
 
 
@@ -840,6 +849,17 @@ public:
 	/// \returns whether snapshot mixture was loaded successfully
 	///
 	bool loadSnapshot(const std::string& name1, const std::string& name2, double c1, double c2);
+	bool loadSnapshot(const Snapshot& ss1, const Snapshot& ss2, double c1, double c2);
+
+	bool loadSnapshot(
+		const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4,
+		double c1, double c2, double c3, double c4);
+
+	bool loadSnapshot(
+		const Snapshot& ss1, const Snapshot& ss2, const Snapshot& ss3, const Snapshot& ss4,
+		double c1, double c2, double c3, double c4);
+
+	void makeClosed();
 
 protected:
 	std::string mName;				// name identifier
@@ -855,6 +875,9 @@ protected:
 //	int stateFromToken(const std::string& src);
 
 	bool defaultFilePath(std::string& s) const;
+
+//	template <int N> bool loadSnapshot(const std::string ** names, const double * c);
+//	template <int N> bool loadSnapshot(const Snapshot ** snapshots, const double * c);
 
 	static std::string namedDataToString(const std::string& s, const Data& d){
 		std::string r;
@@ -966,6 +989,84 @@ DATA_SET(std::string, STRING)
 //	setRaw(src,0,1,Data::STRING); shape(sizes,n); return *this;
 //}
 #undef DATA_SET
+
+inline void Data::mix(const Data& d1, const Data& d2, double c1, double c2){
+	const Data* d[]={&d1,&d2};
+	double c[]={c1,c2};
+	mix<2>(d,c);
+}
+
+inline void Data::mix(
+	const Data& d1, const Data& d2, const Data& d3, const Data& d4,
+	double c1, double c2, double c3, double c4
+){
+	const Data* d[]={&d1,&d2,&d3,&d4};
+	double c[]={c1,c2,c3,c4};
+	mix<4>(d,c);
+}
+
+template <int M>
+void Data::mix(const Data* D[], double c[]){
+	int N = size();
+
+	bool num = isNumerical();
+
+	for(int i=0; i<M; ++i){
+		const Data& d = *D[i];
+		int sz = d.size();
+		if(sz < N) N = sz;
+		num &= d.isNumerical();
+	}
+
+	// TODO: make this more efficient...
+	if(num){
+		double v[M];
+	
+		for(int i=0; i<N; ++i){
+		
+			for(int m=0; m<M; ++m) v[m] = D[m]->at<double>(i);
+
+			if(notEqual<M>(v)){	// avoid numerical error
+				double res = v[0]*c[0];
+				for(int m=1; m<M; ++m) res += v[m]*c[m];
+			
+				// for booleans, we truncate first
+				if(type() == Data::BOOL)	assign(int(res), i);
+				else						assign(res, i);
+			}
+			else{
+				assign(v[0], i);
+			}
+		}
+	}
+	else{	// strings, yuck...
+		assign(*D[0]);
+	}
+}
+
+
+/// This assumes that all snapshots are members of a closed set
+//template <int N>
+//bool ModelManager::loadSnapshot(const Snapshot ** S, double * c){
+//	
+//	Snapshot::const_iterator it[N];
+//	for(int i=0; i<N; ++i) it[i] = S[i]->begin();
+//	
+//	while(S[0]->end() != it[0]){
+//	
+//		const Data * D[N];
+//		for(int i=0; i<N; ++i) D[i] = &(it[i]->second);
+//
+//		Data temp = data1;
+//		temp.clone();
+//		temp.mix<N>(D, c);
+//		itState->second->setData(temp);
+//		
+//		for(int i=0; i<N; ++i) ++(it[i]);
+//	}
+//	return true;
+//}
+
 
 } // glv::
 #endif

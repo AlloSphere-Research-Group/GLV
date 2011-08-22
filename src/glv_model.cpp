@@ -304,41 +304,6 @@ Data& Data::assign(const Data& v, int idx){
 	#undef OPALL
 }
 
-void Data::mix(const Data& d1, const Data& d2, double c1, double c2){
-	
-	int N = size();
-	
-	if(d1.size() < N) N = d1.size();
-	if(d2.size() < N) N = d2.size();
-
-	// TODO: make this more efficient...
-	if(isNumerical() && d1.isNumerical() && d2.isNumerical()){
-		for(int i=0; i<N; ++i){
-			double v1 = d1.at<double>(i);
-			double v2 = d2.at<double>(i);
-			
-			if(v1 != v2){	// avoid numerical error
-				if(type() == Data::BOOL){	// for booleans, we truncate first
-					assign(int(v1*c1 + v2*c2), i);
-				}
-				else{
-					assign(v1*c1 + v2*c2, i);			
-				}
-			}
-			else{
-				assign(v1, i);
-			}
-			
-//			if(type() == Data::BOOL){
-//				printf("%g -> %g = %g\n", v1, v2, v1*c1 + v2*c2);
-//				print();
-//			}
-		}
-	}
-	else{	// strings, yuck...
-		assign(d1);
-	}
-}
 
 int Data::indexOf(const Data& v) const {
 	if(hasData() && v.hasData()){
@@ -1020,54 +985,187 @@ bool ModelManager::loadSnapshot(const std::string& name){
 	return false;
 }
 
-bool ModelManager::loadSnapshot(const std::string& name1, const std::string& name2, double c1, double c2){
+bool ModelManager::loadSnapshot(const Snapshot& ss1, const Snapshot& ss2, double c1, double c2){
+	Snapshot::const_iterator it1 = ss1.begin();
+	Snapshot::const_iterator it2 = ss2.begin();
+	
+	while(ss1.end() != it1 && ss2.end() != it2){
+		
+		const std::string& id1 = it1->first;
+		const std::string& id2 = it2->first;
 
+		int cmp = id1.compare(id2);
+		
+		if(0 == cmp){		// ids match, attempt interpolation
+			
+			NamedModels::const_iterator itState = mState.find(id1);
+			if(mState.end() != itState){	// found model with this id, lock and load!
+				const Data& data1 = it1->second;
+				const Data& data2 = it2->second;
+				
+				Data temp = data1;
+				temp.clone();
+				temp.mix(data1, data2, c1, c2);
+				itState->second->setData(temp);
+			}
+			
+			++it1;
+			++it2;
+		}
+		else if(cmp < 0){	// first id less than second id
+			++it1;			// let first iterator catch up with second
+		}
+		else{				// first id greater than second id
+			++it2;			// let second iterator catch up with first
+		}
+	}
+	return true;
+}
+
+
+bool ModelManager::loadSnapshot(
+	const Snapshot& ss1, const Snapshot& ss2, const Snapshot& ss3, const Snapshot& ss4,
+	double c1, double c2, double c3, double c4
+){
+	const int N = 4;
+	Snapshot::const_iterator it[N] = {ss1.begin(), ss2.begin(), ss3.begin(), ss4.begin()};
+	double cs[N] = {c1,c2,c3,c4};
+	
+	while(ss1.end() != it[0] && ss2.end() != it[1] && ss3.end() != it[2] && ss4.end() != it[3]){
+
+		/*
+		First, sort strings into A <= B <= C <= D
+		
+		if(A == B && B == C && C == D){
+			interpolate
+			 ++itA; ++itB; ++itC; ++itD;
+		}
+		else if(C != D) ++itA; ++itB; ++itC;
+		else if(B != C) ++itA; ++itB;
+		else if(A != B) ++itA;
+		*/
+
+		int sort[N]; // = 0, 1, 2, ..., N-1
+		for(int i=0;i<N;++i) sort[i]=i;
+		
+		// do a shell sort
+		int cmp13 = it[sort[0]]->first.compare(it[sort[2]]->first);
+		int cmp24 = it[sort[1]]->first.compare(it[sort[3]]->first);
+		
+		if(cmp13 > 0) std::swap(sort[0], sort[2]);
+		if(cmp24 > 0) std::swap(sort[1], sort[3]);
+
+		int cmpAB = it[sort[0]]->first.compare(it[sort[1]]->first);
+		int cmpCD = it[sort[2]]->first.compare(it[sort[3]]->first);
+
+		if(cmpAB > 0) std::swap(sort[0], sort[1]);
+		if(cmpCD > 0) std::swap(sort[2], sort[3]);
+
+		int cmpBC = it[sort[1]]->first.compare(it[sort[2]]->first);
+
+		if(cmpAB==0 && cmpBC==0 && cmpCD==0){
+			NamedModels::const_iterator itState = mState.find(it[0]->first);
+			if(mState.end() != itState){	// found model with this id, lock and load!
+				const Data * D[N];
+				for(int i=0; i<N; ++i) D[i] = &(it[i]->second);
+
+				Data temp = *D[0];
+				temp.clone();
+				temp.mix<N>(D, cs);
+				itState->second->setData(temp);
+			}
+			for(int i=0;i<N;++i) ++(it[i]);		
+		}
+		else if(cmpCD){ for(int i=0;i<N-1;++i) ++(it[i]); }
+		else if(cmpBC){ for(int i=0;i<N-2;++i) ++(it[i]); }
+		else if(cmpAB){ for(int i=0;i<N-3;++i) ++(it[i]); }
+	}
+	return true;
+}
+
+
+bool ModelManager::loadSnapshot(
+	const std::string& name1, const std::string& name2,
+	double c1, double c2
+){
+//	const std::string* names[] = {&name1, &name2}; 
+//	const double cs[] = {c1,c2};
+//	return loadSnapshot<2>(names, cs);
 	Snapshots::const_iterator it1 = mSnapshots.find(name1);
 	if(mSnapshots.end() == it1) return false;
-	
 	Snapshots::const_iterator it2 = mSnapshots.find(name2);
 	if(mSnapshots.end() == it2) return false;
+	return loadSnapshot(it1->second, it2->second, c1,c2);
+}
 
-	const Snapshot& ss1 = it1->second;
-	const Snapshot& ss2 = it2->second;
+bool ModelManager::loadSnapshot(
+	const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4,
+	double c1, double c2, double c3, double c4
+){
+//	const std::string* names[] = {&name1, &name2, &name3, &name4}; 
+//	const double cs[] = {c1,c2,c3,c4};
+//	return loadSnapshot<4>(names, cs);
+	Snapshots::const_iterator it1 = mSnapshots.find(name1);
+	if(mSnapshots.end() == it1) return false;
+	Snapshots::const_iterator it2 = mSnapshots.find(name2);
+	if(mSnapshots.end() == it2) return false;
+	Snapshots::const_iterator it3 = mSnapshots.find(name3);
+	if(mSnapshots.end() == it3) return false;
+	Snapshots::const_iterator it4 = mSnapshots.find(name4);
+	if(mSnapshots.end() == it4) return false;
+	return loadSnapshot(it1->second, it2->second, it3->second, it4->second, c1,c2,c3,c4);
+}
 
-	{
-		Snapshot::const_iterator it1 = ss1.begin();
-		Snapshot::const_iterator it2 = ss2.begin();
-		
-		while(ss1.end() != it1 && ss2.end() != it2){
+
+// to header...
+//template <int N>
+//bool ModelManager::loadSnapshot(const std::string ** names, const double * c){
+//	const Snapshot * snapshots[N];
+//	for(int i=0; i<N; ++i){
+//		Snapshots::const_iterator it = mSnapshots.find(names[i]);
+//		if(mSnapshots.end() == it) return false;
+//		snapshots[i] = &it->second;	
+//	}
+//	return loadSnapshot<N>(snapshots, c);
+//}
+
+//bool ModelManager::loadSnapshot(const std::string& name1, const std::string& name2, double c1, double c2){
+//	Snapshots::const_iterator it1 = mSnapshots.find(name1);
+//	if(mSnapshots.end() == it1) return false;
+//	Snapshots::const_iterator it2 = mSnapshots.find(name2);
+//	if(mSnapshots.end() == it2) return false;
+//	return loadSnapshot(it1->second, it2->second, c1,c2);
+//}
+
+
+// This runs through the current set of models and checks that snapshots have same
+// parameters. If a snapshot is missing a parameter, it is copied in from the
+// current model state.
+void ModelManager::makeClosed(){
+
+	// Run through each model in set
+	NamedModels::const_iterator itm = mState.begin();
+	for(; itm!=mState.end(); ++itm){
+	
+		const std::string& paramName = itm->first;
+		Data temp; 
+		temp = itm->second->getData(temp);
+	
+		// Run through all the snapshots checking for param name
+		Snapshots::iterator its = mSnapshots.begin();
+		for(; its!=mSnapshots.end(); ++its){
 			
-			const std::string& id1 = it1->first;
-			const std::string& id2 = it2->first;
-
-			int cmp = id1.compare(id2);
+			const std::string& ssName = its->first;
+			Snapshot& ss = its->second;
 			
-			if(0 == cmp){		// ids match, attempt interpolation
-				
-				NamedModels::const_iterator itState = mState.find(id1);
-				if(mState.end() != itState){	// found model with this id, lock and load!
-					const Data& data1 = it1->second;
-					const Data& data2 = it2->second;
-					
-					Data temp = data1;
-					temp.clone();
-					temp.mix(data1, data2, c1, c2);
-					itState->second->setData(temp);
-				}
-				
-				++it1;
-				++it2;
-			}
-			else if(cmp < 0){	// first id less than second id
-				++it1;			// let first iterator catch up with second
-			}
-			else{				// first id greater than second id
-				++it2;			// let second iterator catch up with first
+			if(ss.find(paramName) == ss.end()){
+				printf("In set \"%s\": Parameter \"%s\" not found in preset \"%s\"\n",
+					name().c_str(), paramName.c_str(), ssName.c_str());
+				(ss[paramName] = temp).clone();
 			}
 		}
 	}
-
-	return true;
 }
+
 
 } // glv::
