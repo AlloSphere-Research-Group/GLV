@@ -194,9 +194,22 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 	glEnableClientState(GL_VERTEX_ARRAY);
 	//glEnableClientState(GL_COLOR_ARRAY); // note: enabling this messes up glColor, so leave it off
 	//glColorPointer(4, GL_FLOAT, 0, 0);
-  
+
+
+	// Animate all the views
+	struct AnimateViews : public TraversalAction{
+		AnimateViews(GLV& g_, double dt_): g(g_), dt(dt_){}
+		virtual bool operator()(View * v, int depth){
+			if(v->enabled(Animate)) v->onAnimate(dt, g);
+			return true;
+		}
+		GLV& g; double dt;
+	} animateViews(*this, dsec);
+	traverseDepth(animateViews);
+
+
 	graphicsData().reset();
-	if(enabled(Animate)) onAnimate(dsec, *this);
+	//if(enabled(Animate)) onAnimate(dsec, *this);
 	doDraw(*this);
 	
 	draw::enable(ScissorTest);
@@ -235,7 +248,7 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 		}
 		
 		// animate current view
-		if(cv->enabled(Animate)) cv->onAnimate(dsec, *this);
+		//if(cv->enabled(Animate)) cv->onAnimate(dsec, *this);
 		
 		// draw current view
 		if(cv->visible()){
