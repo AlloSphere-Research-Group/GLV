@@ -418,7 +418,7 @@ bool TextView::onAssignData(Data& d, int ind1, int ind2){
 	return false;
 }
 
-void TextView::onAnimate(double dsec, GLV& g){
+void TextView::onAnimate(double dsec){
 	mBlink += dsec * 0.8;
 	if(mBlink >= 1) mBlink-=1;
 }

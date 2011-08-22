@@ -96,7 +96,7 @@ public:
 	void loadFile();
 	void saveFile();
 
-	virtual void onAnimate(double dsec, GLV& g);
+	virtual void onAnimate(double dsec);
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
 	virtual void onCellChange(int iOld, int iNew);

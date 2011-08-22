@@ -76,7 +76,7 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 //	glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
 	draw::enable(draw::PointSmooth);
 	draw::enable(draw::LineSmooth);
-	
+
 	bool doLineStipple = (-1 != mLineStipple);
 
 	if(doLineStipple){
@@ -114,7 +114,20 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 //	glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
 //	glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA)
 
+	//glEnable(GL_ALPHA_TEST);
+	//glAlphaFunc(GL_GREATER, 0.99);
+
 	onDraw(gd, d);
+
+//	glDisable(GL_ALPHA_TEST);
+
+//	glBlendEquation(GL_MAX);
+//	glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
+//	
+//	draw::color(0,0,0,1);
+//	draw::rectangle(-1,-1,1,1);
+//	
+//	draw::blendTrans();
 
 	switch(mBlendMode){
 		case TRANSPARENT: break;
@@ -124,6 +137,12 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 			break;
 		default:;
 	}
+
+//	glEnable(GL_ALPHA_TEST);
+//	glAlphaFunc(GL_GREATER, 0.9);
+//	draw::color(0,0,0,0.91);
+//	draw::rectangle(-1,-1,1,1);
+//	glDisable(GL_ALPHA_TEST);
 
     if(doLineStipple) draw::lineStippling(false);
 }

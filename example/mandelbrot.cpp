@@ -20,7 +20,7 @@ struct Canvas : public Plot{
 		disable(DrawBorder);
 	}
 
-	void onAnimate(double dt, GLV& g){
+	void onAnimate(double dt){
 		
 //		major(interval(1).diameter()/4);
 //		minor(1);

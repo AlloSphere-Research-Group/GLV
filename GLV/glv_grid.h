@@ -110,7 +110,7 @@ public:
 	Grid& zoom(double amt, double x, double y);
 
 	virtual bool onEvent(Event::t e, GLV& g);
-	virtual void onAnimate(double dt, GLV& g);
+	virtual void onAnimate(double dt);
 	virtual void onDraw(GLV& g);
 	virtual void onResize(space_t dx, space_t dy);
 	

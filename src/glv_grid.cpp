@@ -41,7 +41,7 @@ int Grid::addGridLines(int i, double dist, GraphicsData& gb){
 	return n;
 }
 
-void Grid::onAnimate(double dt, GLV& g){
+void Grid::onAnimate(double dt){
 //	for(int i=0; i<DIM; ++i){
 //		if(mVel[i] != 0) interval(i).translate(mVel[i]);
 //	}

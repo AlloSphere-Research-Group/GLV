@@ -431,7 +431,7 @@ PathView& PathView::modelManager(ModelManager& v){
 }
 
 
-void PathView::onAnimate(double dsec, GLV& g){
+void PathView::onAnimate(double dsec){
 	if(mPlaying && mPath.size()>0){
 
 		double max = mPath.size()-1;
@@ -448,7 +448,7 @@ void PathView::onAnimate(double dsec, GLV& g){
 			}
 			else{
 				++mPos;
-				onAnimate(dsec, g);
+				onAnimate(dsec);
 			}
 		}
 	}

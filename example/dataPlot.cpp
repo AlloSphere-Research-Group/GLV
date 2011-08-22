@@ -52,7 +52,7 @@ struct MyGLV : GLV {
 		data().resize(Data::DOUBLE, 2,16,16);
 	}
 
-	void onAnimate(double dt, GLV& g){
+	void onAnimate(double dt){
 		phase += 0.013;
 		Data& d = data();
 		

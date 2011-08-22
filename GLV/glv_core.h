@@ -390,7 +390,7 @@ public:
 	virtual const char * className() const { return "View"; } ///< Get class name
 
 	// User-defined callbacks
-	virtual void onAnimate(double dsec, GLV& g){}	///< Animation callback
+	virtual void onAnimate(double dsec){}			///< Animation callback
 	virtual void onDraw(GLV& g){}					///< Drawing callback
 	virtual bool onEvent(Event::t e, GLV& g){return true;} ///< Event callback to be called after those in callback list
 	virtual void onResize(space_t dx, space_t dy){}	///< Resize callback

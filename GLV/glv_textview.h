@@ -229,7 +229,7 @@ public:
 	void deselect(){ mSel=0; }
 
 	virtual const char * className() const { return "TextView"; }
-	virtual void onAnimate(double dsec, GLV& g);
+	virtual void onAnimate(double dsec);
 	virtual void onDraw(GLV& g);	
 	virtual bool onEvent(Event::t e, GLV& g);
 

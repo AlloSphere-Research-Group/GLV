@@ -14,8 +14,8 @@ struct MyGLV : GLV {
 		data().resize(Data::DOUBLE, 3, 128);
 	}
 
-	void onAnimate(double dt, GLV& g){
-		const float pi = 3.141593;
+	void onAnimate(double dt){
+		const float pi = 3.141592653589793;
 
 		phase1 += 0.0037; while(phase1 > 2*pi){ phase1 -= 2*pi; }
 		phase2 += 0.0031; while(phase2 > 2*pi){ phase2 -= 2*pi; }

@@ -198,18 +198,18 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 
 	// Animate all the views
 	struct AnimateViews : public TraversalAction{
-		AnimateViews(GLV& g_, double dt_): g(g_), dt(dt_){}
+		AnimateViews(double dt_): dt(dt_){}
 		virtual bool operator()(View * v, int depth){
-			if(v->enabled(Animate)) v->onAnimate(dt, g);
+			if(v->enabled(Animate)) v->onAnimate(dt);
 			return true;
 		}
-		GLV& g; double dt;
-	} animateViews(*this, dsec);
+		double dt;
+	} animateViews(dsec);
 	traverseDepth(animateViews);
 
 
 	graphicsData().reset();
-	//if(enabled(Animate)) onAnimate(dsec, *this);
+	//if(enabled(Animate)) onAnimate(dsec);
 	doDraw(*this);
 	
 	draw::enable(ScissorTest);
@@ -248,7 +248,7 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 		}
 		
 		// animate current view
-		//if(cv->enabled(Animate)) cv->onAnimate(dsec, *this);
+		//if(cv->enabled(Animate)) cv->onAnimate(dsec);
 		
 		// draw current view
 		if(cv->visible()){
@@ -277,7 +277,7 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 				//scissorGUI(pix(r.l-0.019)-0.0, pix(r.t-0.019), pix(r.w), pix(r.h), wh);
 
 				graphicsData().reset();
-				//if(cv->enabled(Animate)) cv->onAnimate(dsec, *this);
+				//if(cv->enabled(Animate)) cv->onAnimate(dsec);
 				cv->doDraw(*this);
 //			}
 		}

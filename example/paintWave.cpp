@@ -32,7 +32,7 @@ struct Canvas : public Plot{
 		gui.arrange();
 	}
 
-	void onAnimate(double dt, GLV& g){
+	void onAnimate(double dt){
 
 		// set plot data to current z plane
 		data() = P.slice(it0*P.size(0,1)).shape(1, P.size(0), P.size(1));

@@ -14,7 +14,7 @@ struct Canvas : public Plot{
 		iz=0;
 	}
 
-	void onAnimate(double dt, GLV& g){
+	void onAnimate(double dt){
 
 		// set plot data to current z plane
 		data() = P.slice(iz*P.size(0,1)).shape(1, P.size(0), P.size(1));

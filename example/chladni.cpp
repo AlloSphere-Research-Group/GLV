@@ -19,7 +19,7 @@ struct Canvas : public Plot{
 		disable(DrawBorder);
 	}
 
-	void onAnimate(double dt, GLV& g){
+	void onAnimate(double dt){
 		
 		plotDensity.plotRegion(interval(0), interval(1));
 		
