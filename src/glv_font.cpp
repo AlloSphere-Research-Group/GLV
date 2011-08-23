@@ -1,6 +1,5 @@
 #include <ctype.h>		// isgraph
 #include <string.h>		// strlen
-#include "glv_draw.h"
 #include "glv_font.h"
 
 namespace glv{
@@ -26,6 +25,7 @@ struct Glyph{
 static Glyph glyphs[94] = {
 	{Glyph::Once | Glyph::Dot1 | 2, {3,4,4}, {7,0,5}},		// !
 	{Glyph::Once | 4, {3,3,5,5}, {0,3,0,3}},				// "
+//	{Glyph::Once | 8, {1,7,1,7,3,3,5,5}, {3,3,5,5,1,7,1,7}},// #
 	{Glyph::Once | 8, {1,7,1,7,3,3,5,5}, {3,3,5,5,1,7,1,7}},// #
 	{0},/* composite of S and | */							// $
 	{Glyph::Once | Glyph::Dot2 | 2, {1,6,7,1}, {0,7,0,8}},	// %
@@ -57,23 +57,23 @@ static Glyph glyphs[94] = {
 	{Glyph::Dot1 | 5, {3,1,6,6,3,3}, {7,0,0,3,4,5}},		// ?
 	{8, {7,3,3,7,7,1,1,7}, {2,3,6,6,0,0,8,8}},				// @
 	{Glyph::Once | 6, {1,4,4,7,2,6}, {8.5,0,0,8.5,5,5}},	// A
-	{8, {1,1,5,5,1,6,6,1}, {8,0,1,4,4,4,8,8}},				// B
+	{8, {1,1,5,5,1,6,6,1}, {8,0,0.5,4,4,4,8,8}},			// B
 	{4, {6,1,1,6}, {0,0.5,7.5,8}},							// C
-	{5, {1,6,6,1,1}, {0,2,7,8,0}},							// D
+	{5, {1,6,6,1,1}, {0,1,7,8,0}},							// D
 	{Glyph::Once | 8, {1,1,1,6,1,5,1,6}, {0,8,0,0,4,4,8,8}},// E
 	{Glyph::Once | 6, {1,1,1,6,1,5}, {0,8,0,0,4,4}},		// F
-	{6, {6,1,1,6,6,4}, {0,1,7,8,5,5}},						// G
+	{6, {6,1,1,6,6,4}, {0,0.5,7.5,8,4,4}},					// G
 	{Glyph::Once | 6, {1,1,1,6,6,6}, {0,8.5,4,4,0,8.5}},	// H
 	{Glyph::Once | 6, {2,6,4,4,2,6}, {0,0,0,8,8,8}},		// I
 	{4, {1,1,6,6}, {6,8,8,-0.5}},							// J
-	{Glyph::Once | 6, {1,1,6,1,1,6}, {-0.5,8.5,-0.5,4,4,8.5}},	// K
+	{Glyph::Once | 6, {1,1,6,1,1,6}, {-0.5,8.5,-0.5,4,4,8.5}}, // K
 	{3, {1,1,6}, {-0.5,8,8}},								// L
 	{5, {1,1,4,7,7}, {8.5,0,5,0,8.5}},						// M
 	{4, {1,1,6,6}, {8.5,0,8,0}},							// N
 	{5, {1,6,6,1,1}, {0,0,8,8,0}},							// O
-	{5, {1,1,6,6,1}, {8.5,0,1,4,4}},						// P
-	{6, {5,1,1,6,5,7}, {7,7,0,0,7,9}},						// Q
-	{6, {1,1,6,6,1,6}, {8.5,0,1,4,4,8}},					// R
+	{5, {1,1,6,6,1}, {8.5,0,0.5,4,4.5}},					// P
+	{6, {5,1,1,5.5,5,7}, {7,7,0,0,7,9}},						// Q
+	{6, {1,1,6,6,1,6}, {8.5,0,0.5,4,4,8}},					// R
 	{6, {6,1,1,6,6,1}, {0,0,3,5,8,8}},						// S
 	{Glyph::Once | 4, {1,7,4,4}, {0,0,0,8.5}},				// T
 	{4, {1,1,6,6}, {0,8,8,0}},								// U
@@ -90,9 +90,9 @@ static Glyph glyphs[94] = {
 	{Glyph::Once | 2, {3,5}, {0,3}},						// `
 	{6, {2,6,6,1,1,6}, {3,3,8,8,5,4}},						// a
 	{5, {1,1,6,6,1}, {-0.5,8,8,4,3}},						// b
-	{4, {6,1,1,6}, {3,4,8,8}},								// c
+	{4, {6,1,1,6}, {3,3.5,8,8}},							// c
 	{5, {6,6,1,1,6}, {-0.5,8,8,4,3}},						// d
-	{6, {1,6,6,1,1,6}, {6,5,3,3,8,8}},						// e
+	{6, {1,6,6,1,1,6}, {5.5,5,3,3,8,8}},					// e
 	{Glyph::Once | 6, {7,3,3,3,5.5,1.5}, {0,0,0,8.5,3,3}},	// f
 	{6, {6,1,1,6,6,2}, {8,8,3,3,11,11}},					// g
 	{Glyph::Once | 6, {1,1,1,6,6,6}, {-0.5,8.5,3,4,4,8.5}},	// h
@@ -124,23 +124,98 @@ static Glyph glyphs[94] = {
 //	return int(v*rInv) * r + offset;
 //}
 
-static bool character(int c, float dx, float dy, float ps){
+//static bool character(int c, float dx, float dy, float ps){
+//
+//	// composite character
+//	if(c == '$'){ character('S',dx,dy,ps); return character('|',dx,dy,ps); }
+//
+//	if(isgraph(c)){	// is graphical character?
+//
+//		// align points so that lines start in center of pixels
+////		float po = ps/2;
+////		float psInv = 1./ps;
+////		#define ALIGN(x) round(x,ps,psInv,po)
+//		#define ALIGN(x) (x)
+//		#define MUL(x) (x)/ps
+//	
+//		Point2 xy[32];
+//		int ind=-1;
+//	
+//		c -= 33;
+//		
+//		float * x = glyphs[c].x;
+//		float * y = glyphs[c].y;
+//		int n     = glyphs[c].size();
+//		int dots  = glyphs[c].dots();
+//
+//		if(dots){
+//			// 8*2 = 16
+//			for(int j=0; j<dots; ++j){
+//				float l = x[j] + dx;	float t = y[j] + dy;
+//				float r = l + 1;		float b = t + 1;
+//				
+//				l = ALIGN(l);
+//				t = ALIGN(t);
+//				r = ALIGN(r);
+//				b = ALIGN(b);
+//				
+//				xy[++ind](l,t);
+//				xy[++ind](r,t); xy[++ind](r,t);
+//				xy[++ind](r,b); xy[++ind](r,b);
+//				xy[++ind](l,b); xy[++ind](l,b);
+//				xy[++ind](l,t);
+//				
+////				vertex(l, t); vertex(r, t); vertex(r, t); vertex(r, b);
+////				vertex(r, b); vertex(l, b);	vertex(l, b); vertex(l, t);
+//			}
+//			if(n == 0) goto render;
+//			x += dots; y += dots;
+//		}
+//
+//		--n;
+//		// 16 + 1 = 17
+//		//vertex(x[0] + dx, y[0] + dy);
+//		xy[++ind](ALIGN(x[0]+dx), ALIGN(y[0]+dy));
+//		
+//		// 17 + 7*2 = 31
+//		if(glyphs[c].once() == 0){	// line strip
+//			for(int i=1; i<n; ++i){
+//				
+//				float px = ALIGN(x[i]+dx);
+//				float py = ALIGN(y[i]+dy);
+//				xy[++ind](px, py);
+//				xy[++ind](px, py);
+//				
+//				//vertex(x[i] + dx, y[i] + dy);
+//				//vertex(x[i] + dx, y[i] + dy);
+//			}
+//		}
+//		else{		// normal lines
+//			for(int i=1; i<n; ++i) xy[++ind](ALIGN(x[i]+dx), ALIGN(y[i]+dy)); //vertex(x[i] + dx, y[i] + dy);
+//		}
+//		
+//		// 31 + 1 = 32
+//		xy[++ind](ALIGN(x[n]+dx), ALIGN(y[n]+dy));
+//		//vertex(x[n] + dx, y[n] + dy);
+//		
+//		render:
+//		draw::paint(draw::Lines, xy, ind+1);
+//		return true;
+//	}
+//	
+//	return c == ' ';
+//}
+
+
+static bool addCharacter(GraphicsData& g, int c, float dx, float dy, float sx, float sy){
 
 	// composite character
-	if(c == '$'){ character('S',dx,dy,ps); return character('|',dx,dy,ps); }
+	if(c == '$'){ addCharacter(g, 'S',dx,dy,sx,sy); return addCharacter(g, '|',dx,dy,sx,sy); }
 
 	if(isgraph(c)){	// is graphical character?
+		#define GETX(x) ((x*sx+dx))
+		#define GETY(y) ((y*sy+dy))
 
-		// align points so that lines start in center of pixels
-//		float po = ps/2;
-//		float psInv = 1./ps;
-//		#define ALIGN(x) round(x,ps,psInv,po)
-		#define ALIGN(x) (x)
-		#define MUL(x) (x)/ps
-	
-		Point2 xy[32];
-		int ind=-1;
-	
 		c -= 33;
 		
 		float * x = glyphs[c].x;
@@ -151,22 +226,12 @@ static bool character(int c, float dx, float dy, float ps){
 		if(dots){
 			// 8*2 = 16
 			for(int j=0; j<dots; ++j){
-				float l = x[j] + dx;	float t = y[j] + dy;
-				float r = l + 1;		float b = t + 1;
-				
-				l = ALIGN(l);
-				t = ALIGN(t);
-				r = ALIGN(r);
-				b = ALIGN(b);
-				
-				xy[++ind](l,t);
-				xy[++ind](r,t); xy[++ind](r,t);
-				xy[++ind](r,b); xy[++ind](r,b);
-				xy[++ind](l,b); xy[++ind](l,b);
-				xy[++ind](l,t);
-				
-//				vertex(l, t); vertex(r, t); vertex(r, t); vertex(r, b);
-//				vertex(r, b); vertex(l, b);	vertex(l, b); vertex(l, t);
+				float l = GETX(x[j]);	float t = GETY(y[j]);
+				float r = l + sx;		float b = t + sy;
+				g.addVertex2(l,t,r,t);
+				g.addVertex2(r,t,r,b);
+				g.addVertex2(r,b,l,b);
+				g.addVertex2(l,b,l,t);
 			}
 			if(n == 0) goto render;
 			x += dots; y += dots;
@@ -174,37 +239,33 @@ static bool character(int c, float dx, float dy, float ps){
 
 		--n;
 		// 16 + 1 = 17
-		//vertex(x[0] + dx, y[0] + dy);
-		xy[++ind](ALIGN(x[0]+dx), ALIGN(y[0]+dy));
+		g.addVertex2(GETX(x[0]), GETY(y[0]));
 		
 		// 17 + 7*2 = 31
 		if(glyphs[c].once() == 0){	// line strip
 			for(int i=1; i<n; ++i){
 				
-				float px = ALIGN(x[i]+dx);
-				float py = ALIGN(y[i]+dy);
-				xy[++ind](px, py);
-				xy[++ind](px, py);
-				
-				//vertex(x[i] + dx, y[i] + dy);
-				//vertex(x[i] + dx, y[i] + dy);
+				float px = GETX(x[i]);
+				float py = GETY(y[i]);
+				g.addVertex2(px, py);
+				g.addVertex2(px, py);
 			}
 		}
 		else{		// normal lines
-			for(int i=1; i<n; ++i) xy[++ind](ALIGN(x[i]+dx), ALIGN(y[i]+dy)); //vertex(x[i] + dx, y[i] + dy);
+			for(int i=1; i<n; ++i) g.addVertex2(GETX(x[i]), GETY(y[i]));
 		}
 		
 		// 31 + 1 = 32
-		xy[++ind](ALIGN(x[n]+dx), ALIGN(y[n]+dy));
-		//vertex(x[n] + dx, y[n] + dy);
+		g.addVertex2(GETX(x[n]), GETY(y[n]));
 		
 		render:
-		draw::paint(draw::Lines, xy, ind+1);
+		//draw::paint(draw::Lines, xy, ind+1);
 		return true;
 	}
 	
 	return c == ' ';
 }
+
 
 
 struct TextIterator{
@@ -220,18 +281,23 @@ struct TextIterator{
 	bool operator()(){
 		if(*s){
 			char c = *s++;
-			l = x; t = y;
+			l = x;
+			t = y;
 //			w = f.advance(c);	// varies per character if proportional
 //			h = 1 * f.cap() * f.lineSpacing();
 //			float tabUnits = f.advance('M') * f.tabSpaces();
 			w = Glyph::width(); // varies per character if proportional
 			h = (Glyph::descent() - Glyph::cap());
-			float tabUnits = Glyph::width() * f.tabSpaces() * (1+f.letterSpacing());
 			float dx = w * (1+f.letterSpacing());
 			float dy = h * f.lineSpacing();
 
 			switch(c){
-				case '\t': x = (int(x/tabUnits) + 1) * tabUnits; w = x-l; break;
+				case '\t':{
+					float tabUnits = Glyph::width() * f.tabSpaces() * (1+f.letterSpacing());
+					x = (int(x/tabUnits) + 1) * tabUnits;
+					w = x-l;
+					}
+					break;
 				case '\r':
 				case '\n': x = 0; y += dy; break;
 				case '\b': x -= w; break;
@@ -244,7 +310,7 @@ struct TextIterator{
 
 	virtual bool onPrintable(char c){ return true; }
 
-	float x,y;			// raster position
+	float x,y;			// current raster position
 	float l,t,w,h;		// bounding box of current character
 	const char *& s;
 	const Font& f;
@@ -260,43 +326,78 @@ Font::Font(float size_)
 
 Font::~Font(){}
 
-void Font::render(const char * v, float x, float y, float z) const{
+void Font::render(GraphicsData& gd, const char * v, float x, float y, float z) const{
 	using namespace glv::draw;
-	draw::push(ModelView);
-//	identity();
-//	translate(int(x), int(y), int(z));
+
+	gd.reset();
 
 	float sx = mScaleX;
 	float sy = mScaleY;
 	float tx = x;
 	float ty = y;
-	float tz = z;
+	//float tz = z;
 	//float sh = -0.5*sy; // TODO: shear needs to be done an a per-line basis
-	float sh = 0;
+	//float sh = 0;
 	
 	//tx=ty=tz=0;
 
-	float m[16] = {
-		sx, 0, 0, 0,
-		sh,sy, 0, 0,
-		 0, 0,sy, 0,
-		tx,ty,tz, 1
-	};
-	glMultMatrixf(m);
-
 	struct RenderText : public TextIterator{
-		RenderText(const Font& f_, const char *& s_, float muly_): TextIterator(f_,s_), muly(muly_){}
+		RenderText(const Font& f_, const char *& s_, GraphicsData& g_, float tx_, float ty_, float sx_, float sy_)
+		: TextIterator(f_,s_), g(g_), tx(tx_), ty(ty_), sx(sx_), sy(sy_){}
 		bool onPrintable(char c){
-			return character(c, x, y, muly);
+			return addCharacter(g, c, pixc(tx+x*sx), pixc(ty+y*sy), sx, sy);
 		}
-		float muly;
-	} renderText(*this, v, 1.f/mScaleY);
+		GraphicsData& g;
+		float tx,ty,sx,sy;
+	} renderText(*this, v, gd, tx,ty,sx,sy);
 
 	renderText.run();
-
-//	glv::text(v, 0,0, lineSpacing(), tabSpaces(), mScaleY);
-	draw::pop(); // ModelView
+	
+	draw::paint(draw::Lines, gd);
 }
+
+void Font::render(const char * v, float x, float y, float z) const{
+	GraphicsData gd;
+	render(gd, v,x,y,z);
+}
+
+//void Font::render(const char * v, float x, float y, float z) const{
+//	using namespace glv::draw;
+//	draw::push(ModelView);
+////	identity();
+////	translate(int(x), int(y), int(z));
+//
+//	float sx = mScaleX;
+//	float sy = mScaleY;
+//	float tx = x;
+//	float ty = y;
+//	float tz = z;
+//	//float sh = -0.5*sy; // TODO: shear needs to be done an a per-line basis
+//	float sh = 0;
+//	
+//	//tx=ty=tz=0;
+//
+//	float m[16] = {
+//		sx, 0, 0, 0,
+//		sh,sy, 0, 0,
+//		 0, 0,sy, 0,
+//		tx,ty,tz, 1
+//	};
+//	glMultMatrixf(m);
+//
+//	struct RenderText : public TextIterator{
+//		RenderText(const Font& f_, const char *& s_, float muly_): TextIterator(f_,s_), muly(muly_){}
+//		bool onPrintable(char c){
+//			return character(c, pixc(x), pixc(y), muly);
+//		}
+//		float muly;
+//	} renderText(*this, v, 1.f/mScaleY);
+//
+//	renderText.run();
+//
+////	glv::text(v, 0,0, lineSpacing(), tabSpaces(), mScaleY);
+//	draw::pop(); // ModelView
+//}
 
 Font& Font::letterSpacing(float v){ mLetterSpacing=v; return *this; }
 

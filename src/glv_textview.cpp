@@ -83,7 +83,7 @@ void Label::onDraw(GLV& g){
 	color(colors().text);
 	if(mVertical){ translate(0,h); rotate(0,0,-90); }
 	//font().render(value().c_str());
-	font().render(data().toString().c_str(), 0.5f, 0.5f);
+	font().render(g.graphicsData(), data().toString().c_str());//, 0.5f, 0.5f);
 	//scale(mSize, mSize);
 	//text(value().c_str());
 }
@@ -270,8 +270,11 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 
 			color(colors().text);
 		//	printf("%s\n", str);
-			font().render(str, pixc(tx), pixc(ty));
-			if(mNF>0) font().render(".", pixc(dxDig*(mNI+numSignDigits()-0.5f) + tx), pixc(ty));
+//			font().render(g.graphicsData(), str, pixc(tx), pixc(ty));
+//			if(mNF>0) font().render(g.graphicsData(), ".", pixc(dxDig*(mNI+numSignDigits()-0.5f) + tx), pixc(ty));
+			font().render(g.graphicsData(), str, tx, ty);
+			if(mNF>0) font().render(g.graphicsData(), ".", dxDig*(mNI+numSignDigits()-0.5f) + tx, ty);
+
 		}
 	}
 }
@@ -460,7 +463,8 @@ void TextView::onDraw(GLV& g){
 
 	draw::lineWidth(strokeWidth);
 	color(colors().text);
-	font().render(mText.c_str(), pixc(padX), pixc(padY));
+//	font().render(mText.c_str(), pixc(padX), pixc(padY-1));
+	font().render(g.graphicsData(), mText.c_str(), padX, padY-1);
 }
 
 bool TextView::onEvent(Event::t e, GLV& g){
@@ -662,7 +666,9 @@ void ListView::onDraw(GLV& g){
 		
 		color(colors().text);
 		lineWidth(1);
-		font().render(data().at<std::string>(ix,iy).c_str(), pixc(px+paddingX()), pixc(py+paddingY()));
+		
+		//font().render(data().at<std::string>(ix,iy).c_str(), pixc(px+paddingX()), pixc(py+paddingY()));
+		font().render(g.graphicsData(), data().at<std::string>(ix,iy).c_str(), px+paddingX(), py+paddingY());
 	}
 	
 	Widget::onDraw(g);

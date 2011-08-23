@@ -4,6 +4,8 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include "glv_draw.h"
+
 namespace glv{
 
 /// Font
@@ -25,6 +27,7 @@ public:
 	/// Render text string
 	virtual void render(const char * text, float x=0, float y=0, float z=0) const;
 
+	virtual void render(GraphicsData& g, const char * text, float x=0, float y=0, float z=0) const;
 
 	/// Set spacing, in ems, between the left and right edges of successive letters
 	Font& letterSpacing(float v);

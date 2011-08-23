@@ -94,7 +94,7 @@ void Grid::onDraw(GLV& g){
 					if(fabs(gp) < 1e-5) gp=0;
 					char buf[16];
 					snprintf(buf, sizeof(buf), "%.3g", gp);
-					font().render(buf, v[0], v[1]);
+					font().render(gb, buf, v[0], v[1]);
 				}
 			}
 		}

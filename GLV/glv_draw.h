@@ -386,7 +386,7 @@ void shape(int prim, float x0, float y0, float x1, float y1, float x2, float y2)
 void shape(int prim, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3);
 
 /// Draws a text string, including new lines and tabs.
-void text(const char * s, float l=0, float t=0, unsigned fontSize=8, float lineSpacing=1, unsigned tabSpaces=4);
+void text(const char * s, float l=0, float t=0, unsigned fontSize=8, float lineSpacing=1.5, unsigned tabSpaces=4);
 
 
 
