@@ -236,6 +236,8 @@ public:
 
 	virtual const char * className() const { return "Table"; }
 	virtual void onDraw(GLV& g);
+	
+	//virtual void onResize(space_t dx, space_t dy){ arrange(); }
 
 protected:
 

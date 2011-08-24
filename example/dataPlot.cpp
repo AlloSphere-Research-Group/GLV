@@ -49,12 +49,12 @@ struct PlotVector : public Plottable{
 struct MyGLV : GLV {
 
 	MyGLV(): phase(0){
-		data().resize(Data::DOUBLE, 2,16,16);
+		data.resize(Data::DOUBLE, 2,16,16);
 	}
 
 	void onAnimate(double dt){
 		phase += 0.013;
-		Data& d = data();
+		Data& d = data;
 		
 		Indexer i(d.size(1), d.size(2));
 
@@ -69,6 +69,7 @@ struct MyGLV : GLV {
 	}
 
 	double phase;
+	Data data;
 };
 }
 
@@ -80,9 +81,9 @@ int main(){
 	Plot v2(Rect(400,0, 400,400), *new PlotVector);
 	Plot v3(Rect(800,0, 400,400), (new PlotFunction2D)->prim(draw::Points).stroke(2));
 
-	v1.data() = top.data();
-	v2.data() = top.data();
-	v3.data() = top.data();
+	v1.data() = top.data;
+	v2.data() = top.data;
+	v3.data() = top.data;
 	
 	top << v1 << v2 << v3;
 

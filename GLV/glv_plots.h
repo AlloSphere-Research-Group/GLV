@@ -239,7 +239,7 @@ public:
 
 
 /// Plots data according to one or more attached Plottables
-class Plot : public Grid {
+class Plot : public Grid, public DataObject {
 public:
 	typedef std::vector<Plottable *> Plottables;
 

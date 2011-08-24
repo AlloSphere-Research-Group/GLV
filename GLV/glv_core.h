@@ -367,7 +367,7 @@ public:
 ///
 class View
 :	public Rect,
-	public DataModel,
+	public Model,
 	public Notifier,
 	public SmartObject<View>
 {

@@ -322,8 +322,6 @@ TEM inline SliderVector<Dim>& SliderVector<Dim>::valueAdd(double add, int dim, d
 TEM SliderGrid<Dim>::SliderGrid(const Rect& r, space_t knobSize)
 :	SliderVector<Dim>(r), cx(0), cy(0), mKnobSize(knobSize), mKnobSym(draw::rectangle)
 {
-	//this->cropSelf = false;
-	this->disable(CropSelf);
 }
 
 TEM void SliderGrid<Dim>::onDraw(GLV& g){

@@ -11,7 +11,7 @@ namespace glv{
 struct MyGLV : GLV {
 
 	MyGLV(): phase1(0), phase2(0){
-		data().resize(Data::DOUBLE, 3, 128);
+		data.resize(Data::DOUBLE, 3, 128);
 	}
 
 	void onAnimate(double dt){
@@ -20,7 +20,7 @@ struct MyGLV : GLV {
 		phase1 += 0.0037; while(phase1 > 2*pi){ phase1 -= 2*pi; }
 		phase2 += 0.0031; while(phase2 > 2*pi){ phase2 -= 2*pi; }
 		
-		Data& d = data();
+		Data& d = data;
 		Indexer i(d.size(1));
 		
 		while(i()){
@@ -43,6 +43,7 @@ struct MyGLV : GLV {
 	}
 
 	double phase1, phase2;
+	Data data;
 };
 
 }
@@ -61,7 +62,7 @@ int main(){
 	Plot v1_1(Rect(2*d/3,3*d/8, d/3,d/3), *new PlotFunction2D);
 
 	// Assign slices of data to each plot
-	Data& data = top.data();
+	Data& data = top.data;
 	v1__.data() = data.slice(0).stride(data.size(0)).shape(1, data.size(1,2));
 	v_1_.data() = data.slice(1).stride(data.size(0)).shape(1, data.size(1,2));
 	v__1.data() = data.slice(2).stride(data.size(0)).shape(1, data.size(1,2));

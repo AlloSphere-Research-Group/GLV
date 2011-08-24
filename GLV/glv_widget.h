@@ -12,7 +12,7 @@ namespace glv {
 typedef ChangedValue<Data> ModelChange;
 
 /// Base class for views having a regular grid of elements
-class Widget : public View {
+class Widget : public View, public DataObject {
 public:
 
 	/// @param[in] r		geometry
@@ -121,6 +121,33 @@ public:
 	
 	virtual void onDataModelSync();
 	virtual const char * className() const { return "Widget"; }
+
+	virtual const Data& getData(Data& temp) const { return data(); }
+	virtual void setData(const Data& d){ assignData(d); }
+
+	void assignData(const Data& d, const int& ind=0){
+		int i1=0,i2=0; data().indexDim(i1,i2, ind);
+		assignData(d, i1,i2);
+	}
+
+	// Assigns argument to elements at specified index.
+	
+	// assignData() is called with the input data if the indices are valid.
+	// assignData() can be used to constrain the input data before it is
+	// assigned.
+	void assignData(const Data& d, int ind1, int ind2){
+		if(data().inBounds(ind1, ind2)){
+			Data t=d; t.clone();
+			if(onAssignData(t, ind1, ind2)){
+				//model().assign(t, ind1, ind2);
+			}
+		}
+	}
+
+//	virtual bool onAssignData(Data& d, int ind1, int ind2){
+//		data().assign(d, ind1, ind2);
+//		return true;
+//	}
 
 protected:
 	enum{ DIMS=2 };

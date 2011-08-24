@@ -408,10 +408,10 @@ int main(){
 		assert(w.data().toToken() == "1");
 		w.setValue(false);
 		assert(w.data().toToken() == "0");
-		w.modelFromString("0");	assert(w.getValue() == false);
-		w.modelFromString("1");	assert(w.getValue() == true);
+		w.setDataFromString("0");	assert(w.getValue() == false);
+		w.setDataFromString("1");	assert(w.getValue() == true);
 
-		assert(!w.modelFromString("invalid"));
+		assert(!w.setDataFromString("invalid"));
 	}
 
 	{
@@ -442,7 +442,7 @@ int main(){
 		assert(w.data().toToken() == "{0, 0, 0, 0}");
 		
 		v1 = v2 = false;
-		w.modelFromString("{1,1,1,1}");
+		w.setDataFromString("{1,1,1,1}");
 		assert(w.getValue(0) && w.getValue(1) && w.getValue(2) && w.getValue(3));
 		assert(v1 && v2);
 	}
@@ -472,10 +472,10 @@ int main(){
 		std::string s;
 		w.setValue(0.25);
 		assert(w.data().toToken() == "0.25");
-		w.modelFromString("0.5");	assert(w.getValue() == 0.5);
+		w.setDataFromString("0.5");	assert(w.getValue() == 0.5);
 									assert(v == 0.5);
 
-		assert(!w.modelFromString("invalid"));
+		assert(!w.setDataFromString("invalid"));
 		assert(w.getValue() == 0.5);
 	}
 
@@ -506,7 +506,7 @@ int main(){
 		assert(w.data().toToken() == "{0.1, 0.2, 0.3, 0.4}");
 		
 		v1=v2=0;
-		w.modelFromString("{0.4,0.3,0.2,0.1}");
+		w.setDataFromString("{0.4,0.3,0.2,0.1}");
 		assert(w.getValue(0) == 0.4);
 		assert(w.getValue(1) == 0.3);
 		assert(w.getValue(2) == 0.2);
@@ -569,7 +569,7 @@ int main(){
 		assert(w.data().toToken() == "{0.2, 0.3}");
 		
 		v1 = v2 = 0;
-		w.modelFromString("{0.7, 0.8}");
+		w.setDataFromString("{0.7, 0.8}");
 		assert(w.getValue(0)==0.7 && w.getValue(1)==0.8);
 		assert(v1==(float)w.getValue(0) && v2==(float)w.getValue(1));
 	}
@@ -601,7 +601,7 @@ int main(){
 		assert(w.data().toToken() == "{0.1, 0.2, 0.3, 0.4}");
 		
 		v1=v2=0;
-		w.modelFromString("{0.4,0.3,0.2,0.1}");
+		w.setDataFromString("{0.4,0.3,0.2,0.1}");
 		assert(w.getValue(0) == 0.4);
 		assert(w.getValue(1) == 0.3);
 		assert(w.getValue(2) == 0.2);
@@ -638,7 +638,7 @@ int main(){
 		assert(w.data().toToken() == "{0.2, 0.3}");
 		
 		v1 = v2 = 0;
-		w.modelFromString("{0.7, 0.8}");
+		w.setDataFromString("{0.7, 0.8}");
 		assert(w.getValue(0)==0.7 && w.getValue(1)==0.8);
 		assert(v1==(float)w.getValue(0) && v2==(float)w.getValue(1));
 	}
@@ -655,7 +655,7 @@ int main(){
 		assert(w.data().toToken() == "\"test\"");
 		
 		w.setValue("");
-		w.modelFromString("\"test\"");	assert(w.getValue() == "test");
+		w.setDataFromString("\"test\"");	assert(w.getValue() == "test");
 	}
 
 	{
@@ -693,7 +693,7 @@ int main(){
 		assert(w.data().toToken() == "0.2");
 		
 		v = 0;
-		w.modelFromString("0.8");
+		w.setDataFromString("0.8");
 		assert(w.getValue()==0.8 && w.getValue()==v);
 	}
 
@@ -713,7 +713,7 @@ int main(){
 		w.onDataModelSync();
 		assert(w.getValue() == "test");
 
-		w.modelFromString("\"world\"");
+		w.setDataFromString("\"world\"");
 		assert(w.getValue() == "world");
 		assert(v == "world");
 	}

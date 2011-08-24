@@ -602,7 +602,7 @@ protected:
 
 
 
-
+/// An interface for accessing the model state of an object
 class Model{
 public:
 
@@ -620,18 +620,49 @@ public:
 	/// Set data associated with the model, if any
 	virtual void setData(const Data& d){}
 
-//	// TODO: this may not be necessary
-//	virtual std::string modelToString(){ return ""; }
-//
-//	// TODO: this may not be necessary
-//	virtual int modelFromString(const std::string& v){ return 0; }
+	/// Set data from a string
+	int setDataFromString(const std::string& v){
+		Data d;
+		(d = getData(d)).clone();
+		int r = d.fromToken(v);
+		if(r) setData(d);
+		return r;
+	}
+	
+	/// Get data as string
+	std::string getDataAsString(){ Data d; return toString(getData(d)); }
 };
 
 
-/// Proxy Data object for signalling state changes
+/// Supplies a Data object with accessors
+class DataObject{
+public:
+	DataObject(){}
+	DataObject(Data& d): mData(d){}
 
-/// This permits a user-defined action to be performed when any of the
-/// data values change.
+	const Data& data() const { return mData; }
+	Data& data(){ return mData; }
+
+protected:
+	Data mData;
+};
+
+
+/// A Model that explicitly contains Data
+class DataModel : public Model, public DataObject{
+public:
+
+	DataModel(){}
+	DataModel(Data& d): DataObject(d){}
+
+	virtual ~DataModel(){}
+
+	virtual const Data& getData(Data& temp) const { return data(); }
+	virtual void setData(const Data& d){ data().assign(d); }
+};
+
+
+/*
 class DataModel : public Model{
 public:
 
@@ -687,7 +718,7 @@ protected:
 		return true;
 	}
 };
-
+*/
 
 
 /*
