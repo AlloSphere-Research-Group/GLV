@@ -350,17 +350,6 @@ protected:
 	Items mItems;
 	int mSelectedItem;
 
-	virtual bool onAssignData(Data& d, int ind1, int ind2){
-		std::string s = d.at<std::string>(0);
-		for(int i=0; i<mItems.size(): ++i){
-			if(s == mItems[i]){
-				mSelectedItem=i;
-				break;
-			}
-		}
-		return true;
-	}
-
 	void init(){ mItemList.disable(Visible); }
 	void showList();
 	void hideList(GLV& g);
@@ -369,6 +358,7 @@ protected:
 //		d.print();
 		TextView::onAssignData(d, ind1, ind2);
 		mItemList.selectValue(getValue());
+		mSelectedItem = mItemList.selected();
 		return true;
 	}
 
