@@ -330,7 +330,7 @@ public:
 
 	virtual ~DropDown(){ mItemList.remove(); }
 
-	int selectedItem() const { return mItemList.selected(); }
+	int selectedItem() const { return mSelectedItem; } //return mItemList.selected(); }
 
 	Items& items(){ return mItems; }
 
@@ -348,6 +348,18 @@ protected:
 	} mItemList;
 
 	Items mItems;
+	int mSelectedItem;
+
+	virtual bool onAssignData(Data& d, int ind1, int ind2){
+		std::string s = d.at<std::string>(0);
+		for(int i=0; i<mItems.size(): ++i){
+			if(s == mItems[i]){
+				mSelectedItem=i;
+				break;
+			}
+		}
+		return true;
+	}
 
 	void init(){ mItemList.disable(Visible); }
 	void showList();
