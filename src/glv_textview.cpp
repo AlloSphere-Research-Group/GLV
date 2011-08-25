@@ -1,6 +1,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include <ctype.h>
 #include <math.h>
 #include <string>
 #include <string.h>
@@ -721,6 +722,11 @@ DropDown& DropDown::addItem(const std::string& v){
 	return *this;
 }
 
+void DropDown::hideList(GLV& g){
+	mItemList.disable(Visible);
+	g.setFocus(this);
+}
+
 void DropDown::showList(){
 	if(items().size()){
 		space_t ax = 0, ay = height();
@@ -736,11 +742,6 @@ void DropDown::showList(){
 		mItemList.bringToFront();
 		mItemList.enable(Visible);
 	}
-}
-
-void DropDown::hideList(GLV& g){
-	mItemList.disable(Visible);
-	g.setFocus(this);
 }
 
 void DropDown::onDraw(GLV& g){
@@ -799,10 +800,14 @@ bool DropDown::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 	case Event::KeyDown:
-		if(k.ctrl() || k.alt() || k.meta()){} // bubble if control key down
+		// bubble if modifier key down
+		if(k.ctrl() || k.alt() || k.meta()){}
+		
+		// printable keys search list and select first matching item
 		else if(k.isPrint()){
+			unsigned char lkey = tolower(k.key());
 			for(unsigned i=0; i<items().size(); ++i){
-				if(k.key() == items()[i][0]){
+				if(lkey == tolower(items()[i][0])){
 					mItemList.select(i);
 					showList();
 					break;
@@ -810,14 +815,16 @@ bool DropDown::onEvent(Event::t e, GLV& g){
 			}
 			return false;
 		}
+		
+		// switch on other keys...
 		else{
 			switch(k.key()){
-			case Key::Down:	// pass on up/down arrows to item list...
+			case Key::Down:
 			case Key::Up:
 				if(!mItemList.visible()){
 					mItemList.selectValue(getValue());
 				}
-				else{
+				else{ // pass on up/down arrows to item list...
 					mItemList.onEvent(e,g);
 				}
 				showList();
@@ -826,9 +833,7 @@ bool DropDown::onEvent(Event::t e, GLV& g){
 			case Key::Return:
 				if(mItemList.visible()) setValue(mItemList.getValue());
 				hideList(g);
-				//notify(this, Update::Action);
-				//return false;
-				return TextView::onEvent(e,g); // pass event on to TextView
+				return TextView::onEvent(e,g); // let base class handle it from here
 			default:;
 			}
 		}
@@ -868,7 +873,8 @@ bool DropDown::ItemList::onEvent(Event::t e, GLV& g){
 		disable(Visible);
 		break;
 	case Event::MouseUp:
-		if(containsPoint(m.xRel(), m.yRel())){
+		//printf("setValue\n");
+		if(Rect(w,h).containsPoint(m.xRel(), m.yRel())){
 			dd.setValue(getValue());
 			dd.notify(&dd, Update::Action);
 			//dd.onEvent(e,g);

@@ -201,7 +201,7 @@ public:
 	void reset(){ setSize(0); }
 
 	/// Resize buffer
-	
+
 	/// This will set both the size and capacity of the buffer to the requested 
 	/// size. If the number is smaller than the current size the buffer is 
 	/// truncated, otherwise the buffer is extended and new elements are
@@ -222,7 +222,7 @@ public:
 	void append(const T &v, double growFactor=2){
 		if(size() >= capacity()){
 			T vcopy = v; // 'v' may become invalidated after resize
-			mElems.resize(size() ? int(size()*growFactor) : 4);		
+			mElems.resize(size() ? int(size()*growFactor) : 4);
 			Alloc::construct(&mElems[0] + size(), vcopy);
 		}
 		else{
