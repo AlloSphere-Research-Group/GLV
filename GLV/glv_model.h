@@ -853,12 +853,18 @@ public:
 	/// @param[in] name		file name without directory; 
 	///						if empty, then uses model name with ".txt" extension
 	/// @param[in] dir		file directory
-	void filePath(const std::string& name, const std::string& dir=""){
-		mFileName=name; mFileDir=dir;
+	ModelManager& filePath(const std::string& name, const std::string& dir=""){
+		mFileName=name; return fileDir(dir);
 	}
 
+	/// Set the default file directory
+
+	/// @param[in] dir		file directory
+	///
+	ModelManager& fileDir(const std::string& dir){ mFileDir=dir; return *this; }
+
 	/// Set identifier name
-	void name(const std::string& v){ if(isIdentifier(v)) mName=v; }
+	ModelManager& name(const std::string& v){ if(isIdentifier(v)) mName=v; return *this; }
 
 	/// Remove model data with given name
 	void remove(const std::string& name);
