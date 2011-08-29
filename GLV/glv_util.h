@@ -346,6 +346,43 @@ private:
 
 
 
+/// Maps characters (i.e., keyboard keys) to integers
+class CharMap{
+public:
+	CharMap(const char * keySeq="", char begin=0, char unmappedVal=-128)
+	:	mUnmapped(unmappedVal)
+	{
+		reset();
+		set(keySeq, begin);
+	};
+
+	void reset(){ for(int i=0; i<128; ++i) mMap[i] = mUnmapped; }
+
+	void set(const char * keySeq, char begin=0){
+		int c=0;
+		while(keySeq[c]){
+			mMap[int(keySeq[c])] = begin;
+			c++; begin++;
+		}		
+		//for(int i=0; i<128; ++i) printf("%3d %2d\n", i, mMap[i]);
+	}
+
+	CharMap& map(char index, char value){
+		(*this)[int(index)] = value; return *this;
+	}
+
+	const char& operator[](int key) const { return mMap[key]; }
+	char& operator[](int key){ return mMap[key]; }
+
+	bool mapped(int key) const { return (*this)[key] != mUnmapped; }
+
+private:
+	char mMap[128];
+	char mUnmapped;
+};
+
+
+
 // Implementation ______________________________________________________________
 template<class T>
 SmartObject<T>::SmartObject(): mDynamicAlloc(false){
