@@ -347,6 +347,7 @@ private:
 
 
 /// Maps characters (i.e., keyboard keys) to integers
+template <int KeyMax=128, int KeyMin=0>
 class CharMap{
 public:
 	CharMap(const char * keySeq="", char begin=0, char unmappedVal=-128)
@@ -356,28 +357,32 @@ public:
 		set(keySeq, begin);
 	};
 
-	void reset(){ for(int i=0; i<128; ++i) mMap[i] = mUnmapped; }
+	static const int size(){ return N; }
 
-	void set(const char * keySeq, char begin=0){
-		int c=0;
-		while(keySeq[c]){
-			mMap[int(keySeq[c])] = begin;
-			c++; begin++;
-		}		
-		//for(int i=0; i<128; ++i) printf("%3d %2d\n", i, mMap[i]);
-	}
-
-	CharMap& map(char index, char value){
-		(*this)[int(index)] = value; return *this;
-	}
-
-	const char& operator[](int key) const { return mMap[key]; }
-	char& operator[](int key){ return mMap[key]; }
+	const char& operator[](int key) const { return mMap[key-KeyMin]; }
+	char& operator[](int key){ return mMap[key-KeyMin]; }
 
 	bool mapped(int key) const { return (*this)[key] != mUnmapped; }
 
+	CharMap& set(const char * keySeq, char begin=0){
+		int c=0;
+		while(keySeq[c]){
+			(*this)[int(keySeq[c])] = begin;
+			++c; ++begin;
+		}
+		//for(int i=0; i<128; ++i) printf("%3d %2d\n", i, mMap[i]);
+		return *this;
+	}
+
+	CharMap& set(char index, char value){
+		(*this)[int(index)] = value; return *this;
+	}
+
+	void reset(){ for(int i=0; i<size(); ++i) mMap[i] = mUnmapped; }
+
 private:
-	char mMap[128];
+	static const int N = KeyMax-KeyMin+1;
+	char mMap[N];
 	char mUnmapped;
 };
 
