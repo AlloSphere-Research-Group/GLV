@@ -1,6 +1,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include <algorithm>
 #include "glv_preset_controls.h"
 
 namespace glv{
@@ -250,7 +251,7 @@ bool PresetControl::PresetSearchBox::onEvent(Event::t e, GLV& g){
 	case Event::KeyDown:
 		pc.mStatus.symbol(draw::magnifier);
 		
-		if((k.key() != 's' && k.key() != Key::Delete) || !k.ctrl()){
+		if((k.key() != 's' && k.key() != Key::Delete && k.key() != Key::Backspace) || !k.ctrl()){
 			pc.mPrompt=false;
 		}
 
@@ -390,10 +391,25 @@ static void insertCopy(std::vector<T>& src, int to, int from){
 	}
 }
 
+template <int D>
+static void pointerLine(float l, float t, float r, float b){
+	float h2 = (t+b)/2;
+	float pts[] = {
+		D, h2,
+		0, h2-D,
+		0, h2+D,
+		D, h2,
+		r, h2
+	};
+	draw::paint(draw::LineStrip, (Point2*)pts, GLV_ARRAY_SIZE(pts)/2);
+}
+
+
+
 PathView::PathView()
-:	Widget(Rect(400, 20)),
+:	Widget(Rect(420, 20)),
 	mStates(0),
-	mDur(2,4,80,0), mCrv(3,3, 800, -800), mSmt(1,0,1,0), // mName(Rect(200,12), 6)
+	mDur(3,3, 990,0), mCrv(2,2, 90,-90), mSmt(1,2, 8,-8), // mName(Rect(200,12), 6)
 	mPos(0), mPlaying(false)
 {
 //	data().resize(Data::STRING);
@@ -410,10 +426,13 @@ PathView::PathView()
 	mName.l= mSmt.right()+8;
 	
 	mDur.disable(DrawBorder | DrawBack);
-	mCrv.disable(DrawBorder);
-	mSmt.disable(DrawBorder);
-	mName.disable(DrawBorder);
-	mName.searchBox().disable(DrawBorder);
+	mCrv.disable(DrawBorder | DrawBack);
+	mSmt.disable(DrawBorder | DrawBack);
+	mName.disable(DrawBorder | DrawBack);
+	mName.searchBox().disable(DrawBorder | DrawBack);
+	
+	mCrv.attach(ntUpdatePlot, Update::Value, this);
+	mSmt.attach(ntUpdatePlot, Update::Value, this);
 	
 //	mPathMM.add("dur", mDur);
 //	mPathMM.add("crv", mCrv);
@@ -423,13 +442,15 @@ PathView::PathView()
 	(*this) << mDur << mCrv << mSmt << mName;
 }
 
+void PathView::ntUpdatePlot(const Notification& n){
+	n.receiver<PathView>()->updatePlot();
+}
 
 PathView& PathView::modelManager(ModelManager& v){
 	mStates = &v;
 	mName.modelManager(v);
 	return *this;
 }
-
 
 void PathView::onAnimate(double dsec){
 	if(mPlaying && mPath.size()>0){
@@ -439,43 +460,57 @@ void PathView::onAnimate(double dsec){
 		if(mPos >= max){		// clip current position
 			mPos = max;
 		}
-		else if(mStates){		// are there presets assigned?				
-			int idx0 = loadCurrentPos();
-			float dur = mPath[idx0].dur;
-//			printf("dur = %g, dt = %g\n", dur, dsec);
-			if(dur > dsec){
-				mPos += dsec/dur;
+		else if(mStates){		// are there presets assigned?
+			
+			// okay, this will be complicated, so stick with me
+			int idx = int(mPos);			// current keyframe index
+			double dur = mPath[idx].dur;	// current keyframe duration
+			double frac = mPos - idx;		// fraction through keyframe
+			double timeNow = frac * dur;	// relative time within keyframe
+			double timeNext= timeNow + dsec;// 
+			
+			// time update leaves us in the same keyframe
+			if(timeNext < dur){
+				mPos = idx + timeNext/dur;
+				loadCurrentPos();
 			}
+			
+			// time update puts us beyond current keyframe
 			else{
-				++mPos;
-				onAnimate(dsec);
+				//printf("went over!\n");
+				double timeOver = timeNext - dur;
+				mPos = idx + 1;
+				loadCurrentPos();
+				onAnimate(timeOver);
 			}
+
+//			int idx0 = loadCurrentPos();
+//			double dur = mPath[idx0].dur;
+//			//printf("dur = %g, dt = %g\n", dur, dsec);			
+//			
+//			if(dur > dsec){
+//				mPos += dsec/dur;
+//			}
+//			else{
+//				++mPos;
+//				onAnimate(dsec);
+//			}
 		}
 	}
 }
+
 
 void PathView::drawHeader(float x, float y){
 //	float y =-10 + 0.;
 //	float x = 0.;
 	float textSize = 6;
+	draw::stroke(1);
 	draw::text("dur" , mDur.l + x, y, textSize);
 	draw::text("crv" , mCrv.l + x, y, textSize);
 	draw::text("s" , mSmt.l + x, y, textSize);
 	draw::text("name", mName.l+ x, y, textSize);
 }
 
-template <int D>
-static void pointerLine(float l, float t, float r, float b){
-	float h2 = (t+b)/2;
-	float pts[] = {
-		D, h2,
-		0, h2-D,
-		0, h2+D,
-		D, h2,
-		r, h2
-	};
-	draw::paint(draw::LineStrip, (Point2*)pts, GLV_ARRAY_SIZE(pts)/2);
-}
 
 void PathView::onDraw(GLV& g){
 
@@ -498,6 +533,8 @@ void PathView::onDraw(GLV& g){
 		pointerLine<6>(l,pixStart-8, right(),pixStart+8);
 	
 		// draw position indicator
+		draw::color(colors().selection.mix(colors().back, 0.8));
+		draw::rectTrunc<2,2,2,2>(2, dy()*mPos, w-2, dy()*(mPos+1));
 		draw::color(colors().selection);
 		draw::rectTrunc<2,2,2,2>(2, dy()*mPos, seqRight()-2, dy()*(mPos+1));
 
@@ -565,7 +602,10 @@ bool PathView::onEvent(Event::t e, GLV& g){
 	
 	const Keyboard& k = g.keyboard();
 	const Mouse& m = g.mouse();
-	
+	const float mx = m.xRel();
+	const float my = m.yRel();
+	const float cx = m.xRel(Mouse::Left);
+
 	switch(e){
 	case Event::KeyDown:
 		switch(k.key()){
@@ -582,7 +622,6 @@ bool PathView::onEvent(Event::t e, GLV& g){
 				return false;
 			}
 			break;
-
 		case 'l':
 			if(k.ctrl()){
 				loadFile();
@@ -591,36 +630,78 @@ bool PathView::onEvent(Event::t e, GLV& g){
 			break;
 		case ' ':	// toggle playback
 			mPlaying ^= 1;
-			break;
+			return false;
 		case Key::Enter:
 		case Key::Return:
 			mPos = mStart;
+			return false;
+		case Key::Delete:
+		case Key::Backspace:
+			if(k.ctrl()){
+				mPath.erase(mPath.begin()+selected());
+				data().size(1, mPath.size());
+				if(mPath.size()){
+					select(selected());
+					onCellChange(selected(), selected());
+				}
+				return false;
+			}
 			break;
-			
+		case Key::Up:
+			if(k.shift()){ // move up
+				if(selected()>0 && mPath.size()>1){
+					std::swap(mPath[selected()], mPath[selected()-1]);
+					select(selected()-1);
+				}
+				return false;
+			}
+			break;
+		case Key::Down:
+			if(k.shift()){ // move down
+				if(selected()<((int)mPath.size()-1) && mPath.size()>1){
+					std::swap(mPath[selected()], mPath[selected()+1]);
+					select(selected()+1);
+				}
+				return false;
+			}
+			break;
 		default:;
 		}
 		break;
 
 	case Event::MouseDown:
-	case Event::MouseDrag:
-		{
-			float mx = m.xRel();
-			float my = m.yRel();
-			//printf("%d\n", yi);
-			if(e == Event::MouseDown && mx >= seqRight()){
-				selectFromMousePos(g);
-			}
-			else if(mx <= startRight()){
-				int yi = my / dy();
-				mStart = glv::clip<int>(yi, mPath.size()-1);
-			}
-			else{
-				float y = my / dy();
-				mPos = glv::clip<float>(y, mPath.size()-1);
-				loadCurrentPos();			
-			}
+		if(mx > seqRight()){
+			selectFromMousePos(g);
 		}
-		break;
+		else if(mx <= startRight()){
+			int yi = my / dy();
+			mStart = glv::clip<int>(yi, mPath.size()-1);
+		}
+		else{
+			return onEvent(Event::MouseDrag, g);
+		}
+		return false;
+	case Event::MouseDrag:
+//		//printf("%d\n", yi);
+//		if(e == Event::MouseDown && mx >= seqRight()){
+//			selectFromMousePos(g);
+//		}
+//		else if(mx <= startRight()){
+//			int yi = my / dy();
+//			mStart = glv::clip<int>(yi, mPath.size()-1);
+//		}
+//		else{
+//			float y = my / dy();
+//			mPos = glv::clip<float>(y, mPath.size()-1);
+//			loadCurrentPos();			
+//		}
+		//break;
+		if(cx > startRight() && cx <= seqRight()){
+			float y = my / dy();
+			mPos = glv::clip<float>(y, mPath.size()-1);
+			loadCurrentPos();
+		}
+		return false;
 	default:;
 	}
 	
@@ -642,7 +723,29 @@ void PathView::onCellChange(int iOld, int iNew){
 	mSmt.data().set(kf.smt);
 	mName.searchBox().data().set(kf.name);
 	mName.searchBox().setValue(mName.searchBox().getValue());
-	mName.searchBox().selectAll();
+	//mName.searchBox().selectAll();
+
+	updatePlot();
+}
+
+void PathView::updatePlot(){
+	if(0 == mPath.size()) return;
+
+	const int N = mPlotWarp.w/2;	
+	mPlotWarp.range(0,N-1, 0);
+	mPlotWarp.range(-1/mPlotWarp.h,1+1/mPlotWarp.h, 1);
+	mPlotWarp.showAxes(false).showGrid(false);
+	mPlotWarp.disable(Controllable);
+
+	float crv = mCrv.getValue();
+	float smt = mSmt.getValue();
+	Data& warpPoints = mPlotWarp.data();
+	warpPoints.resize(Data::FLOAT, 1,N);
+
+	for(int i=0; i<N; ++i){
+		float phs = float(i)/(N-1);
+		warpPoints.elem<float>(i) = warp(phs, crv, smt);
+	}
 }
 
 std::string PathView::pathsName() const {
@@ -650,6 +753,8 @@ std::string PathView::pathsName() const {
 }
 
 void PathView::loadFile(){
+	const std::string snapshotName("default");
+
 	ModelManager& mm = mPathMM;
 
 	mm.clearModels();
@@ -671,7 +776,9 @@ void PathView::loadFile(){
 //	mm.printSnapshots();
 
 	//(mm.snapshots()["path"]["len"])->data().print();
-	if(!mm.loadSnapshot("path")) printf("error loading path snapshot\n");
+	if(!mm.loadSnapshot(snapshotName)){
+		printf("Could not load snapshot \"%s\".\n", snapshotName.c_str());
+	}
 
 //	len.data().print();
 
@@ -691,7 +798,7 @@ void PathView::loadFile(){
 	name.data().resize(Data::STRING, N);
 	
 	mm.snapshotsFromFile();
-	mm.loadSnapshot("path");
+	mm.loadSnapshot(snapshotName);
 //	mm.printSnapshots();
 
 	mPath.resize(N);
@@ -737,7 +844,7 @@ void PathView::saveFile(){
 	mm.add("smt", smt);
 	mm.add("name", name);
 	
-	mm.saveSnapshot("path");
+	mm.saveSnapshot("default");
 	mm.snapshotsToFile();
 }
 
@@ -750,26 +857,67 @@ void PathView::fitExtent(){
 
 
 int PathView::loadCurrentPos(){
-	int idx0 = int(mPos);
+	int ix = int(mPos);
+	int iend = mPath.size()-1;
 	
-	if(idx0 >= int(mPath.size()-1)){
-		mStates->loadSnapshot(mPath[idx0].name);
+	if(ix >= iend){ // on the last keyframe?
+		mStates->loadSnapshot(mPath[ix].name);
 	}
-	else{		
-		int idx1 = idx0 + 1;
-		float frac = mPos - idx0;
+	else{
+		int iy = ix + 1;
+		float f = mPos - ix;
 		
+		int iw = ix-1; if(iw<0) iw=0;
+		int iz = ix+2; if(iz>iend) iz=iend;
+
 		// warp fraction
-		float crv = mPath[idx0].crv;
-		float smt = mPath[idx0].smt;
-		frac = warp(frac, crv, smt);
-	
-		const std::string& name0 = mPath[idx0].name;
-		const std::string& name1 = mPath[idx1].name;
-//		printf("%s -> %s, %g\n", name0.c_str(), name1.c_str(), frac);
-		mStates->loadSnapshot(name0, name1, 1-frac, frac);
+		float crv = mPath[ix].crv;
+		float smt = mPath[ix].smt;
+		f = warp(f, crv, smt);
+
+		const std::string& namex = mPath[ix].name;
+		const std::string& namey = mPath[iy].name;
+		const std::string& namew = mPath[iw].name;
+		const std::string& namez = mPath[iz].name;
+		//printf("%s -> %s, %g\n", namex.c_str(), namey.c_str(), frac);
+		//mStates->loadSnapshot(namex, namey, 1-frac, frac);
+		//mStates->loadSnapshot(name0, name1, cos(frac*M_PI/2), sin(frac*M_PI/2));
+
+		
+		double w[4];
+		{			
+			// Cardinal spline coefs
+			
+			// smoothness is (1 - tension)
+			// Smoothness > 0 results in a more gradual curve, but
+			// with increased overshooting. Smoothness of 0 results
+			// in a line-like curve with sharp transitions at breakpoints, but
+			// minimal ripple. Smoothness < 0 creates fastest curve at the
+			// expense of increased undershooting.
+			float c = smt*(1-f) + mPath[iy].smt*f; //1;
+			
+			float x[4]; // absolute times
+			x[0] = 0;
+			x[1] =        mPath[iw].dur;
+			x[2] = x[1] + mPath[ix].dur;
+			x[3] = x[2] + mPath[iy].dur;
+
+			c *= (x[2]-x[1]);	// make domain [t[1], t[2]]
+			
+			// evaluate the Hermite basis functions
+			float h00 = (1 + 2*f)*(f-1)*(f-1);
+			float h10 = f*(f-1)*(f-1);
+			float h01 = f*f*(3-2*f);
+			float h11 = f*f*(f-1);	
+			w[0] = (    - c*h10/(x[2]-x[0]));
+			w[1] = (h00 - c*h11/(x[3]-x[1]));
+			w[2] = (h01 + c*h10/(x[2]-x[0]));
+			w[3] = (    + c*h11/(x[3]-x[1]));
+		}
+
+		mStates->loadSnapshot(namew, namex, namey, namez, w[0],w[1],w[2],w[3]);
 	}
-	return idx0;
+	return ix;
 }
 
 float PathView::warp(float x, float crv, float smt){
@@ -778,8 +926,29 @@ float PathView::warp(float x, float crv, float smt){
 		x = (1.f - exp(-crv*x))/(1.f - exp(-crv));
 	}
 	if(smt>0){
-		x = x*x*(3.f - 2.f*x);
+		//x = x*x*(3.f - 2.f*x);
+
+		//float c = 1/smt;
+		//x = (2*x-1)/(c + fabs(2*x-1))*(c+1)*0.5 + 0.5;
 	}
+	
+//	if(smt <= -1)		smt =-0.999;
+//	else if(smt >= 1)	smt = 0.999;
+//	x = -cos(M_PI*x)/(1 + smt*cos(2*M_PI*x))*(1+smt)*0.5+0.5;
+	
+	/*
+		// truncated rational sigmoid
+		float c = 1/smt;
+		x = (2*x-1)/(c + abs(2*x-1))*(c+1)*0.5 + 0.5
+		
+		// smooth cosine rational
+		// c controls "knee" amount
+		// c in [0, 0.36)	flat tops (square-like)
+		// c in [0.36, 1)	overshoot
+		// c in [-0.2, 0)	smooth line (triangle-like)
+		// c in [x, -0.2)	mid-shelf
+		x = cos(PI*x)/(1 + c*cos(2*PI*x))*(1+c)*0.5+0.5
+	*/
 	return x;
 }
 
@@ -787,16 +956,25 @@ float PathView::warp(float x, float crv, float smt){
 
 
 PathEditor::PathEditor(space_t hei)
-:	Table("<")
+:	Table("<<,<-,<-")
 {
+	enable(DrawBack | DrawBorder);
+
 	mPathView.attach(ntSelection, Update::Selection, this);
 	
 	mPathPresetControl.modelManager(mPathView.mPathMM);
+	mPathView.mPlotWarp.add(
+		(*new PlotFunction1D(Color(0),1,draw::TriangleStrip,PlotFunction1D::ZIGZAG)).useStyleColor(true)
+	);
+	mPathView.mPlotWarp.extent(100, mPathPresetControl.h);
 	
 	mHeader.h = 10;
 	mScroll.extent(mPathView.w, hei);
 	mScroll.mode(Scroll::VERTICAL);
-	(*this) << mPathPresetControl << mHeader << (mScroll << mPathView);
+	(*this) 
+		<< mPathPresetControl << mPathView.mPlotWarp
+		<< mHeader 
+		<< (mScroll << mPathView);
 	arrange();
 }
 

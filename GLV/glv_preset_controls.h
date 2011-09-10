@@ -8,6 +8,7 @@
 #include "glv_behavior.h"
 #include "glv_layout.h"
 #include "glv_buttons.h"
+#include "glv_plots.h"
 #include "glv_textview.h"
 
 namespace glv{
@@ -92,6 +93,8 @@ public:
 
 	PathView& modelManager(ModelManager& v);
 
+	ModelManager& pathModelManager(){ return mPathMM; }
+
 	void drawHeader(float x, float y);
 	void loadFile();
 	void saveFile();
@@ -112,11 +115,13 @@ protected:
 	// Animation controls
 	NumberDialer mDur, mCrv, mSmt;
 	PresetControl mName;
+	Plot mPlotWarp;
 	std::vector<Keyframe> mPath;
 	double mPos;	// current sequence playback position
 	double mStart;	// sequence start
 	bool mPlaying;
 
+	void updatePlot();
 	void fitExtent();
 	
 	// Get y position of ith element
@@ -126,6 +131,7 @@ protected:
 
 	int loadCurrentPos();
 
+	static void ntUpdatePlot(const Notification& n);
 	static float warp(float x, float crv, float smt);
 	std::string pathsName() const;
 };
@@ -136,8 +142,10 @@ class PathEditor : public Table{
 public:
 	PathEditor(space_t height=180);
 	
-//	PathView& pathView(){ return mPathView; }
+	PathView& pathView(){ return mPathView; }
 //	PresetControl& presetControl(){ return mPresetControl; }
+
+	ModelManager& pathModelManager(){ return pathView().pathModelManager(); }
 
 	PathEditor& stateModelManager(ModelManager& v){
 		mPathView.modelManager(v); return *this;
