@@ -577,9 +577,14 @@ private:
 class GLV : public View{
 public:
 
+	/// Constructor
+
 	/// @param[in] width		width, in pixels
 	/// @param[in] height		height, in pixels
-	GLV(space_t width=800, space_t height=600);
+	///
+	/// Note that in practice, the dimensions of this view will usually match 
+	/// the dimensions of the window it is attached to.
+	GLV(space_t width=0, space_t height=0);
 
 	virtual ~GLV();
 
