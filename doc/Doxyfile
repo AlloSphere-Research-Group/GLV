@@ -38,7 +38,7 @@ PROJECT_NUMBER         = "Version 0.96"
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = 
+OUTPUT_DIRECTORY       =
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
@@ -591,7 +591,7 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = ../src/ \
-                         ../include/
+                         ../GLV/
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 
@@ -826,7 +826,7 @@ GENERATE_HTML          = YES
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 
 # put in front of it. If left blank `html' will be used as the default path.
 
-HTML_OUTPUT            = ../../www/doxy/0.96
+HTML_OUTPUT            = html
 
 # The HTML_FILE_EXTENSION tag can be used to specify the file extension for 
 # each generated HTML page (for example: .htm,.php,.asp). If it is left blank 
@@ -1489,7 +1489,7 @@ CLASS_DIAGRAMS         = YES
 # the mscgen tool resides. If left empty the tool is assumed to be found in the 
 # default search path.
 
-MSCGEN_PATH            = /Applications/Doxygen.app/Contents/Resources/
+MSCGEN_PATH            = /usr/local/bin
 
 # If set to YES, the inheritance and collaboration graphs will hide 
 # inheritance and usage relations if the target is undocumented 
@@ -1502,7 +1502,7 @@ HIDE_UNDOC_RELATIONS   = YES
 # toolkit from AT&T and Lucent Bell Labs. The other options in this section 
 # have no effect if this option is set to NO (the default)
 
-HAVE_DOT               = NO
+HAVE_DOT               = YES
 
 # The DOT_NUM_THREADS specifies the number of dot invocations doxygen is 
 # allowed to run in parallel. When set to 0 (the default) doxygen will 
@@ -1616,7 +1616,7 @@ DOT_IMAGE_FORMAT       = png
 # The tag DOT_PATH can be used to specify the path where the dot tool can be 
 # found. If left blank, it is assumed the dot tool can be found in the path.
 
-DOT_PATH               = /Applications/Doxygen.app/Contents/Resources/
+DOT_PATH               = /usr/local/bin
 
 # The DOTFILE_DIRS tag can be used to specify one or more directories that 
 # contain dot files that are included in the documentation (see the 
