@@ -3,18 +3,18 @@
 
 namespace glv{
 
-bool Widget::widgetKeyDown(View * v, GLV& g){
-	Widget& w = *(Widget *)v;
-	switch(g.keyboard().key()){
-		case Key::Down:	++w.sy; break;
-		case Key::Up:	--w.sy; break;
-		case Key::Right:++w.sx; break;
-		case Key::Left:	--w.sx; break;
-		default: return true;
-	}
-	w.clipIndices();
-	return false;
-}
+//bool Widget::widgetKeyDown(View * v, GLV& g){
+//	Widget& w = *(Widget *)v;
+//	switch(g.keyboard().key()){
+//		case Key::Down:	++w.sy; break;
+//		case Key::Up:	--w.sy; break;
+//		case Key::Right:++w.sx; break;
+//		case Key::Left:	--w.sx; break;
+//		default: return true;
+//	}
+//	w.clipIndices();
+//	return false;
+//}
 
 
 Widget::Widget(

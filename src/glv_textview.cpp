@@ -214,12 +214,15 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 	// draw box at position (only if focused)
 	if(enabled(Focused)){
 	
-		float bx = dxCell*selectedX() + paddingX()/1 - 1;
-		float by = dyCell*selectedY();// + paddingY()/2;
+		float x = dxCell*selectedX() + paddingX()/1 - 1;
+		//float y = dyCell*selectedY() + paddingY()/2;
+		float y = dyCell*(selectedY()+0.5);
+		float ty= font().cap()/2. + 3;
 	
 //		color(colors().fore, colors().fore.a*0.4);
 		color(colors().selection);
-		rectangle(bx + dig()*dxDig, by, bx + (dig()+1)*dxDig, by + dyCell-0.5f);
+		//rectangle(bx + dig()*dxDig, by, bx + (dig()+1)*dxDig, by + dyCell-0.5f);
+		rectangle(x + dig()*dxDig, y-ty, x + (dig()+1)*dxDig, y+ty);
 	}
 
 	drawSelectionBox();
