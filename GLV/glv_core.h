@@ -574,6 +574,14 @@ private:
 /// The GLV is the topmost view that serves as an interface between OS events
 /// (windowing, device input) and GLV events. The GLV is responsible for sending
 /// events to views and rendering the GUI.
+/// Before rendering the GUI, some specific GL state is set. Depth testing is
+/// turned off, blending is turned on, the viewport is set to the size of the
+/// GLV and the current projection and modelview matrices on the stack are 
+/// overwritten. For efficiency reasons, the existing GL state is simply
+/// overwritten, i.e., there is no pushing/popping of any relevant matrices or 
+/// attributes. If a 3D scene is being rendered before the GUI, then the 
+/// aforementioned GL state needs to be reinitialized properly before rendering
+/// the scene on the next frame.
 class GLV : public View{
 public:
 
