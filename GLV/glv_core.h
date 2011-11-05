@@ -422,9 +422,11 @@ public:
 	void traverseDepth(TraversalAction& action);
 	void traverseDepth(ConstTraversalAction& action) const;
 
-	/// Add a child view to myself
-	View& operator << (View& newChild){ add(newChild); return *this; }
-	View& operator << (View* newChild){ add(newChild); return *this; }
+	/// Add a child view to myself, alias of add()
+	View& operator << (View& child){ return add(child); }
+	
+	/// Add a child view to myself, alias of add()
+	View& operator << (View* child){ return add(child); }
 
 
 	/// Append draw handler
