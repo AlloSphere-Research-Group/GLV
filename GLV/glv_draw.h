@@ -302,12 +302,12 @@ void fileSave	(float l, float t, float r, float b);	///< Save file indicator
 void frame		(float l, float t, float r, float b);	///< Rectangular frame
 template<int LT, int LB, int RB, int RT>
 void frameTrunc	(float l, float t, float r, float b);	///< Rectangular frame truncated at corners
-void minus		(float l, float t, float r, float b);	///< Minus
+void minus		(float l, float t, float r, float b);	///< Minus sign
 template <int N, int M, int A>
 void polygon	(float l, float t, float r, float b);	///< Regular polygon with N edges, M loops, and angle A
 template<int N, int A>
 void polygonCut	(float l, float t, float r, float b);	///< Regular polygon with N edges at angle A cut through center
-void plus		(float l, float t, float r, float b);	///< Plus
+void plus		(float l, float t, float r, float b);	///< Plus sign
 void magnifier	(float l, float t, float r, float b);	///< Magnifying glass
 void question	(float l, float t, float r, float b);	///< Question mark
 void rectangle	(float l, float t, float r, float b);	///< Solid rectangle
@@ -321,6 +321,8 @@ void triangleR	(float l, float t, float r, float b);	///< Right pointing triangl
 void triangleL	(float l, float t, float r, float b);	///< Left pointing triangle
 void triangleU	(float l, float t, float r, float b);	///< Upward pointing triangle
 void triangleD	(float l, float t, float r, float b);	///< Downward pointing triangle
+void viewChild	(float l, float t, float r, float b);	///< A parent and child view symbol
+void viewSibling(float l, float t, float r, float b);	///< Two sibling views symbol
 void x			(float l, float t, float r, float b);	///< X mark
 
 /// Combination of two symbols; can be used recursively
@@ -639,6 +641,39 @@ inline void triangleD(float l, float t, float r, float b){ shape(Triangles, 0.5f
 inline void triangleL(float l, float t, float r, float b){ shape(Triangles, l,0.5f*(t+b), r,b, r,t); }
 inline void triangleR(float l, float t, float r, float b){ shape(Triangles, r,0.5f*(t+b), l,t, l,b); }
 inline void triangleU(float l, float t, float r, float b){ shape(Triangles, 0.5f*(l+r),t, l,b, r,b); }
+
+inline void viewChild(float l, float t, float r, float b){
+	float w=r-l, h=b-t;
+	float pts[] = {
+		l+w*0.0f, t+h*0.6f,
+		l+w*0.0f, t+h*0.9f,
+		l+w*1.0f, t+h*0.9f,
+		l+w*1.0f, t+h*0.1f,
+		l+w*0.0f, t+h*0.1f,
+		l+w*0.0f, t+h*0.6f,
+		l+w*0.7f, t+h*0.6f,
+		l+w*0.7f, t+h*0.1f
+	};
+	paint(LineStrip, (Point2*)pts, GLV_ARRAY_SIZE(pts)/2);
+}
+
+inline void viewSibling(float l, float t, float r, float b){
+	float w=r-l, h=b-t;
+	float pts[] = {
+		l+w*0.2f, t+h*0.6f,
+		l+w*0.0f, t+h*0.6f,
+		l+w*0.0f, t+h*0.0f,
+		l+w*0.8f, t+h*0.0f,
+		l+w*0.8f, t+h*0.4f,
+		l+w*1.0f, t+h*0.4f,
+		l+w*1.0f, t+h*1.0f,
+		l+w*0.2f, t+h*1.0f,
+		l+w*0.2f, t+h*0.4f,
+		l+w*0.8f, t+h*0.4f
+	};
+	paint(LineStrip, (Point2*)pts, GLV_ARRAY_SIZE(pts)/2);
+}
+
 inline void x(float l, float t, float r, float b){ shape(Lines, l,t, r,b, l,b, r,t); }
 
 
