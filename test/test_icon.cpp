@@ -161,7 +161,7 @@ int main (int argc, char ** argv){
 	MyGLV top;
 	top.colors().back.set(1);
 	
-	Window win(400, 500, "GLV", &top);
+	Window win(400, 540, "GLV", &top);
 	Application::run();
 }
 
