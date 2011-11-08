@@ -330,7 +330,7 @@ public:
 	void set(Preset preset);
 	
 	/// Set style based on a single color
-	void set(const Color& c, float contrast=0.4);
+	void set(const Color& c, float contrast=0.7);
 };
 
 //class StyleShape{
