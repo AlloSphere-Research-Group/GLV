@@ -285,10 +285,8 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	//glDisableClientState(GL_COLOR_ARRAY);
-	
-	// this weird call is necessary so that raster calls get scissored properly
-	// not entirely sure why this works, but it does.
-	scissor(0,0,(GLint)ww,(GLint)wh);
+
+	draw::disable(ScissorTest);
 }
 
 std::vector<GLV *>& GLV::instances(){
