@@ -89,10 +89,7 @@ createFolders:
 
 # Create file with settings for linking to external libraries
 external:
-	@echo '\
-CPPFLAGS += $(EXT_CPPFLAGS) \r\n\
-LDFLAGS += $(EXT_LDFLAGS) \
-'> Makefile.external
+	@printf "%b\n" "CPPFLAGS +=$(EXT_CPPFLAGS)\r\nLDFLAGS +=$(EXT_LDFLAGS)"> Makefile.external
 
 
 # Install library into path specified by DESTDIR
