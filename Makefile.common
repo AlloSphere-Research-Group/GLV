@@ -152,6 +152,7 @@ endif
 ifeq ($(BUILD_CONFIG), Release)
 	CFLAGS += -O3 -fpeel-loops
 else
+	CFLAGS += -g -O0 -fno-inline
 endif
 
 ifneq ($(STRICT_WARNINGS), 0)
