@@ -192,7 +192,7 @@ public:
 	ParamPanel()
 	:	Table("><")
 	{
-		(*this) << mPresetControl << (new Label("preset", lspec))->size(6);
+		(*this) << mPresetControl << (new Label("preset"))->size(6);
 	}
 
 
