@@ -78,7 +78,6 @@ private:
 
 
 
-
 class PathView : public Widget{
 public:
 
@@ -182,6 +181,39 @@ protected:
 private:
 	friend class PresetControl;
 	PresetView(){}
+};
+
+
+
+/// A simple parametric control panel
+class ParamPanel : public Table {
+public:
+
+	ParamPanel()
+	:	Table("><")
+	{
+		(*this) << mPresetControl << (new Label("preset", lspec))->size(6);
+	}
+
+
+	/// Add a control widget with label
+	
+	/// @param[in] v					The control widget
+	/// @param[in] label				The control's label
+	/// @param[in] nameViewFromLabel	Whether to set the control's name to the label
+	ParamPanel& addParam(
+		View& v, const std::string& label, bool nameViewFromLabel=true
+	){
+		(*this) << v << (new glv::Label(label))->size(6);
+		if(nameViewFromLabel) v.name(label);
+		return *this;
+	}
+	
+	/// Get preset control
+	PresetControl& presetControl(){ return mPresetControl; }
+
+private:
+	PresetControl mPresetControl;
 };
 
 
