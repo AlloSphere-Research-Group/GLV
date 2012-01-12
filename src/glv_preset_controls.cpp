@@ -533,8 +533,8 @@ void PathView::onDraw(GLV& g){
 		pointerLine<6>(l,pixStart-8, right(),pixStart+8);
 	
 		// draw position indicator
-		draw::color(colors().selection.mix(colors().back, 0.8));
-		draw::rectTrunc<2,2,2,2>(2, dy()*mPos, w-2, dy()*(mPos+1));
+		//draw::color(colors().selection.mix(colors().back, 0.8)); // row hilite bar
+		//draw::rectTrunc<2,2,2,2>(2, dy()*mPos, w-2, dy()*(mPos+1));
 		draw::color(colors().selection);
 		draw::rectTrunc<2,2,2,2>(2, dy()*mPos, seqRight()-2, dy()*(mPos+1));
 
