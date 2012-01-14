@@ -1046,17 +1046,19 @@ template <int M>
 void Data::mix(const Data* D[], double c[]){
 	int N = size();
 
-	bool num = isNumerical();
+	//bool isNum = isNumerical();
+	bool isNum = true;
 
 	for(int i=0; i<M; ++i){
 		const Data& d = *D[i];
 		int sz = d.size();
 		if(sz < N) N = sz;
-		num &= d.isNumerical();
+		isNum	&= d.isNumerical()
+				&& (d.type() != Data::BOOL);
 	}
 
 	// TODO: make this more efficient...
-	if(num){
+	if(isNum){
 		double v[M];
 	
 		for(int i=0; i<N; ++i){
@@ -1068,16 +1070,17 @@ void Data::mix(const Data* D[], double c[]){
 				for(int m=1; m<M; ++m) res += v[m]*c[m];
 			
 				// for booleans, we truncate first
-				if(type() == Data::BOOL)	assign(int(res), i);
-				else						assign(res, i);
+				//if(type() == Data::BOOL)	assign(int(res), i);
+				//else						assign(res, i);
+				assign(res, i);
 			}
 			else{
 				assign(v[0], i);
 			}
 		}
 	}
-	else{	// strings, yuck...
-		assign(*D[0]);
+	else{	// for strings and bools copy the lower index middle element
+		assign(*D[M/2-1]);
 	}
 }
 
