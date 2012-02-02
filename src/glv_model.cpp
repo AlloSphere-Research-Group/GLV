@@ -337,6 +337,29 @@ int Data::indexOf(const Data& v) const {
 }
 
 
+bool Data::isZero() const{
+	if(isNumerical()){
+		#define DO(TYPE, type)\
+		case TYPE:\
+		if(stride()==1){\
+			return (elem<type>(0)==type(0))\
+				&& (0==memcmp(mElems, mElems+sizeof(type), (size()-1)*sizeof(type)));\
+		}else{\
+			for(int i=0; i<size(); ++i){\
+				if(elem<type>(i) != type(0)) return false;\
+			}\
+			return true;\
+		}
+		switch(type()){
+			DO(BOOL,bool) DO(FLOAT,float) DO(DOUBLE,double) DO(INT,int)
+			default:;
+		}
+		#undef DO
+	}
+	return false;
+}
+
+
 void Data::clear(){
 PDEBUG;
 	if(release(mData)){

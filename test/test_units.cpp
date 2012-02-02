@@ -28,6 +28,20 @@ void ntSetBool2(const Notification& n){
 
 int main(){
 
+//	{
+//		const std::string mAlign = "xxx,<><,--x";
+//		const int mRepeatRow = 1;
+//
+//		int row = 0;
+//		int ibeg=0, iend=0;
+//		for(int i=0; i<mAlign.size(); ++i){
+//			if(mAlign[i] == ','){
+//				++row;
+//				
+//			}
+//		}
+//	}
+
 	#define SET4(x, a,b,c,d) x[0]=a; x[1]=b; x[2]=c; x[3]=d
 	#define EQ4(x, a,b,c,d) (x[0]==a && x[1]==b && x[2]==c && x[3]==d)
 
@@ -196,6 +210,22 @@ int main(){
 			d.set("d");
 			d2.assign(d);
 			assert(d2.at<std::string>(0) == d.at<std::string>(0));
+		}
+		
+		// checking elements
+		{
+			Data::Type types[] = {Data::BOOL, Data::INT, Data::FLOAT, Data::DOUBLE};
+			for(int i=0;i<4;++i){
+				Data a(types[i], 8);
+				a.assignAll(0);
+				assert(a.isZero());
+				a.assign(1, 1);
+				assert(!a.isZero());
+				a.assign(1, 3);
+				a.assign(1, 5);
+				a.assign(1, 7);
+				assert(a.slice(0,4,2).isZero());
+			}
 		}
 		
 		// searching

@@ -344,6 +344,9 @@ public:
 	/// Returns whether type is numerical, i.e., int, float, or double
 	bool isNumerical() const { return type() < Data::STRING; }
 
+	/// Returns true if all values are zero
+	bool isZero() const;
+
 	/// Get maximum allowable dimensions
 	static int maxDim(){ return DATA_MAXDIM; }
 
