@@ -266,7 +266,7 @@ public:
 	Data& operator+= (const Data& v);
 
 	/// Get element at 1D index, performing type conversion if necessary
-	template <class T> const T at(int ind) const;
+	template <class T> const T at(int idx) const;
 
 	/// Get element at 2D index, performing type conversion if necessary
 	template <class T> const T at(int i1, int i2) const;
@@ -276,6 +276,9 @@ public:
 
 	/// Get element at 4D index, performing type conversion if necessary
 	template <class T> const T at(int i1, int i2, int i3, int i4) const;
+
+	/// Copy all elements into another array
+	template <class T> void copyTo(T * dst) const { for(int i=0;i<size();++i) dst[i]=at(i); }
 
 	/// Get reference to element at 1D index using raw pointer casting
 	template <class T>
@@ -694,8 +697,8 @@ public:
 
 	Data& data(){ return mData; }
 	
-	void assignData(const Data& d, const int& ind=0){
-		int i1=0,i2=0; data().indexDim(i1,i2, ind);
+	void assignData(const Data& d, const int& idx=0){
+		int i1=0,i2=0; data().indexDim(i1,i2, idx);
 		assignData(d, i1,i2);
 	}
 
