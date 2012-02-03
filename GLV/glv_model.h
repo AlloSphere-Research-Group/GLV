@@ -266,19 +266,19 @@ public:
 	Data& operator+= (const Data& v);
 
 	/// Get element at 1D index, performing type conversion if necessary
-	template <class T> const T at(int idx) const;
+	template <class T> T at(int idx) const;
 
 	/// Get element at 2D index, performing type conversion if necessary
-	template <class T> const T at(int i1, int i2) const;
+	template <class T> T at(int i1, int i2) const;
 
 	/// Get element at 3D index, performing type conversion if necessary
-	template <class T> const T at(int i1, int i2, int i3) const;
+	template <class T> T at(int i1, int i2, int i3) const;
 
 	/// Get element at 4D index, performing type conversion if necessary
-	template <class T> const T at(int i1, int i2, int i3, int i4) const;
+	template <class T> T at(int i1, int i2, int i3, int i4) const;
 
 	/// Copy all elements into another array
-	template <class T> void copyTo(T * dst) const { for(int i=0;i<size();++i) dst[i]=at(i); }
+	template <class T> void copyTo(T * dst) const { for(int i=0;i<size();++i) dst[i]=at<T>(i); }
 
 	/// Get reference to element at 1D index using raw pointer casting
 	template <class T>
@@ -981,7 +981,7 @@ int toToken(std::string& dst, const T * src, int size, int stride){
 }
 
 template <class T>
-const T Data::at(int i) const {
+T Data::at(int i) const {
 	#define CS(TY,t) case Data::TY: return static_cast<const T>(elem<t>(i));
 	switch(type()){
 	CS(BOOL,bool) CS(INT,int) CS(FLOAT,float) CS(DOUBLE,double)
@@ -994,7 +994,7 @@ const T Data::at(int i) const {
 }
 
 template<>
-inline const std::string Data::at<std::string>(int i) const {
+inline std::string Data::at<std::string>(int i) const {
 	#define CS(T,t) case Data::T: return glv::toString(elem<t>(i));
 	switch(type()){
 	CS(BOOL,bool) CS(INT,int) CS(FLOAT,float) CS(DOUBLE,double)
@@ -1005,13 +1005,13 @@ inline const std::string Data::at<std::string>(int i) const {
 }
 
 template <class T>
-inline const T Data::at(int i1, int i2) const { return at<T>(indexFlat(i1,i2)); }
+inline T Data::at(int i1, int i2) const { return at<T>(indexFlat(i1,i2)); }
 
 template <class T>
-inline const T Data::at(int i1, int i2, int i3) const { return at<T>(indexFlat(i1,i2,i3)); }
+inline T Data::at(int i1, int i2, int i3) const { return at<T>(indexFlat(i1,i2,i3)); }
 
 template <class T>
-inline const T Data::at(int i1, int i2, int i3, int i4) const { return at<T>(indexFlat(i1,i2,i3,i4)); }
+inline T Data::at(int i1, int i2, int i3, int i4) const { return at<T>(indexFlat(i1,i2,i3,i4)); }
 
 #define DATA_SET(t, T)\
 template<> inline Data& Data::set<t>(t * src, const int * sizes, int n){\
