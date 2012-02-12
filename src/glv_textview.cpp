@@ -752,7 +752,8 @@ void DropDown::onDraw(GLV& g){
 	TextView::onDraw(g);
 	
 	draw::color(colors().fore);
-	draw::triangleD(w - h + 2, 2, w-2, h-2);
+	float ds = 3;
+	draw::triangleD(w - h + ds, ds, w-ds, h-ds);
 }
 
 bool DropDown::onEvent(Event::t e, GLV& g){
