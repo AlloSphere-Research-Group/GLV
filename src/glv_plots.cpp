@@ -445,24 +445,29 @@ void Plot_addEvents(Plot& p){
 	p.addHandler(Event::Quit, evPlotDestroyContext);
 }
 
+void Plot_init(Plot& p){
+	p.data().type(Data::FLOAT);
+	Plot_addEvents(p);
+}
+
 Plot::Plot(const Rect& r)
 :	Grid(r)
 {
-	Plot_addEvents(*this);
+	Plot_init(*this);
 }
 
 Plot::Plot(const Rect& r, Plottable& p)
 :	Grid(r)
 {
+	Plot_init(*this);
 	add(p);
-	Plot_addEvents(*this);
 }
 
 Plot::Plot(const Rect& r, Plottable& p1, Plottable& p2)
 :	Grid(r)
 {
+	Plot_init(*this);
 	add(p1); add(p2);
-	Plot_addEvents(*this);
 }
 
 void Plot::onDraw(GLV& g){
