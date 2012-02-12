@@ -483,6 +483,10 @@ public:
 	int visible() const;						///< Returns whether View visibility flag is set
 	Rect visibleRegion() const;					///< Returns visible region in relative coordinates
 
+	space_t anchorX() const { return mAnchorX; }
+	space_t anchorY() const { return mAnchorY; }
+	space_t stretchX() const { return mStretchX; }
+	space_t stretchY() const { return mStretchY; }
 
 	View& anchor(space_t mx, space_t my);		///< Set translation factors relative to parent resize amount
 	View& anchor(Place::t parentPlace);			///< Set translation factors relative to parent resize amount
