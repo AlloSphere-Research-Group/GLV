@@ -6,6 +6,38 @@
 namespace glv{
 
 
+Divider::Divider(float thickness, float strokeWidth, bool vertical)
+:	mStrokeWidth(strokeWidth), mIsVertical(vertical)
+{
+	if(vertical){
+		stretch(0,1);
+		width(thickness);
+	}
+	else{
+		stretch(1,0);
+		height(thickness);		
+	}
+}
+
+void Divider::onDraw(GLV& g){
+	using namespace glv::draw;
+	if(mStrokeWidth <= 0) return;
+
+	lineWidth(mStrokeWidth);
+	color(colors().fore);
+	if(mIsVertical){
+		float p = pixc(w/2);
+		shape(Lines, p,0, p,h);		
+	}
+	else{
+		float p = pixc(h/2);
+		shape(Lines, 0,p, w,p);
+	}
+}
+
+
+
+
 Placer::Placer(space_t absX, space_t absY)
 :	x(absX), y(absY), rx(0), ry(0), ax(0), ay(0), fw(0), fh(0), mAnchor((Place::t)0), parent(0)
 {}
@@ -142,8 +174,21 @@ Rect& LayoutGrid::operator()(){
 
 
 Table::Table(const char * a, space_t padX, space_t padY, const Rect& r)
-:	Group(r), mSize1(0), mSize2(0), mPad1(padX), mPad2(padY)
+:	Group(r), mSize1(0), mSize2(0), mPad1(padX), mPad2(padY), mRepeatRow(-1)
 {	arrangement(a); }
+
+
+void Table::getCellDim(int idx, space_t& pl, space_t& pt, space_t& pr, space_t& pb){
+	const Cell& c = mCells[idx];
+	space_t padl = mPad1*(c.x+1);
+	space_t padt = mPad2*(c.y+1);
+	space_t padr = (c.w-1)*mPad1;
+	space_t padb = (c.h-1)*mPad2;
+	pl = sumSpan(&mColWs[0], c.x) + padl;
+	pt = sumSpan(&mRowHs[0], c.y) + padt;
+	pr = sumSpan(&mColWs[0], c.x+c.w, c.x) + pl+padr;
+	pb = sumSpan(&mRowHs[0], c.y+c.h, c.y) + pt+padb;
+}
 
 
 Table& Table::arrange(){
@@ -157,11 +202,19 @@ Table& Table::arrange(){
 	while(vp){ ++numChildren; vp=vp->sibling; }
 	
 	if(numChildren > (int)mCells.size()){
-		std::string a = mAlign;
-		//int sizeCells = mCells.size();
-		int numCopies = (numChildren-1)/mCells.size();
-		for(int i=0; i<numCopies; ++i){ a+=","; a+=mAlign; }
-		arrangement(a.c_str());
+		if(mRepeatRow < 0){
+			std::string a = mAlign;
+			//int sizeCells = mCells.size();
+			int numCopies = (numChildren-1)/mCells.size();
+			for(int i=0; i<numCopies; ++i){ a+=","; a+=mAlign; }
+			arrangement(a.c_str());
+		}
+		else{
+//			int c 
+//			for(int i=0; i<mAlign.size(); ++i){
+//				
+//			}
+		}
 	}
 	
 
@@ -242,18 +295,14 @@ Table& Table::arrange(){
 		if(0 == c.view) continue;
 		View& v = *c.view;
 
-		int i1=c.x, i2=c.y;		
-
-		space_t padl = mPad1*(i1+1);
-		space_t padt = mPad2*(i2+1);
-		space_t padr = (c.w-1)*mPad1;
-		space_t padb = (c.h-1)*mPad2;
-		space_t pl = sumSpan(&mColWs[0], i1) + padl;
-		space_t pt = sumSpan(&mRowHs[0], i2) + padt;
-		space_t pr = sumSpan(&mColWs[0], i1+c.w, i1) + pl+padr;
-		space_t pb = sumSpan(&mRowHs[0], i2+c.h, i2) + pt+padb;
+		space_t pl,pt,pr,pb;
+		getCellDim(i,pl,pt,pr,pb);
 		space_t cx = (pr-pl)*0.5;
 		space_t cy = (pb-pt)*0.5;
+
+		// Fit in cell if view stretches. We subtract off dimensions exterior
+		// to the cell, including padding.
+		v.extent(v.w - (w-(pr-pl))*v.stretchX(), v.h - (h-(pb-pt))*v.stretchY());
 
 		#define CS(c, p, x, y) case c: v.anchor(Place::p).pos(Place::p, x, y); break;
 		switch(c.code){
@@ -347,13 +396,13 @@ void Table::onDraw(GLV& g){
 		color(colors().border);
 		lineWidth(1);
 		for(unsigned i=0; i<mCells.size(); ++i){
-			Cell& c = mCells[i];
-			//printf("%d %d %d %d\n", c.x, c.y, c.w, c.h);
-			space_t cl = sumSpan(&mColWs[0], c.x) + c.x*mPad1;
-			space_t ct = sumSpan(&mRowHs[0], c.y) + c.y*mPad2;
-			space_t cw = sumSpan(&mColWs[0], c.x+c.w, c.x) + c.w*mPad1;
-			space_t ch = sumSpan(&mRowHs[0], c.y+c.h, c.y) + c.h*mPad2;
-			frame(cl, ct, cl+cw, ct+ch);
+			space_t cl,ct,cr,cb;
+			getCellDim(i, cl,ct,cr,cb);
+			cl -= mPad1/2;
+			cr += mPad1/2;
+			ct -= mPad2/2;
+			cb += mPad2/2;
+			frame(cl,ct,cr,cb);
 		}
 	}
 }
@@ -379,7 +428,7 @@ Scroll::Scroll(const Rect& r, float scrollBarWidth)
 	mSliderXY.knobSymbol(draw::circle<8>);
 	mSliderXY.enable(Momentary);
 	
-	(*this) << mSliderX << mSliderY;// << mSliderXY;
+	(*this) << mSliderX << mSliderY << mSliderXY;
 }
 
 
@@ -389,7 +438,7 @@ void Scroll::onDraw(GLV& g){
 	mSliderY.bringToFront();
 	mSliderXY.bringToFront();
 
-	// hide overlayed Views by default
+	// hide scrollbars by default
 	mSliderX.disable(Visible);
 	mSliderY.disable(Visible);
 	mSliderXY.disable(Visible);
@@ -425,7 +474,8 @@ void Scroll::onDraw(GLV& g){
 			mSliderX.enable(Visible);
 			mSliderXY.enable(Visible);
 		}
-		float sr = width();
+		// subtracting y slider width to fit content
+		float sr = width() - mSliderY.width();
 		mSliderX.endpoints(xpos, xpos+sr);
 		mSliderX.jump(sr/(mSliderX.max()-mSliderX.min()));
 	}
@@ -435,7 +485,8 @@ void Scroll::onDraw(GLV& g){
 			mSliderY.enable(Visible);
 			mSliderXY.enable(Visible);
 		}
-		float sr = height();
+		// subtracting x slider height to fit content
+		float sr = height() - mSliderX.height();
 		mSliderY.endpoints(ypos, ypos-sr);
 		mSliderY.jump(sr/(mSliderY.max()-mSliderY.min()));
 //		printf("%g %g\n", mSliderY.getValue(0), mSliderY.getValue(1));

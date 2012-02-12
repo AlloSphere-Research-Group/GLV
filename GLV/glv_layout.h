@@ -27,6 +27,19 @@ struct Group : public View{
 
 
 
+/// Horizontal or vertical line
+class Divider : public Group{
+public:
+	Divider(float thickness=6, float strokeWidth=1, bool vertical=false);
+
+	virtual void onDraw(GLV& g);
+	virtual const char * className() const { return "Divider"; }
+
+protected:
+	float mStrokeWidth;
+	bool mIsVertical;
+};
+
 
 
 /// View placer
@@ -253,6 +266,7 @@ protected:
 	std::string mAlign;
 	space_t mPad1, mPad2;
 	std::vector<space_t> mColWs, mRowHs;
+	int mRepeatRow;
 	
 	bool isAlignCode(char c){
 		return	c=='<' || c=='>' || c=='^' || c=='v' || c=='x' || 
@@ -266,6 +280,8 @@ protected:
 		for(int i=begin; i<end; ++i) r += src[i];
 		return r;
 	}
+	
+	void getCellDim(int idx, space_t& pl, space_t& pt, space_t& pr, space_t& pb);
 };
 
 
