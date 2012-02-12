@@ -212,6 +212,16 @@ int main(){
 			assert(d2.at<std::string>(0) == d.at<std::string>(0));
 		}
 		
+		{
+			Data a(Data::FLOAT, 3);
+			a.assign(10,0);
+			a.assign(20,1);
+			a.assign(30,2);
+			float b[3];
+			a.copyTo(b);
+			for(int i=0;i<3;++i) assert(b[i] == a.at<float>(i));
+		}
+		
 		// checking elements
 		{
 			Data::Type types[] = {Data::BOOL, Data::INT, Data::FLOAT, Data::DOUBLE};
