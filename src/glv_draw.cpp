@@ -145,6 +145,7 @@ void paint(int prim, const GraphicsData& b){
 }
 
 void enter2D(float w, float h) {
+	disable(Lighting);
 	disable(DepthTest);
 	enable(LineSmooth);
 	enable(Blend);

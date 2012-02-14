@@ -189,6 +189,7 @@ enum{
 	Blend			= GL_BLEND,
 	DepthTest		= GL_DEPTH_TEST,
 	Fog				= GL_FOG,
+	Lighting		= GL_LIGHTING,
 	LineSmooth		= GL_LINE_SMOOTH,
 	PointSmooth		= GL_POINT_SMOOTH,
 	ScissorTest		= GL_SCISSOR_TEST,
