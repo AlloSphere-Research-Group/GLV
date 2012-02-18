@@ -300,6 +300,7 @@
 		163D5ABE1354182600E01F8A /* glv_color_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_color_controls.h; sourceTree = "<group>"; };
 		167F30B5120E05C80023A08C /* glv_font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_font.h; sourceTree = "<group>"; };
 		167F30F2120E1F1A0023A08C /* glv_font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_font.cpp; sourceTree = "<group>"; };
+		168723D914EE42770037221B /* glv_color_controls.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_color_controls.cpp; sourceTree = "<group>"; };
 		169DED97134BD75400E368B8 /* glv_preset_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_preset_controls.h; sourceTree = "<group>"; };
 		169DED98134BD76800E368B8 /* glv_preset_controls.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_preset_controls.cpp; sourceTree = "<group>"; };
 		16A93E5F1002BA4400F5404E /* TestWindowGLUT */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestWindowGLUT; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -528,6 +529,7 @@
 				08F72F080E465E8F001A58ED /* glv_binding_glut.cpp */,
 				DFE897FD0DD4EE1000D266E2 /* glv_buttons.cpp */,
 				B917A7540BA2434200E819AF /* glv_color.cpp */,
+				168723D914EE42770037221B /* glv_color_controls.cpp */,
 				160969BC0D8DDE98003B36BD /* glv_core.cpp */,
 				16ECB4D80D3F48BD005A06AE /* glv_draw.cpp */,
 				167F30F2120E1F1A0023A08C /* glv_font.cpp */,

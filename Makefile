@@ -6,6 +6,7 @@ include Makefile.config
 
 SRCS = 	glv_buttons.cpp \
 	glv_color.cpp \
+	glv_color_controls.cpp \
 	glv_core.cpp \
 	glv_draw.cpp \
 	glv_font.cpp \
