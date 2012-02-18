@@ -8,7 +8,7 @@ namespace glv{
 
 Sliders::Sliders(const Rect& r, int nx, int ny, bool dragSelect)
 :	Widget(r, 0.5, false, false, false),
-	mOri(AUTO), mAcc(0)
+	mOri(AUTO), mKnobSym(draw::rectangle), mAcc(0)
 {
 	data().resize(Data::DOUBLE, nx,ny);
 	property(SelectOnDrag, dragSelect);
@@ -59,7 +59,7 @@ void Sliders::onDraw(GLV& g){
 				float y0 = to01(0)*yd;
 				//rect(x + x0, y, f*xd+x, y+yd-padding());
 				
-				rectangle(x, y + (yd-v01*yd), x+xd-paddingX()*2, y + (yd-y0));
+				mKnobSym(x, y + (yd-v01*yd), x+xd-paddingX()*2, y + (yd-y0));
 
 				// if zero line showing
 				if(max()>0 && min()<0){
@@ -84,7 +84,7 @@ void Sliders::onDraw(GLV& g){
 
 				float v01 = to01(getValue(ind));
 				float x0 = to01(0)*xd;
-				rectangle(x + x0, y, v01*xd+x, y+yd-paddingY()*2);
+				mKnobSym(x + x0, y, v01*xd+x, y+yd-paddingY()*2);
 
 				// if zero line showing
 				if(max()>0 && min()<0){
@@ -165,7 +165,7 @@ void Sliders::selectSlider(GLV& g, bool click){
 // Slider2D
 
 Slider2D::Slider2D(const Rect& r, double valX, double valY, space_t knobSize, SymbolFunc knobSym)
-:	SliderVector<2>(r), mKnobSize(knobSize), mKnobSym(knobSym)
+:	SliderVector<2>(r), mKnobSize(knobSize), mKnobSym(knobSym), mConstrainKnob(true)
 {
 	setValue(valX, 0);
 	setValue(valY, 1);
@@ -233,8 +233,16 @@ void Slider2D::onDraw(GLV& g){
 	using namespace glv::draw;
 	float sz = knobSize();	// size of indicator block
 	float sz2 = sz * 0.5f;
-	float posX = sz2 + (w - sz) * to01(getValue(0));
-	float posY = sz2 + (h - sz) * (1.f - to01(getValue(1)));
+	float posX, posY;
+	
+	if(mConstrainKnob){
+		posX = sz2 + (w - sz) * to01(getValue(0));
+		posY = sz2 + (h - sz) * (1.f - to01(getValue(1)));
+	}
+	else{
+		posX = w * to01(getValue(0));
+		posY = h * (1.f - to01(getValue(1)));	
+	}
 	
 	color(colors().fore);
 //	mKnobSym(pix(posX - sz2), pix(posY - sz2), pix(posX + sz2), pix(posY + sz2));
@@ -343,12 +351,24 @@ void SliderRange::onDraw(GLV& g){
 
 	color(colors().fore);
 	if(w>h){	// horizontal
-		rectTrunc<2,2,2,2>(v1*w,0, v2*w,h);
+		//rectTrunc<2,2,2,2>(v1*w,0, v2*w,h);
+		float x1 = v1*w;
+		float x2 = v2*w;
+		rectangle(x1+2,0, x2-2,h);
+		x1 = pixc(x1);
+		x2 = pixc(x2)-1;
+		shape(Lines, x1,0, x1,h, x2,0, x2,h);
 	}
 	else{
 //		rectTrunc<2,2,2,2>(0,v1*h, w,v2*h);
-		rectTrunc<2,2,2,2>(0,h - v2*h, w, h - v1*h); // REV: flip y
-		//printf("v1: %g   v2: %g\n", v1*h, v2*h);
+//		rectTrunc<2,2,2,2>(0,h - v2*h, w, h - v1*h); // REV: flip y
+
+		float y1 = h-v1*h;
+		float y2 = h-v2*h;
+		rectangle(0,y2+2, w,y1-2);
+		y1 = pixc(y1)-1;
+		y2 = pixc(y2);
+		shape(Lines, 0,y1, w,y1, 0,y2, w,y2);
 	}
 }
 

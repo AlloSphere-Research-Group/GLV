@@ -66,6 +66,9 @@ public:
 	/// Set knob symbol
 	Slider2D& knobSymbol(SymbolFunc f){ mKnobSym=f; return *this; }
 
+	/// Set whether knob is constrained to always fit within view
+	Slider2D& constrainKnob(bool v){ mConstrainKnob=v; return *this; }
+
 	virtual const char * className() const { return "Slider2D"; }
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
@@ -73,6 +76,7 @@ public:
 protected:
 	space_t mKnobSize;
 	SymbolFunc mKnobSym;
+	bool mConstrainKnob;
 };
 
 
@@ -174,6 +178,9 @@ public:
 
 	virtual ~Sliders(){}
 
+	/// Set knob symbol
+	Sliders& knobSymbol(SymbolFunc f){ mKnobSym=f; return *this; }
+
 	Orientation orientation() const { return mOri; }
 	Sliders& orientation(Orientation v){ mOri=v; return *this; }
 
@@ -192,6 +199,7 @@ public:
 	
 protected:
 	Orientation mOri;
+	SymbolFunc mKnobSym;
 	double mAcc;
 
 	bool vertOri() const { return VERTICAL==mOri || (AUTO==mOri && tallElems()); }
