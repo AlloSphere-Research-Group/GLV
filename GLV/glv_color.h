@@ -52,7 +52,9 @@ struct Color{
 	Color blackAndWhite() const;					///< Returns nearest black or white color
 	Color inverse() const;							///< Returns inverted color
 	float luminance() const;						///< Get luminance value
-	Color mix(const Color& c, float amt);			///< Returns linear mix with another color (0 = none)
+	Color mix(const Color& c, float amt) const;		///< Returns linear mix with another color (0 = none)
+	Color mixRGB(const Color& c, float amt) const;
+
 
 	void clamp();									///< Clamp RGB components into [0,1]
 	void invert();									///< Invert colors
@@ -150,7 +152,11 @@ inline Color& Color::operator*=(float v){ set(r*v, g*v, b*v, a*v); return *this;
 inline Color Color::blackAndWhite() const { return Color(luminance()>0.5f?1.f:0.f); }
 inline Color Color::inverse() const { return Color(1.f-r, 1.f-g, 1.f-b, a); }
 inline float Color::luminance() const { return r*0.299f+g*0.587f+b*0.114f; }
-inline Color Color::mix(const Color& c, float f){ return (c-*this)*f + *this; }
+inline Color Color::mix(const Color& c, float f) const { return (c-*this)*f + *this; }
+
+inline Color Color::mixRGB(const Color& c, float f) const {
+	return Color((c.r-r)*f+r, (c.g-g)*f+g, (c.b-b)*f+b, a);
+}
 
 inline void	Color::clamp(){
 	r<0.f ? r=0.f : (r>1.f ? r=1.f : 0);
