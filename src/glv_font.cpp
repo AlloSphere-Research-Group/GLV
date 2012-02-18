@@ -319,7 +319,7 @@ struct TextIterator{
 
 
 Font::Font(float size_)
-:	mLetterSpacing(0), mLineSpacing(1), mTabSpaces(4)
+:	mLetterSpacing(0), mLineSpacing(1.25), mTabSpaces(4)
 {
 	size(size_);
 }
