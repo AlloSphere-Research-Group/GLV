@@ -1,7 +1,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-#include "../example.h"
+#include "example.h"
 
 int main(){
 	using namespace std;
