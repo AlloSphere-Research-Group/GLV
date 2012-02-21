@@ -52,7 +52,8 @@ ColorPicker& ColorPicker::setValue(const HSV& v){
 
 const Data& ColorPicker::getData(Data& temp) const {
 	temp.resize(Data::FLOAT,3);
-	return temp.assignFromArray(&getValue().h, 3);
+	HSV val = getValue();
+	return temp.assignFromArray(&val.h, 3);
 }
 
 void ColorPicker::setData(const Data& d){
