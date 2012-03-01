@@ -29,84 +29,36 @@ ifdef WINDOW_BINDING
 endif
 
 OBJS		= $(addsuffix .o, $(basename $(notdir $(SRCS))))
-
-CPPFLAGS	+= $(EXT_CPPFLAGS)
-LDFLAGS		+= $(EXT_LDFLAGS)
-
 CFLAGS		+= $(addprefix -I, $(INC_DIR))
 LDFLAGS		:= $(addprefix -L, $(LIB_DIRS)) $(LDFLAGS)
 
-CFLAGS		:= $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS)
-
-DEPFLAGS	=
-ifneq ($(DEP_TRACK), 0)
-	DEPFLAGS = -MMD -MF $(basename $@).dep
-endif
 
 #--------------------------------------------------------------------------
 # Rules
 #--------------------------------------------------------------------------
+include Makefile.rules
+
 .PHONY: clean test
-
-# Build object file from C++ source
-$(OBJ_DIR)%.o: %.cpp
-	@echo CXX $< $@
-	@$(CXX) -c $(CFLAGS) $< -o $@ $(DEPFLAGS)
-
--include $(wildcard $(OBJ_DIR)*.dep)
-
-
-# Build static library
-$(SLIB_PATH): createFolders $(addprefix $(OBJ_DIR), $(OBJS))
-	@echo AR $@
-	@rm -f $@
-	@$(AR) $@ $(filter %.o, $^)
-	@$(RANLIB) $@
-
-
-all: $(SLIB_PATH) test
-
-# Archive repository
-archive:
-	$(eval $@_TMP := $(shell mktemp -d tmp.XXXXXXXXXX))
-	@echo Creating archive, this may take some time...
-	@echo Creating temporary export...
-	@svn export --force . $($@_TMP)
-	@echo Compressing...
-	@cd $($@_TMP) && tar -czf ../$(LIB_NAME).tar.gz .
-	@echo Compression complete.
-	@rm -R $($@_TMP)
-
-# Remove build files
-clean:
-	@$(RM)r $(BUILD_DIR)
-
-
-createFolders:
-	@mkdir -p $(BIN_DIR)
-	@mkdir -p $(OBJ_DIR)
-	@mkdir -p $(BUILD_DIR)/lib
-
-
-# Create file with settings for linking to external libraries
-external:
-	@printf "%b\n" "CPPFLAGS +=$(EXT_CPPFLAGS)\r\nLDFLAGS +=$(EXT_LDFLAGS)"> Makefile.external
 
 
 # Install library into path specified by DESTDIR
 # Include files are copied into DESTDIR/include/LIB_NAME and
 # library files are copied to DESTDIR/lib
-install: $(SLIB_PATH)
+install: $(LIB_PATH)
 #	@echo 'INSTALL $(DESTDIR)'
 	@$(INSTALL) -d $(DESTDIR)/lib
 	@$(INSTALL) -d $(DESTDIR)/include/$(LIB_NAME)
-	@$(INSTALL) -C -m 644 $(SLIB_PATH) $(DESTDIR)/lib
+	@$(INSTALL) -C -m 644 $(LIB_PATH) $(DESTDIR)/lib
 	@$(INSTALL) -C -m 644 $(INC_DIR)/*.h $(DESTDIR)/include/$(LIB_NAME)
-	@$(RANLIB) $(DESTDIR)/lib/$(SLIB_FILE)
+#	@$(RANLIB) $(DESTDIR)/lib/$(LIB_FILE)
 
 
-test: $(SLIB_PATH)
-	@$(MAKE) -C $(TEST_DIR)
+test: $(LIB_PATH)
+#	@$(MAKE) -C $(TEST_DIR)
+	@$(MAKE) --no-print-directory test/test_units.cpp
+
+buildtest: test
+	@$(MAKE) --no-print-directory example/*.cpp AUTORUN=0
 
 
 # Compile and run source files in example/ or test/ folder
@@ -118,3 +70,20 @@ ifneq ($(AUTORUN), 0)
 	@cd $(BIN_DIR) && ./$(*F) &
 endif
 
+
+# Remove build files
+clean:
+# Clean only removes object files for now; avoids unintentional removal of user files
+	$(call RemoveDir, $(OBJ_DIR))
+
+
+# Archive repository
+archive:
+	$(eval $@_TMP := $(shell mktemp -d tmp.XXXXXXXXXX))
+	@echo Creating archive, this may take some time...
+	@echo Creating temporary export...
+	@svn export --force . $($@_TMP)
+	@echo Compressing...
+	@cd $($@_TMP) && tar -czf ../$(LIB_NAME).tar.gz .
+	@echo Compression complete.
+	@rm -R $($@_TMP)
