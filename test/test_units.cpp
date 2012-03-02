@@ -322,11 +322,13 @@ int main(){
 		N=toToken(s1, true);			assert(1==N && s1 == "1");
 		N=toToken(s1, false);			assert(1==N && s1 == "0");
 		N=toToken(s1, "test");			assert(1==N && s1 == "\"test\"");
-		
+		N=toToken(s1, std::string("test"));
+										assert(1==N && s1 == "\"test\"");		
+
 		SET4(b4, 1,0,1,1);		N=toToken(s1, b4,4,1);	assert(4==N && s1 == "{1, 0, 1, 1}");
 		SET4(f4,-1,0.1,3,1e10);	N=toToken(s1, f4,4,1);	assert(4==N && s1 == "{-1, 0.1, 3, 1e+10}");
 		SET4(d4,-1,0.1,3,1e10);	N=toToken(s1, d4,4,1);	assert(4==N && s1 == "{-1, 0.1, 3, 1e+10}");
-		SET4(s4,"one","two","three","four"); N=toToken(s1,s4,4,1); //printf("%s\n", s1.c_str());
+		SET4(s4,"one","two","three","four"); N=toToken(s1,s4,4,1);
 														assert(4==N && s1 == "{\"one\", \"two\", \"three\", \"four\"}");
 	}
 

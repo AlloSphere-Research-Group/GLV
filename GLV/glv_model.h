@@ -44,16 +44,18 @@ int fromToken(T * dst, int size, int stride, const std::string& src);
 
 /// Convert object to a string token. Returns number of elements converted.
 template<class T>
-int toToken(std::string& dst, const T& src){ return toString(dst,src); }
+int toToken(std::string& dst, const T& src);
 int toToken(std::string& dst, const char * src);
 
 /// Convert objects to a string token. Returns number of elements converted.
 template<class T>
-int toToken(std::string& dst, const T * src, int size);
+int toToken(std::string& dst, const T * src, int size, int stride=1);
 
 /// Returns string token of an object
 template <class T>
 inline std::string toToken(const T& obj){ std::string r; toToken(r,obj); return r; }
+
+
 
 /// Convert Data object to string
 int toString(std::string& dst, const Data& src);
@@ -931,8 +933,7 @@ protected:
 
 
 
-// Implementation
-//------------------------------------------------------------------------------
+// Implementation ______________________________________________________________
 
 template<class T>
 int toString(std::string& dst, const T& src, const char * format){
@@ -974,11 +975,23 @@ int toString(std::string& dst, const T * src, int size, int stride){
 }
 
 template<class T>
+inline int toToken(std::string& dst, const T& src){ return toString(dst,src); }
+
+template<>
+inline int toToken<std::string>(std::string& dst, const std::string& src){
+	dst = "\"" + src + "\""; return 1;
+}
+
+template<class T>
 int toToken(std::string& dst, const T * src, int size, int stride){
 	int res = stringifyArray(dst,src,size,stride, toToken);
 	if(1!=size) dst = "{" + dst + "}";
 	return res;
 }
+
+
+
+// Data ________________________________________________________________________
 
 template <class T>
 T Data::at(int i) const {

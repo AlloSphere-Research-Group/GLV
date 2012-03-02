@@ -107,10 +107,6 @@ template<> int fromToken<std::string>(std::string * dst, int size, int stride, c
 	return i;
 }
 
-template<> int toToken<std::string>(std::string& dst, const std::string& src){
-	dst = "\"" + src + "\"";
-	return 1;
-}
 int toToken(std::string& dst, const char * src){ return toToken(dst, std::string(src)); }
 
 
