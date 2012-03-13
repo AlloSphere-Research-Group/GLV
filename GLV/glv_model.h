@@ -385,6 +385,10 @@ public:
 	Data slice(int offset, int size) const { return slice(offset,size,stride()); }
 
 	/// Returns 1D slice with given offset, size, and stride
+	
+	/// @param[in] offset	element offset from source data
+	/// @param[in] size		number of elements in slice
+	/// @param[in] stride	element stride through source data
 	Data slice(int offset, int size, int stride) const;
 
 	/// Get index stride
