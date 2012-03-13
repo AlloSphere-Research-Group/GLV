@@ -67,6 +67,12 @@
 		16258B331017D74A0037164D /* glv_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7540BA2434200E819AF /* glv_color.cpp */; };
 		16258B351017D74E0037164D /* glv_inputdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B917A7560BA2434200E819AF /* glv_inputdevice.cpp */; };
 		16258B361017D7500037164D /* glv_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5E7610D91F43B001153DA /* glv_layout.cpp */; };
+		162A0F0E151006360006641C /* glv_sono.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 162A0F0D151006120006641C /* glv_sono.cpp */; };
+		162A0F0F1510063C0006641C /* glv_sono.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 162A0F0D151006120006641C /* glv_sono.cpp */; };
+		162A0F10151006520006641C /* glv_sono.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 162A0F0D151006120006641C /* glv_sono.cpp */; };
+		162A0F121510065A0006641C /* glv_color_controls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168723D914EE42770037221B /* glv_color_controls.cpp */; };
+		162A0F131510065D0006641C /* glv_preset_controls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169DED98134BD76800E368B8 /* glv_preset_controls.cpp */; };
+		162A0F14151006620006641C /* glv_view3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16BC4092114B0678001246DB /* glv_view3D.cpp */; };
 		162CD4AB0FF4AC8600A58570 /* glv_plots.h in Headers */ = {isa = PBXBuildFile; fileRef = 16DEEE260FC28359006B373C /* glv_plots.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		162CD4AC0FF4ACA000A58570 /* glv.h in Headers */ = {isa = PBXBuildFile; fileRef = B9183C950B9E36B100D8DA81 /* glv.h */; };
 		162CD4AD0FF4ACA000A58570 /* glv_behavior.h in Headers */ = {isa = PBXBuildFile; fileRef = 16E051290D7E990F00C521D0 /* glv_behavior.h */; };
@@ -296,6 +302,8 @@
 		1610882A121DC37F00DC1DF1 /* glv_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_model.h; sourceTree = "<group>"; };
 		1610882B121DC37F00DC1DF1 /* glv_model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_model.cpp; sourceTree = "<group>"; };
 		161B38830DE359DD00936BA0 /* glv_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_widget.h; sourceTree = "<group>"; };
+		162A0F0C151006060006641C /* glv_sono.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_sono.h; sourceTree = "<group>"; };
+		162A0F0D151006120006641C /* glv_sono.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glv_sono.cpp; sourceTree = "<group>"; };
 		162FAF8A124F1D0800C7C494 /* glv_icon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_icon.h; sourceTree = "<group>"; };
 		163D5ABE1354182600E01F8A /* glv_color_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_color_controls.h; sourceTree = "<group>"; };
 		167F30B5120E05C80023A08C /* glv_font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glv_font.h; sourceTree = "<group>"; };
@@ -541,6 +549,7 @@
 				16DEEE3B0FC28A0C006B373C /* glv_plots.cpp */,
 				169DED98134BD76800E368B8 /* glv_preset_controls.cpp */,
 				B917A7580BA2434200E819AF /* glv_sliders.cpp */,
+				162A0F0D151006120006641C /* glv_sono.cpp */,
 				7E4DABDE0DAAEFC7009D2272 /* glv_texture.cpp */,
 				7E40B0030D92EB3A00219F2C /* glv_textview.cpp */,
 				B917A75A0BA2434200E819AF /* glv_view.cpp */,
@@ -573,6 +582,7 @@
 				169DED97134BD75400E368B8 /* glv_preset_controls.h */,
 				B91841270BA125D600D8DA81 /* glv_rect.h */,
 				B9183C9C0B9E36B100D8DA81 /* glv_sliders.h */,
+				162A0F0C151006060006641C /* glv_sono.h */,
 				16096BF00D8E1FFB003B36BD /* glv_textview.h */,
 				7E4DABD90DAAEF44009D2272 /* glv_texture.h */,
 				B91841290BA125EA00D8DA81 /* glv_util.h */,
@@ -970,6 +980,10 @@
 				16B6490C1267CE3C00BFE768 /* glv_grid.cpp in Sources */,
 				16AAAC72129CD2E100977108 /* glv_texture.cpp in Sources */,
 				16A93E6D1002BAB600F5404E /* test_units.cpp in Sources */,
+				162A0F10151006520006641C /* glv_sono.cpp in Sources */,
+				162A0F121510065A0006641C /* glv_color_controls.cpp in Sources */,
+				162A0F131510065D0006641C /* glv_preset_controls.cpp in Sources */,
+				162A0F14151006620006641C /* glv_view3D.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1068,6 +1082,7 @@
 				16C96265123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 				16B649051267CE3C00BFE768 /* glv_grid.cpp in Sources */,
 				169DED99134BD76800E368B8 /* glv_preset_controls.cpp in Sources */,
+				162A0F0F1510063C0006641C /* glv_sono.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1128,6 +1143,7 @@
 				16C96266123CC5A2008735F3 /* glv_widget.cpp in Sources */,
 				16B649041267CE3C00BFE768 /* glv_grid.cpp in Sources */,
 				169DED9A134BD76800E368B8 /* glv_preset_controls.cpp in Sources */,
+				162A0F0E151006360006641C /* glv_sono.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1396,7 +1412,7 @@
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = NO;
-				HEADER_SEARCH_PATHS = ../include;
+				HEADER_SEARCH_PATHS = ../GLV;
 				WARNING_CFLAGS = (
 					"-Wchar-subscripts",
 					"-Wsequence-point",
@@ -1419,7 +1435,7 @@
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = NO;
-				HEADER_SEARCH_PATHS = ../include;
+				HEADER_SEARCH_PATHS = ../GLV;
 				WARNING_CFLAGS = (
 					"-Wchar-subscripts",
 					"-Wsequence-point",

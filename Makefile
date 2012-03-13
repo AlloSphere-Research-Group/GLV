@@ -18,6 +18,7 @@ SRCS = 	glv_buttons.cpp \
  	glv_plots.cpp \
 	glv_preset_controls.cpp \
 	glv_sliders.cpp \
+	glv_sono.cpp \
 	glv_texture.cpp \
 	glv_textview.cpp \
 	glv_view.cpp \
@@ -63,8 +64,8 @@ buildtest: test
 
 # Compile and run source files in example/ or test/ folder
 EXEC_TARGETS = example/%.cpp test/%.cpp
-.PRECIOUS: $(EXEC_TARGETS) FORCE
-$(EXEC_TARGETS): $(LIB_PATH)
+.PRECIOUS: $(EXEC_TARGETS)
+$(EXEC_TARGETS): $(LIB_PATH) FORCE
 	@$(CXX) $(CFLAGS) -o $(BIN_DIR)$(*F) $@ $(LIB_PATH) $(LDFLAGS)
 ifneq ($(AUTORUN), 0)
 	@cd $(BIN_DIR) && ./$(*F) &

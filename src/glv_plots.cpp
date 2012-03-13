@@ -326,7 +326,7 @@ void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	2		number of points along y
 	*/
 
-	//int N0 = d.size(0);
+	//int N0 = d.size(0); // only first component used
 	int N1 = d.size(1);
 	int N2 = d.size(2);
 	
