@@ -178,6 +178,12 @@ protected:
 
 
 /// One-dimensional function plotter
+
+/// The shape of the model data should be (1, N or 1, 1 or N) where N is the
+/// number of elements to plot. If the shape is (1, N, 1) then the domain
+/// is along the x axis. Likewise, if the shape is (1, 1, N) then the domain
+/// is along the y axis. Sizes greater than 1 for dimension 0 are reserved for
+/// future use.
 class PlotFunction1D : public Plottable{
 public:
 
