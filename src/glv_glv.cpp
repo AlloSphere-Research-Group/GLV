@@ -264,7 +264,7 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 			int sh = r.h + 0.5;
 //			if(sx < int(ww) && sy < int(wh)){	// LJP: this might be too paranoid
 //				if(sx < 0) sx=0;
-//				if(sy < 0) sy=0;
+				if(sy < 0) sy=0;
 //				if(sx+sw > int(ww)) sw = ww - sx;
 //				if(sy+sh > int(wh)) sh = wh - sy;
 				//printf("[%d %d] -> %d %d %d %d\n", ww,wh, sx,sy,sw,sh);
