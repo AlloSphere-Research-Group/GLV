@@ -35,7 +35,7 @@ public:
 	/// This can be safely called from the audio thread.
 	void update(float * buf, int bufFrames, int bufChans);
 
-
+	virtual bool onEvent(Event::t e, GLV& g);
 	virtual const char * className() const { return "TimeScope"; }
 protected:
 	std::vector<PlotFunction1D> mGraphs;

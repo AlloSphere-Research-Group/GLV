@@ -67,18 +67,18 @@ void TimeScope::resize(int frames, int chans){
 	
 	delete[] mSamples;
 	mSamples = new float[frames*chans];
-	
+
 	mLocked = false;
 }
 
 
 void TimeScope::update(float * buf, int bufFrames, int bufChans){
 
+	if(!enabled(glv::Animate)) return;
+	if(!data().hasData() || !mSamples) return;
 	if(mLocked) return; // if data is locked, then just return without blocking
 
 	mLocked = true;
-
-	if(!data().hasData() || !mSamples) return;
 
 	// copy new audio data into internal buffer
 	const int left = frames() - mFill;
@@ -103,6 +103,19 @@ void TimeScope::update(float * buf, int bufFrames, int bufChans){
 }
 
 
+bool TimeScope::onEvent(Event::t e, GLV& g){
+	const Keyboard& k = g.keyboard();
+	switch(e){
+	case Event::KeyDown:
+		switch(k.key()){
+		case ' ': toggle(glv::Animate); return false;
+		default:;
+		}
+	default:;
+	}
+	
+	return Plot::onEvent(e,g);
+}
 
 
 PeakMeters::PeakMeters(const Rect& r, int chans)
