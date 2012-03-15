@@ -12,12 +12,20 @@ inline float linLog2(float v, float recMin = 1./16){
 }
 
 
+enum{
+	SYNC_WAIT = -1,		// sync on; found sync point
+	SYNC_FIND = -2,		// sync on; searching for sync point
+	SYNC_OFF  = -3		// sync off
+};
+
 
 TimeScope::TimeScope(const glv::Rect& r, int frames, int chans)
-:	mSamples(NULL), mFill(0), mLocked(false)
+:	mSamples(NULL), mFill(0), mSync(SYNC_FIND), mLocked(false)
 {
 	range(-1,1, 1);
 	//range( 0,1, 0);
+	showAxes(false);
+	major(1, 1);
 	minor(4, 1);
 	
 	resize(frames, chans);
@@ -35,6 +43,13 @@ TimeScope::~TimeScope(){
 	mSamples=NULL;
 }
 
+
+TimeScope& TimeScope::sync(bool v){
+	mSync = v ? SYNC_FIND : SYNC_OFF;
+	return *this;
+}
+
+
 void TimeScope::resize(int frames, int chans){
 
 	if(0 == frames || 0 == chans) return;
@@ -43,7 +58,7 @@ void TimeScope::resize(int frames, int chans){
 
 	mLocked = true;
 
-	range(0,frames, 0);
+	range(-1, frames+1, 0); // offset by 1 so wave isn't hidden by borders
 	major(frames, 0);
 	minor(1, 0);
 
@@ -82,23 +97,50 @@ void TimeScope::update(float * buf, int bufFrames, int bufChans){
 
 	// copy new audio data into internal buffer
 	const int left = frames() - mFill;
-	const int Nf   = left < bufFrames ? left : bufFrames;
-	const int Nc   = bufChans <= channels() ? bufChans : channels();
+	int Nf = left < bufFrames ? left : bufFrames;
+	const int Nc = bufChans <= channels() ? bufChans : channels();
 
-	for(int i=0; i<Nc; ++i){
-		memcpy(mSamples + frames()*i + mFill, buf + bufFrames*i, Nf*sizeof(*mSamples));
+	// search for sync point
+	if(SYNC_FIND == mSync){
+		for(int i=1; i<Nf; ++i){
+			float prev = buf[i-1];
+			float curr = buf[i  ];
+			if(prev <= 0.f && curr > 0.f){
+				mSync = i-1;
+				break;
+			}
+		}
+		if(SYNC_FIND == mSync) goto end;	// no sync found, so bail...
 	}
-	
-	mFill += bufFrames;
+
+	if(mSync >= 0){				// sync found
+		for(int i=0; i<Nc; ++i){
+			memcpy(
+				mSamples + frames()*i + mFill,
+				buf + bufFrames*i + mSync,
+				(Nf-mSync)*sizeof(*mSamples)
+			);
+		}
+		mFill += bufFrames - mSync;
+		mSync = SYNC_WAIT;
+	}
+	else{
+		for(int i=0; i<Nc; ++i){
+			memcpy(mSamples + frames()*i + mFill, buf + bufFrames*i, Nf*sizeof(*mSamples));
+		}
+		mFill += bufFrames;
+	}
 
 	// Is our sample buffer is full? If so, copy to draw buffer...
 	// Note that this is more or less thread-safe since we are merely assigning
 	// floating point values.
 	if(mFill >= frames()){
 		data().assignFromArray(mSamples, samples());
-		mFill=0;
+		mFill = 0;
+		if(mSync > SYNC_OFF) mSync = SYNC_FIND;
 	}
 	
+	end:
 	mLocked = false;
 }
 

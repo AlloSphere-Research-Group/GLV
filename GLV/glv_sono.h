@@ -14,6 +14,7 @@ namespace glv{
 
 class TimeScope : public Plot{
 public:
+
 	TimeScope(const glv::Rect& r=glv::Rect(200,100), int frames=0, int chans=1);
 	
 	~TimeScope();
@@ -35,12 +36,17 @@ public:
 	/// This can be safely called from the audio thread.
 	void update(float * buf, int bufFrames, int bufChans);
 
+	/// Set whether to synchronize waveform to first positive slope zero-crossing
+	TimeScope& sync(bool v);
+
 	virtual bool onEvent(Event::t e, GLV& g);
 	virtual const char * className() const { return "TimeScope"; }
+
 protected:
 	std::vector<PlotFunction1D> mGraphs;
 	float * mSamples;
 	int mFill;
+	int mSync;
 	bool mLocked;
 };
 
