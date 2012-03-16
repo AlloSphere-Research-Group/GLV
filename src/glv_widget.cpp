@@ -20,7 +20,7 @@ namespace glv{
 Widget::Widget(
 	const Rect& r, space_t pad, bool moment, bool mutExc, bool drawGrid
 )
-:	View(r), sx(0), sy(0), mInterval(0,1), mUseInterval(true)
+:	View(r), sx(0), sy(0), mInterval(0,1), mPrevVal(0), mUseInterval(true)
 {
 	padding(pad);
 	property(DrawGrid, drawGrid);
