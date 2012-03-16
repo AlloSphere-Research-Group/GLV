@@ -878,7 +878,8 @@ bool DropDown::ItemList::onEvent(Event::t e, GLV& g){
 		break;
 	case Event::MouseUp:
 		//printf("setValue\n");
-		if(Rect(w,h).containsPoint(m.xRel(), m.yRel())){
+		//if(Rect(w,h).containsPoint(m.xRel(), m.yRel())){
+		if(containsPoint(m.x(), m.y())){
 			dd.setValue(getValue());
 			dd.notify(&dd, Update::Action);
 			//dd.onEvent(e,g);
