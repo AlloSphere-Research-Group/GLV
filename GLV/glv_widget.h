@@ -183,7 +183,16 @@ protected:
 		return interval(omx, omn);
 	}
 
+	// This is the central go to for all data assignment methods of Widget.
+	// It is responsible for updating the widget's data and attached variables,
+	// and for sending out Update::Value notifications.
+	// The order of events is 1) update widget's data, 2) update attached
+	// variables, if any, and 3) send out notifications.
+	// @param[in] d		the source data
+	// @param[in] ind1	destination index of first dimension
+	// @param[in] ind2	destitation index of second dimension
 	virtual bool onAssignData(Data& d, int ind1, int ind2);
+
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
 
