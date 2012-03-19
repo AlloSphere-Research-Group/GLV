@@ -218,6 +218,7 @@ public:
 	/// Value returned by various member functions when they fail
 	static const int npos = static_cast<int>(-1);
 
+
 	/// This sets the data type to void and does not allocate memory
 	Data();
 	
@@ -340,9 +341,10 @@ public:
 		indexDim(i1,i2,i3,i); i3%=size(2); i4=i/(size(0,1,2));
 	}
 	
-	/// Get index of an element
+	/// Get index of first element matching argument or Data::npos if not found
 	int indexOf(const Data& v) const;
 
+	/// Get index of first element matching argument or Data::npos if not found
 	template <class T>
 	int indexOf(const T& v) const { return indexOf(Data(v)); }
 	
