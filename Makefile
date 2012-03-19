@@ -15,6 +15,7 @@ SRCS = 	glv_buttons.cpp \
 	glv_inputdevice.cpp \
 	glv_layout.cpp \
 	glv_model.cpp \
+	glv_notification.cpp \
  	glv_plots.cpp \
 	glv_preset_controls.cpp \
 	glv_sliders.cpp \

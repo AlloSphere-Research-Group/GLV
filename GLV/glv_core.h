@@ -8,7 +8,7 @@
 #include <string>
 #include <list>
 #include "glv_rect.h"
-#include "glv_observer_pattern.h"
+#include "glv_notification.h"
 #include "glv_color.h"
 #include "glv_draw.h"
 #include "glv_font.h"

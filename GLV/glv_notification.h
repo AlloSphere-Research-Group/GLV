@@ -99,71 +99,46 @@ protected:
 
 /// Notifies one or more observers of state change
 class Notifier{
-private:
-	typedef void (* callback)(const Notification& n);
-
 public:
-	
-	Notifier(): mHandlers(0){}
 
-	// Non-virtual unless someone will delete a derived-class object via
-	// a Notifier pointer...
-	~Notifier(){ delete[] mHandlers; }
+	/// Notification callback
+	typedef void (* Callback)(const Notification& n);
+	
+	Notifier();
+
+	~Notifier();
+
 
 	/// Attach a new notification callback, type, and receiver
-	void attach(callback cb, Update::t n, void * rcvr=0){
-		handlers()[n].push_back(Handler(cb, rcvr));
-	}
-
+	void attach(Callback cb, Update::t type, void * rcvr=0);
 	
 	/// Detach an existing notification callback, type, and receiver
-	void detach(callback cb, Update::t n, void * rcvr=0){
-	
-		if(hasHandlers()){
-			for(unsigned int i=0; i<handlers()[n].size(); i++){
-				Handler& h = handlers()[n][i];
-				if(h.handler == cb && h.receiver == rcvr)
-					handlers()[n].erase(handlers()[n].begin() + i);
-			}		
-		}
-	}
+	void detach(Callback cb, Update::t type, void * rcvr=0);
 
 
 	/// Notify observers of a specific update type
-	void notify(void * sender, Update::t n, void * data=0){
-	
-		if(!hasHandlers() || handlers()[n].empty()) return;
+	void notify(void * sender, Update::t type, void * data=0);
 
-		// call handlers in FIFO order
-		int i=handlers()[n].size();
-		while(i--){
-			Handler& h = handlers()[n][i];
-			if(h.handler) h.handler(Notification(sender, h.receiver, data));
-		}
-	}
-
-// LJP: These can lead to unexpected results when casting since the void *
-//		points to a Notifier.
 	/// Notify observers of a specific update type
-	void notify(Update::t n, void * data=0){ notify(this, n, data); }
-	
+	void notify(Update::t type, void * data=0){ notify(this, type, data); }
+	// LJP: The above can lead to unexpected results when casting since the
+	//		void * points to a Notifier.
+
+
 	/// Notify observers of a specific update type
 	template <class T>
-	void notify(Update::t n, const ChangedValue<T>& v){
-		notify(n, (void *)&v);		
+	void notify(Update::t type, const ChangedValue<T>& v){
+		notify(type, (void *)&v);		
 	}
 
 	/// Returns number of observers for this update type
-	int numObservers(Update::t n) const {
-		if(hasHandlers()) return handlers()[n].size();
-		return 0;
-	}
+	int numObservers(Update::t type) const;
 
 protected:
 
 	struct Handler{
-		Handler(callback c, void * r): handler(c), receiver(r){}
-		callback handler;
+		Handler(Callback c, void * r): handler(c), receiver(r){}
+		Callback handler;
 		void * receiver;
 	};
 
