@@ -78,7 +78,7 @@ protected:
 		mSliderStyle.color.fore = col;
 		//mSliderStyle.color.back = Color(1-col.luminance());
 		//mSliderStyle.color.back = Color(col.luminance() > 0.5f ? 0:1);
-		mSliderStyle.color.back = Color(0);
+		mSliderStyle.color.back = Color(0,0,0, Style::standard().color.back.a);
 	}
 
 	static void ntUpdateStyle(const Notification& n){
