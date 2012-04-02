@@ -68,7 +68,13 @@ public:
 	/// Attach a single variable at a specified index
 	template <class V>
 	void attachVariable(V& val, int i=0){
-		variables()[i] = Data(val);
+		attachVariable(&val, 1, i);
+	}
+
+	/// Attach an array of variables at a specified index
+	template <class T>
+	void attachVariable(T * src, int size, int i=0){
+		variables()[i] = Data(src, size);
 	}
 
 	void clipIndices(){ clipIndices(sx,sy); }
