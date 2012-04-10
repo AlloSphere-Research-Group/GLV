@@ -127,6 +127,7 @@ struct Box : public Group{
 	Box& operator<< (View* v){ p<<v; fit(); return *this; }
 	Box& operator<< (View& v){ p<<v; fit(); return *this; }
 
+	Box& pad (space_t v){ return padX(v).padY(v); }
 	Box& padX(space_t v){ p.absX(v); return *this; }
 	Box& padY(space_t v){ p.absY(v); return *this; }
 
