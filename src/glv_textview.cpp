@@ -895,6 +895,16 @@ bool DropDown::ItemList::onEvent(Event::t e, GLV& g){
 
 
 
+SearchBox::SearchBox(const Rect& r, float textSize)
+:	TextView(r,textSize), mItemList(*this)
+{}
+
+SearchBox::~SearchBox(){ mItemList.remove(); }
+
+SearchBox& SearchBox::addItem(const std::string& v){
+	items().push_back(v);
+	return *this;
+}
 
 bool SearchBox::onEvent(Event::t e, GLV& g){
 
@@ -1002,11 +1012,14 @@ bool SearchBox::ItemList::onEvent(Event::t e, GLV& g){
 		default:;
 		}
 		break;
+
 	case Event::FocusLost:
 		disable(Visible);
 		break;
+
 	case Event::MouseUp:
-		if(containsPoint(m.xRel(), m.yRel())){
+		// ItemList is in absolute coordinates
+		if(containsPoint(m.x(), m.y())){
 			sb.setValue(getValue());
 			sb.cursorEnd();
 			sb.notify(&sb, Update::Action);
@@ -1015,6 +1028,7 @@ bool SearchBox::ItemList::onEvent(Event::t e, GLV& g){
 		disable(Visible);
 		g.setFocus(&sb);
 		return false;
+
 	default:;
 	}
 	return ListView::onEvent(e,g);

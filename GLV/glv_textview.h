@@ -400,22 +400,25 @@ protected:
 };
 
 
-
+/// Search box
 class SearchBox : public TextView{
 public:
 	typedef std::vector<std::string> Items;
 
-	SearchBox(const Rect& r=glv::Rect(200,16), float textSize=8)
-	:	TextView(r,textSize), mItemList(*this)
-	{}
+	/// @param[in] r			geometry
+	/// @param[in] textSize		size of text, in pixels
+	SearchBox(const Rect& r=glv::Rect(200,16), float textSize=8);
 
-	virtual ~SearchBox(){ mItemList.remove(); }
+	virtual ~SearchBox();
 
+	/// Get whether results list is currently showing
 	bool listShowing() const { return mItemList.visible(); }
 
+	/// Get reference to items
 	Items& items(){ return mItems; }
 
-	SearchBox& addItem(const std::string& v){ items().push_back(v); return *this; }
+	/// Add item to search
+	SearchBox& addItem(const std::string& v);
 
 	virtual const char * className() const { return "SearchBox"; }
 	virtual bool onEvent(Event::t e, GLV& g);
