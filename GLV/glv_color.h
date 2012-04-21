@@ -25,18 +25,25 @@ struct Color{
 	};
 
 
-	/// @param[in] r			red component
-	/// @param[in] g			green component
-	/// @param[in] b			blue component
-	/// @param[in] a			alpha component
+	/// @param[in] r		red component
+	/// @param[in] g		green component
+	/// @param[in] b		blue component
+	/// @param[in] a		alpha component
 	Color(float r, float g, float b, float a = 1.f);
 	
-	/// @param[in] gray			red/green/blue components
-	/// @param[in] a			alpha component
+	/// @param[in] gray		red/green/blue components
+	/// @param[in] a		alpha component
 	Color(float gray=1.f, float a=1.f);
 
+	/// @param[in] hsv		HSV color space
+	/// @param[in] a		alpha component
 	Color(const HSV& hsv, float a=1.f);
-	
+
+	/// @param[in] rgba		4-vector of RGBA components
+	template<class T>
+	Color(T * rgba): r(rgba[0]), g(rgba[1]), b(rgba[2]), a(rgba[3]){}
+
+
 	/// Set color component at index with no bounds checking
 	float& operator[](int i){ return components[i]; }
 	
@@ -94,6 +101,7 @@ struct HSV{
 		float components[3]; ///< HSV component vector
 	};
 
+
 	/// @param[in] h	hue
 	/// @param[in] s	saturation
 	/// @param[in] v	value
@@ -102,9 +110,10 @@ struct HSV{
 	/// @param[in] c	RGB color to convert from
 	HSV(const Color& c){ *this = c; }
 
-	/// @param[in] hsv		3-vector of hsv components
+	/// @param[in] hsv	3-vector of HSV components
 	template<class T>
 	HSV(T * hsv): h(hsv[0]), s(hsv[1]), v(hsv[2]){}
+
 
 	/// Set from RGB color
 	HSV& operator=(const Color& c){ c.getHSV(h, s, v); return *this; }
