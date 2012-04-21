@@ -5,6 +5,12 @@
 
 namespace glv{
 
+static Color HSVFromH(const Color& hue, float x, float y){
+	Color res = Color(1).mixRGB(hue, x);
+	return res.mixRGB(Color(0), y);
+}
+
+
 ColorPicker::ColorPicker(const Rect& r, float hueHeight)
 :	View(r),
 	mCtrlH(Rect(0,0,0,hueHeight)),
@@ -17,7 +23,8 @@ ColorPicker::ColorPicker(const Rect& r, float hueHeight)
 	mCtrlSV.stretch(1,1).disable(DrawBorder | DrawBack);
 
 	struct F{
-		static void line(float l, float t, float r, float b){
+		static void blackLine(float l, float t, float r, float b){
+			draw::color(0,0,0,1);
 			//float x0 = r-1;
 			//float x1 = r+1;
 			//draw::shape(draw::Lines, x0,t, x0,b, x1,t, x1,b);
@@ -27,12 +34,16 @@ ColorPicker::ColorPicker(const Rect& r, float hueHeight)
 			//float d = (b-t)/2;
 			//draw::shape(draw::Lines, r-d,t,r+d,b, r-d,b,r+d,t);
 		}
+		
+		static void whiteCircle(float l, float t, float r, float b){
+			draw::color(1,1,1,1);
+			draw::circle<8>(l,t,r,b);
+		}
 	};
 	
-	mCtrlH.knobSymbol(F::line);
+	mCtrlH.knobSymbol(F::blackLine);
 	mCtrlH.orientation(Sliders::HORIZONTAL);
-	
-	mCtrlSV.knobSymbol(draw::circle<8>);
+	mCtrlSV.knobSymbol(F::whiteCircle);
 	mCtrlSV.knobSize(8);
 	mCtrlSV.constrainKnob(0);
 	(*this) << mCtrlH << mCtrlSV;

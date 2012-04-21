@@ -33,14 +33,6 @@ public:
 protected:
 	Slider mCtrlH;
 	Slider2D mCtrlSV;
-	
-	static Color HSVFromH(const Color& hue, float x, float y){
-		Color res = hue.mixRGB(Color(1), x);
-		return res.mixRGB(Color(0), y);
-		//return Color(1-y).mixRGB(hue, x);
-		//return HSV(hue.r, x, (1-y));
-		//return HSV(hue.r,x,(1-y)*(1-x) + x);
-	}
 };
 
 
