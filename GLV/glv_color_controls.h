@@ -15,7 +15,7 @@ public:
 
 	/// @param[in] r			geometry
 	/// @param[in] hueHeight	height of hue slider
-	ColorPicker(const Rect& r=Rect(100), float hueHeight=12);
+	ColorPicker(const Rect& r=Rect(60), float hueHeight=12);
 
 	/// Get value
 	HSV getValue() const;
