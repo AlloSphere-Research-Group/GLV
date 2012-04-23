@@ -25,25 +25,20 @@ ColorPicker::ColorPicker(const Rect& r, float hueHeight)
 	struct F{
 		static void blackLine(float l, float t, float r, float b){
 			draw::color(0,0,0,1);
-			//float x0 = r-1;
-			//float x1 = r+1;
-			//draw::shape(draw::Lines, x0,t, x0,b, x1,t, x1,b);
 			draw::shape(draw::Lines, r,t, r,b);
-			//draw::shape(draw::Lines, r-2,(b-t)/2, r+2,(b-t)/2);
-			
-			//float d = (b-t)/2;
-			//draw::shape(draw::Lines, r-d,t,r+d,b, r-d,b,r+d,t);
 		}
 		
-		static void whiteCircle(float l, float t, float r, float b){
-			draw::color(1,1,1,1);
+		static void bwCircle(float l, float t, float r, float b){
+			draw::color(0.3,0.3,0.3,1);
+			draw::circle<8>(l+1,t+1,r-1,b-1);
+			draw::color(0.7,0.7,0.7,1);
 			draw::circle<8>(l,t,r,b);
 		}
 	};
 	
 	mCtrlH.knobSymbol(F::blackLine);
 	mCtrlH.orientation(Sliders::HORIZONTAL);
-	mCtrlSV.knobSymbol(F::whiteCircle);
+	mCtrlSV.knobSymbol(F::bwCircle);
 	mCtrlSV.knobSize(8);
 	mCtrlSV.constrainKnob(0);
 	(*this) << mCtrlH << mCtrlSV;
