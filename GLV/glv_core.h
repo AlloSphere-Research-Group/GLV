@@ -700,7 +700,7 @@ public:
 	ModelManager& modelManager(){ return mMM; }
 
 	/// Add models of named children to model manager
-	void refreshModels();
+	void refreshModels(bool clearExistingModels=false);
 
 protected:
 	Keyboard mKeyboard;
