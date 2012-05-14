@@ -215,6 +215,10 @@ public:
 	};
 	static std::string typeToString(Type t);
 
+	
+	template<class T> static Type getType();
+
+
 	/// Value returned by various member functions when they fail
 	static const int npos = static_cast<int>(-1);
 
@@ -769,6 +773,9 @@ public:
 
 /// Manages the saving/restoring of model parameters to/from memory and disk.
 
+/// A NamedModel is a string/Model pair associated with a "live" parameter of 
+/// the application. A Snapshot is a recording of all the application's 
+/// NamedModels as string/Data pairs.
 /// When a snapshot is loaded, only data having an identifier having an 
 /// identical identifier of an attached model is loaded. If an attached model 
 /// variable exists, but does not have a corresponding variable in a snapshot,
@@ -998,6 +1005,12 @@ int toToken(std::string& dst, const T * src, int size, int stride){
 
 
 // Data ________________________________________________________________________
+
+template<> inline Data::Type Data::getType<bool>(){ return Data::BOOL; }
+template<> inline Data::Type Data::getType<int>(){ return Data::INT; }
+template<> inline Data::Type Data::getType<float>(){ return Data::FLOAT; }
+template<> inline Data::Type Data::getType<double>(){ return Data::DOUBLE; }
+template<> inline Data::Type Data::getType<std::string>(){ return Data::STRING; }
 
 template <class T>
 T Data::at(int i) const {
