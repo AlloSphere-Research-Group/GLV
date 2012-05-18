@@ -132,7 +132,7 @@ void Label::rotateRect(){ t += w - h; transpose(); }
 
 
 
-#define CTOR_LIST mNI(0), mNF(0), mAcc(0), mShowSign(true), mOverwriteMode(true)
+#define CTOR_LIST mNI(0), mNF(0), mAcc(0), mShowSign(true), mOverwriteMode(true), mDimZero(false)
 #define CTOR_BODY\
 	font().letterSpacing(1./4);\
 	enable(DrawSelectionBox)
@@ -272,7 +272,11 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 			float tx = int(cx + paddingX());
 			float ty = int(cy + paddingY());
 
-			color(colors().text);
+			if(vali || !dimZero()){
+				color(colors().text);
+			} else {
+				color(colors().text.mix(colors().back, 0.8));
+			}
 		//	printf("%s\n", str);
 //			font().render(g.graphicsData(), str, pixc(tx), pixc(ty));
 //			if(mNF>0) font().render(g.graphicsData(), ".", pixc(dxDig*(mNI+numSignDigits()-0.5f) + tx), pixc(ty));

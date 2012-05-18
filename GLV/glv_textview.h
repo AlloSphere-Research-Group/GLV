@@ -126,11 +126,19 @@ public:
 	/// Get value at 2D index
 	double getValue(int i1, int i2) const { return Widget::getValue<double>(i1,i2); }
 
+
+	/// Get whether the display is dimmed if the value is zero
+	bool dimZero() const { return mDimZero; }
+
 	/// Get number of digits in fraction part
 	int sizeFraction() const;
 	
 	/// Get number of digits in integer part
 	int sizeInteger() const;
+
+
+	/// Set whether the display is dimmed if the value is zero
+	NumberDialers& dimZero(bool v){ mDimZero=v; return *this; }
 
 	/// Set size of font
 	NumberDialers& fontSize(float pixels){ font().size(pixels); fitExtent(); return *this; }
@@ -147,6 +155,7 @@ public:
 	/// Set whether to show sign
 	NumberDialers& showSign(bool v);
 
+
 	virtual const char * className() const { return "NumberDialers"; }
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
@@ -154,7 +163,7 @@ public:
 protected:
 	int mNI, mNF, mPos;		// # digits in integer, # digits in fraction, selected digit position
 	float mAcc;
-	bool mShowSign, mOverwriteMode;
+	bool mShowSign, mOverwriteMode, mDimZero;
 
 	void fitExtent();
 
