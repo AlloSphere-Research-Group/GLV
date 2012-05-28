@@ -34,32 +34,6 @@ public:
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
-
-//	struct PanelButtonClick : public EventHandler{
-//		PanelButtonClick(PresetControl& p): pc(p){}
-//
-//		virtual bool onEvent(View& v, GLV& g);
-//
-//		PresetControl& pc;
-//	} mPanelButtonClick;
-
-
-//	struct SearchBox : public TextView{
-//		SearchBox(PresetControl& p): pc(p), mSearchList(*this){}
-//
-//		virtual ~SearchBox(){ mSearchList.remove(); }
-//
-//		virtual bool onEvent(Event::t e, GLV& g);
-//
-//		PresetControl& pc;
-//
-//		struct SearchList : public ListView{
-//			SearchList(SearchBox& v): sb(v){}
-//			virtual bool onEvent(Event::t e, GLV& g);
-//			SearchBox& sb;
-//		} mSearchList;
-//	} mSearchBox;
-
 	struct PresetSearchBox : public SearchBox{
 		PresetSearchBox(PresetControl& p): pc(p){}
 		virtual bool onEvent(Event::t e, GLV& g);
@@ -92,6 +66,10 @@ public:
 
 	PathView& modelManager(ModelManager& v);
 
+
+	float duration() const;
+
+
 	ModelManager& pathModelManager(){ return mPathMM; }
 
 	void drawHeader(float x, float y);
@@ -108,9 +86,37 @@ protected:
 	friend class PathEditor;
 	// Data is an array of preset names? or nothing, just dimensions?
 
+	template <class T, int Offset>
+	struct KeyframeElemModel : public Model {
+	
+		PathView& pv;
+		
+		KeyframeElemModel(PathView& v): pv(v){}
+	
+		virtual const Data& getData(Data& temp) const {
+			const int N = pv.mPath.size();
+			temp.resize(Data::getType<T>(), N);
+			for(int i=0; i<N; ++i){
+				temp.elem<T>(i) = *(T*)((char*)(&pv.mPath[i]) + Offset);
+			}
+			return temp;
+		}
+
+		virtual void setData(const Data& d){
+//			const int N = d.size();
+//			if(pv.mPath.size() != N) pv.mPath.resize(N);
+//			for(int i=0; i<N; ++i){
+//				*(T*)((char*)(&pv.mPath[i]) + Offset) = d.at<T>(i);
+//			}
+		}
+	};
+
 	ModelManager * mStates;		// States (from GUI)
 	ModelManager mPathMM;		// Animation path keyframes
-	
+
+	KeyframeElemModel<float,0> mDurModel;
+	//KeyframeElemModel<float,4> mCrvModel;
+
 	// Animation controls
 	NumberDialer mDur, mCrv, mSmt;
 	PresetControl mName;
@@ -155,32 +161,12 @@ public:
 
 protected:
 	PresetControl mPathPresetControl;
+	Button mTransportPlay;
 	Scroll mScroll;
 	Group mHeader;
 	PathView mPathView;
 	
 	static void ntSelection(const Notification& n);
-};
-
-
-
-
-
-
-class PresetView : public View {
-public:
-	PresetView(ModelManager& mm);
-
-	virtual const char * className() const { return "PresetView"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
-
-protected:
-	ModelManager * mMM;
-
-private:
-	friend class PresetControl;
-	PresetView(){}
 };
 
 

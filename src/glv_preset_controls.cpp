@@ -6,38 +6,6 @@
 
 namespace glv{
 
-
-PresetView::PresetView(ModelManager& mm)
-:	mMM(&mm)
-{
-	extent(200);
-	addHandler(Event::MouseDrag, Behavior::mouseMove);
-}
-
-void PresetView::onDraw(GLV& g){
-	using namespace glv::draw;
-}
-
-bool PresetView::onEvent(Event::t e, GLV& g){
-
-	switch(e){
-	case Event::MouseDown:
-	case Event::MouseDrag:
-		return false;
-	
-	case Event::KeyDown:
-		switch(g.keyboard().key()){
-		default:;
-		}
-		break;
-	
-	default:;
-	};
-
-	return true;
-}
-
-
 PresetControl::PresetControl()
 :	mSearchBox(*this), mMM(NULL), mPrompt(false)
 {
@@ -49,6 +17,8 @@ PresetControl::PresetControl(ModelManager& m)
 {
 	init();
 }
+
+PresetControl::~PresetControl(){}
 
 void PresetControl::init(){
 //	mTextEntry.addHandler(Event::KeyDown, mTextKeyDown);
@@ -65,171 +35,6 @@ void PresetControl::init(){
 	fit();
 }
 
-
-PresetControl::~PresetControl(){
-}
-
-//bool PresetControl::PanelButtonClick::onEvent(View& v, GLV& g){
-//	//printf("%d\n", pc.mBtnPanel.getValue());
-////	if(!pc.mBtnPanel.getValue()){ // flipped since value gets set after event
-////		g << pc.mPanel;
-////	}
-////	else{
-////		pc.mPanel.remove();
-////	}
-//	if(pc.mPanel.parent){ // flipped since value gets set after event
-//		pc.mPanel.remove();
-//	}
-//	else{
-//		g << pc.mPanel;
-//	}
-//
-//	return true;
-//}
-
-
-//bool PresetControl::SearchBox::onEvent(Event::t e, GLV& g){
-//
-//	ModelManager& mm = *pc.mMM;
-////	TextView& te = pc.mTextEntry;
-//	const Keyboard& k = g.keyboard();
-//
-//	switch(e){
-//	case Event::KeyDown:
-//		pc.mStatus.symbol(draw::magnifier);
-//		
-//		if(k.key() != 's' || !k.ctrl()){
-//			pc.mPrompt=false;
-//		}
-//
-//		switch(k.key()){
-//		case Key::Down:	// pass on up/down arrows to search list...
-//		case Key::Up:
-//			mSearchList.onEvent(e,g);
-//			return false;
-//		case 's':
-//			if(k.ctrl()){
-//				if(!empty()){
-//					const std::string& name = getValue();
-//					if(!pc.mPrompt && mm.snapshots().count(name)){
-//						pc.mPrompt = true;
-//						pc.mStatus.symbol(draw::polygonCut<16,45>);
-//						//pc.mStatus.symbol(draw::spokes<8,90>);
-//					}
-//					else{
-//						pc.mPrompt = false;
-//						pc.mStatus.symbol(draw::fileSave);
-//						mm.saveSnapshot(name);
-//						mm.snapshotsToFile();
-//					}
-//				}
-//				return false;
-//			}
-//			break;
-//		case Key::Enter:
-//		case Key::Return:
-//			if(mSearchList.visible()) setValue(mSearchList.getValue());
-//			if(!mm.loadSnapshot(getValue())){
-//				printf("Could not load snapshot \"%s\"\n", getValue().c_str());
-//			}
-//			else{
-//				pc.mStatus.symbol(draw::fileLoad);
-//			}
-//			mSearchList.disable(Visible);
-//			return false;
-//		case Key::Tab:
-//			if(!empty()){
-//				const std::string& tstr = getValue();
-//				ModelManager::Snapshots::const_iterator it = mm.snapshots().begin();
-//				while(it != mm.snapshots().end()){
-//					const std::string& s = it->first;
-//					int r = strncmp(s.c_str(), tstr.c_str(), tstr.size());
-//					if(0 == r){
-//						setValue(s);
-//						cursorEnd();
-//						break;
-//					}
-//					++it;
-//				}
-//			}
-//			return false;
-//		default:;
-//		}
-//	default:;
-//	}
-//	
-//	bool res = TextView::onEvent(e,g);
-//
-//	if(Event::KeyDown == e){
-//
-//		mSearchList.disable(Visible);
-//		if(!empty()){
-//			std::vector<std::string> items;
-//			const std::string& tstr = getValue();
-//			ModelManager::Snapshots::const_iterator it = mm.snapshots().begin();
-//			while(it != mm.snapshots().end()){
-//				const std::string& s = it->first;
-//				//int r = strncasecmp(s.c_str(), tstr.c_str(), tstr.size());
-//				size_t res = s.find(tstr);
-//				if(res != std::string::npos){
-////					printf("%s, %d\n", s.c_str(), res);
-//					items.push_back(s);
-//				}
-//				/*
-//				The strcasecmp() and strncasecmp() return an integer greater than,
-//				equal to, or less than 0, according as s1 is lexicographically
-//				greater than, equal to, or less than s2 after translation of each
-//				corresponding character to lower-case.  The strings themselves are
-//				not modified.  The comparison is done using unsigned characters, so
-//				that `\200' is greater than `\0'.
-//				*/
-////				if(0 == r){
-//////					items.push_back(s);
-////				}
-////				printf("%s\n", s.c_str());
-//				++it;
-//			}
-//
-//			if(items.size()){
-//				space_t ax = 0, ay = height();
-//				toAbs(ax, ay);
-//				
-//				mSearchList.data().resize(1, items.size());
-//				mSearchList.data().assignFromArray(&items[0], items.size());
-//				mSearchList.clipIndices();
-//				mSearchList.fitExtent();
-//				mSearchList.pos(ax,ay);
-//				mSearchList.enable(Visible);
-//				mSearchList.bringToFront();
-//			}
-//			if(mSearchList.parent == 0) pc.root() << mSearchList;			
-//		}
-//	}	
-//
-//	return res;
-//}
-//
-//bool PresetControl::SearchBox::SearchList::onEvent(Event::t e, GLV& g){
-//	const Keyboard& k = g.keyboard();
-//
-//	switch(e){
-//	case Event::KeyDown:
-//		switch(k.key()){
-//		case Key::Enter:
-//		case Key::Return:
-//			sb.setValue(getValue());
-//			sb.onEvent(e,g);
-//			break;
-//		default:;
-//		}
-//		break;
-//	case Event::FocusLost:
-//		disable(Visible);
-//		break;
-//	default:;
-//	}
-//	return ListView::onEvent(e,g);
-//}
 
 bool PresetControl::PresetSearchBox::onEvent(Event::t e, GLV& g){
 
@@ -409,6 +214,7 @@ static void pointerLine(float l, float t, float r, float b){
 PathView::PathView()
 :	Widget(Rect(420, 20)),
 	mStates(0),
+	mDurModel(*this),
 	mDur(3,3, 990,0), mCrv(2,2, 90,-90), mSmt(1,2, 8,-8), // mName(Rect(200,12), 6)
 	mPos(0), mPlaying(false)
 {
@@ -446,6 +252,16 @@ void PathView::ntUpdatePlot(const Notification& n){
 	n.receiver<PathView>()->updatePlot();
 }
 
+
+float PathView::duration() const {
+	float r = 0;
+	for(unsigned i=0; i<mPath.size(); ++i){
+		r += mPath[i].dur;
+	}
+	return r;
+}
+
+
 PathView& PathView::modelManager(ModelManager& v){
 	mStates = &v;
 	mName.modelManager(v);
@@ -459,10 +275,11 @@ void PathView::onAnimate(double dsec){
 
 		if(mPos >= max){		// clip current position
 			mPos = max;
+			mPlaying = false;	// stop playing when end is reached
 		}
 		else if(mStates){		// are there presets assigned?
 			
-			// okay, this will be complicated, so stick with me
+			// okay, updating time is complicated...
 			int idx = int(mPos);			// current keyframe index
 			double dur = mPath[idx].dur;	// current keyframe duration
 			double frac = mPos - idx;		// fraction through keyframe
@@ -483,19 +300,10 @@ void PathView::onAnimate(double dsec){
 				loadCurrentPos();
 				onAnimate(timeOver);
 			}
-
-//			int idx0 = loadCurrentPos();
-//			double dur = mPath[idx0].dur;
-//			//printf("dur = %g, dt = %g\n", dur, dsec);			
-//			
-//			if(dur > dsec){
-//				mPos += dsec/dur;
-//			}
-//			else{
-//				++mPos;
-//				onAnimate(dsec);
-//			}
 		}
+	}
+	else { // for when mPath.size() <= 0
+		mPlaying = false;
 	}
 }
 
@@ -549,17 +357,27 @@ void PathView::onDraw(GLV& g){
 //		draw::x(vrect.left(), vrect.top(), vrect.right(), vrect.bottom());			
 //		printf("%d %d\n", jbeg, jend);
 
-		draw::color(colors().text);
 		draw::stroke(1);
 		std::string s;
 //		float px = 0.375, py = 0.375;
 		float px = 0.5, py = 0.5;
 		
+		Color seqCol = colors().text;
+		seqCol = seqCol.mixRGB(colors().back, 0.5);
+
+		/*printf("%7.6g\n",   1.);
+		printf("%7.6g\n",  10.);
+		printf("%7.6g\n", 100.);
+		printf("%7.6g\n", 100.025);*/
+
 		for(int j=jbeg; j<jend; ++j){
 			float y = getY(j) + py;
+			
+			draw::color(seqCol);
 			toString(s, j, "%03i");	draw::text(s.c_str(), px+startRight(), y+2, 6);
 
 			if(selected() != j){
+				draw::color(colors().text);
 				Keyframe& kf = mPath[j];
 				toString(s, kf.dur);		draw::text(s.c_str(), mDur.l + px, y);
 				toString(s, kf.crv, "% g");	draw::text(s.c_str(), mCrv.l + px, y);
@@ -809,6 +627,10 @@ void PathView::loadFile(){
 		kf.smt = smt.data().elem<float>(i);
 		kf.name=name.data().elem<std::string>(i);
 	}
+	
+	//Data temp;
+	//mDurModel.getData(temp);
+	//temp.print();
 }
 
 void PathView::saveFile(){
@@ -953,26 +775,63 @@ float PathView::warp(float x, float crv, float smt){
 }
 
 
+//static void ntPresetControlAction(const Notification& n){
+//	printf("action 52!\n");
+//}
 
 
 PathEditor::PathEditor(space_t hei)
-:	Table("<<,<-,<-")
+:	Table("<<<,<--,<--")
 {
 	enable(DrawBack | DrawBorder);
 
+
+	struct TransportSymbols{
+		static void play(float l, float t, float r, float b){
+			draw::shape(draw::Triangles, l,b, r,(t+b)/2, l,t);
+		}
+
+		static void pause(float l, float t, float r, float b){
+			float w = r-l;
+			float pts[] = {
+				l,t, l,b, l+w*0.4,t, l+w*0.4,b,
+				l+w*0.6,t, l+w*0.6,b, r,t, r,b
+			};
+			index_t idx[] = {
+				0,1,2,3,
+				3,4, // degenerate
+				4,5,6,7
+			};
+			draw::paint(draw::TriangleStrip, (Point2*)pts, idx, GLV_ARRAY_SIZE(idx));
+		}
+	};
+
+	mPathPresetControl.modelManager(mPathView.mPathMM);
+
+	mTransportPlay.disable(FocusHighlight);
+	mTransportPlay.symbolOn (TransportSymbols::pause);
+	mTransportPlay.symbolOff(TransportSymbols::play);
+	mTransportPlay.attachVariable(mPathView.mPlaying);
+
+	mPathView.disable(DrawBorder);
 	mPathView.attach(ntSelection, Update::Selection, this);
 	
-	mPathPresetControl.modelManager(mPathView.mPathMM);
+
+	//mPathPresetControl.searchBox().attach(ntPresetControlAction, Update::Action, this);
+	
 	mPathView.mPlotWarp.add(
 		(*new PlotFunction1D(Color(0),1,draw::TriangleStrip,PlotFunction1D::ZIGZAG)).useStyleColor(true)
 	);
-	mPathView.mPlotWarp.extent(100, mPathPresetControl.h);
+
+	const float topBarH = mPathPresetControl.h;
+	mTransportPlay.extent(topBarH);
+	mPathView.mPlotWarp.extent(100, topBarH);
 	
 	mHeader.h = 10;
 	mScroll.extent(mPathView.w, hei);
 	mScroll.mode(Scroll::VERTICAL);
 	(*this) 
-		<< mPathPresetControl << mPathView.mPlotWarp
+		<< mPathPresetControl << mTransportPlay << mPathView.mPlotWarp
 		<< mHeader 
 		<< (mScroll << mPathView);
 	arrange();
