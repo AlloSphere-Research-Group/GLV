@@ -68,9 +68,12 @@ public:
 
 
 	float duration() const;
-
+	bool isPlaying() const { return mPlaying; }
 
 	ModelManager& pathModelManager(){ return mPathMM; }
+
+	PathView& play(){ mPlaying=true; return *this; }
+	PathView& pause(){ mPlaying=false; return *this; }
 
 	void drawHeader(float x, float y);
 	void loadFile();
