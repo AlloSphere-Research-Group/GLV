@@ -127,9 +127,9 @@ struct Box : public Group{
 	Box& operator<< (View* v){ p<<v; fit(); return *this; }
 	Box& operator<< (View& v){ p<<v; fit(); return *this; }
 
-	Box& pad (space_t v){ return padX(v).padY(v); }
-	Box& padX(space_t v){ p.absX(v); return *this; }
-	Box& padY(space_t v){ p.absY(v); return *this; }
+	Box& padding (space_t v){ return paddingX(v).paddingY(v); }
+	Box& paddingX(space_t v){ p.absX(v); return *this; }
+	Box& paddingY(space_t v){ p.absY(v); return *this; }
 
 	virtual const char * className() const { return "Box"; }
 private:
@@ -245,8 +245,8 @@ public:
 	/// Get arrangement string
 	const std::string& arrangement() const { return mAlign; }
 
-	space_t padX() const { return mPad1; }
-	space_t padY() const { return mPad2; }
+	space_t paddingX() const { return mPad1; }
+	space_t paddingY() const { return mPad2; }
 
 	virtual const char * className() const { return "Table"; }
 	virtual void onDraw(GLV& g);

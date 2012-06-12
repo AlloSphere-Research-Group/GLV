@@ -23,7 +23,7 @@ struct Scene : View3D{
 		gui << freqX << freqY << freqZ;
 		gui.arrange();
 		
-		tz.extent(gui.width() - 2*gui.padX(), 20);
+		tz.extent(gui.width() - 2*gui.paddingX(), 20);
 
 		prim.addItem("Points").addItem("LineLoop").addItem("Triangles").addItem("TriangleStrip");
 

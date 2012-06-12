@@ -31,7 +31,7 @@ void PresetControl::init(){
 	mBtnPanel.symbol(draw::combo<draw::frameTrunc<1,1,1,1>, draw::crosshatch<2,2> >);
 	mBtnPanel.enable(Momentary);
 	mBtnPanel.padding(4,0).padding(8,1);
-	padX(0).padY(0);
+	paddingX(0).paddingY(0);
 	(*this) << mStatus << mSearchBox;// << mBtnPanel;
 	fit();
 }
