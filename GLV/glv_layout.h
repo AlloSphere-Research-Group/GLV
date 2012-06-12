@@ -242,15 +242,28 @@ public:
 	/// The alignment code will set the View's anchor factors.
 	Table& arrangement(const char * v);
 
+	/// Set padding amounts, in pixels, along x and y
+	Table& padding (space_t v){ mPad1=mPad2=v; return arrange(); }
+
+	/// Set padding, in pixels, along x
+	Table& paddingX(space_t v){ mPad1=v; return arrange(); }
+
+	/// Set padding, in pixels, along y
+	Table& paddingY(space_t v){ mPad2=v; return arrange(); }
+
+
 	/// Get arrangement string
 	const std::string& arrangement() const { return mAlign; }
 
+	/// Get padding, in pixels, along x
 	space_t paddingX() const { return mPad1; }
+	
+	/// Get padding, in pixels, along y
 	space_t paddingY() const { return mPad2; }
 
+
 	virtual const char * className() const { return "Table"; }
-	virtual void onDraw(GLV& g);
-	
+	virtual void onDraw(GLV& g);	
 	//virtual void onResize(space_t dx, space_t dy){ arrange(); }
 
 protected:

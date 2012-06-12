@@ -148,13 +148,18 @@ protected:
 
 class PathEditor : public Table{
 public:
+
+	/// @param[in] r	geometry
 	PathEditor(const Rect& r = Rect(400,180));
 	
+	/// Get PathView component
 	PathView& pathView(){ return mPathView; }
 //	PresetControl& presetControl(){ return mPresetControl; }
 
+	/// Get path model manager
 	ModelManager& pathModelManager(){ return pathView().pathModelManager(); }
 
+	/// Get state model manager
 	PathEditor& stateModelManager(ModelManager& v){
 		mPathView.modelManager(v); return *this;
 	}
