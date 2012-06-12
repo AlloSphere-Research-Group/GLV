@@ -212,8 +212,8 @@ static void pointerLine(float l, float t, float r, float b){
 
 
 
-PathView::PathView()
-:	Widget(Rect(400, 20)),
+PathView::PathView(space_t width)
+:	Widget(Rect(width, 20)),
 	mStates(0),
 	mDurModel(*this),
 	mDur(3,3, 990,0), mCrv(2,1, 90,-90), mSmt(1,1, 8,-8), // mName(Rect(200,12), 6)
@@ -781,7 +781,7 @@ float PathView::warp(float x, float crv, float smt){
 //}
 
 
-PathEditor::PathEditor(space_t hei)
+PathEditor::PathEditor(const Rect& r)
 :	Table("<<<,<--,<--")
 {
 	enable(DrawBack | DrawBorder);
@@ -814,6 +814,7 @@ PathEditor::PathEditor(space_t hei)
 	mTransportPlay.symbolOff(TransportSymbols::play);
 	mTransportPlay.attachVariable(mPathView.mPlaying);
 
+	mPathView.w = r.w;
 	mPathView.disable(DrawBorder);
 	mPathView.attach(ntSelection, Update::Selection, this);
 	
@@ -826,10 +827,10 @@ PathEditor::PathEditor(space_t hei)
 
 	const float topBarH = mPathPresetControl.h;
 	mTransportPlay.extent(topBarH);
-	mPathView.mPlotWarp.extent(100, topBarH);
+	mPathView.mPlotWarp.extent(80, topBarH);
 	
 	mHeader.h = 10;
-	mScroll.extent(mPathView.w, hei);
+	mScroll.extent(mPathView.w, r.h);
 	mScroll.mode(Scroll::VERTICAL);
 	(*this) 
 		<< mPathPresetControl << mTransportPlay << mPathView.mPlotWarp

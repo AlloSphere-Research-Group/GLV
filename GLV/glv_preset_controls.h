@@ -62,7 +62,7 @@ public:
 	};
 
 
-	PathView();
+	PathView(space_t width=400);
 
 	PathView& modelManager(ModelManager& v);
 
@@ -148,7 +148,7 @@ protected:
 
 class PathEditor : public Table{
 public:
-	PathEditor(space_t height=180);
+	PathEditor(const Rect& r = Rect(400,180));
 	
 	PathView& pathView(){ return mPathView; }
 //	PresetControl& presetControl(){ return mPresetControl; }
