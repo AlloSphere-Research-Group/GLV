@@ -31,6 +31,7 @@ void PresetControl::init(){
 	mBtnPanel.symbol(draw::combo<draw::frameTrunc<1,1,1,1>, draw::crosshatch<2,2> >);
 	mBtnPanel.enable(Momentary);
 	mBtnPanel.padding(4,0).padding(8,1);
+	padX(0).padY(0);
 	(*this) << mStatus << mSearchBox;// << mBtnPanel;
 	fit();
 }
@@ -212,10 +213,10 @@ static void pointerLine(float l, float t, float r, float b){
 
 
 PathView::PathView()
-:	Widget(Rect(420, 20)),
+:	Widget(Rect(400, 20)),
 	mStates(0),
 	mDurModel(*this),
-	mDur(3,3, 990,0), mCrv(2,2, 90,-90), mSmt(1,2, 8,-8), // mName(Rect(200,12), 6)
+	mDur(3,3, 990,0), mCrv(2,1, 90,-90), mSmt(1,1, 8,-8), // mName(Rect(200,12), 6)
 	mPos(0), mPlaying(false)
 {
 //	data().resize(Data::STRING);
@@ -315,7 +316,7 @@ void PathView::drawHeader(float x, float y){
 	draw::stroke(1);
 	draw::text("dur" , mDur.l + x, y, textSize);
 	draw::text("crv" , mCrv.l + x, y, textSize);
-	draw::text("s" , mSmt.l + x, y, textSize);
+	draw::text("smt" , mSmt.l + x, y, textSize);
 	draw::text("name", mName.l+ x, y, textSize);
 }
 
