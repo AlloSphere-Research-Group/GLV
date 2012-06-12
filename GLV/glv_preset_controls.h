@@ -159,7 +159,7 @@ public:
 	/// Get path model manager
 	ModelManager& pathModelManager(){ return pathView().pathModelManager(); }
 
-	/// Get state model manager
+	/// Set state model manager
 	PathEditor& stateModelManager(ModelManager& v){
 		mPathView.modelManager(v); return *this;
 	}
