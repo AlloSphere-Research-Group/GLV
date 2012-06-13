@@ -241,6 +241,8 @@ PathView::PathView(space_t width)
 	mCrv.attach(ntUpdatePlot, Update::Value, this);
 	mSmt.attach(ntUpdatePlot, Update::Value, this);
 	
+	//mPlotWarp.disable(DrawBorder);
+	
 //	mPathMM.add("dur", mDur);
 //	mPathMM.add("crv", mCrv);
 //	mPathMM.add("smt", mSmt);
@@ -345,7 +347,7 @@ void PathView::onDraw(GLV& g){
 		//draw::color(colors().selection.mix(colors().back, 0.8)); // row hilite bar
 		//draw::rectTrunc<2,2,2,2>(2, dy()*mPos, w-2, dy()*(mPos+1));
 		draw::color(colors().selection);
-		draw::rectTrunc<2,2,2,2>(2, dy()*mPos, seqRight()-2, dy()*(mPos+1));
+		draw::rectTrunc<2,2,2,2>(4, dy()*mPos, seqRight()-2, dy()*(mPos+1));
 
 		Rect vrect = visibleRegion();
 //		vrect.print();
@@ -364,7 +366,7 @@ void PathView::onDraw(GLV& g){
 		float px = 0.5, py = 0.5;
 		
 		Color seqCol = colors().text;
-		seqCol = seqCol.mixRGB(colors().back, 0.5);
+		seqCol = seqCol.mixRGB(colors().back, 0.2);
 
 		/*printf("%7.6g\n",   1.);
 		printf("%7.6g\n",  10.);
@@ -786,7 +788,6 @@ PathEditor::PathEditor(const Rect& r)
 {
 	enable(DrawBack | DrawBorder);
 
-
 	struct TransportSymbols{
 		static void play(float l, float t, float r, float b){
 			draw::shape(draw::Triangles, l,b, r,(t+b)/2, l,t);
@@ -816,8 +817,8 @@ PathEditor::PathEditor(const Rect& r)
 
 	mPathView.w = r.w;
 	mPathView.disable(DrawBorder);
+	mPathView.disable(DrawBack);
 	mPathView.attach(ntSelection, Update::Selection, this);
-	
 
 	//mPathPresetControl.searchBox().attach(ntPresetControlAction, Update::Action, this);
 	
