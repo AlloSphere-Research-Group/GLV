@@ -894,7 +894,7 @@ static bool goToNextPrintablePast(unsigned& p, char c, const std::string& str){
 //}
 
 int ModelManager::snapshotFromString(const std::string& src){
-//	printf("%s\n", src.c_str());
+	//printf("%s\n", src.c_str());
 	unsigned r = src.size();
 	unsigned p=0, p2=0;
 
@@ -904,31 +904,43 @@ int ModelManager::snapshotFromString(const std::string& src){
 	if(!goToNext(p2=p, '\"', src)) return r;
 
 	std::string name = src.substr(p, p2-p);
-//	printf("%s\n", name.c_str());
+	//printf("%s\n", name.c_str());
 	p = p2+1;
 
 	if(!goToNextPrintablePast(p, ']' , src)) return r;
 	if(!goToNextPrintablePast(p, '=' , src)) return r;
-//	printf("%s\n", src.substr(p).c_str());
+	//printf("%s\n", src.substr(p).c_str());
 
 	// retrieve key-value pairs
 	struct It : KeyValueParser {
 		It(Snapshot& vs, NamedModels& vm): s(vs), m(vm){}
 		void onKeyValue(const std::string& key, const std::string& val){
-//			printf("%s = %s\n", key.c_str(), val.c_str());
+			//printf("%s = %s\n", key.c_str(), val.c_str());
 
 			// Only convert value string if main state contains key 
 			// with same name.
 			NamedModels::const_iterator it = m.find(key);
 			if(it != m.end()){
 				Data& ds = s[key]; //ds.print();
-				Data temp;
-				const Data& dm = it->second->getData(temp);
-				
-				// Use main state as prototype
-				ds.resize(dm.type(), dm.shape(), dm.maxDim());
-				ds.fromToken(val);
-//				ds.print();
+
+				// Set size of snapshot Data according to application Model				
+				if(true){
+					Data temp;
+					const Data& dm = it->second->getData(temp);
+
+					ds.resize(dm.type(), dm.shape(), dm.maxDim());
+					ds.fromToken(val);
+					//ds.print();
+				}
+
+				// Or, resize application model and snapshot data according to
+				// number of elements counted in string.
+				/*else {
+					int N = numElemsToken(val);
+					
+					ds.resize(dm.type(), N);
+					ds.fromToken(val);
+				}*/
 			}
 		}
 		Snapshot& s;
