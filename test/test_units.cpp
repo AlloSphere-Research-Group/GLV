@@ -254,7 +254,7 @@ int main(){
 		
 		// multiple element assignment
 		{
-			#define EQUALS(a,b,c,d,e)\
+			#define ASSERT_EQUALS(a,b,c,d,e)\
 				assert(d1.at<int>(0) == a);\
 				assert(d1.at<int>(1) == b);\
 				assert(d1.at<int>(2) == c);\
@@ -263,26 +263,27 @@ int main(){
 
 			Data d1(Data::INT, 5);
 			d1.assignAll(-1);
-			EQUALS(-1,-1,-1,-1,-1);
+			ASSERT_EQUALS(-1,-1,-1,-1,-1);
 			
 			d1.assignAll(0);
+			ASSERT_EQUALS(0,0,0,0,0);
 			
 			{
 				float t[] = {1,2,3,4,5};
 				d1.assignFromArray(t,2);
-				EQUALS(1,2,0,0,0);
+				ASSERT_EQUALS(1,2,0,0,0);
 				
 				d1.assignFromArray(t+2,2,1,2);
-				EQUALS(1,2,3,4,0);
+				ASSERT_EQUALS(1,2,3,4,0);
 				
 				d1.assignAll(0);
-				d1.assignFromArray(t,5,2);
-				EQUALS(1,3,5,0,0);
+				d1.assignFromArray(t,3, 2);
+				ASSERT_EQUALS(1,3,5,0,0);
 				
-				d1.assignFromArray(t+1,4,2,3);
-				EQUALS(1,3,5,2,4);
+				d1.assignFromArray(t+1,2, 2,3);
+				ASSERT_EQUALS(1,3,5,2,4);
 			}
-			#undef EQUALS
+			#undef ASSERT_EQUALS
 		}
 	}
 
