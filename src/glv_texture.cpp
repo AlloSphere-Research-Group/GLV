@@ -124,7 +124,7 @@ void Texture2::destroy(){
 
 
 Texture2& Texture2::draw(
-	double ql, double qt, double qr, double qb,
+	float ql, float qt, float qr, float qb,
 	float tl, float tt, float tr, float tb
 ){
 	int Nv=4;

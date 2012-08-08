@@ -10,7 +10,7 @@ namespace draw{
 
 int printError(const char * pre, bool verbose, FILE * out){
 	GLenum err = glGetError();
-	#define CS(v, desc) case GL_##v: printf("%s%s%s\n", pre, #v, verbose?": "desc :""); break;	
+	#define CS(v, desc) case GL_##v: printf("%s%s%s\n", pre, #v, verbose?": " desc :""); break;	
 	switch(err){
 		CS(INVALID_ENUM, "An unacceptable value is specified for an enumerated argument.")
 		CS(INVALID_VALUE, "A numeric argument is out of range.")

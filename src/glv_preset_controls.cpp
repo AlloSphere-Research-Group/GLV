@@ -796,8 +796,8 @@ PathEditor::PathEditor(const Rect& r)
 		static void pause(float l, float t, float r, float b){
 			float w = r-l;
 			float pts[] = {
-				l,t, l,b, l+w*0.4,t, l+w*0.4,b,
-				l+w*0.6,t, l+w*0.6,b, r,t, r,b
+				l,t, l,b, l+w*0.4f,t, l+w*0.4f,b,
+				l+w*0.6f,t, l+w*0.6f,b, r,t, r,b
 			};
 			index_t idx[] = {
 				0,1,2,3,

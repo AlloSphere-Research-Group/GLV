@@ -58,7 +58,7 @@ public:
 
 	Texture2& bind();							///< Bind self to current context
 	Texture2& draw(								///< Draw texture to rectangular quad
-		double ql, double qt, double qr, double qb,
+		float ql, float qt, float qr, float qb,
 		float tl=0, float tt=1, float tr=1, float tb=0
 	);
 	
