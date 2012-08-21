@@ -951,7 +951,7 @@ protected:
 template<class T>
 int toString(std::string& dst, const T& src, const char * format){
 	#ifdef WIN32
-		#define TO_STRING_FUNC sprintf_s
+		#define TO_STRING_FUNC _snprintf
 	#else
 		#define TO_STRING_FUNC snprintf
 	#endif

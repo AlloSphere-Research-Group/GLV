@@ -96,7 +96,7 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	}
 
 	switch(mBlendMode){
-		case TRANSPARENT: break;
+		case TRANSLUCENT: break;
 		case ADDITIVE:
 			glBlendEquation(GL_FUNC_ADD);
 			glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
@@ -130,7 +130,7 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 //	draw::blendTrans();
 
 	switch(mBlendMode){
-		case TRANSPARENT: break;
+		case TRANSLUCENT: break;
 		case ADDITIVE:
 		case SUBTRACTIVE:
 			draw::blendTrans();
