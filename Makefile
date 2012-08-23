@@ -50,8 +50,8 @@ install: $(LIB_PATH)
 #	@echo 'INSTALL $(DESTDIR)'
 	@$(INSTALL) -d $(DESTDIR)/lib
 	@$(INSTALL) -d $(DESTDIR)/include/$(LIB_NAME)
-	@$(INSTALL) -C -m 644 $(LIB_PATH) $(DESTDIR)/lib
-	@$(INSTALL) -C -m 644 $(INC_DIR)/*.h $(DESTDIR)/include/$(LIB_NAME)
+	@$(INSTALL) -m 644 $(LIB_PATH) $(DESTDIR)/lib
+	@$(INSTALL) -m 644 $(INC_DIR)/*.h $(DESTDIR)/include/$(LIB_NAME)
 #	@$(RANLIB) $(DESTDIR)/lib/$(LIB_FILE)
 
 
