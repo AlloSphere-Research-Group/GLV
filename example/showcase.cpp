@@ -20,6 +20,7 @@ int main(){
 	View v110(Rect( 8, 8,W/4,W/4));
 	View v111(Rect(16,16,W/4,W/4));
 	Scroll scr(Rect(W,W));
+	scr.padding(4);
 	Label scrText(
 		"Scroll provides a subview\n"
 		"of its children whose\n"
