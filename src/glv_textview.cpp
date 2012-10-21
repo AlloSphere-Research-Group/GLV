@@ -718,6 +718,18 @@ bool ListView::onEvent(Event::t e, GLV& g){
 }
 
 
+DropDown::~DropDown(){
+	mItemList.remove();
+}
+
+void DropDown::init(){ //printf("DropDown::init\n");
+	mItemList.disable(Visible);
+	
+	// Set padding so text appears vertically centered
+	paddingX(font().size()/2 + h/2);
+	//padding(6);
+}
+
 DropDown& DropDown::addItem(const std::string& v){
 	items().push_back(v);
 	if(items().size() == 1) setValue(items()[0]);
@@ -859,6 +871,22 @@ bool DropDown::onEvent(Event::t e, GLV& g){
 	default:;
 	}
 
+	return true;
+}
+
+bool DropDown::onAssignData(Data& d, int ind1, int ind2){
+	//printf("DropDown: onAssignData\n");
+	//d.print();
+	// ind1 and ind2 are always zero since TextView is one value
+	
+	// check if new string value is in our list
+	std::string itemString = d.at<std::string>(0);
+	int itemIndex = mItemList.data().indexOf(itemString);
+	if(Data::npos != itemIndex){
+		mSelectedItem = itemIndex;
+		mItemList.selectValue(itemString);
+	}
+	TextView::onAssignData(d, ind1, ind2);
 	return true;
 }
 

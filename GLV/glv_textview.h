@@ -337,7 +337,8 @@ public:
 	:	TextView(r,textSize), mItemList(*this)
 	{	init(); addItem(item1).addItem(item2).addItem(item3).addItem(item4); }
 
-	virtual ~DropDown(){ mItemList.remove(); }
+	virtual ~DropDown();
+
 
 	/// Get index of currently selected item
 	int selectedItem() const { return mSelectedItem; } //return mItemList.selected(); }
@@ -362,25 +363,10 @@ protected:
 	Items mItems;		// list data that ItemList references
 	int mSelectedItem;
 
-	void init(){ mItemList.disable(Visible); }
+	void init();
 	void showList();
 	void hideList(GLV& g);
-
-	virtual bool onAssignData(Data& d, int ind1, int ind2){
-		//printf("DropDown: onAssignData\n");
-		//d.print();
-		// ind1 and ind2 are always zero since TextView is one value
-		
-		// check if new string value is in our list
-		std::string itemString = d.at<std::string>(0);
-		int itemIndex = mItemList.data().indexOf(itemString);
-		if(Data::npos != itemIndex){
-			mSelectedItem = itemIndex;
-			mItemList.selectValue(itemString);
-		}
-		TextView::onAssignData(d, ind1, ind2);
-		return true;
-	}
+	virtual bool onAssignData(Data& d, int ind1, int ind2);
 
 /* TODO from ListSelect:
 	/// Get index of an item
