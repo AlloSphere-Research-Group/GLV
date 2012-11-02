@@ -219,7 +219,7 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 //			}
 
 			// Reassign keycodes when CTRL is down
-			#ifdef GLV_PLATFORM_OSX
+			//#ifdef GLV_PLATFORM_OSX
 			bool ctrl = glutGetModifiers() & GLUT_ACTIVE_CTRL;
 
 			if(ctrl){
@@ -248,6 +248,8 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 					};
 				}
 			}
+
+			#ifdef GLV_PLATFORM_OSX
 
 			// swap backspace and delete
 			else{
