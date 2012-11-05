@@ -6,7 +6,8 @@
 namespace glv{
 
 inline float linLog2(float v, float recMin = 1./16){
-	v = ::log2(::fabsf(v) + 0.000001f);	// offset to avoid -inf
+	static const float lnToLog2 = 1.f/::logf(2.);
+	v = ::logf(::fabsf(v) + 0.000001f)*lnToLog2;// offset to avoid -inf
 	v *= recMin;
 	return v > -1.f ? v + 1.f : 0.f;
 }
