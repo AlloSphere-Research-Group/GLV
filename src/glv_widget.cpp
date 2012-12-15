@@ -41,7 +41,7 @@ void Widget::drawGrid(GraphicsData& g){
 }
 
 void Widget::drawSelectionBox(){
-	if(enabled(DrawSelectionBox) && size()>1){
+	if(enabled(Focused) && enabled(DrawSelectionBox) && size()>1){
 		draw::lineWidth(2);
 //		draw::color(colors().selection);
 		draw::color(colors().border);
