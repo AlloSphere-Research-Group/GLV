@@ -346,8 +346,8 @@ void GLV::setKeyModifiers(bool shift, bool alt, bool ctrl, bool caps, bool meta)
 }
 
 void GLV::setMouseDown(space_t& x, space_t& y, int button, int clicks){
-	eventType(Event::MouseDown);	
-	//if(button == Mouse::Left)
+	eventType(Event::MouseDown);
+	if(!mMouse.isDownAny()) // only change focus if no other buttons down
 		setFocus(findTarget(x, y));
 	mMouse.posRel(x,y);
 	mMouse.updateButton(button, true, clicks);
