@@ -314,7 +314,11 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 			mAcc += 0.25f * fabs(m.dy());
 			if(mAcc > 1){
 				int mul = (int)mAcc;
-				valAdd((m.dy() > 0.f ? -mag() : mag())*mul);
+				int digit = dig();
+				/*if(m.left() && m.right() && digit < (numDigits()-1)){
+					++digit;
+				}*/
+				valAdd((m.dy() > 0.f ? -mag(digit) : mag(digit))*mul);
 				mAcc -= mul;
 			}
 		}
