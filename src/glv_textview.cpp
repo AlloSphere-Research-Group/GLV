@@ -836,8 +836,7 @@ TextView NumberDialers::mTextEntry;
 	mShowSign(true), mOverwriteMode(true), mDimZero(false), mTextEntryMode(false)
 #define CTOR_BODY\
 	font().letterSpacing(1./4);\
-	enable(DrawSelectionBox);\
-	mTextEntry.filter(TextView::filterNumeric).paddingY(2)
+	enable(DrawSelectionBox)
 
 NumberDialers::NumberDialers(int numInt, int numFrac, double max, double min, int nx, int ny)
 :	Widget(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 2, false,false,true), CTOR_LIST
@@ -1052,6 +1051,7 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 			//case Key::Return:
 				if(!mTextEntryMode){ // bring up the text entry box
 					mTextEntryMode=true;
+					mTextEntry.filter(TextView::filterNumeric).paddingY(2);
 					(*this) << mTextEntry;
 					mTextEntry.setValue(toString(getValue()));
 					mTextEntry.selectAll();
