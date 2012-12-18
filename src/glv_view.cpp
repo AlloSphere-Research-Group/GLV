@@ -361,15 +361,24 @@ void View::doDraw(GLV& g){
 //			color(colors().border);
 //		}
 
-		color(colors().border);
-
 		// double border thickness if focused
 		if(enabled(Focused) && enabled(FocusHighlight)){
 			borderWidth *= 2;
 		}
 
 		lineWidth(borderWidth);
+
+		color(colors().border);
 		frame(0.5f, 0.5f, w-0.5f, h-0.5f);
+		//frame(0.f, 0.f, w-0.5f, h-0.5f); // hack to give bevelled look
+		
+		/*
+		// This uses slightly different border colors to give bevelled look
+		color(colors().border);
+		shape(draw::LineStrip, 0.5f,h-0.5f, w-0.5f,h-0.5f, w-0.5f,0.5f);
+		color(colors().border.mixRGB(colors().back, 0.5));
+		shape(draw::LineStrip, w-0.5f,0.5f, 0.5f,0.5f, 0.5f,h-0.5f);
+		*/
 	}
 }
 

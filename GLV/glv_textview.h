@@ -91,7 +91,6 @@ protected:
 };
 
 
-
 /// View for editing text
 class TextView : public Widget{
 public:
@@ -428,7 +427,8 @@ protected:
 		return (int)(v * pow(10., mNF) + (v>0. ? 0.5:-0.5));
 	}
 
-	double mag() const { return pow(10., numDigits()-1-dig() - mNF); }
+	double mag(int digit) const { return pow(10., numDigits()-1-digit - mNF); }
+	double mag() const { return mag(dig()); }
 	void valAdd(double v){ setValue(getValue() + v); }
 
 	void flipSign(){

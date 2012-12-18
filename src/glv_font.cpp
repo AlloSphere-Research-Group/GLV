@@ -405,8 +405,11 @@ Font& Font::lineSpacing(float v){ mLineSpacing=v; return *this; }
 
 Font& Font::size(float v){
 	mSize = v;
-	mScaleX = v/Glyph::width();
-	mScaleY = v/Glyph::width();
+	mScaleY = v/Glyph::baseline();
+	mScaleX = mScaleY;
+	
+	//mScaleX = v/Glyph::width();
+	//mScaleY = v/Glyph::width();
 	return *this;
 }
 
