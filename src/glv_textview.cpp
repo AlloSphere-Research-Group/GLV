@@ -1077,6 +1077,13 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 	return true;
 }
 
+
+void NumberDialers::onCellChange(int indexOld, int indexNew){
+//	mTextEntryMode=false;
+//	mTextEntry.remove();
+}
+
+
 // Old from NumberDialers:
 //	int mVal;				// current fixed-point value
 //	double mValMul;
