@@ -404,6 +404,8 @@ public:
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
 
+	virtual void onCellChange(int indexOld, int indexNew);
+
 protected:
 	//Lazy<TextView> mTextEntry;
 	static TextView mTextEntry;
