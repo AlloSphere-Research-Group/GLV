@@ -797,7 +797,7 @@ struct KeyValueParser{
 
 				while(isBlank(*e) || *e=='=') ++e;	// go to '='
 				
-				// find next valid token
+				// find next valid value token
 				b=e=strpbrk(e, "\"{0123456789.-+");
 
 				if(!b) b=e=&src[src.size()];	// no more valid tokens, so go to end of string
@@ -811,7 +811,7 @@ struct KeyValueParser{
 						while(*e!='}') ++e; ++e;
 					}
 					else{
-						while((isdigit(*e) || *e=='.' || *e=='-' || *e=='+')) ++e;
+						while((isdigit(*e) || *e=='.' || *e=='-' || *e=='+' || *e=='e')) ++e;
 					}
 
 					val.assign(b,e-b);
