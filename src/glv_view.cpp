@@ -210,6 +210,7 @@ View& View::addHandler(DrawHandler& v){
 }
 
 View& View::addHandler(Event::t e, EventHandler& h){
+	mEventHandlersMap(); // create map, if not already created
 	if(!hasEventHandler(e, h)){
 		mEventHandlersMap()[e].push_back(&h);
 	}
@@ -325,11 +326,9 @@ void View::constrainWithinParent(){
 void View::doDraw(GLV& g){
 	using namespace glv::draw;
 
-//	drawPre();
 	if(enabled(DrawBack)){
 		color(colors().back);
-//		rectangle(0, -0.5, iw+1, ih+0.5);
-		rectangle(0, 0, w, h);
+		rectangle(0,0, w,h);
 	}
 
 	bool drawNext = true;
@@ -347,19 +346,8 @@ void View::doDraw(GLV& g){
 		onDraw(g);
 	}
 
-//	drawPost();
 	if(enabled(DrawBorder)){
 		float borderWidth = 1.0;
-		
-		// changing brightness doesn't always look so great...
-//		if(enabled(Focused) && enabled(FocusHighlight)){
-//			HSV hsv(colors().border);
-//			hsv.v > 0.5 ? hsv.v -= 0.2 : hsv.v += 0.2;
-//			color(Color(hsv));
-//		}
-//		else{
-//			color(colors().border);
-//		}
 
 		// double border thickness if focused
 		if(enabled(Focused) && enabled(FocusHighlight)){
@@ -367,10 +355,10 @@ void View::doDraw(GLV& g){
 		}
 
 		lineWidth(borderWidth);
-
 		color(colors().border);
-		frame(0.5f, 0.5f, w-0.5f, h-0.5f);
-		//frame(0.f, 0.f, w-0.5f, h-0.5f); // hack to give bevelled look
+		const float ds = 0.5; // OpenGL suggests 0.375, but smears with AA enabled
+		frame(ds, ds, pix(w)-ds, pix(h)-ds);
+		//frame(0,0, pix(w)-ds, pix(h)-ds); // hack to give bevelled look
 		
 		/*
 		// This uses slightly different border colors to give bevelled look
