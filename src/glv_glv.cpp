@@ -175,13 +175,13 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 	//		callback. Currently if this is attempted, we crash and burn.
 
 	enter2D(ww, wh);		// initialise the OpenGL renderer for our 2D GUI world
-  
+
 	// Render all primitives at integer positions, ref: OpenGL Redbook
 	// NOTE: This is a comprise to get almost pixel-perfection for both lines 
 	// (half-integers) and polygons (integers). We'll do it "by hand" due to all
 	// the exceptions and to get exact pixel-perfect accuracy.
 //	translate(0.375f, 0.375f);
-  
+
 	float cx = 0, cy = 0; // drawing context absolute position
 	View * const root = this;
 	View * cv = root;
@@ -195,7 +195,6 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 	//glEnableClientState(GL_COLOR_ARRAY); // note: enabling this messes up glColor, so leave it off
 	//glColorPointer(4, GL_FLOAT, 0, 0);
 
-
 	// Animate all the views
 	struct AnimateViews : public TraversalAction{
 		AnimateViews(double dt_): dt(dt_){}
@@ -207,39 +206,38 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 	} animateViews(dsec);
 	traverseDepth(animateViews);
 
-
 	graphicsData().reset();
 	//if(enabled(Animate)) onAnimate(dsec);
 	doDraw(*this);
-	
+
 	draw::enable(ScissorTest);
 
 	while(true){
 
 		cv->onDataModelSync();		// update state based on attached model variables
 		cv->rectifyGeometry();
-	
+
 		// find the next view to draw
-		
+
 		// go to child node if exists and I'm drawable
 		if(cv->child && cv->visible()){
 			drawContext(cv->child->l, cv->child->t, cv->child, cx, cy, cv);
 			computeCrop(cropRects, ++lvl, cx, cy, cv);
 		}
-		
+
 		// go to sibling node if exists
 		else if(cv->sibling){
 			drawContext(cv->sibling->l - cv->l, cv->sibling->t - cv->t, cv->sibling, cx, cy, cv);
 			computeCrop(cropRects, lvl, cx, cy, cv);
 		}
-		
+
 		// retrace upwards until a parent's sibling is found
 		else{
 			while(cv != root && cv->sibling == 0){
 				drawContext(-cv->l, -cv->t, cv->parent, cx, cy, cv);
 				lvl--;
 			}
-			
+
 			if(cv->sibling){
 				drawContext(cv->sibling->l - cv->l, cv->sibling->t - cv->t, cv->sibling, cx, cy, cv);
 				computeCrop(cropRects, lvl, cx, cy, cv);
@@ -260,7 +258,7 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 
 			int sx = pix(r.l);
 			int sy = wh - (pix(r.t) + pix(r.h)) + 0.99;
-			int sw = r.w;
+			int sw = pix(r.w);
 			int sh = r.h + 0.5;
 //			if(sx < int(ww) && sy < int(wh)){	// LJP: this might be too paranoid
 //				if(sx < 0) sx=0;
@@ -269,12 +267,6 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 //				if(sy+sh > int(wh)) sh = wh - sy;
 				//printf("[%d %d] -> %d %d %d %d\n", ww,wh, sx,sy,sw,sh);
 				scissor(sx, sy, sw, sh);
-
-				// LJP: using some weird numbers here, seems to work right though...
-				//scissor(pix(r.l), pix(wh - r.bottom() - 1.499f), pix(r.w+1), pix(r.h+1.499f));
-				//scissor(pix(r.l), wh - (pix(r.t) + pix(r.h)), pix(r.w), pix(r.h));
-				//scissor(pix(r.l), wh - (pix(r.t) + pix(r.h)) + 0, r.w, r.h + 0);
-				//scissorGUI(pix(r.l-0.019)-0.0, pix(r.t-0.019), pix(r.w), pix(r.h), wh);
 
 				graphicsData().reset();
 				//if(cv->enabled(Animate)) cv->onAnimate(dsec);
