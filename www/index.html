@@ -455,13 +455,14 @@ All GLV <tt>View</tt>s inherit a <tt>Notifier</tt> class so they can operate as 
 <pre class="code">
 // Notification callback
 void sliderUpdateLabel(const Notification& n){
-	Label& l = *(Label *)n.receiver();
-	SliderChange v = *(SliderChange *)n.data();
-	char buf[16]; snprintf(buf, sizeof(buf), "[%2d] = %4.2f", v.index(), v.value());
+	Label& l = *n.receiver&lt;Label&gt;();
+	SliderChange& v = *n.data&lt;SliderChange&gt;();
+	char buf[16];
+	snprintf(buf, sizeof(buf), "[%2d] = %4.2f", v.index(), v.value());
 	l.label(buf);
 }
 
-int main(int argc, char ** argv){
+int main(){
 	Slider slider;
 	Label sliderLabel;
 
@@ -655,7 +656,6 @@ In this example, the text is drawn with its left edge at 0 and letter cap at 0. 
 
 <h3>Button</h3>
 <div class="sub">
-
 <div class="figRight">
 <img src="gfx/ButtonOff.png"><br>
 <div class="figText">off</div>
@@ -664,24 +664,20 @@ In this example, the text is drawn with its left edge at 0 and letter cap at 0. 
 <img src="gfx/ButtonOn.png"><br>
 <div class="figText">on</div>
 </div>
-
 A <tt>Button</tt> is a widget that has two possible states- on or off. By default, a <tt>Button</tt> is toggleable meaning that its state changes when it is clicked on. A <tt>Button</tt> can also be made non-toggleable so that it becomes active on a <tt>MouseDown</tt> event and inactive on a <tt>MouseUp</tt> event. <tt>Button</tt> has two drawing function pointers for specifying which graphical symbols to use for on and off states.
-</div><br>
-
+</div>
 
 
 <h3>Buttons</h3>
 <div class="sub">
-
 The <tt>Buttons</tt> widget is an extremely flexible N x M button array. It can be used to create menus, radio buttons, and button matrices, for example. <tt>Buttons</tt> can be either in mutually exclusive mode or not. When in mutually exclusive mode, only one button can be on at a time. Otherwise, any number of buttons can be on or off at a time.
-
 <!--
 Like the singular Button widget, Buttons can be either toggleable or not. When it is toggleable, any number of buttons can be on or off at a time. When it is non-toggeable, only 
 -->
-
 <br><br>
-
-<table class="figs"><tr style="vertical-align: bottom"><td>
+<table style="text-align: center" align="center" width="360">
+<!--table class="figs"-->
+<tr style="vertical-align: bottom"><td>
 <img src="gfx/Buttons1x4.png">
 <div class="figText">1x4 radio bar</div>
 </td><td>
@@ -691,76 +687,96 @@ Like the singular Button widget, Buttons can be either toggleable or not. When i
 <img src="gfx/Buttons4x4.png">
 <div class="figText">4x4 button matrix</div>
 </td></tr></table>
-
-</div><br>
-
+</div>
 
 
 <h3>ColorPicker</h3>
 <div class="sub">
-
 <div class="figLeft">
 <img src="gfx/ColorPicker1.png">
 <img src="gfx/ColorPicker2.png">
 </div>
-
 <tt>ColorPicker</tt> permits selection of a single color from HSV space. The top bar is a slider for selecting hue while the bottom panel is a 2D slider for choosing saturation (x-axis) and value (y-axis).
-
 <br><br><br>
 </div>
 
 
-
-<h3>FunctionPlot</h3>
+<h3>DropDown</h3>
 <div class="sub">
-
-<tt>FunctionPlot</tt> permits graphing of functions in one or two dimensions. It has two internal buffers for storing x and y coordinate data. If only one of these buffers is written to, then a 1D graph is made. If both buffers are written to, then a 2D graph is made. There is also a third color buffer that can be used for plotting additional dimensions. The range of the x and y axes can be custom set.
-
-<br><br>
-
-<table class="figs"><tr style="vertical-align: bottom"><td>
-<img src="gfx/FunctionPlotY.png">
-<div class="figText">y plot</div>
-</td><td>
-<img src="gfx/FunctionPlotX.png">
-<div class="figText">x plot</div>
-</td><td>
-<img src="gfx/FunctionPlotXY.png">
-<div class="figText">x-y plot</div>
-</td></tr></table>
-
-</div><br>
-
+<div class="figRight">
+<img src="gfx/DropDown.png">
+</div>
+<tt>DropDown</tt> is a no-frills drop down menu of text strings. Items can be selected using either mouse or keyboard interaction. 
+<br><br><br><br><br>
+</div>
 
 
 <h3>Label</h3>
 <div class="sub">
-
 <div class="figRight">
 <img src="gfx/Label.png">
 </div>
-
 <tt>Label</tt> is a text string that is typically attached as a child to another view. By default, <tt>Label</tt>s do not render a background or border allowing them to 'float' on top of other views. Hit testing is also disabled by default preventing them from stealing focus from a parent view. <tt>Label</tt>s can also be specified to render vertically which can be useful for notating the y-axis of graphs.
-</div><br>
+</div>
 
+
+<h3>ListView</h3>
+<div class="sub">
+<div class="figRight">
+<img src="gfx/ListView.png">
+</div>
+<tt>ListView</tt> allows selection of a text string from a set of strings arranged on an N x M grid. It can be used, for instance, as a single column menu (see <tt>DropDown</tt>) or a radio selector.
+<br><br>
+</div>
 
 
 <h3>NumberDialer</h3>
-
 <div class="sub">
 <div class="figLeft">
 <img src="gfx/NumberDialer1.png"><br>
 <img src="gfx/NumberDialer2.png"><br>
 </div>
-
 <tt>NumberDialer</tt> allows one to treat each digit of a number as a dial. The number of digits in the integer and fractional parts is specified upon construction. <tt>NumberDialer</tt> can also be specified to have a minimum or maximum value. The default extrema are the largest displayable values. When a digit is dragged up or down with the mouse, the number is incremented or decremented by an amount proportional to the place of the digit. The currently selected digit (indicated by a lightly colored box) can also be modified through the number keys on the keyboard. The sign of the number can be toggled by clicking it or by pressing the '-' key.
+</div>
 
-</div><br>
 
+<h3>Plot</h3>
+<div class="sub">
+<tt>Plot</tt> permits graphing of data in one or two dimensions. To each <tt>Plot</tt> can be attached one or more <tt>Plottables</tt> for presenting data in a particular way. The provided <tt>Plottables</tt> are <tt>PlotFunction1D</tt>, <tt>PlotFunction2D</tt>, and <tt>PlotDensity</tt>.
+<br><br>
+<table style="text-align: center" align="center" width="330">
+<!--table class="figs"-->
+<tr style="vertical-align: bottom"><td>
+<img src="gfx/PlotFunction1Dcont.png"><br>
+<img src="gfx/PlotFunction1Ddisc.png">
+<div class="figText">1D plots</div>
+</td><td>
+<img src="gfx/PlotFunction2D.png">
+<div class="figText">2D plot</div>
+</td><td>
+<img src="gfx/PlotDensity.jpg">
+<div class="figText">Density plot</div>
+</td></tr></table>
+</div>
+<!--h3>FunctionPlot</h3>
+<div class="sub">
+<tt>FunctionPlot</tt> permits graphing of functions in one or two dimensions. It has two internal buffers for storing x and y coordinate data. If only one of these buffers is written to, then a 1D graph is made. If both buffers are written to, then a 2D graph is made. There is also a third color buffer that can be used for plotting additional dimensions. The range of the x and y axes can be specified.
+<br><br>
+<table style="text-align: center" align="center" width="330">
+<tr style="vertical-align: bottom"><td>
+<img src="gfx/FunctionPlotY.png" width="100">
+<div class="figText">y plot</div>
+</td><td>
+<img src="gfx/FunctionPlotX.png" height="100">
+<div class="figText">x plot</div>
+</td><td>
+<img src="gfx/FunctionPlotXY.png" width="100">
+<div class="figText">x-y plot</div>
+</td></tr></table>
+</div-->
 
 
 <h3>Slider</h3>
-
 <div class="sub">
 <div class="figRight">
 <img src="gfx/Slider1VS.png"><br>
@@ -770,57 +786,41 @@ Like the singular Button widget, Buttons can be either toggleable or not. When i
 <img src="gfx/Slider1V.png"><br>
 <div class="figText">vertical</div>
 </div>
-
 <div class="figRight">
 <img src="gfx/Slider1H.png"><br>
 <div class="figText">horizontal</div>
 <img src="gfx/Slider1HS.png"><br>
 <div class="figText">horizontal<br>(signed)</div>
 </div>
-
 The <tt>Slider</tt> widget allows one to change a value by sliding a bar across the screen.  Depending on its dimensions, the slider will automatically be displayed as vertical (w < h) or horizontal (w >= h). The slider value is 0 at the left or bottom edge and 1 at the top or right edge. In its signed mode, the value is -1 at the left or bottom edge.
-
 <br><br>
-
 Clicking on the slider with the left mouse button will set its absolute position. Dragging with the left or right mouse button will increment the slider's value. Normally, the amount the slider moves is in a one-to-one correspondence to the mouse cursor position. However, if both mouse buttons are held while dragging, the slider is incremented by a quarter of the distance the mouse moves.
-
-</div><br>
+</div>
 
 
 <h3>SliderRange</h3>
 <div class="sub">
-
 <div class="figRight">
 <img src="gfx/SliderRangeH.png">
 </div>
-
 The <tt>SliderRange</tt> widget allows one to control the minimum and maximum values of an interval. The entire interval can be translated by dragging the bar. Clicking and dragging near the ends of the bar changes the associated extremum. Clicking on a blank region causes the whole interval to translate in the direction of the click.
-
-<br>
-</div><br>
+</div>
 
 
 <h3>Slider2D</h3>
 <div class="sub">
-
 <div class="figRight">
 <img src="gfx/Slider2D.png">
 </div>
-
 <t>Slider2D</tt> is used to control two numeric values simultaneously, such as an x-y position. A knob indicates the current values of the slider. The slider values are 0 at the left or bottom edge and 1 at the top or right edge.
-
 <br><br>
-
 Mouse interaction along each axis of <tt>Slider2D</tt> is the same as with the <tt>Slider</tt> widget.
-
 <br><br><br>
-</div><br>
-
+</div>
 
 
 <h3>Sliders</h3>
 <div class="sub">
-
 <div class="figRight">
 <img src="gfx/SlidersV.png">
 <div class="figText">10 vertical</div>
@@ -829,20 +829,14 @@ Mouse interaction along each axis of <tt>Slider2D</tt> is the same as with the <
 <img src="gfx/SlidersH.png">
 <div class="figText">10 horizontal</div>
 </div>
-
 The <tt>Sliders</tt> widget is a group of several <tt>Slider</tt>s. In general, it will be easier and more efficient to control a set of values using a single <tt>Sliders</tt> widget rather than multiple <tt>Slider</tt> widgets. The sliders can be displayed either horizontally or vertically. It also supports a special <i>drag set</i> mode where sliders can be set by dragging across the widget as if drawing a curve.
-
 <br><br>
-
 Mouse interaction with individual sliders is the same as the <tt>Slider</tt> widget.
-<br><br>
 </div>
-
 
 
 <h3>SliderGrid</h3>
 <div class="sub">
-
 <div class="figRight">
 <img src="gfx/SliderGrid3.png">
 <div class="figText">3-D</div>
@@ -851,32 +845,29 @@ Mouse interaction with individual sliders is the same as the <tt>Slider</tt> wid
 <img src="gfx/SliderGrid4.png">
 <div class="figText">4-D</div>
 </div>
-
 <tt>SliderGrid</tt> is used to control two or more parameters either alone or in pairs. Each cell in the grid represents one permutation of parameter pairs. The pairs are controlled just like in <tt>Slider2D</tt>, with the exception of the cells along the diagonal. The diagonal cells allow exclusive control over individual parameters. The parameters are layed out on the grid with the first parameter at the bottom-left and the last parameter at the top-right. Within each cell, the slider values are 0 at the left or bottom edge and 1 at the top or right edge.
-
 <br><br>
-
 Mouse interaction within cells is the same as with the <tt>Slider2D</tt> widget.
-<br><br>
+</div>
+
+
+<h3>TextView</h3>
+<div class="sub">
+<div class="figLeft">
+<img src="gfx/TextView.png">
+</div>
+<tt>TextView</tt> is a simple single-line text entry box. Character input can be filtered according to a custom function. For convenience, a numeric filter is provided. <tt>Notification</tt>s can be sent when the text string changes and when the 'enter' or 'return' key is pressed.
 </div>
 
 
 <h3>View3D</h3>
-
 <div class="sub">
-
-<table>
-<tr>
-<td>
-<img src="gfx/View3D.png" width=150><br>
-</td>
-<td valign="top">
-<tt>View3D</tt> allows a 3D scene to be rendered within a View. Custom drawing code is implemented by subclassing <tt>View3D</tt> and overriding the <tt>virtual onDraw3D()</tt> method. <tt>View3D</tt> has options for setting the near and far clipping planes and the field of view angle in the y direction. By default, depth testing is enabled and blending is disabled.
-</td>
-</tr>
-</table>
-
+<div class="figRight">
+<img src="gfx/View3D.png"><br>
 </div>
+<tt>View3D</tt> allows a 3D scene to be rendered within a View. Custom drawing code is implemented by subclassing <tt>View3D</tt> and overriding the <tt>virtual onDraw3D()</tt> method. <tt>View3D</tt> has options for setting the near and far clipping planes and the field of view angle in the y direction. By default, depth testing is enabled and blending is disabled.
+</div>
+
 
 </div><br><br> <!-- widgets -->
 
