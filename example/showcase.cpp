@@ -11,6 +11,10 @@ int main(){
 	Label::Spec h1; h1.stroke=1.5; h1.size=8;
 
 	GLV top;
+	top.colors().set(StyleColor::BlackOnWhite);
+	top.colors().fore.set(0.5);
+	top.colors().selection.set(0.8);
+	top.colors().border.set(0);
 	Table gui("pppppp");
 
 	Table tblView;
@@ -68,7 +72,7 @@ int main(){
 	tbl1
 		<< new Label("Button", h1)
 		<< new Divider
-		<< btn		<< new Label(btn.className(), caption)
+		<< btn		<< (new Label(btn.className(), caption))->paddingY(4)
 		<< btnsH	<< new Label(btnsH.className()+string(" (5x1)"), caption)
 		//<< btnsV
 		<< btns2	<< new Label(btns2.className()+string(" (5x5)"), caption)
@@ -77,7 +81,7 @@ int main(){
 
 	//Table tblText;
 	TextView tv(Rect(W,16));
-	tv.setValue("GLV text");
+	tv.setValue("Hello GLV!");
 	NumberDialer nd; nd.setValue(12.34);
 	ListView lv(Rect(W,16*3), 2,3);
 	for(int i=0; i<lv.data().size(); ++i){
