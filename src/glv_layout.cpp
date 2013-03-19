@@ -411,8 +411,8 @@ void Table::onDraw(GLV& g){
 
 Scroll::Scroll(const Rect& r, float scrollBarWidth, float padX, float padY)
 :	View(r),
-	mSliderX(Rect(-scrollBarWidth, scrollBarWidth)), 
-	mSliderY(Rect( scrollBarWidth,-scrollBarWidth)),
+	mSliderX(Rect(-scrollBarWidth, scrollBarWidth+1)), 
+	mSliderY(Rect( scrollBarWidth+1,-scrollBarWidth)),
 	mSliderXY(Rect(-scrollBarWidth,-scrollBarWidth, scrollBarWidth, scrollBarWidth)),
 	mMode(HORIZONTAL | VERTICAL)
 {
@@ -430,6 +430,7 @@ Scroll::Scroll(const Rect& r, float scrollBarWidth, float padX, float padY)
 	mSliderXY.knobSize(0);
 	mSliderXY.knobSymbol(draw::circle<8>);
 	mSliderXY.enable(Momentary);
+	mSliderXY.disable(DrawBorder);
 	
 	(*this) << mSliderX << mSliderY << mSliderXY;
 }
