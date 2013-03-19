@@ -72,7 +72,7 @@ int main(){
 	tbl1
 		<< new Label("Button", h1)
 		<< new Divider
-		<< btn		<< (new Label(btn.className(), caption))->paddingY(4)
+		<< btn		<< new Label(btn.className(), caption)
 		<< btnsH	<< new Label(btnsH.className()+string(" (5x1)"), caption)
 		//<< btnsV
 		<< btns2	<< new Label(btns2.className()+string(" (5x5)"), caption)
@@ -83,18 +83,22 @@ int main(){
 	TextView tv(Rect(W,16));
 	tv.setValue("Hello GLV!");
 	NumberDialer nd; nd.setValue(12.34);
+	NumberDialers nds(1,0,4,0,4,2);
+	nds.dimZero(true);
+	nds.data().fromToken("{1,2,3,4,2,0,1,3}");
 	ListView lv(Rect(W,16*3), 2,3);
 	for(int i=0; i<lv.data().size(); ++i){
 		lv.setValue("item"+toString(i+1), i);
 	}
 	DropDown dd(Rect(W,16), "Item 1", "Item 2", "Item 3", "Item 4");
 	tbl1
-		<< new Divider(16,0)
+		<< new Divider(8,0)
 		<< new Label("Text", h1)
 		<< new Divider
 		//<< new Label("a label")
 		<< tv	<< new Label(tv.className(), caption)
 		<< nd	<< new Label(nd.className(), caption)
+		<< nds	<< new Label(nds.className(), caption)
 		<< lv	<< new Label(lv.className(), caption)
 		<< dd	<< new Label(dd.className(), caption)
 	;
