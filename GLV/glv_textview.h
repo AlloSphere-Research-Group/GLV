@@ -88,6 +88,11 @@ protected:
 		}
 		return false;
 	}
+
+	virtual void onResize(space_t dx, space_t dy){
+		Widget::onResize(dx,dy);
+		fitExtent();
+	}
 };
 
 

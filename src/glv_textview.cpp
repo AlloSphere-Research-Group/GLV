@@ -10,38 +10,39 @@
 namespace glv{
 
 #define CTOR_LIST mAlignX(0), mAlignY(0), mVertical(false)
-#define CTOR_BODY\
+#define CTOR_BODY(stroke_, vert_)\
+	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
+	padding(0);\
 	data().resize(Data::STRING);\
 	useInterval(false);\
-	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
 	setValue(str);\
-	stroke(1);\
-	vertical(vert)
+	stroke(stroke_);\
+	vertical(vert_);
 
 Label::Label(const std::string& str, const Spec& s)
-:	Widget(Rect(0)), mAlignX(0), mAlignY(0)
+:	Widget(Rect(0)), CTOR_LIST
 {
-	data().resize(Data::STRING);
-	useInterval(false);
-	disable(CropSelf | DrawBack | DrawBorder | HitTest);
-	setValue(str);
-	stroke(s.stroke);
-	vertical(s.vert);
+	CTOR_BODY(s.stroke, s.vert);
 	size(s.size);
 	pos(s.posAnch, s.dx, s.dy).anchor(s.posAnch);
 }
 
 Label::Label(const std::string& str, bool vert)
 :	Widget(Rect(0)), CTOR_LIST
-{	CTOR_BODY; }
+{
+	CTOR_BODY(1,vert);
+}
 
 Label::Label(const std::string& str, space_t l, space_t t, bool vert)
 :	Widget(Rect(l,t,0,0)), CTOR_LIST
-{	CTOR_BODY; }
+{
+	CTOR_BODY(1,vert);
+}
 
 Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool vert)
 :	Widget(Rect(0)), CTOR_LIST
-{	CTOR_BODY;
+{
+	CTOR_BODY(1,vert);
 	pos(p, px, py).anchor(p);
 }
 
@@ -83,52 +84,38 @@ void Label::onDraw(GLV& g){
 	lineWidth(stroke());
 	color(colors().text);
 	if(mVertical){ translate(0,h); rotate(0,0,-90); }
-	//font().render(value().c_str());
-	font().render(g.graphicsData(), data().toString().c_str());//, 0.5f, 0.5f);
+	font().render(
+		g.graphicsData(),
+		data().toString().c_str(),
+		paddingX(),
+		paddingY()
+	);
 	//scale(mSize, mSize);
 	//text(value().c_str());
 }
 
 
 void Label::fitExtent(){
-
+	// get width/height of text
 	float tw, th;
 	font().getBounds(tw,th, data().toString().c_str());
-	//th -= font().descent();
 
-	space_t dw = tw - w;
-	space_t dh = th - h;
+	// align text by translating its current position
+	space_t dw = tw - (w - paddingX()*2);
+	space_t dh = th - (h - paddingY()*2);
 	posAdd(-dw*mAlignX, -dh*mAlignY);
+
+	tw += paddingX()*2;
+	th += paddingY()*2;
+
 	extent(tw, th);
 	if(mVertical) rotateRect();
-
-/*
-	space_t dx = 8;
-	space_t tw = 0, th = 8, mw = 0;
-	//const char * c = value().c_str();
-	const char * c = data().toString().c_str();
-	if(!c) return;
-	while(*c){
-		switch(*c++){
-		case '\n': th += dx*2; tw = 0; break;
-		case '\t': tw = ((int)(tw/32) + 1) * 32; if(tw > mw) mw=tw; break;
-		case '\b': tw -= dx; break;
-		default: tw += dx; if(tw > mw) mw=tw;
-		}
-	}
-	
-	float mul = font().scaleX();
-	
-	space_t dw = mw*mul - w;
-	space_t dh = th*mul - h;
-	posAdd(-dw*mAlignX, -dh*mAlignY);
-	
-	extent(mw*mul, th*mul);
-	if(mVertical) rotateRect();
-*/
 }
 
-void Label::rotateRect(){ t += w - h; transpose(); }
+void Label::rotateRect(){
+	t += w - h;
+	transpose();
+}
 
 
 
