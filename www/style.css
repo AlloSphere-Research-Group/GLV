@@ -1,0 +1,30 @@
+body		{ font-family: Arial; font-size: 10pt; color: #000; }
+a		{ font-family: Arial; text-decoration: none; color: #171; }
+a:hover		{ text-decoration: underline; }
+hr		{ margin: 0px; }
+img		{ border-width: 0px; }
+table		{ font-family: Arial; font-size:10pt; }
+table.figs	{ width: 100%; text-align: center; }
+h1		{ border-style: solid; border-color: #111; border-width: 0px; font-size:16pt; padding: 2px; padding-left: 8px; color: #000; font-weight: bold; margin-top:8px;  }
+h3		{ font-weight: normal; border-bottom-style: solid; border-color: #111; border-width: 1px; }
+
+.bordered	{ border-style: solid; border-color: #000; border-width: 1px; }
+.cbg0		{ background-color: #FFF; }
+.cbg1b		{ background-color: #222; }
+.cbg1		{ background-color: #FFF; }
+.cbg2		{ background-color: #040; }
+.color0		{ color: #000; }
+.code		{ font-size: 8pt; color: #111; background-color: #EEE; padding: 12px; border: thin solid #CCC; }
+.figs		{ vertical-align: bottom; padding-right: 32px; }
+.figLeft	{ float: left; margin-right: 32px; text-align: center; }
+.figRight	{ float: right; margin-left: 32px; text-align: center; }
+.figText	{ font-size: 8pt; font-weight: bold; margin-top: 8px; margin-bottom: 8px; }
+.huge		{ font-size: 20pt; font-weight: bold; margin-top: 0px; margin-bottom: 0px; }
+.main		{ margin-left: 32px; margin-right: 32px; }
+.sub		{ margin-left: 24px; }
+
+#contact	{ position: fixed; bottom:16px; left:32px; font-size:8pt; color: #000; }
+#outer		{ position: fixed; left: 32px; top: 0px; padding: 0px; border-right: thin solid #000; }
+#menu		{ left: 0px; width: 140px; padding: 8px; text-align: right; }
+#menuLinks	{ text-align: right; padding: 8px; }
+#content	{ position: absolute; left: 220px; width: 720px; top: 0px; margin-right: 32px; }

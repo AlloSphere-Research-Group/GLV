@@ -1,0 +1,1008 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title>GLV GUI Toolkit</title>
+<link href="style.css" rel="stylesheet" type="text/css" media="screen">
+</head>
+
+<!-- TODO:
+Style
+-->
+
+<body class="cbg0">
+
+<div id="outer" class="color0">
+
+<div id="menu" class="cbg1 color0">
+  <div class="huge"><b>GLV</b></div>
+  <hr>
+  <b>A C++ GUI Toolkit</b>
+</div>
+
+<div id="menuLinks">
+  <big>
+  <a href="#Summary">Summary</a><br>
+  <a href="#Screenshots">Screenshots</a><br>
+  <a href="#Download">Download</a><br>
+  <a href="#Resources">Resources</a><br>
+  <a href="#Core">Documentation</a><br>
+<small>
+  <a href="#Core">Core</a><br>
+  <a href="#Draw">Draw</a><br>
+  <a href="#Widgets">Widgets</a><br>
+  <a href="#Layout">Layout</a><br><br>
+</small>
+  </big>
+</div>
+
+</div>
+
+<div id="contact">
+contact: glv-owner at mat.ucsb.edu<br><br>
+&copy; 2008-2010 Lance Putnam,<br> Graham Wakefield,<br> and Eric Newman,<br>
+<a href="http://mat.ucsb.edu/">Media Arts and Technology, UCSB</a>
+</div>
+
+
+
+<div id="content">
+
+<!-- ================================================== -->
+
+<a name="Summary"></a>
+<h1 class="cbg1">Summary</h1>
+<div class="sub">
+
+<i>GLV</i> (<i>G</i>raphics <i>L</i>ibrary of <i>V</i>iews) is a GUI building toolkit written in C++ for Linux, OSX, and Win32. GLV is specifically designed for creating interfaces to real-time, multimedia applications using hardware accelerated graphics. GLV is designed to be lightweight and modular so as to make it easy to integrate with existing projects. Its only dependency is OpenGL. Although windowing is technically not a part of GLV, it does provide an abstraction layer for creating bindings to a particular windowing system for creating an OpenGL context and getting mouse and keyboard input. A binding to <a href="http://www.opengl.org/resources/libraries/glut/">GLUT</a> is currently provided.
+
+<br><br>
+
+GLV observes a very minimal rectilinear design. Not only does this result in a straightforward presentation, but also optimizes many aspects of the underlying rendering system, such as number of vertices used, hit detection, and view cropping, making it run more efficiently.
+<!--
+The appearance of GLV is intentionally not based on any existing native operating system interfaces. GLV provides simple, unadorned widgets constructed from a minimal number of lines and rectangles. This simplifies many aspects of the underlying GUI rendering system, such as vertex counts, hit detection, and child cropping, making it run more efficiently.
+-->
+<br><br>
+
+The main <i>View</i> class provides a common interface that all other widgets inherit from. There is no concept of "leaf" or "composite" views, as typically seen in other GUI toolkits, making the API easier to learn and extend. A unique feature of Views is that they support both early- and late-bound event handlers. Furthermore, each View can contain multiple late-bound event handlers per event type. This provides a general model for extending the behavior of Views, such as adding mouse-controlled translation or resizing to any View.
+
+<!-- The ideal is to create an efficient, multi-platform API that makes it simple for the end-user developer to create an application's graphical user interface entirely using GPU-based OpenGL instructions, thus freeing CPU resources for other work (e.g. audio DSP). -->
+
+</div><br><br>
+
+
+
+<!-- ================================================== -->
+
+<a name="Screenshots"></a>
+<h1 class="cbg1">Screenshots</h1>
+<div class="sub">
+
+<a href="gfx/Screenshot1.png"><img height=300 src="gfx/Screenshot1.png"></a>
+<a href="gfx/Screenshot2.png"><img height=300 src="gfx/Screenshot2.png"></a>
+
+</div><br><br>
+
+
+<!-- ================================================== -->
+
+<a name="Download"></a>
+<h1 class="cbg1">Download</h1>
+<div class="sub">
+<h3>Stable Releases</h3>
+<div class="sub">
+<big><a href="dl/glv-0.96.tar.gz">GLV version 0.96</a></big><br><br>
+
+Older versions:
+<a href="dl/glv-0.95.tar.gz">0.95</a>,
+<a href="dl/glv-0.94.tar.gz">0.94</a>, 
+<a href="dl/glv-0.93.tar.gz">0.93</a>, 
+<a href="dl/glv-0.92.tar.gz">0.92</a>, 
+<a href="dl/glv-0.91.tar.gz">0.91</a>, 
+<a href="dl/glv_0.90.zip">0.90</a>, 
+<a href="dl/glv_0.79.zip">0.79</a>
+<br>
+</div>
+
+<h3>Source Repository</h3>
+<div class="sub">
+Obtain the latest source code from <a href="https://github.com/AlloSphere-Research-Group/GLV">GitHub</a>.
+
+<!--The latest source code can be checked out anonymously through SVN via
+<pre class="sub">svn co https://svn.mat.ucsb.edu/svn/glv-svn/trunk glv</pre-->
+</div>
+
+<h3>License</h3>
+<div class="sub">
+<small><pre>
+Copyright (C) 2006-2008. The Regents of the University of California (REGENTS). 
+All Rights Reserved.
+
+Permission to use, copy, modify, distribute, and distribute modified versions
+of this software and its documentation without fee and without a signed
+licensing agreement, is hereby granted, provided that the above copyright
+notice, the list of contributors, this paragraph and the following two paragraphs 
+appear in all copies, modifications, and distributions.
+
+IN NO EVENT SHALL REGENTS BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,
+SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF REGENTS HAS
+BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+REGENTS SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE. THE SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED
+HEREUNDER IS PROVIDED "AS IS". REGENTS HAS NO OBLIGATION TO PROVIDE
+MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+</pre></small>
+</div>
+
+</div><br><br>
+
+
+<!-- ================================================== -->
+
+<a name="Resources"></a>
+<h1 class="cbg1">Resources</h1>
+<div class="sub">
+<a href="http://lists.create.ucsb.edu/mailman/listinfo/glv">GLV mailing list</a><br>
+<a href="doxy/0.96/index.html">API reference v0.96 (HTML)</a><br>
+<a href="dl/glvTutorial.0.96.pdf">Tutorial v0.96 (PDF)</a><br>
+<!--a href="https://svn.mat.ucsb.edu/svn/glv-svn/">Source repository (HTML)</a><br-->
+<a href="dl/glvWorkshop0810.pdf">MAT/AlloSphere summer 2010 workshop handout (PDF)</a><br>
+</div><br><br>
+
+
+<!-- ================================================== -->
+
+<a name="Core"></a>
+<h1 class="cbg1">Core</h1>
+<div class="sub">
+
+<h3>Rect</h3>
+<div class="sub">
+
+<table><tr><td>
+<tt>Rect</tt> is a geometry base class that all <tt>View</tt>s inherit from. It represents a rectangular object with data members to describe its position and extent in pixels. Its position is stored as the coordinate of its top-left corner on a cartesian grid with positive x going right and positive y going down.
+</td><td>
+<img style="float:right" src="gfx/Rect.png">
+</td></tr></table>
+
+A <tt>Rect</tt> can be constructed in the following ways:
+<pre class="code">
+Rect r1(10, 5, 100, 50);	// rectangle with l=10, t=5, w=100, h= 50
+Rect r2(100, 50);		// rectangle with l= 0, t=0, w=100, h= 50
+Rect r3(100);			// square with    l= 0, t=0, w=100, h=100
+</pre>
+<br>
+
+<tt>Rect</tt> has methods for changing its position and extent and multiple methods for getting its right edge, bottom edge, center points, area. There is also a method to determine whether the <tt>Rect</tt> contains an x-y coordinate. This can be used, for instance, to check if a <tt>Rect</tt> has been clicked on in the window.
+</div><br>
+
+
+
+<h3>View</h3>
+<div class="sub">
+A <tt>View</tt> is a <tt>Rect</tt> that has one or more drawing routines and event handlers, and properties for being a node in a tree of <tt>View</tt>s. Every <tt>View</tt> has a <tt>virtual onDraw()</tt> method that gets called every frame. This method contains the <tt>View</tt>'s specific OpenGL commands to display it on screen.  
+A <tt>View</tt> contains four <tt>View</tt> references, parent, child, left sibling, and right sibling, that enable it to be a node in a tree structure.  This is the main basis for how Views are organized spatially and behaviorally within a top-level <tt>View</tt>.
+
+<tt>View</tt>s are rendered by traversing the <tt>View</tt> tree pre-order calling each <tt>View</tt>'s <tt>onDraw()</tt> method, starting at the root (window) <tt>View</tt>. This means that the root <tt>View</tt>'s <tt>onDraw()</tt> gets called first, then, recursively, the children followed by their siblings.
+<br><br>
+<center><img src="gfx/View.png"></center>
+<br>
+The code to produce this hierarchy is as follows:<br>
+<pre class="code">
+// Create the Views
+View v1;		// top parent View
+View v11, v12;		// 2nd level Views
+View v121, v122;	// 3rd level Views
+
+// Create the tree hierarchy
+v1 << v11 << (v12 << v121 << v122);
+</pre>
+
+The <tt><<</tt> operator adds its right operand as a child to the left operand. The operator returns the parent <tt>View</tt>, so that multiple children can easily be added using method chaining.
+
+<br><br><br>
+<tt>View</tt> has the following enumerated property bit flags:
+
+<pre class="code">
+Visible		// Whether to draw myself
+DrawBack	// Whether to draw back rect
+DrawBorder	// Whether to draw border
+CropChildren	// Whether to crop children when drawing
+CropSelf	// Whether to crop own drawing routine(s)
+Focused		// Whether View is focused
+FocusHighlight	// Whether to highlight border when focused
+HitTest		// Whether View can be clicked
+Controllable	// Whether View can be controlled through events
+</pre>
+
+The properties can be interfaced to through several methods:
+
+<pre class="code">
+View v;
+
+v.enable(Visible);				// enable a property
+v.disable(DrawBack);				// disable a property
+v.enable(DrawBorder | CropSelf | HitTest);	// enable multiple properties
+v.toggle(Visible);				// toggle a property
+v.property(DrawBack, true);			// set property using a boolean
+if(v.enabled(Visible)){...}			// check if a property is enabled
+</pre>
+
+<br>
+
+A <tt>View</tt> can also reposition or resize itself automatically when its parent resizes. These capabilities are controlled through its <tt>anchor()</tt> and <tt>stretch()</tt> methods. In the most general case, anchor and stretch factors can be specified in each dimension as floating-point values between 0 and 1. The factors determine how much of the parent's resize amount is added to the view's position and extent. The following figures illustrate how a child view (C) behaves when its parent (P) is resized by dx and dy.
+
+<br><br>
+
+<table class="figs"><tr style="vertical-align: bottom"><td>
+<img src="gfx/ViewAnchor.png">
+<div class="figText">Resize behavior with various<br>x, y anchor factors</div>
+</td><td>
+<img src="gfx/ViewStretch.png">
+<div class="figText">Resize behavior with various<br>x, y stretch factors</div>
+</td></tr></table>
+
+</div><br>
+
+
+
+<h3>Place</h3>
+<div class="sub">
+
+<table><tr><td>
+<tt>Place</tt> is an enumeration namespace for specifying specific points on a rectangle. The defined types are TL, TC, TR, CL, CC, CR, BL, BC, BR where T = top, B = bottom, L = left, R = right, and C = center. These are primarily used for positioning views and specifying parent anchoring points.
+</td><td>
+<img style="float:right" src="gfx/Place.png">
+</td></tr></table>
+
+</div><br>
+
+
+
+<h3>Direction</h3>
+<div class="sub">
+
+<img class="figRight" src="gfx/Direction.png">
+
+<tt>Direction</tt> is an enumeration namespace for specifying a direction. The defined types are N, E, S, and W. The convention used in GLV is that north points to the top of the screen and east to the right of the screen. Directions are used primarily for specifying the placement flow of layout managers.
+
+<br><br><br>
+
+</div><br>
+
+
+
+<h3>Color</h3>
+<div class="sub">
+The <tt>Color</tt> class stores colors as their constituent red, green, blue, and alpha (RGBA) components.  Colors can be created in several ways:
+
+<pre class="code">
+Color c1(0, 1, 0);		// green (alpha = 1)
+Color c2(0, 0, 1, 0.5);		// blue with alpha
+Color c3(0.5);			// grey scale
+</pre>
+<br>
+
+There is a lightweight <tt>HSV</tt> struct defined to allow working within the HSV color space. Colors can be constructed with this alternate syntax:
+
+<pre class="code">
+Color c(HSV(0.5, 1, 1));		// create a new color from HSV values
+c.print();				// prints [0.00 1.00 1.00 1.00]
+</pre>
+<br>
+
+Likewise, we can set and get a color's HSV values:
+
+<pre class="code">
+Color c;				// create a new color
+c = HSV(0.5, 1, 1);			// set its RGB components from HSV values
+c.print();				// prints [0.00 1.00 1.00 1.00]
+
+HSV h;					// create a new HSV struct
+h = c;					// convert color's RGB components to HSV
+printf("[%g %g %g]", h.h, h.s, h.v);	// prints [0.5 1 1]
+</pre>
+<br>
+
+<tt>HSV</tt> also has a special constructor to allow a short-hand method of getting a color's HSV values.
+<pre class="code">
+Color c(HSV(0.5, 1, 1));
+HSV h(c);				// create a new HSV struct from a color
+printf("[%g %g %g]", h.h, h.s, h.v);	// prints [0.5 1 1]
+</pre>
+
+</div><br>
+
+
+
+<!--h3>Style</h3>
+<div class="sub">
+
+The <i>Style</i> class contains default sets of all layout and style parameters, such as default, highlight, indicator, disable colours, font sizes and faces, etc. A singleton pointer refers to the initially loaded Style- changing this object will change all inherited default attributes in the application, facilitating easy skinning. However the Style can be easily duplicated and modified to create sub-styles for different types of views, or even specific Styles for individual views. More work needs to be done to integrate layout management.
+
+</div><br-->
+
+
+
+
+<h3>Callback System</h3>
+<div class="sub">
+
+A <tt>View</tt> can handle callbacks through virtual methods and/or function pointers. Upon receipt of an event, a View's virtual methods are called, then its list of function pointers, if populated.
+
+A <tt>View</tt> can receive any of the following events of type of <i>Event::t</i>:
+<pre class="code">
+Quit	FocusGained	MouseDown	KeyDown
+	FocusLost	MouseUp		KeyUp
+			MouseMove	KeyRepeat
+			MouseDrag
+			MouseWheel
+</pre>
+
+A <tt>View</tt>'s virtual methods are:
+
+<pre class="code">
+virtual void onDraw();
+virtual bool onEvent(Event::t e, GLV& glv);
+virtual void onResize(space_t dx, space_t dy);
+</pre>
+
+The function pointer types are:
+
+<pre class="code">
+typedef bool (*eventCallback)(View * v, GLV& glv);
+typedef void (*drawCallback)(View * v);
+</pre>
+
+Virtual methods can be overridden by subclasses to customize their behavior. The following example shows skeletal code for a <tt>View</tt> subclass defining its own callbacks.
+<pre class="code">
+class SubView : public View{
+public:
+	virtual void onDraw(){
+
+	}
+
+	virtual bool onEvent(Event::t e, GLV& glv){
+		switch(e){
+		case Event::MouseDrag:	return false;
+		case Event::MouseDown:	return false;
+		case Event::KeyDown:	return false;
+		}
+		return true;	// bubble unrecognized events to parent
+	}
+
+	virtual void onResize(space_t dx, space_t dy){
+
+	}
+};
+</pre>
+
+A <tt>View</tt> also has a single pointer to a <tt>drawCallback</tt> type and a map of <tt>eventCallback</tt> lists. A <tt>View</tt>'s function pointer type callbacks are called after its virtual callbacks. The event callbacks are special in that one or more can be added per event type. <tt>View</tt> has an overloaded, chainable function operator defined to simplify appending event callbacks.
+
+<pre class="code">
+View view;
+
+// append mouse dragging behaviors to view
+view	(Event::MouseDrag, mouseMove)
+	(Event::MouseDrag, mouseResize);
+</pre>
+
+</div><br>
+
+
+
+<h3>GLV</h3>
+<div class="sub">
+The <tt>GLV</tt> class acts as a top-level <tt>View</tt> as well as a bridge to a windowing system. This class handles the drawing of the <tt>View</tt> hierarchy and distributes mouse and keyboard events from the window to its descendents. A <tt>GLV</tt> class is usually constructed with a static drawing callback.
+
+<pre class="code">
+void drawCB(View * v){
+	// v is a pointer to a GLV
+}
+
+GLV top(drawCB);
+</pre>
+
+The <tt>GLV</tt> class contains objects with the current keyboard and mouse state that can be accessed from event and drawing callbacks.
+
+</div><br>
+
+
+
+<h3>Keyboard</h3>
+<div class="sub">
+This is a class used to store the current state of the keyboard.  The state includes the key code of the last key pressed, whether it was pressed or released, and the state of modifier keys shift, control, and alt.
+<br><br>
+
+Printable keyboard keys can be referenced by their non-shifted ASCII character. For non-printable keys, there exists a <tt>Key::t</tt> type with the following types:
+<pre class="code">
+Enter		F{1-12}		PageDown
+BackSpace	Insert		PageUp
+Tab		Left		End
+Return		Up		Home
+Escape		Right	
+Delete		Down
+</pre>
+
+Here is a skeleton code illustrating how to map key events to various actions, such as inside a callback:<br>
+<pre class="code">
+switch(keyboard.key()){
+case 'b':		break;
+case ' ':		break;
+case Key::Escape:	break;
+case Key::F5:		break;
+};
+</pre>
+
+</div><br>
+
+
+
+<h3>Mouse</h3>
+<div class="sub">
+This is a class used to store the current state of the mouse.  The state includes its buttons' state, coordinates relative to the window, coordinates relative to its listener, coordinates relative to the window when each button was pressed, mouse wheel position, and velocity and acceleration in the x and y directions.
+</div><br>
+
+
+
+<h3>Notifications</h3>
+<div class="sub">
+All GLV <tt>View</tt>s inherit a <tt>Notifier</tt> class so they can operate as the subject of one or more observers. The principle of operation is for a <tt>Notification</tt> object to be passed from the sending object (subject) to the receiving objects (observers). The <tt>Notification</tt> holds pointers to the sender, receiver, and optional data and is handled by a user-defined callback function. This is used primarily for sending out notifications when a widget changes its value. For instance, we may want to update a label according to the value of a slider:
+
+<pre class="code">
+// Notification callback
+void sliderUpdateLabel(const Notification& n){
+	Label& l = *(Label *)n.receiver();
+	SliderChange v = *(SliderChange *)n.data();
+	char buf[16]; snprintf(buf, sizeof(buf), "[%2d] = %4.2f", v.index(), v.value());
+	l.label(buf);
+}
+
+int main(int argc, char ** argv){
+	Slider slider;
+	Label sliderLabel;
+
+	// Notify the label whenever the slider value is updated.
+	slider.attach(sliderUpdateLabel, Update::Value, &sliderLabel);
+}
+</pre>
+
+
+All widgets have specific <tt>ChangedValue</tt> types that are sent with the notification. A <tt>ChangedValue</tt> holds a generic value type and an index number. To simplify casting the data pointer in the notification, the following typedefs are defined:
+
+<pre class="code">
+typedef ChangedValue&lt;bool>		ButtonChange;
+typedef ChangedValue&lt;std::string>	LabelChange;
+typedef ChangedValue&lt;double>		NumberDialerChange;
+typedef ChangedValue&lt;float>		SliderChange;
+</pre>
+
+</div><br>
+
+
+
+<h3>Window/Application</h3>
+<div class="sub">
+Optionally, the <tt>Window</tt> class provides an operating system window with an OpenGL context. The provided implementation binds to GLUT, but bindings to other APIs are supported. The <tt>Window</tt> holds a pointer to a <tt>GLV</tt> context. The code for setting up a window typically looks like this:
+
+<pre class="code">
+GLV top(drawCB);
+Window win(400, 300, "GLV Window", &top);
+</pre>
+
+The <tt>Application</tt> class is responsible for starting the main application event loop. <tt>Application::run()</tt> is called after setting up the GUI code.
+</div><br>
+
+
+</div><br><br> <!-- core -->
+
+
+
+<!-- ================================================== -->
+
+<a name="Draw"></a>
+<h1 class="cbg1">Draw</h1>
+<div class="sub">
+The drawing namespace, <tt>draw::</tt>, consists of a minimal wrapper around the OpenGL API, shape drawing routines, and vector-based text rendering. The following functionalities exist only for convienence, as direct OpenGL calls can still be used, e.g., when creating custom widgets.
+
+<h3>Rendering Commands</h3>
+<div class="sub">
+The <tt>draw::</tt> rendering commands use the same syntax as OpenGL, but drop the "gl" prefix for clarity. The currently implemented OpenGL subset is:
+<br><br>
+
+<div class="sub">
+<table><tr><td>Primitives:</td><td>Capabilities:</td><td>Attributes:</td><td>Matrix Modes:</td></tr>
+<tr valign="top"><td valign="top"><pre class="code">
+LineLoop
+LineStrip
+Lines
+Points
+TriangleFan
+TriangleStrip
+Triangles
+QuadStrip
+Quads
+</pre></td>
+<td><pre class="code">
+Blend
+DepthTest
+LineSmooth
+LineStipple
+PolygonSmooth
+ScissorTest
+</pre></td>
+<td><pre class="code">
+ColorBufferBit
+DepthBufferBit
+ViewPortBit
+</pre></td>
+<td><pre class="code">
+Model
+Projection
+Texture
+</pre></td></tr></table>
+<br>
+
+Rendering Commands:
+<pre class="code">
+begin		identity	pop2D		rotate
+clear		lineStipple	pop3D		scale
+clearColor	lineWidth	popAttrib	scissor
+color		matrixMode	push		translate
+disable		ortho		push2D		vertex
+enable		pointSize	push3D		viewport
+end		pop		pushAttrib
+</pre>
+</div><br>
+
+The following example shows how rendering commands would be used to draw a 3D scene in a <tt>View</tt>'s <tt>onDraw()</tt> method.
+
+<pre class="code">
+void onDraw(){
+	using namespace draw;	// implicitly use draw:: in this scope
+	push3D(w, h);		// push into 3-D mode passing in width and height of view
+
+	translate(tx, ty, tz);	// transform model matrix
+	rotate(rx, ry, rz);	//
+	scale(sx, sy, sz);	//
+
+	// draw axes of cartesian space
+	begin(Lines);
+		color(1, 0, 0);			// set color to red
+		vertex(0,0,0); vertex(1,0,0);	// draw +x-axis
+		color(0, 1, 0);			// set color to green
+		vertex(0,0,0); vertex(0,1,0);	// draw +y-axis
+		color(0, 0, 1);			// set color to blue
+		vertex(0,0,0); vertex(0,0,1);	// draw +z-axis
+	end();
+
+	pop3D();		// pop out of 3-D space
+}
+</pre>
+
+
+
+</div>
+
+<h3>Symbols</h3>
+<div class="sub">
+The <tt>draw::</tt> namespace has several functions for drawing symbols for buttons, scrollbars, menus, etc. The functions follow the format:
+<pre class="code">
+void symbolName(float l, float t, float w, float h);
+</pre>
+The following are images/names of the currently implemented symbols.
+<br><br>
+<div class="sub">
+<table border=0><tr style="vertical-align: top">
+<td width=100px>
+<img src="gfx/IconTriangleL.png">  triangleL<br>
+<img src="gfx/IconTriangleR.png"> triangleR<br>
+<img src="gfx/IconTriangleU.png"> triangleU<br>
+<img src="gfx/IconTriangleD.png"> triangleD<br>
+</td>
+<td width=100px>
+<img src="gfx/IconCheck.png" > check<br>
+<img src="gfx/IconFrame.png"> frame<br>
+<img src="gfx/IconMinus.png"> minus<br>
+<img src="gfx/IconPlus.png"> plus<br>
+</td>
+<td width=100px>
+<img src="gfx/IconRect.png"> rect<br>
+<img src="gfx/IconX.png"> x<br>
+</td>
+</tr></table>
+</div>
+</div>
+
+<h3>Text</h3>
+<div class="sub">
+
+<div class="figRight">
+<img src="gfx/fontMetrics.png">
+<div class="figText">Font character metrics</div>
+</div>
+<div class="figRight">
+<img src="gfx/drawASCII.png">
+<div class="figText">Printable character set</div>
+</div>
+
+The <tt>draw::</tt> namespace also has a function for rendering simple text to the screen. The text renderer uses an internal fixed-width vector font with each character defined on an 8x11 unit grid. The cap lies at 0 units and the baseline at 8 units. In general, characters are rendered with the minimal number of vertices that does not sacrifice their readability and distinction from others. The text rendering mechanism is not meant to be comprehensive, but to be quick and easy without requiring dependencies on external libraries or font files.
+<br><br>
+
+A text string can be rendered using one line of code:
+
+<pre class="code">
+draw::text("Amazingly few discotheques provide jukeboxes.");
+</pre><br>
+
+In this example, the text is drawn with its left edge at 0 and letter cap at 0. Text strings with new lines, \n, and tabs, \t, are also handled properly by the renderer.
+
+</div>
+
+</div><br><br> <!-- draw -->
+
+
+
+<!-- ================================================== -->
+
+<a name="Widgets"></a>
+<h1 class="cbg1">Widgets</h1>
+<div class="sub">
+
+
+<h3>Button</h3>
+<div class="sub">
+
+<div class="figRight">
+<img src="gfx/ButtonOff.png"><br>
+<div class="figText">off</div>
+</div>
+<div class="figRight">
+<img src="gfx/ButtonOn.png"><br>
+<div class="figText">on</div>
+</div>
+
+A <tt>Button</tt> is a widget that has two possible states- on or off. By default, a <tt>Button</tt> is toggleable meaning that its state changes when it is clicked on. A <tt>Button</tt> can also be made non-toggleable so that it becomes active on a <tt>MouseDown</tt> event and inactive on a <tt>MouseUp</tt> event. <tt>Button</tt> has two drawing function pointers for specifying which graphical symbols to use for on and off states.
+</div><br>
+
+
+
+<h3>Buttons</h3>
+<div class="sub">
+
+The <tt>Buttons</tt> widget is an extremely flexible N x M button array. It can be used to create menus, radio buttons, and button matrices, for example. <tt>Buttons</tt> can be either in mutually exclusive mode or not. When in mutually exclusive mode, only one button can be on at a time. Otherwise, any number of buttons can be on or off at a time.
+
+<!--
+Like the singular Button widget, Buttons can be either toggleable or not. When it is toggleable, any number of buttons can be on or off at a time. When it is non-toggeable, only 
+-->
+
+<br><br>
+
+<table class="figs"><tr style="vertical-align: bottom"><td>
+<img src="gfx/Buttons1x4.png">
+<div class="figText">1x4 radio bar</div>
+</td><td>
+<img src="gfx/Buttons4x1.png">
+<div class="figText">4x1 radio bar</div>
+</td><td>
+<img src="gfx/Buttons4x4.png">
+<div class="figText">4x4 button matrix</div>
+</td></tr></table>
+
+</div><br>
+
+
+
+<h3>ColorPicker</h3>
+<div class="sub">
+
+<div class="figLeft">
+<img src="gfx/ColorPicker1.png">
+<img src="gfx/ColorPicker2.png">
+</div>
+
+<tt>ColorPicker</tt> permits selection of a single color from HSV space. The top bar is a slider for selecting hue while the bottom panel is a 2D slider for choosing saturation (x-axis) and value (y-axis).
+
+<br><br><br>
+</div>
+
+
+
+<h3>FunctionPlot</h3>
+<div class="sub">
+
+<tt>FunctionPlot</tt> permits graphing of functions in one or two dimensions. It has two internal buffers for storing x and y coordinate data. If only one of these buffers is written to, then a 1D graph is made. If both buffers are written to, then a 2D graph is made. There is also a third color buffer that can be used for plotting additional dimensions. The range of the x and y axes can be custom set.
+
+<br><br>
+
+<table class="figs"><tr style="vertical-align: bottom"><td>
+<img src="gfx/FunctionPlotY.png">
+<div class="figText">y plot</div>
+</td><td>
+<img src="gfx/FunctionPlotX.png">
+<div class="figText">x plot</div>
+</td><td>
+<img src="gfx/FunctionPlotXY.png">
+<div class="figText">x-y plot</div>
+</td></tr></table>
+
+</div><br>
+
+
+
+<h3>Label</h3>
+<div class="sub">
+
+<div class="figRight">
+<img src="gfx/Label.png">
+</div>
+
+<tt>Label</tt> is a text string that is typically attached as a child to another view. By default, <tt>Label</tt>s do not render a background or border allowing them to 'float' on top of other views. Hit testing is also disabled by default preventing them from stealing focus from a parent view. <tt>Label</tt>s can also be specified to render vertically which can be useful for notating the y-axis of graphs.
+</div><br>
+
+
+
+<h3>NumberDialer</h3>
+
+<div class="sub">
+<div class="figLeft">
+<img src="gfx/NumberDialer1.png"><br>
+<img src="gfx/NumberDialer2.png"><br>
+</div>
+
+<tt>NumberDialer</tt> allows one to treat each digit of a number as a dial. The number of digits in the integer and fractional parts is specified upon construction. <tt>NumberDialer</tt> can also be specified to have a minimum or maximum value. The default extrema are the largest displayable values. When a digit is dragged up or down with the mouse, the number is incremented or decremented by an amount proportional to the place of the digit. The currently selected digit (indicated by a lightly colored box) can also be modified through the number keys on the keyboard. The sign of the number can be toggled by clicking it or by pressing the '-' key.
+
+</div><br>
+
+
+
+<h3>Slider</h3>
+
+<div class="sub">
+<div class="figRight">
+<img src="gfx/Slider1VS.png"><br>
+<div class="figText">vertical<br>(signed)</div>
+</div>
+<div class="figRight">
+<img src="gfx/Slider1V.png"><br>
+<div class="figText">vertical</div>
+</div>
+
+<div class="figRight">
+<img src="gfx/Slider1H.png"><br>
+<div class="figText">horizontal</div>
+<img src="gfx/Slider1HS.png"><br>
+<div class="figText">horizontal<br>(signed)</div>
+</div>
+
+The <tt>Slider</tt> widget allows one to change a value by sliding a bar across the screen.  Depending on its dimensions, the slider will automatically be displayed as vertical (w < h) or horizontal (w >= h). The slider value is 0 at the left or bottom edge and 1 at the top or right edge. In its signed mode, the value is -1 at the left or bottom edge.
+
+<br><br>
+
+Clicking on the slider with the left mouse button will set its absolute position. Dragging with the left or right mouse button will increment the slider's value. Normally, the amount the slider moves is in a one-to-one correspondence to the mouse cursor position. However, if both mouse buttons are held while dragging, the slider is incremented by a quarter of the distance the mouse moves.
+
+</div><br>
+
+
+<h3>SliderRange</h3>
+<div class="sub">
+
+<div class="figRight">
+<img src="gfx/SliderRangeH.png">
+</div>
+
+The <tt>SliderRange</tt> widget allows one to control the minimum and maximum values of an interval. The entire interval can be translated by dragging the bar. Clicking and dragging near the ends of the bar changes the associated extremum. Clicking on a blank region causes the whole interval to translate in the direction of the click.
+
+<br>
+</div><br>
+
+
+<h3>Slider2D</h3>
+<div class="sub">
+
+<div class="figRight">
+<img src="gfx/Slider2D.png">
+</div>
+
+<t>Slider2D</tt> is used to control two numeric values simultaneously, such as an x-y position. A knob indicates the current values of the slider. The slider values are 0 at the left or bottom edge and 1 at the top or right edge.
+
+<br><br>
+
+Mouse interaction along each axis of <tt>Slider2D</tt> is the same as with the <tt>Slider</tt> widget.
+
+<br><br><br>
+</div><br>
+
+
+
+<h3>Sliders</h3>
+<div class="sub">
+
+<div class="figRight">
+<img src="gfx/SlidersV.png">
+<div class="figText">10 vertical</div>
+</div>
+<div class="figRight">
+<img src="gfx/SlidersH.png">
+<div class="figText">10 horizontal</div>
+</div>
+
+The <tt>Sliders</tt> widget is a group of several <tt>Slider</tt>s. In general, it will be easier and more efficient to control a set of values using a single <tt>Sliders</tt> widget rather than multiple <tt>Slider</tt> widgets. The sliders can be displayed either horizontally or vertically. It also supports a special <i>drag set</i> mode where sliders can be set by dragging across the widget as if drawing a curve.
+
+<br><br>
+
+Mouse interaction with individual sliders is the same as the <tt>Slider</tt> widget.
+<br><br>
+</div>
+
+
+
+<h3>SliderGrid</h3>
+<div class="sub">
+
+<div class="figRight">
+<img src="gfx/SliderGrid3.png">
+<div class="figText">3-D</div>
+</div>
+<div class="figRight">
+<img src="gfx/SliderGrid4.png">
+<div class="figText">4-D</div>
+</div>
+
+<tt>SliderGrid</tt> is used to control two or more parameters either alone or in pairs. Each cell in the grid represents one permutation of parameter pairs. The pairs are controlled just like in <tt>Slider2D</tt>, with the exception of the cells along the diagonal. The diagonal cells allow exclusive control over individual parameters. The parameters are layed out on the grid with the first parameter at the bottom-left and the last parameter at the top-right. Within each cell, the slider values are 0 at the left or bottom edge and 1 at the top or right edge.
+
+<br><br>
+
+Mouse interaction within cells is the same as with the <tt>Slider2D</tt> widget.
+<br><br>
+</div>
+
+
+<h3>View3D</h3>
+
+<div class="sub">
+
+<table>
+<tr>
+<td>
+<img src="gfx/View3D.png" width=150><br>
+</td>
+<td valign="top">
+<tt>View3D</tt> allows a 3D scene to be rendered within a View. Custom drawing code is implemented by subclassing <tt>View3D</tt> and overriding the <tt>virtual onDraw3D()</tt> method. <tt>View3D</tt> has options for setting the near and far clipping planes and the field of view angle in the y direction. By default, depth testing is enabled and blending is disabled.
+</td>
+</tr>
+</table>
+
+</div>
+
+</div><br><br> <!-- widgets -->
+
+
+
+<!-- ================================================== -->
+
+<a name="Layout"></a>
+<h1 class="cbg1">Layout</h1>
+<div class="sub">
+
+<h3>Placer</h3>
+<div class="sub">
+
+<tt>Placer</tt> is used to position a sequence of elements relative to each other, at absolute positions, or a combination of both. <tt>Placer</tt> holds relative increment factors and absolute increment amounts for both the x and y directions, thus making it an extremely flexible layout positioner.
+
+<br><br>
+In the simplest case, elements can be arranged so that their absolute positions are a fixed distance apart. This is done by using relative increment factors of zero and absolute increment amounts equal to the distance.
+
+<pre class="code">
+View top;
+View v1(Rect(6)), v2(v1), v3(Rect(4)), v4(Rect(10,8));
+
+// args: (absolute x-increment, absolute y-increment)
+Placer placer(8, 0);
+
+placer << v1 << v2 << v3 << v4;
+</pre>
+
+This results in the arrangement: <img src="gfx/PlacerAbs.png" style="vertical-align: top"><br><br><br>
+
+Another use of <tt>Placer</tt> is to position a sequence of views with a fixed amount of padding between them. In this case, the relative increment factor is set to 1, while the absolute increment is set to the desired padding amount. The following example positions elements going east with a padding of 1.
+
+<pre class="code">
+View top;
+View v1(Rect(6)), v2(v1), v3(Rect(4)), v4(Rect(10,8));
+
+// args: (parent view, flow direction, align place, initial x, initial y, padding)
+Placer placer(top, Direction::E, Place::TL, 0,0, 1);
+
+placer << v1 << v2 << v3 << v4;
+</pre>
+
+This results in the arrangement: <img src="gfx/PlacerFlow.png" style="vertical-align: top"><br><br><br>
+
+
+In the previous example, the alignment was set to the top-left corner. By setting the alignment property of <tt>Placer</tt>, views can be aligned from different places.
+<br><br>
+Arrangement using center-left alignment: <img src="gfx/PlacerCL.png" style="vertical-align: middle"><br><br>
+Arrangement using bottom-left alignment: <img src="gfx/PlacerBL.png" style="vertical-align: bottom"><br><br>
+
+</div>
+
+
+<!--
+The Layout object automatically places Views next to each other taking into account their extent. The layout flow can be specified to run in one of four directions, N, E, S, or W, to add a padding amount between elements, and which place on the perimeter to align elements.
+
+x += w * rx + ax
+y += h * ry + ay
+
+r{x,y} determines relative positioning
+a{x,y} determines absolute positioning
+
+Linear two dimensional trajectory.
+
+The basic algorithm:
+- place element at current trajectory point
+- computes next trajectory point based on element's geometry
+
+stores a placement point
+
+next point determined by adding the current element's width or height plus padding
+-->
+
+
+<h3>Table</h3>
+<div class="sub">
+
+<tt>Table</tt> is used for doing general rectangular layouts on an <i>N</i> x <i>M</i> dimensional grid. A 2D arrangement string is used to specify how views will be arranged when added to the table, starting from the top-left corner and going left-to-right, top-to-bottom. The arrangement string consists of single character codes that specify either existence of elements and their alignments or table cell structure (i.e. spanning, dimensions).<br><br>
+
+The element alignment codes are:
+<pre class="code">
+p ^ q     top-left     top-center     top-right
+< x >     center-left  center-center  center-right
+b v d     bottom-left  bottom-center  bottom-right
+</pre>
+
+The structural codes are:
+<pre class="code">
+.         empty region
+-         span first leftward neighboring element rightward
+|         span first upward neighboring element downward
+,         end of row
+</pre><br>
+
+The arrangement string makes it easy to specify complex layouts. The string can be written in a two-dimensional fashion to give a one-to-one visualization of the arrangement.
+<pre class="code">
+const char * layout = 
+	". x - x,"
+	"x x x -,"
+	"| x | . "
+
+Table table(layout);
+table << v1 << v2 << v3 << v4 << v5 << v6;
+table.arrange();
+</pre>
+
+This produces: <img src="gfx/TableComplex.png" style="vertical-align: top"><br><br>
+
+If the arrangement string is shorter than the number of views added, then it will be repeated. This feature can be used to define a layout pattern using only a single row specification.
+
+<pre class="code">
+Table table("><");
+table << v1 << v2 << v3 << v4 << v5 << v6;
+table.arrange();
+</pre>
+
+This produces: <img src="gfx/TableRepeat.png" style="vertical-align: top"><br>
+
+</div>
+</div> <!-- html documentation -->
+<br><br>
+
+<!-- ================================================== -->
+
+</div> <!-- content -->
+
+</body>
+</html>
