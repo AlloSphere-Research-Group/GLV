@@ -25,7 +25,7 @@ class GraphicsMap{
 public:
 	virtual ~GraphicsMap(){}
 	
-	/// Routine to generate graphics from model data
+	/// Defines how data should be mapped to graphics primitives
 	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind) = 0;
 };
 
@@ -41,25 +41,19 @@ public:
 		SUBTRACTIVE
 	};
 
+	Plottable(const Plottable& src);
 
 	/// @param[in] prim		drawing primitive
 	/// @param[in] stroke	width of lines or points
-	Plottable(int prim=draw::Points, float stroke=1)
-	:	mPrim(prim), mStroke(stroke), mBlendMode(TRANSLUCENT), mLineStipple(-1),
-		mDrawUnder(false), mUseStyleColor(true)
-	{}
+	Plottable(int prim=draw::Points, float stroke=1);
 
 	/// @param[in] prim		drawing primitive
 	/// @param[in] stroke	width of lines or points
 	/// @param[in] col		color
-	Plottable(int prim, float stroke, const Color& col)
-	:	mPrim(prim), mStroke(stroke), mBlendMode(TRANSLUCENT), mLineStipple(-1),
-		mDrawUnder(false)
-	{
-		color(col);
-	}
+	Plottable(int prim, float stroke, const Color& col);
 
 	virtual ~Plottable(){}
+
 
 	/// Called when a new graphics context is created
 	virtual void onContextCreate(){}
@@ -72,6 +66,7 @@ public:
 		draw::paint(prim(), gd);
 	}
 
+	/// Defines how data should be mapped to graphics primitives
 	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind){}
 
 
@@ -118,20 +113,25 @@ public:
 	/// Remove a graphics map
 	Plottable& remove(GraphicsMap& v);
 
+
+	Plottable& operator= (const Plottable& src);
+
 protected:
 	friend class Plot;
-
 	typedef std::vector<GraphicsMap *> GraphicsMaps;
 
+	Data mData;
+	GraphicsMaps mGraphicsMaps;
+
+	struct POD1{} mPOD1;
 	int mPrim;
 	float mStroke;
 	BlendMode mBlendMode;
 	Color mColor;
-	Data mData;
-	GraphicsMaps mGraphicsMaps;
 	short mLineStipple;
 	bool mDrawUnder;
 	bool mUseStyleColor;
+	struct POD2{} mPOD2;
 	
 	void doPlot(GraphicsData& gd, const Data& d);
 };
