@@ -200,8 +200,8 @@ public:
 	ParamPanel& addParamGroup(
 		View * views[], const std::string * labels[], unsigned count,
 		const std::string& groupName = "",
-		bool nameViewsFromLabels=true,
-		bool prefixViewNamesWithGroupName=false
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
 	);
 
 	/// Add two control widgets grouped in a row with labels underneath
@@ -209,8 +209,8 @@ public:
 		View& view1, const std::string& label1,
 		View& view2, const std::string& label2,
 		const std::string& groupName = "",
-		bool nameViewsFromLabels=true,
-		bool prefixViewNamesWithGroupName=false
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
 	);
 
 	/// Add three control widgets grouped in a row with labels underneath
@@ -219,8 +219,8 @@ public:
 		View& view2, const std::string& label2,
 		View& view3, const std::string& label3,
 		const std::string& groupName = "",
-		bool nameViewsFromLabels=true,
-		bool prefixViewNamesWithGroupName=false
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
 	);
 
 	/// Add four control widgets grouped in a row with labels underneath
@@ -230,8 +230,20 @@ public:
 		View& view3, const std::string& label3,
 		View& view4, const std::string& label4,
 		const std::string& groupName = "",
-		bool nameViewsFromLabels=true,
-		bool prefixViewNamesWithGroupName=false
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
+	);
+
+	/// Add five control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View& view1, const std::string& label1,
+		View& view2, const std::string& label2,
+		View& view3, const std::string& label3,
+		View& view4, const std::string& label4,
+		View& view5, const std::string& label5,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
 	);
 	
 	/// Get preset control
