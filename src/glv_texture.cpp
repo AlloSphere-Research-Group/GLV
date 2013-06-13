@@ -10,7 +10,7 @@ Texture2::Texture2(GLsizei w_, GLsizei h_, GLenum format, GLenum type)
 :	mID(0), w(0), h(0), mPixels(0), mBuffer(0),
 	mFormat(format), mType(type), mMagFilter(GL_LINEAR), mWrapMode(GL_CLAMP_TO_EDGE)
 {
-	alloc(w,h);
+	alloc(w_, h_);
 }
 
 Texture2::Texture2(GLsizei w, GLsizei h, GLvoid * pixs, GLenum format, GLenum type, bool doesLoad)
@@ -124,7 +124,7 @@ void Texture2::destroy(){
 
 
 Texture2& Texture2::draw(
-	double ql, double qt, double qr, double qb,
+	float ql, float qt, float qr, float qb,
 	float tl, float tt, float tr, float tb
 ){
 	int Nv=4;

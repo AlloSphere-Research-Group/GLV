@@ -6,7 +6,8 @@
 namespace glv{
 
 inline float linLog2(float v, float recMin = 1./16){
-	v = ::log2(::fabsf(v) + 0.000001f);	// offset to avoid -inf
+	static const float lnToLog2 = 1.f/::logf(2.);
+	v = ::logf(::fabsf(v) + 0.000001f)*lnToLog2;// offset to avoid -inf
 	v *= recMin;
 	return v > -1.f ? v + 1.f : 0.f;
 }
@@ -102,11 +103,20 @@ void TimeScope::update(float * buf, int bufFrames, int bufChans){
 
 	// search for sync point
 	if(SYNC_FIND == mSync){
-		for(int i=1; i<Nf; ++i){
+		//float maxSlope = 0;
+		for(int i=1; i<Nf-1; ++i){
 			float prev = buf[i-1];
 			float curr = buf[i  ];
+			//float next = buf[i+1];
 			if(prev <= 0.f && curr > 0.f){
-				mSync = i-1;
+				//float slope = curr - prev;
+				//float slope = -prev;
+				//float slope = (next-curr)-(curr-prev); slope *= slope;
+				//float slope = (next-prev)*0.5; slope *= slope;
+				//if(slope > maxSlope){
+				//	maxSlope = slope;
+					mSync = i-1;
+				//}
 				break;
 			}
 		}

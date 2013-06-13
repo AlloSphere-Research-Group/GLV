@@ -12,14 +12,25 @@ namespace glv{
 class Texture2{
 public:
 
-	/// This constructor will allocate an internal pixel buffer
+	/// Construct a texture that allocates an internal pixel buffer
+	
+	/// @param[in] width	width, in texels
+	/// @param[in] height	height, in texels
+	/// @param[in] format	color format
+	/// @param[in] type		color data type
 	Texture2(
 		GLsizei width, GLsizei height, 
 		GLenum format=GL_RGB, GLenum type=GL_UNSIGNED_BYTE);
 
-	/// Constructor
+	/// Construct a texture that references an external pixel buffer
+
+	/// @param[in] width	width, in texels, of external buffer
+	/// @param[in] height	height, in texels, of external buffer
+	/// @param[in] pixels	external texel buffer
+	/// @param[in] format	color format of external buffer
+	/// @param[in] type		color data type of external buffer
 	Texture2(
-		GLsizei width, GLsizei height, GLvoid * pixels=0,
+		GLsizei width, GLsizei height, GLvoid * pixels,
 		GLenum format=GL_RGB, GLenum type=GL_UNSIGNED_BYTE,
 		bool doesLoad=false);
 
@@ -29,12 +40,12 @@ public:
 	template <class T>
 	T * buffer() const { return static_cast<T*>(mBuffer); }
 
-	GLuint  id() const { return mID; }
-	GLsizei width() const { return w; }		///< Get width
-	GLsizei height() const { return h; }	///< Get height
+	GLuint  id() const { return mID; }			///< Get unique identifier
+	GLsizei width() const { return w; }			///< Get width
+	GLsizei height() const { return h; }		///< Get height
 
-	void begin() const;										///< Bind self to current context
-	void end() const;										///< Binds default texture
+	void begin() const;							///< Bind self to current context
+	void end() const;							///< Binds default texture
 
 	/// Allocate local texture memory. 
 	
@@ -45,25 +56,25 @@ public:
 	/// Free local texture memory
 	void dealloc();
 
-	Texture2& bind();										///< Bind self to current context
-	Texture2& draw(											///< Draw texture to rectangular quad
-		double ql, double qt, double qr, double qb,
+	Texture2& bind();							///< Bind self to current context
+	Texture2& draw(								///< Draw texture to rectangular quad
+		float ql, float qt, float qr, float qb,
 		float tl=0, float tt=1, float tr=1, float tb=0
 	);
 	
 	void destroy();
 	
 	Texture2& create(GLsizei w, GLsizei h, GLvoid * pixels = 0);	///< Create new texture on graphics card
-	Texture2& create();										///< Reload texture onto GPU
+	Texture2& create();							///< Reload texture onto GPU
 
-	Texture2& recreate();									///< Recreates texture on GPU using current settings
+	Texture2& recreate();						///< Recreates texture on GPU using current settings
 
-	Texture2& send();										///< Send pointed to pixels to GPU
+	Texture2& send();							///< Send pointed to pixels to GPU
 
-	Texture2& format(GLenum v);								///< Set the color format
-	Texture2& type(GLenum v);								///< Set the color data type
-	Texture2& magFilter(GLenum v);							///< Set mag filter
-	Texture2& wrapMode(GLenum v);							///< Set wrap mode
+	Texture2& format(GLenum v);					///< Set the color format
+	Texture2& type(GLenum v);					///< Set the color data type
+	Texture2& magFilter(GLenum v);				///< Set mag filter
+	Texture2& wrapMode(GLenum v);				///< Set wrap mode
 
 private:
 	GLuint mID;

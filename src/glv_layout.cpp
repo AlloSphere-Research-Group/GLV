@@ -409,13 +409,16 @@ void Table::onDraw(GLV& g){
 
 
 
-Scroll::Scroll(const Rect& r, float scrollBarWidth)
+Scroll::Scroll(const Rect& r, float scrollBarWidth, float padX, float padY)
 :	View(r),
-	mSliderX(Rect(-scrollBarWidth, scrollBarWidth)), 
-	mSliderY(Rect( scrollBarWidth,-scrollBarWidth)),
+	mSliderX(Rect(-scrollBarWidth, scrollBarWidth+1)), 
+	mSliderY(Rect( scrollBarWidth+1,-scrollBarWidth)),
 	mSliderXY(Rect(-scrollBarWidth,-scrollBarWidth, scrollBarWidth, scrollBarWidth)),
 	mMode(HORIZONTAL | VERTICAL)
 {
+	paddingX(padX);
+	paddingY(padY);
+
 	enable(CropChildren);
 	mSliderX.anchor(0,1).stretch(1,0).pos(Place::BL);
 	mSliderY.anchor(1,0).stretch(0,1).pos(Place::TR);
@@ -427,12 +430,14 @@ Scroll::Scroll(const Rect& r, float scrollBarWidth)
 	mSliderXY.knobSize(0);
 	mSliderXY.knobSymbol(draw::circle<8>);
 	mSliderXY.enable(Momentary);
+	mSliderXY.disable(DrawBorder);
 	
 	(*this) << mSliderX << mSliderY << mSliderXY;
 }
 
 
 void Scroll::onDraw(GLV& g){
+
 	using namespace glv::draw;
 	mSliderX.bringToFront();	// do not change order of these!
 	mSliderY.bringToFront();
@@ -446,6 +451,9 @@ void Scroll::onDraw(GLV& g){
 	if(child == &mSliderX) return;
 
 	Rect r = child->rect();
+	
+	r.w += paddingX()*2;
+	r.h += paddingY()*2;
 
 //		Rect r(0,0,0,0);
 //		
@@ -465,7 +473,7 @@ void Scroll::onDraw(GLV& g){
 
 	float xpos = mSliderX.getValue(0);
 	float ypos = mSliderY.getValue(1);
-	child->pos(-xpos, ypos);
+	child->pos(-xpos + paddingX(), ypos + paddingY());
 	mSliderX.interval(0, r.width());
 	mSliderY.interval(0,-r.height()); // use negative range so 0 is at top
 

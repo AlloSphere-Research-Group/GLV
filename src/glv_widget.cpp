@@ -41,7 +41,7 @@ void Widget::drawGrid(GraphicsData& g){
 }
 
 void Widget::drawSelectionBox(){
-	if(enabled(DrawSelectionBox) && size()>1){
+	if(enabled(Focused) && enabled(DrawSelectionBox) && size()>1){
 		draw::lineWidth(2);
 //		draw::color(colors().selection);
 		draw::color(colors().border);
@@ -167,10 +167,12 @@ bool Widget::onAssignData(Data& d, int ind1, int ind2){
 }
 
 void Widget::selectFromMousePos(GLV& g){
-	select(
-		(g.mouse().xRel() / w) * sizeX(),
-		(g.mouse().yRel() / h) * sizeY()
-	);
+	//if(containsPoint(g.mouse().xRel() + left(), g.mouse().yRel() + top())){
+		select(
+			(g.mouse().xRel() / w) * sizeX(),
+			(g.mouse().yRel() / h) * sizeY()
+		);
+	//}
 }
 
 Widget& Widget::select(int ix, int iy){

@@ -2,6 +2,7 @@
 	See COPYRIGHT file for authors and license information */
 
 #include <float.h>
+#include <string.h>
 #include "glv_util.h"
 #include "glv_plots.h"
 
@@ -56,7 +57,44 @@ Surface x	(1, 1, n, m)	((v11, v21, v31), (v12, v22, v32))
 
 */
 
+Plottable::Plottable(const Plottable& src){
+	*this = src;
+}
 
+Plottable::Plottable(int prim, float stroke)
+:	mPrim(prim), mStroke(stroke), mBlendMode(TRANSLUCENT), mLineStipple(-1),
+	mDrawUnder(false), mUseStyleColor(true)
+{
+	add(*this);
+}
+
+Plottable::Plottable(int prim, float stroke, const Color& col)
+:	mPrim(prim), mStroke(stroke), mBlendMode(TRANSLUCENT), mLineStipple(-1),
+	mDrawUnder(false)
+{
+	color(col);
+	add(*this);
+}
+
+Plottable& Plottable::operator= (const Plottable& src){
+	if(this == &src) return *this;
+
+	// Assign members with pointers
+	mGraphicsMaps = src.mGraphicsMaps;
+	mData = src.mData;
+
+	// Deep copy data members
+	memcpy(&mPOD1, &(src.mPOD1), (char*)&mPOD2 - (char*)&mPOD1);
+
+	const GraphicsMap * srcGraphicsMap = dynamic_cast<const GraphicsMap*>(&src);
+	GraphicsMaps::iterator it = mGraphicsMaps.begin();
+	for(;it!=mGraphicsMaps.end();++it){
+		if(*it == srcGraphicsMap){
+			*it = dynamic_cast<GraphicsMap*>(this);
+		}
+	}
+	return *this;
+}
 
 Plottable& Plottable::add(GraphicsMap& v){
 	mGraphicsMaps.push_back(&v);
@@ -64,7 +102,10 @@ Plottable& Plottable::add(GraphicsMap& v){
 }
 
 Plottable& Plottable::remove(GraphicsMap& v){
-	std::remove(mGraphicsMaps.begin(), mGraphicsMaps.end(), &v);
+	mGraphicsMaps.erase(
+		std::remove(mGraphicsMaps.begin(), mGraphicsMaps.end(), &v),
+		mGraphicsMaps.end()
+	);
 	return *this;
 }
 
@@ -85,7 +126,7 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	}
 
 	Indexer ind(d.shape()+1); // dimension 0 is non-spatial
-	onMap(gd, d, ind);
+	//onMap(gd, d, ind);
 
 	{	GraphicsMaps::iterator it = mGraphicsMaps.begin();
 		while(it != mGraphicsMaps.end()){
@@ -96,7 +137,7 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	}
 
 	switch(mBlendMode){
-		case TRANSPARENT: break;
+		case TRANSLUCENT: break;
 		case ADDITIVE:
 			glBlendEquation(GL_FUNC_ADD);
 			glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
@@ -130,7 +171,7 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 //	draw::blendTrans();
 
 	switch(mBlendMode){
-		case TRANSPARENT: break;
+		case TRANSLUCENT: break;
 		case ADDITIVE:
 		case SUBTRACTIVE:
 			draw::blendTrans();

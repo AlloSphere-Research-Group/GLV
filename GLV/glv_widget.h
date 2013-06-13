@@ -85,10 +85,10 @@ public:
 	}
 
 	/// Set padding around elements
-	Widget& padding(space_t v){ for(int i=0; i<DIMS; ++i){ mPadding[i]=v; } return *this; }
+	Widget& padding(space_t v){ for(int i=0; i<DIMS; ++i){ mPadding[i]=v; } onResize(0,0); return *this; }
 
 	/// Set padding around elements
-	Widget& padding(space_t v, int dim){ mPadding[dim]=v; return *this; }
+	Widget& padding(space_t v, int dim){ mPadding[dim]=v; onResize(0,0); return *this; }
 
 	/// Set padding around elements in x direction
 	Widget& paddingX(space_t v){ return padding(v,0); }

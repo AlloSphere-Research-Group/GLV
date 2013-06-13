@@ -951,7 +951,7 @@ protected:
 template<class T>
 int toString(std::string& dst, const T& src, const char * format){
 	#ifdef WIN32
-		#define TO_STRING_FUNC sprintf_s
+		#define TO_STRING_FUNC _snprintf
 	#else
 		#define TO_STRING_FUNC snprintf
 	#endif
@@ -984,7 +984,7 @@ inline int stringifyArray(
 
 template<class T>
 int toString(std::string& dst, const T * src, int size, int stride){
-	return stringifyArray(dst,src,size,stride, toString);
+	return stringifyArray<T>(dst,src,size,stride, toString);
 }
 
 template<class T>
@@ -997,7 +997,7 @@ inline int toToken<std::string>(std::string& dst, const std::string& src){
 
 template<class T>
 int toToken(std::string& dst, const T * src, int size, int stride){
-	int res = stringifyArray(dst,src,size,stride, toToken);
+	int res = stringifyArray<T>(dst,src,size,stride, toToken);
 	if(1!=size) dst = "{" + dst + "}";
 	return res;
 }

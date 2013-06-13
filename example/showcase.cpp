@@ -11,6 +11,10 @@ int main(){
 	Label::Spec h1; h1.stroke=1.5; h1.size=8;
 
 	GLV top;
+	top.colors().set(StyleColor::BlackOnWhite);
+	top.colors().fore.set(0.5);
+	top.colors().selection.set(0.8);
+	top.colors().border.set(0);
 	Table gui("pppppp");
 
 	Table tblView;
@@ -20,6 +24,7 @@ int main(){
 	View v110(Rect( 8, 8,W/4,W/4));
 	View v111(Rect(16,16,W/4,W/4));
 	Scroll scr(Rect(W,W));
+	scr.padding(4);
 	Label scrText(
 		"Scroll provides a subview\n"
 		"of its children whose\n"
@@ -76,20 +81,24 @@ int main(){
 
 	//Table tblText;
 	TextView tv(Rect(W,16));
-	tv.setValue("GLV text");
+	tv.setValue("Hello GLV!");
 	NumberDialer nd; nd.setValue(12.34);
+	NumberDialers nds(1,0,4,0,4,2);
+	nds.dimZero(true);
+	nds.data().fromToken("{1,2,3,4,2,0,1,3}");
 	ListView lv(Rect(W,16*3), 2,3);
 	for(int i=0; i<lv.data().size(); ++i){
 		lv.setValue("item"+toString(i+1), i);
 	}
 	DropDown dd(Rect(W,16), "Item 1", "Item 2", "Item 3", "Item 4");
 	tbl1
-		<< new Divider(16,0)
+		<< new Divider(8,0)
 		<< new Label("Text", h1)
 		<< new Divider
 		//<< new Label("a label")
 		<< tv	<< new Label(tv.className(), caption)
 		<< nd	<< new Label(nd.className(), caption)
+		<< nds	<< new Label(nds.className(), caption)
 		<< lv	<< new Label(lv.className(), caption)
 		<< dd	<< new Label(dd.className(), caption)
 	;

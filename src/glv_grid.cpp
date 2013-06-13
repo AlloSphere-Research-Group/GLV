@@ -199,8 +199,8 @@ Grid& Grid::zoom(double amt, double x, double y){
 	// 1. translate center of interval to inflection point
 	// 2. scale diameter
 	// 3. translate center of interval back to scaled original					
-	float scale = pow(2, amt);
-	float gs[] = { x, y };
+	double scale = pow(2, amt);
+	double gs[] = { x, y };
 	
 	for(int i=0; i<DIM; ++i){
 		if(lockZoom(i)) continue;

@@ -269,7 +269,8 @@ public:
 	int button() const;				///< Last event button number
 	int clicks() const;				///< Number of sequential clicks of buttons
 	bool isDown() const;			///< Whether last event was button down
-	bool isDown(int button) const;	///< Whether button is currently down
+	bool isDown(int button) const;	///< Whether specified button is currently down
+	bool isDownAny() const;			///< Whether any button is currently down
 	bool left() const;				///< Whether left button is currently down
 	bool middle() const;			///< Whether middle button is currently down
 	bool right() const;				///< Whether right button is currently down

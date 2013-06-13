@@ -52,7 +52,7 @@ void StyleColor::set(Preset preset){
 		case Gray:			back.set(0.6); border.set(0.1); fore.set(0.8);
 							selection.set(0.8); text.set(0);
 							break;
-		case SmokyGray:		set(Color(0.7, 0.5), 0.3); break;
+		case SmokyGray:		set(Color(0.6, 0.7), 0.4); break;
 
 		default:;
 	}

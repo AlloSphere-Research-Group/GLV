@@ -183,28 +183,73 @@ protected:
 class ParamPanel : public Table {
 public:
 
-	ParamPanel()
-	:	Table("><")
-	{
-		(*this) << mPresetControl << (new Label("preset"))->size(6);
-	}
+	ParamPanel();
 
 
 	/// Add a control widget with label
 	
 	/// @param[in] v					The control widget
 	/// @param[in] label				The control's label
-	/// @param[in] nameViewFromLabel	Whether to set the control's name to the label
+	/// @param[in] nameViewFromLabel	Whether to set the control's name to the 
+	///									label (so it's a preset parameter)
 	ParamPanel& addParam(
 		View& v, const std::string& label, bool nameViewFromLabel=true
-	){
-		(*this) << v << (new glv::Label(label))->size(6);
-		if(nameViewFromLabel) v.name(label);
-		return *this;
-	}
+	);
+
+	/// Add control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View * views[], const std::string * labels[], unsigned count,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
+	);
+
+	/// Add two control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View& view1, const std::string& label1,
+		View& view2, const std::string& label2,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
+	);
+
+	/// Add three control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View& view1, const std::string& label1,
+		View& view2, const std::string& label2,
+		View& view3, const std::string& label3,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
+	);
+
+	/// Add four control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View& view1, const std::string& label1,
+		View& view2, const std::string& label2,
+		View& view3, const std::string& label3,
+		View& view4, const std::string& label4,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
+	);
+
+	/// Add five control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View& view1, const std::string& label1,
+		View& view2, const std::string& label2,
+		View& view3, const std::string& label3,
+		View& view4, const std::string& label4,
+		View& view5, const std::string& label5,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
+	);
 	
 	/// Get preset control
 	PresetControl& presetControl(){ return mPresetControl; }
+
+	virtual const char * className() const { return "ParamPanel"; }
 
 private:
 	PresetControl mPresetControl;

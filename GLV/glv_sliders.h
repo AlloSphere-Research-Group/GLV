@@ -398,12 +398,12 @@ TEM void SliderGrid<Dim>::onDraw(GLV& g){
 	for(int i=0; i<Dim; ++i){
 		float xmin = i*w*rDim + sz2;
 		float xdia = w*rDim-sz;
-        float x = xmin + this->to01(getValue(i))*xdia;
+		float x = xmin + this->to01(this->getValue(i))*xdia;
 		
 		for(int j=0; j<Dim; ++j){
 			float ymin = (j+1)*h*rDim - sz2;
 			float ydia = -(h*rDim-sz);
-            float y = ymin + this->to01(getValue(Dim-1-j))*ydia;
+			float y = ymin + this->to01(this->getValue(Dim-1-j))*ydia;
 			mKnobSym((x - sz2), (y - sz2), (x + sz2), (y + sz2));
 		}
 	}
@@ -413,8 +413,8 @@ TEM bool SliderGrid<Dim>::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 	case Event::MouseDrag:
-                    this->valueAdd( g.mouse().dx()/w * diam() * Dim * g.mouse().sens(), cx);
-        if(cx!=cy)	this->valueAdd(-g.mouse().dy()/h * diam() * Dim * g.mouse().sens(), cy);
+					this->valueAdd( g.mouse().dx()/w * diam() * Dim * g.mouse().sens(), cx);
+		if(cx!=cy)	this->valueAdd(-g.mouse().dy()/h * diam() * Dim * g.mouse().sens(), cy);
 		break;
 		
 	case Event::MouseDown:
@@ -427,8 +427,8 @@ TEM bool SliderGrid<Dim>::onEvent(Event::t e, GLV& g){
 		if(g.mouse().left() && !g.mouse().right()){
 			float cw = w/Dim;
 			float ch = h/Dim;
-                        this->setValue(toInterval(    (g.mouse().xRel()/cw - cx)), cx);
-            if(cx!=cy)	this->setValue(toInterval(1.f-(g.mouse().yRel()/ch - ((Dim-1)-cy))), cy);
+						this->setValue(toInterval(    (g.mouse().xRel()/cw - cx)), cx);
+			if(cx!=cy)	this->setValue(toInterval(1.f-(g.mouse().yRel()/ch - ((Dim-1)-cy))), cy);
 		}
 		break;
 		

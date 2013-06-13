@@ -736,9 +736,13 @@ inline void paint(int prim, Point3 * verts, Color * cols, index_t * indices, int
 // [-1, 0) -> -0.5
 // [ 0, 1) ->  0.5
 // [ 1, 2) ->  1.5
-//inline int pix(float v){ return v>=0 ? (int)(v+0.5) : (int)(v-0.5); }
+#ifdef GLV_PLATFORM_WIN
+inline int pix(float v){ return v>=0 ? (int)(v+0.5f) : (int)(v-0.5f); }
+inline float pixc(float v){ return pix(v) + 0.5f; }
+#else
 inline int pix(float v){ return lrintf(v); }
 inline float pixc(float v){ return rintf(v) + 0.5f; }
+#endif
 
 //template<int N, int M>
 //inline void star(float l, float t, float r, float b){ pgon(l,t,r-l,b-t,N,-0.25,M); }
@@ -823,7 +827,7 @@ inline void ortho(float l, float r, float b, float t, float n, float f){
 }
 
 inline void perspective(float fovy, float aspect, float near, float far) {
-	float f = 1.f/tanf(fovy*(M_PI/180.f)/2.f);
+	float f = 1.f/tan(fovy*(M_PI/180.f)/2.f);
 	float m[] = {
 		f/aspect, 0, 0, 0, 
 		0, f, 0, 0, 

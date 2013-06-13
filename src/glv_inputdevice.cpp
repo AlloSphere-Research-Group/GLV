@@ -29,7 +29,14 @@ Mouse::Mouse()
 	}
 }
 
-void Mouse :: print() const {
+bool Mouse::isDownAny() const {
+	for(unsigned i=0; i<GLV_MAX_MOUSE_BUTTONS; ++i){
+		if(b[i]) return true;
+	}
+	return false;
+}
+
+void Mouse::print() const {
 	printf("abspos: [%i, %i]\n", (int)x(), (int)y());
 	printf("relpos: [%i, %i]\n", (int)xRel(), (int)yRel());
 	printf("dpos:   [%i, %i]\n", (int)dx(), (int)dy());

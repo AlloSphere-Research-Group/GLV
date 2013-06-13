@@ -25,7 +25,11 @@ public:
 	/// @param[in] intervalMax	maximum displayed value for all dimensions
 	/// @param[in] majorDist	distance between major grid lines
 	/// @param[in] minorDiv		number of minor divisions between major lines
-	Grid(const Rect& r, double intervalMin=-1, double intervalMax=1, double majorDist=1, int minorDiv=4);
+	Grid(
+		const Rect& r=Rect(100,100),
+		double intervalMin=-1, double intervalMax=1,
+		double majorDist=1, int minorDiv=4
+	);
 
 	/// Get interval of a dimension
 	const Interval<double>& interval(int dim) const { return mInterval[dim]; }

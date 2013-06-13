@@ -311,25 +311,36 @@ public:
 		ALWAYS		= 1<<2,		/**< Always show activated scrollbars */
 	};
 
-
-	Scroll(const Rect& r=Rect(200), float scrollBarWidth=12);
+	/// @param[in] r				geometry
+	/// @param[in] scrollBarWidth	scroll bar width
+	/// @param[in] paddingX			padding along x direction
+	/// @param[in] paddingY			padding along y direction
+	Scroll(const Rect& r=Rect(200), float scrollBarWidth=12, float padX=0, float padY=0);
 
 	Mode mode() const { return mMode; }
+	float paddingX() const { return mPadding[0]; }
+	float paddingY() const { return mPadding[1]; }
+
 	Scroll& mode(Mode v){ mMode=v; return *this; }
+
+	Scroll& padding(float v){ return paddingX(v).paddingY(v); }
+	Scroll& paddingX(float v){ mPadding[0]=v; return *this; }
+	Scroll& paddingY(float v){ mPadding[1]=v; return *this; }
+
+	Scroll& pageX(float v){ mSliderX.jumpBy(v); return *this; }
+	Scroll& pageY(float v){	mSliderY.jumpBy(v); return *this; }
 
 	Scroll& scrollTopTo(float v){
 		mSliderY.center(-v - mSliderY.range()/2);
 		return *this;
 	}
 
-	Scroll& pageX(float v){ mSliderX.jumpBy(v); return *this; }
-	Scroll& pageY(float v){	mSliderY.jumpBy(v); return *this; }
-
 	virtual const char * className() const { return "Scroll"; }
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
 
 protected:
+	float mPadding[2];
 	SliderRange mSliderX, mSliderY; // intervals dimensions of child view
 									// bar intervals dimensions of child subregion
 	Slider2D mSliderXY;

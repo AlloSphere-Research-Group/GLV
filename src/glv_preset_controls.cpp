@@ -796,8 +796,8 @@ PathEditor::PathEditor(const Rect& r)
 		static void pause(float l, float t, float r, float b){
 			float w = r-l;
 			float pts[] = {
-				l,t, l,b, l+w*0.4,t, l+w*0.4,b,
-				l+w*0.6,t, l+w*0.6,b, r,t, r,b
+				l,t, l,b, l+w*0.4f,t, l+w*0.4f,b,
+				l+w*0.6f,t, l+w*0.6f,b, r,t, r,b
 			};
 			index_t idx[] = {
 				0,1,2,3,
@@ -867,6 +867,87 @@ void PathEditor::ntSelection(const Notification& n){
 
 
 
+ParamPanel::ParamPanel()
+:	Table("><")
+{
+	*this << mPresetControl << (new Label("preset"))->size(6);
+}
 
+ParamPanel& ParamPanel::addParam(
+	View& v, const std::string& label, bool nameViews
+){
+	*this << v << (new Label(label))->size(6);
+	if(nameViews) v.name(label);
+	return *this;
+}
+
+ParamPanel& ParamPanel::addParamGroup(
+	View * views[], const std::string * labels[], unsigned count,
+	const std::string& groupName,
+	bool prefixGroup, bool nameViews
+){
+	std::string layout(count, 'v');
+	Table& table = *new Table(layout.c_str());
+	table.padding(2);
+	for(unsigned i=0; i<count; ++i) table << views[i];
+	for(unsigned i=0; i<count; ++i) table << (new Label(*labels[i]))->size(6);
+	if(nameViews){
+		for(unsigned i=0; i<count; ++i){
+			const std::string& label = *labels[i];
+			views[i]->name(
+				(prefixGroup && groupName[0]) ? groupName + "_" + label : label
+			);
+		}
+	}
+	table.arrange();
+	*this << table << (new Label(groupName))->size(6);
+	return *this;
+}
+
+ParamPanel& ParamPanel::addParamGroup(
+	View& v1, const std::string& l1,
+	View& v2, const std::string& l2,
+	const std::string& groupName, bool prefixGroup, bool nameViews
+){
+	View * v[] = {&v1, &v2};
+	const std::string * l[] = {&l1, &l2};
+	return addParamGroup(v,l,2, groupName, prefixGroup, nameViews);
+}
+
+ParamPanel& ParamPanel::addParamGroup(
+	View& v1, const std::string& l1,
+	View& v2, const std::string& l2,
+	View& v3, const std::string& l3,
+	const std::string& groupName, bool prefixGroup, bool nameViews
+){
+	View * v[] = {&v1, &v2, &v3};
+	const std::string * l[] = {&l1, &l2, &l3};
+	return addParamGroup(v,l,3, groupName, prefixGroup, nameViews);
+}
+
+ParamPanel& ParamPanel::addParamGroup(
+	View& v1, const std::string& l1,
+	View& v2, const std::string& l2,
+	View& v3, const std::string& l3,
+	View& v4, const std::string& l4,
+	const std::string& groupName, bool prefixGroup, bool nameViews
+){
+	View * v[] = {&v1, &v2, &v3, &v4};
+	const std::string * l[] = {&l1, &l2, &l3, &l4};
+	return addParamGroup(v,l,4, groupName, prefixGroup, nameViews);
+}
+
+ParamPanel& ParamPanel::addParamGroup(
+	View& v1, const std::string& l1,
+	View& v2, const std::string& l2,
+	View& v3, const std::string& l3,
+	View& v4, const std::string& l4,
+	View& v5, const std::string& l5,
+	const std::string& groupName, bool prefixGroup, bool nameViews
+){
+	View * v[] = {&v1, &v2, &v3, &v4, &v5};
+	const std::string * l[] = {&l1, &l2, &l3, &l4, &l5};
+	return addParamGroup(v,l,5, groupName, prefixGroup, nameViews);
+}
 
 } // glv::
