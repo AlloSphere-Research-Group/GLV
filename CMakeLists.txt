@@ -82,4 +82,5 @@ foreach(example ${EXAMPLE_FILES})
 endforeach(example)
 
 # installation
-
+install(DIRECTORY GLV/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+install(TARGETS GLV DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
