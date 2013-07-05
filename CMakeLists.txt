@@ -78,8 +78,8 @@ target_link_libraries(GLV ${GLV_LINK_LIBRARIES})
 file(GLOB EXAMPLE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} example/*.cpp)
 foreach(example ${EXAMPLE_FILES})
   get_filename_component(EXAMPLE_NAME ${example} NAME_WE) # Get name w/o extension
-  add_executable(${EXAMPLE_NAME} ${example})
-  target_link_libraries(${EXAMPLE_NAME} GLV ${GLV_LINK_LIBRARIES})
+  add_executable(glv_${EXAMPLE_NAME} ${example})
+  target_link_libraries(glv_${EXAMPLE_NAME} GLV ${GLV_LINK_LIBRARIES})
 endforeach(example)
 
 # installation
