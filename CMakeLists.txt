@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(GLV)
 
+# Set window binding and openGL ES usage here
 set(WINDOW_BINDING GLUT)
 set(USE_OPENGL_ES 0)
 
@@ -33,10 +34,10 @@ set(GLV_SRC src/glv_buttons.cpp
         src/glv_view3D.cpp
         src/glv_widget.cpp)
 
-include_directories(${CMAKE_SOURCE_DIR}/GLV)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/GLV)
 
-set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/lib)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/bin)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build/lib)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
 
 # Dependencies
 
@@ -53,10 +54,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   find_library(OPENGL_FM OpenGL)
   set(GLV_LINK_LIBRARIES ${OPENGL_FM} ${AGL_FM})
   if(${WINDOW_BINDING} MATCHES "GLUT")
-  message("USING GLUT")
-  set(WINDOW_BINDING_SRC ${WINDOW_BINDING_SRC} src/glv_binding_glut.cpp)
-  find_library(GLUT_FM GLUT)
-  set(GLV_LINK_LIBRARIES ${GLV_LINK_LIBRARIES} GLUT_FM)
+    message("USING GLUT")
+    set(WINDOW_BINDING_SRC ${WINDOW_BINDING_SRC} src/glv_binding_glut.cpp)
+    find_library(GLUT_FM GLUT)
+    set(GLV_LINK_LIBRARIES ${GLV_LINK_LIBRARIES} GLUT_FM)
   endif(${WINDOW_BINDING} MATCHES "GLUT")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
@@ -64,9 +65,9 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set(GLV_LINK_LIBRARIES GLEW GLEW GL)
   if(${WINDOW_BINDING} MATCHES "GLUT")
-  message("USING GLUT")
-  set(WINDOW_BINDING_SRC ${WINDOW_BINDING_SRC} src/glv_binding_glut.cpp)
-  set(GLV_LINK_LIBRARIES ${GLV_LINK_LIBRARIES} glut)
+    message("USING GLUT")
+    set(WINDOW_BINDING_SRC ${WINDOW_BINDING_SRC} src/glv_binding_glut.cpp)
+    set(GLV_LINK_LIBRARIES ${GLV_LINK_LIBRARIES} glut)
   endif(${WINDOW_BINDING} MATCHES "GLUT")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
@@ -76,11 +77,11 @@ target_link_libraries(GLV ${GLV_LINK_LIBRARIES})
 # Examples
 file(GLOB EXAMPLE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} example/*.cpp)
 foreach(example ${EXAMPLE_FILES})
-        get_filename_component(EXAMPLE_NAME ${example} NAME_WE) # Get name w/o extension
-        add_executable(${EXAMPLE_NAME} ${example})
-        target_link_libraries(${EXAMPLE_NAME} GLV ${GLV_LINK_LIBRARIES})
+  get_filename_component(EXAMPLE_NAME ${example} NAME_WE) # Get name w/o extension
+  add_executable(${EXAMPLE_NAME} ${example})
+  target_link_libraries(${EXAMPLE_NAME} GLV ${GLV_LINK_LIBRARIES})
 endforeach(example)
 
 # installation
-install(DIRECTORY GLV/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+install(DIRECTORY GLV/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include/GLV)
 install(TARGETS GLV DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
