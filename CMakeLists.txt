@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(GLV)
 
+message("==== Configuring GLV")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules")
 
 # Set window binding and openGL ES usage here
