@@ -606,6 +606,21 @@ void ModelManager::add(const std::string& name, const Model& v){
 	if(isIdentifier(name)) mConstState[name] = &v;
 }
 
+void ModelManager::clearModels(){
+	mState.clear();
+	mConstState.clear();
+}
+
+ModelManager& ModelManager::copyModels(const ModelManager& m){
+	mState = m.mState;
+	mConstState = m.mConstState;
+	return *this;
+}
+
+void ModelManager::clearSnapshots(){
+	mSnapshots.clear();
+}
+
 bool ModelManager::defaultFilePath(std::string& s) const {
 	if(!mFileName.empty()){
 		s = mFileDir + mFileName;
@@ -616,6 +631,21 @@ bool ModelManager::defaultFilePath(std::string& s) const {
 		return true;
 	}
 	return false;
+}
+
+ModelManager& ModelManager::filePath(const std::string& name, const std::string& dir){
+	mFileName=name;
+	return fileDir(dir);
+}
+
+ModelManager& ModelManager::fileDir(const std::string& dir){
+	mFileDir=dir;
+	return *this;
+}
+
+ModelManager& ModelManager::name(const std::string& v){
+	if(isIdentifier(v)) mName=v;
+	return *this;
 }
 
 void ModelManager::remove(const std::string& name){
