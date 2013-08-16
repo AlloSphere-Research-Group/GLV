@@ -639,7 +639,13 @@ ModelManager& ModelManager::filePath(const std::string& name, const std::string&
 }
 
 ModelManager& ModelManager::fileDir(const std::string& dir){
-	mFileDir=dir;
+	mFileDir = dir;
+	
+	char delim = '/';
+	if(dir.size() && dir[dir.size()-1] != delim){
+		mFileDir += delim;
+	}
+
 	return *this;
 }
 
