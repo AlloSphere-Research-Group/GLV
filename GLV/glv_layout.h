@@ -106,21 +106,39 @@ struct Box : public Group{
 	Box(Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4)
 	:	p(*this, dir, align, 0,0, pad){}
 
-	Box(View& v1, View& v2, Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4)
+	Box(
+		View& v1, View& v2,
+		Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4
+	)
 	:	p(*this, dir, align, 0,0, pad){
 		p << v1 << v2;
 		fit();
 	}
 
-	Box(View& v1, View& v2, View& v3, Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4)
+	Box(
+		View& v1, View& v2, View& v3,
+		Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4
+	)
 	:	p(*this, dir, align, 0,0, pad){
 		p << v1 << v2 << v3;
 		fit();
 	}
 
-	Box(View& v1, View& v2, View& v3, View& v4, Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4)
+	Box(
+		View& v1, View& v2, View& v3, View& v4,
+		Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4
+	)
 	:	p(*this, dir, align, 0,0, pad){
 		p << v1 << v2 << v3 << v4;
+		fit();
+	}
+
+	Box(
+		View& v1, View& v2, View& v3, View& v4, View& v5,
+		Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4
+	)
+	:	p(*this, dir, align, 0,0, pad){
+		p << v1 << v2 << v3 << v4 << v5;
 		fit();
 	}
 	

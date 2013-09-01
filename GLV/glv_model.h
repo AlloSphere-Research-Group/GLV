@@ -857,35 +857,29 @@ public:
 	void add(const std::string& name, const Model& v);
 
 	/// Remove all models
-	void clearModels(){ mState.clear(); mConstState.clear(); }
+	void clearModels();
 
 	/// Copy over models from another manager; replaces existing models
-	ModelManager& copyModels(const ModelManager& m){
-		mState = m.mState;
-		mConstState = m.mConstState;
-		return *this;
-	}
+	ModelManager& copyModels(const ModelManager& m);
 
 	/// Clear all currently stored snapshots
-	void clearSnapshots(){ mSnapshots.clear(); }
+	void clearSnapshots();
 	
 	/// Set the default file directory and name
 	
 	/// @param[in] name		file name without directory; 
 	///						if empty, then uses model name with ".txt" extension
 	/// @param[in] dir		file directory
-	ModelManager& filePath(const std::string& name, const std::string& dir=""){
-		mFileName=name; return fileDir(dir);
-	}
+	ModelManager& filePath(const std::string& name, const std::string& dir="");
 
 	/// Set the default file directory
 
 	/// @param[in] dir		file directory
 	///
-	ModelManager& fileDir(const std::string& dir){ mFileDir=dir; return *this; }
+	ModelManager& fileDir(const std::string& dir);
 
 	/// Set identifier name
-	ModelManager& name(const std::string& v){ if(isIdentifier(v)) mName=v; return *this; }
+	ModelManager& name(const std::string& v);
 
 	/// Remove model data with given name
 	void remove(const std::string& name);
