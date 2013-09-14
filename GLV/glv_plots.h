@@ -70,6 +70,12 @@ public:
 	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind){}
 
 
+	/// Set whether active
+	Plottable& active(bool v){ mActive=v; return *this; }
+	
+	/// Get whether active
+	bool active() const { return mActive; }
+
 	/// Set blend mode
 	Plottable& blendMode(BlendMode v){ mBlendMode=v; return *this; }
 
@@ -93,7 +99,7 @@ public:
 	short lineStipple() const { return mLineStipple; }
 	
 	/// Set line stippling pattern
-	Plottable& lineStipple(short v){ mLineStipple=v; return *this; }	
+	Plottable& lineStipple(short v){ mLineStipple=v; return *this; }
 	
 	/// Get geometric primitive
 	int prim() const { return mPrim; }	
@@ -116,6 +122,9 @@ public:
 
 	Plottable& operator= (const Plottable& src);
 
+	// Plot (map and draw) data
+	virtual void doPlot(GraphicsData& gd, const Data& d);
+
 protected:
 	friend class Plot;
 	typedef std::vector<GraphicsMap *> GraphicsMaps;
@@ -131,9 +140,9 @@ protected:
 	short mLineStipple;
 	bool mDrawUnder;
 	bool mUseStyleColor;
+	bool mActive;
 	struct POD2{} mPOD2;
-	
-	void doPlot(GraphicsData& gd, const Data& d);
+
 };
 
 

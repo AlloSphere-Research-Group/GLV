@@ -63,14 +63,14 @@ Plottable::Plottable(const Plottable& src){
 
 Plottable::Plottable(int prim, float stroke)
 :	mPrim(prim), mStroke(stroke), mBlendMode(TRANSLUCENT), mLineStipple(-1),
-	mDrawUnder(false), mUseStyleColor(true)
+	mDrawUnder(false), mUseStyleColor(true), mActive(true)
 {
 	add(*this);
 }
 
 Plottable::Plottable(int prim, float stroke, const Color& col)
 :	mPrim(prim), mStroke(stroke), mBlendMode(TRANSLUCENT), mLineStipple(-1),
-	mDrawUnder(false)
+	mDrawUnder(false), mActive(true)
 {
 	color(col);
 	add(*this);
@@ -110,7 +110,7 @@ Plottable& Plottable::remove(GraphicsMap& v){
 }
 
 void Plottable::doPlot(GraphicsData& gd, const Data& d){
-	if(!d.hasData()) return;
+	if(!d.hasData() || !active()) return;
 	draw::color(color());
 	draw::stroke(stroke());
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
