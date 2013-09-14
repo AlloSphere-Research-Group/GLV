@@ -161,7 +161,7 @@ protected:
 
 	Lazy<IndexDataMap> mVariables;	// external variables to sync to, index-Data
 	space_t mPadding[DIMS];			// num pixels to inset icon
-	int sx, sy;						// last clicked position
+	short sx, sy;					// selected element position
 	Interval<double> mInterval;		
 	double mPrevVal;				// used for momentary value
 	bool mUseInterval;
@@ -173,8 +173,10 @@ protected:
 	int index(int ix, int iy) const { return ix + iy*sizeX(); }
 	bool tallElems() const { return dy() > dx(); }
 
-	static void clip(int& i, int max){ i<0 ? i=0 : i>=max ? i=max-1 : 0; }
-	void clipIndices(int& x, int& y){ clip(x, sizeX()); clip(y, sizeY()); }
+	template<class Int>
+	static void clip(Int& i, int max){ i<0 ? i=0 : i>=max ? i=max-1 : 0; }
+	template<class Int>
+	void clipIndices(Int& x, Int& y){ clip(x, sizeX()); clip(y, sizeY()); }
 	bool validIndex(int i) const { return (i < size()) && (i >= 0); }
 
 	double diam() const { return mInterval.diameter(); }
