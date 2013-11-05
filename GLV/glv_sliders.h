@@ -85,9 +85,9 @@ protected:
 class SliderRange : public SliderVector<2>{
 public:
 
-	/// @param[in] r			geometry
-	/// @param[in] valMin		initial minimum value (on left or bottom)
-	/// @param[in] valMax		initial maximum value (on right or top)
+	/// @param[in] r		geometry
+	/// @param[in] val1		initial minimum value (on left or bottom)
+	/// @param[in] val2		initial maximum value (on right or top)
 	SliderRange(const Rect& r=glv::Rect(100,20), double val1=0.25, double val2=0.5);
 	
 	SliderRange& center(double v);							///< Set center of interval
@@ -164,6 +164,7 @@ protected:
 class Sliders: public Widget{
 public:
 
+	/// Sliding orientation
 	enum Orientation{
 		HORIZONTAL = 0,		/**< Display horizontally */
 		VERTICAL,			/**< Display vertically */

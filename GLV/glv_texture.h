@@ -29,6 +29,7 @@ public:
 	/// @param[in] pixels	external texel buffer
 	/// @param[in] format	color format of external buffer
 	/// @param[in] type		color data type of external buffer
+	/// @param[in] doesLoad	whether or not to load texture onto GPU
 	Texture2(
 		GLsizei width, GLsizei height, GLvoid * pixels,
 		GLenum format=GL_RGB, GLenum type=GL_UNSIGNED_BYTE,
@@ -57,7 +58,9 @@ public:
 	void dealloc();
 
 	Texture2& bind();							///< Bind self to current context
-	Texture2& draw(								///< Draw texture to rectangular quad
+	
+	/// Draw texture to rectangular quad
+	Texture2& draw(
 		float ql, float qt, float qr, float qb,
 		float tl=0, float tt=1, float tr=1, float tb=0
 	);

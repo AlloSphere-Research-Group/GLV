@@ -383,7 +383,6 @@ public:
 	
 	/// @param[in] rect		Rect geometry of View
 	/// @param[in] anchor	Anchor place
-	/// @param[in] cb		Drawing callback
 	View(const Rect& rect=Rect(200, 200), Place::t anchor=Place::TL);
 
 	virtual ~View();

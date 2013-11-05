@@ -15,11 +15,11 @@ typedef ChangedValue<Data> ModelChange;
 class Widget : public View, public DataObject {
 public:
 
-	/// @param[in] r		geometry
-	/// @param[in] pad		padding from border
-	/// @param[in] toggles	whether the value elements toggle
-	/// @param[in] mutExc	whether value elements operate mutually exclusively
-	/// @param[in] drawGrid	whether to draw grid separater for multiple elements
+	/// @param[in] r			geometry
+	/// @param[in] pad			padding from border
+	/// @param[in] momentary	whether the value elements are momentary
+	/// @param[in] mutExc		whether value elements operate mutually exclusively
+	/// @param[in] drawGrid		whether to draw grid separater for multiple elements
 	Widget(
 		const Rect& r, space_t pad=3,
 		bool momentary=false, bool mutExc=false, bool drawGrid=true

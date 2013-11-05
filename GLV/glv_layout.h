@@ -331,8 +331,8 @@ public:
 
 	/// @param[in] r				geometry
 	/// @param[in] scrollBarWidth	scroll bar width
-	/// @param[in] paddingX			padding along x direction
-	/// @param[in] paddingY			padding along y direction
+	/// @param[in] padX				padding along x direction
+	/// @param[in] padY				padding along y direction
 	Scroll(const Rect& r=Rect(200), float scrollBarWidth=12, float padX=0, float padY=0);
 
 	Mode mode() const { return mMode; }

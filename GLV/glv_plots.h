@@ -196,6 +196,7 @@ protected:
 class PlotFunction1D : public Plottable{
 public:
 
+	/// Path styles
 	enum PathStyle{
 		DIRECT,			/**< Function values are vertices */
 		ZIGZAG,			/**< Zig-zag between domain axis and function values */

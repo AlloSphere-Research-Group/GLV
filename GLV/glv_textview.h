@@ -39,9 +39,9 @@ public:
 
 	/// @param[in] text		Label text
 	/// @param[in] spec		Label spec prototype
-	Label(const std::string& str, const Spec& spec);
+	Label(const std::string& text, const Spec& spec);
 
-	/// @param[in] str		Label text
+	/// @param[in] text		Label text
 	/// @param[in] vert		Whether to draw label vertically
 	Label(const std::string& text, bool vert);
 
