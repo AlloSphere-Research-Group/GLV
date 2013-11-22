@@ -507,7 +507,16 @@ public:
 	///
 	View * findTarget(space_t& x, space_t& y);
 
-	void fit();									///< Fit geometry so all children are visible
+	/// Fit geometry so all children are visible
+
+	/// This uses the geometric union of all the children to resize the extent
+	/// of the view.
+	///
+	/// @param[in] moveChildren		If true, children are moved to fit within
+	///								the current view. If false, the view is set
+	///								to the union of the children.
+	void fit(bool moveChildren=true);
+
 	void move(space_t x, space_t y);			///< Translate constraining within parent
 
 	/// Set descriptor, e.g. tooltip text

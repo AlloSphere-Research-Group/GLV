@@ -439,16 +439,23 @@ View * View::findTarget(space_t &x, space_t &y){
 }
 
 
-void View::fit(){
+void View::fit(bool moveChildren){
 	if(child){			
 		Rect r = unionOfChildren();
 		//printf("%s: ", name().c_str()); r.print(); print();
 		
-		// FIXME: If children have negative positions, this doesn't work.
-		// The children might need to be translated.
-		extent(r.right(), r.bottom());
-		//extent(r.width(), r.height());
-		//printf("%s: ", name().c_str()); print();
+		if(moveChildren){
+			View * v = child;
+			while(v){
+				v->l -= r.l;
+				v->t -= r.t;
+				v = v->sibling;
+			}
+			extent(r.width(), r.height());
+		}
+		else{
+			set(r);
+		}
 	}
 }
 
