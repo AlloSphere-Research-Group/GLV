@@ -103,6 +103,10 @@ protected:
 
 /// A Group that automatically fits itself to child Views
 struct Box : public Group{
+
+	/// @param[in] dir		flow direction of successively added views
+	/// @param[in] align	alignment of views in each "cell"
+	/// @param[in] pad		padding, in pixels, between each view
 	Box(Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4)
 	:	p(*this, dir, align, 0,0, pad){}
 
@@ -141,7 +145,16 @@ struct Box : public Group{
 		p << v1 << v2 << v3 << v4 << v5;
 		fit();
 	}
-	
+
+	Box(
+		View& v1, View& v2, View& v3, View& v4, View& v5, View& v6,
+		Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4
+	)
+	:	p(*this, dir, align, 0,0, pad){
+		p << v1 << v2 << v3 << v4 << v5 << v6;
+		fit();
+	}
+
 	Box& operator<< (View* v){ p<<v; fit(); return *this; }
 	Box& operator<< (View& v){ p<<v; fit(); return *this; }
 
