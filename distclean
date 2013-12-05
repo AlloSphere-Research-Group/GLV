@@ -1,2 +1,3 @@
-rm -rf build/ CMakeCache.txt CMakeFiles/ cmake_install.cmake Makefile build.ninja rules.ninja GLV.xcodeproj GLV.build CMakeScripts
+#!/bin/sh
 
+rm -rf build/ CMakeCache.txt CMakeFiles/ cmake_install.cmake Makefile build.ninja rules.ninja GLV.xcodeproj GLV.build CMakeScripts AlloSystem-build/ doc/html/
