@@ -206,9 +206,7 @@ public:
 
 	/// @param[in] r			geometry
 	/// @param[in] textSize		size of text, in pixels
-	DropDown(const Rect& r=glv::Rect(200,16), float textSize=8)
-	:	TextView(r,textSize), mItemList(*this)
-	{	init(); }
+	DropDown(const Rect& r=glv::Rect(200,16), float textSize=8);
 
 	/// @param[in] r			geometry
 	/// @param[in] item1		item 1
@@ -218,9 +216,7 @@ public:
 		const Rect& r,
 		const std::string& item1, const std::string& item2,
 		float textSize=8
-	)
-	:	TextView(r,textSize), mItemList(*this)
-	{	init(); addItem(item1).addItem(item2); }
+	);
 
 	/// @param[in] r			geometry
 	/// @param[in] item1		item 1
@@ -231,9 +227,7 @@ public:
 		const Rect& r,
 		const std::string& item1, const std::string& item2, const std::string& item3,
 		float textSize=8
-	)
-	:	TextView(r,textSize), mItemList(*this)
-	{	init(); addItem(item1).addItem(item2).addItem(item3); }
+	);
 
 	/// @param[in] r			geometry
 	/// @param[in] item1		item 1
@@ -245,9 +239,7 @@ public:
 		const Rect& r,
 		const std::string& item1, const std::string& item2, const std::string& item3, const std::string& item4,
 		float textSize=8
-	)
-	:	TextView(r,textSize), mItemList(*this)
-	{	init(); addItem(item1).addItem(item2).addItem(item3).addItem(item4); }
+	);
 
 	virtual ~DropDown();
 
@@ -453,12 +445,10 @@ public:
 	/// @param[in] numFrac	Number of places in fraction part
 	/// @param[in] max		Maximum value
 	/// @param[in] min		Minimum value
-	NumberDialer(int numInt=3, int numFrac=2, double max=100, double min=0)
-	:	NumberDialers(numInt,numFrac,max,min,1,1){ padding(2); }
+	NumberDialer(int numInt=3, int numFrac=2, double max=100, double min=0);
 
 	/// Copy constructor
-	NumberDialer(const NumberDialer& v)
-	:	NumberDialers(v){ padding(2); }
+	NumberDialer(const NumberDialer& v);
 
 	virtual const char * className() const { return "NumberDialer"; }
 };
