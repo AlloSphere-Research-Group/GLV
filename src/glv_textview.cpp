@@ -503,7 +503,7 @@ void DropDown::init(){ //printf("DropDown::init\n");
 	mItemList.disable(Visible);
 	
 	// Set padding so text appears vertically centered
-	paddingX(font().size()/2 + h/2);
+	//paddingX(font().size()/2 + h/2);
 }
 
 DropDown& DropDown::addItem(const std::string& v){
