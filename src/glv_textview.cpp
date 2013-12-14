@@ -468,7 +468,7 @@ bool ListView::onEvent(Event::t e, GLV& g){
 
 
 DropDown::DropDown(const Rect& r, float textSize)
-:	TextView(r,textSize), mItemList(*this)
+:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
 {	init(); }
 
 DropDown::DropDown(
@@ -476,7 +476,7 @@ DropDown::DropDown(
 	const std::string& item1, const std::string& item2,
 	float textSize
 )
-:	TextView(r,textSize), mItemList(*this)
+:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
 {	init(); addItem(item1).addItem(item2); }
 
 DropDown::DropDown(
@@ -484,7 +484,7 @@ DropDown::DropDown(
 	const std::string& item1, const std::string& item2, const std::string& item3,
 	float textSize
 )
-:	TextView(r,textSize), mItemList(*this)
+:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
 {	init(); addItem(item1).addItem(item2).addItem(item3); }
 
 DropDown::DropDown(
@@ -492,7 +492,7 @@ DropDown::DropDown(
 	const std::string& item1, const std::string& item2, const std::string& item3, const std::string& item4,
 	float textSize
 )
-:	TextView(r,textSize), mItemList(*this)
+:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
 {	init(); addItem(item1).addItem(item2).addItem(item3).addItem(item4); }
 
 DropDown::~DropDown(){
@@ -508,11 +508,12 @@ void DropDown::init(){ //printf("DropDown::init\n");
 
 DropDown& DropDown::addItem(const std::string& v){
 	items().push_back(v);
-	if(items().size() == 1) setValue(items()[0]);
 
 	mItemList.data().set(&items()[0], 1, items().size());
 	mItemList.clipIndices();
 	mItemList.fitExtent();
+
+	if(items().size() == 1) setValue(items()[0]);
 
 	return *this;
 }
@@ -651,8 +652,7 @@ bool DropDown::onEvent(Event::t e, GLV& g){
 }
 
 bool DropDown::onAssignData(Data& d, int ind1, int ind2){
-	//printf("DropDown: onAssignData\n");
-	//d.print();
+	//printf("DropDown: onAssignData\n"); d.print();
 	// ind1 and ind2 are always zero since TextView is one value
 	
 	// check if new string value is in our list
@@ -660,6 +660,7 @@ bool DropDown::onAssignData(Data& d, int ind1, int ind2){
 	int itemIndex = mItemList.data().indexOf(itemString);
 	if(Data::npos != itemIndex){
 		mSelectedItem = itemIndex;
+		//printf("DropDown: selectedItem = %d\n", itemIndex);
 		mItemList.selectValue(itemString);
 	}
 	TextView::onAssignData(d, ind1, ind2);
