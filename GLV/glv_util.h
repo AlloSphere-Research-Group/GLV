@@ -330,6 +330,18 @@ public:
 
 	/// Translate interval by fixed amount
 	Interval& translate(const T& v){ mMin+=v; mMax+=v; return *this; }
+	
+	/// Scale interval
+	
+	/// @param[in] v			scale amount
+	/// @param[in] centerFrac	scaling center as fraction between endpoints 
+	Interval& scale(const T& v, const T& centerFrac){
+		T trans = fromUnit(centerFrac);
+		translate(-trans);
+		mMin *= v; mMax *= v;
+		translate( trans);
+		return *this;
+	}
 
 	/// Set maximum endpoint
 	Interval& max(const T& v){ return endpoints(min(), v); }
