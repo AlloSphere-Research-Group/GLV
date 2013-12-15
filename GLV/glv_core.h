@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 #include <list>
+#include <vector>
 #include "glv_rect.h"
 #include "glv_notification.h"
 #include "glv_color.h"
@@ -380,21 +381,42 @@ public:
 	/// Ordered list of event handlers
 	typedef std::list<EventHandler *> EventHandlers;
 
-	
+
 	/// @param[in] rect		Rect geometry of View
 	/// @param[in] anchor	Anchor place
 	View(const Rect& rect=Rect(200, 200), Place::t anchor=Place::TL);
 
 	virtual ~View();
 
-	virtual const char * className() const { return "View"; } ///< Get class name
 
-	// User-defined callbacks
-	virtual void onAnimate(double dsec){}			///< Animation callback
-	virtual void onDraw(GLV& g){}					///< Drawing callback
-	virtual bool onEvent(Event::t e, GLV& g){return true;} ///< Event callback to be called after those in callback list
-	virtual void onResize(space_t dx, space_t dy){}	///< Resize callback
-	virtual void onDataModelSync(){}				///< Update internal values if different from attached model variables
+	/// Get class name
+	virtual const char * className() const { return "View"; }
+
+	/// Animation callback
+
+	/// This is called once before the drawing callback and is where the View's
+	/// model state should be updated.
+	///
+	/// @param[in] dsec		Number of seconds elapsed since last animation frame
+	virtual void onAnimate(double dsec){}
+
+	/// Drawing callback
+	virtual void onDraw(GLV& g){}
+
+	/// Event callback to be called after those in callback list
+
+	/// @param[in] e	The event that triggered the callback
+	/// @param[in] g	Top GLV object (for access to keyboard and mouse)
+	/// \returns whether event should be bubbled to parent. Normally, events
+	/// that are not handled by a View should be bubbled to its parent.
+	virtual bool onEvent(Event::t e, GLV& g){return true;}
+
+	/// Resize callback called when the parent changes size
+	virtual void onResize(space_t dx, space_t dy){}
+
+	/// Update internal values if different from attached model variables
+	virtual void onDataModelSync(){}
+
 
 	// Doubly linked tree list of views
 	// TODO: move this stuff to a Node sub-class
@@ -408,20 +430,6 @@ public:
 	void remove();				///< Remove myself from the parent view, and update linked lists
 	View& root();				///< Returns topmost View, possibly self
 
-	/// An action to be called when traversing the node tree
-	struct TraversalAction{
-		virtual ~TraversalAction(){}
-		virtual bool operator()(View * v, int depth) = 0;
-	};
-	struct ConstTraversalAction{
-		virtual ~ConstTraversalAction(){}
-		virtual bool operator()(const View * v, int depth) = 0;
-	};
-
-	/// Traverse tree depth-first applying an action at each node
-	void traverseDepth(TraversalAction& action);
-	void traverseDepth(ConstTraversalAction& action) const;
-
 	/// Add a child view to myself, alias of add()
 	View& operator << (View& child){ return add(child); }
 	
@@ -429,8 +437,27 @@ public:
 	View& operator << (View* child){ return add(child); }
 
 
+	/// An action to be called when traversing the node tree
+	struct TraversalAction{
+		virtual ~TraversalAction(){}
+		/// Called on visiting a node
+		virtual bool operator()(View * v, int depth) = 0;
+	};
+	struct ConstTraversalAction{
+		virtual ~ConstTraversalAction(){}
+		virtual bool operator()(const View * v, int depth) const = 0;
+	};
+
+	/// Traverse tree depth-first applying an action at each node
+	void traverseDepth(TraversalAction& action);
+	void traverseDepth(const ConstTraversalAction& action) const;
+
+	/// Fill array with children satisfying predicate
+	void getChildren(std::vector<View*>& children, TraversalAction& predicate);
+
+
 	/// Append draw handler
-	
+
 	/// When the View is drawn, first its draw handlers are executed in sequence
 	/// then its virtual onDraw(). The return value of the draw handlers
 	/// determine whether subsequent handlers should be called. The return
@@ -502,7 +529,7 @@ public:
 
 
 	/// Returns View under these absolute coordinates or 0 if none.
-	
+
 	/// The coordinates are modified to be relative to the returned View's.
 	///
 	View * findTarget(space_t& x, space_t& y);
@@ -523,7 +550,7 @@ public:
 	View& descriptor(const std::string& v);
 
 	/// Set identifier string
-	
+
 	/// The name should follow the same conventions as identifiers in C. I.e.,
 	/// it can be any string of letters, digits, and underscores, not beginning 
 	/// with a digit. If the argument is not a valid identifier, then the
@@ -611,7 +638,6 @@ public:
 
 	virtual ~GLV();
 
-	virtual const char * className() const { return "GLV"; }
 
 	const Keyboard& keyboard() const { return mKeyboard; };	///< Get current keyboard state
 	const Mouse& mouse() const { return mMouse; }			///< Get current mouse state
@@ -710,6 +736,8 @@ public:
 
 	/// Add models of named children to model manager
 	void refreshModels(bool clearExistingModels=false);
+
+	virtual const char * className() const { return "GLV"; }
 
 protected:
 	Keyboard mKeyboard;
