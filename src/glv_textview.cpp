@@ -1067,7 +1067,7 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 			//case Key::Return:
 				if(!mTextEntryMode){ // bring up the text entry box
 					mTextEntryMode=true;
-					mTextEntry.filter(TextView::filterNumeric).paddingY(2);
+					mTextEntry.filter(TextView::filterNumeric).paddingY(3);
 					(*this) << mTextEntry;
 					mTextEntry.setValue(toString(getValue()));
 					mTextEntry.selectAll();
