@@ -440,7 +440,11 @@ public:
 	/// An action to be called when traversing the node tree
 	struct TraversalAction{
 		virtual ~TraversalAction(){}
+
 		/// Called on visiting a node
+
+		/// @param[in] v		The node being visited
+		/// @param[in] depth	The depth of the node
 		virtual bool operator()(View * v, int depth) = 0;
 	};
 	struct ConstTraversalAction{
