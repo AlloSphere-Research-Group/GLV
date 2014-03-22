@@ -79,6 +79,9 @@ public:
 	Texture2& magFilter(GLenum v);				///< Set mag filter
 	Texture2& wrapMode(GLenum v);				///< Set wrap mode
 
+	/// Set texel update region
+	Texture2& updateRegion(int x, int y, int w, int h);
+
 private:
 	GLuint mID;
 	GLsizei w, h;
@@ -93,6 +96,7 @@ private:
 
 	GLenum mMagFilter;	// GL_LINEAR, GL_NEAREST
 	GLenum mWrapMode;	// GL_CLAMP_TO_EDGE, GL_REPEAT
+	int mUpdateRegion[4]; // update region (x,y,w,h)
 
 	void sendParams();
 };

@@ -10,6 +10,8 @@ Texture2::Texture2(GLsizei w_, GLsizei h_, GLenum format, GLenum type)
 :	mID(0), w(0), h(0), mPixels(0), mBuffer(0),
 	mFormat(format), mType(type), mMagFilter(GL_LINEAR), mWrapMode(GL_CLAMP_TO_EDGE)
 {
+	mUpdateRegion[0] = mUpdateRegion[1] =  0;
+	mUpdateRegion[2] = mUpdateRegion[3] = -1;
 	alloc(w_, h_);
 }
 
@@ -17,6 +19,8 @@ Texture2::Texture2(GLsizei w, GLsizei h, GLvoid * pixs, GLenum format, GLenum ty
 :	mID(0), w(w), h(h), mPixels(pixs), mBuffer(0),
 	mFormat(format), mType(type), mMagFilter(GL_LINEAR), mWrapMode(GL_CLAMP_TO_EDGE)
 {
+	mUpdateRegion[0] = mUpdateRegion[1] =  0;
+	mUpdateRegion[2] = mUpdateRegion[3] = -1;
 	if(doesLoad) create(w, h, mPixels);
 }
 
@@ -156,7 +160,18 @@ Texture2& Texture2::send(){
 							GLenum format, GLenum type,
 							const GLvoid *pixels ) */
 	sendParams();
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, mFormat, mType, mPixels);
+
+	int tw = mUpdateRegion[2];
+	if(tw < 0) tw = w+1+tw;
+	int th = mUpdateRegion[3];
+	if(th < 0) th = h+1+th;
+	
+	glTexSubImage2D(
+		GL_TEXTURE_2D, 0,
+		mUpdateRegion[0], mUpdateRegion[1],
+		tw, th,
+		mFormat, mType, mPixels
+	);
 	return *this;
 }
 
@@ -169,5 +184,13 @@ void Texture2::sendParams(){
 }
 
 Texture2& Texture2::type(GLenum v){ mType=v; return *this; }
+
+Texture2& Texture2::updateRegion(int ux, int uy, int uw, int uh){
+	mUpdateRegion[0]=ux;
+	mUpdateRegion[1]=uy;
+	mUpdateRegion[2]=uw;
+	mUpdateRegion[3]=uh;
+	return *this;
+}
 
 } // glv::
