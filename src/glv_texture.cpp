@@ -29,6 +29,41 @@ Texture2::~Texture2(){
 	dealloc();
 }
 
+static int compsInFormat(GLenum format){
+	switch(format){
+		case GL_RGB:				return 3;
+		case GL_RGBA:				return 4;
+		case GL_LUMINANCE:	
+	/* not ES compatible
+		case GL_RED:
+		case GL_GREEN:
+		case GL_BLUE:
+	 */
+		case GL_ALPHA:				return 1;
+		case GL_LUMINANCE_ALPHA:	return 2;
+		default:					return 1;
+	};
+}
+
+static int bytesInType(GLenum type){
+	#define CS(a,b) case a: return sizeof(b);
+	switch(type){
+		CS(GL_BYTE, char)
+		CS(GL_UNSIGNED_BYTE, unsigned char)
+		CS(GL_SHORT, short)
+		CS(GL_UNSIGNED_SHORT, unsigned short)
+	/* not ES compatible
+		CS(GL_INT, int)
+		CS(GL_UNSIGNED_INT, unsigned int)
+		CS(GL_DOUBLE, double)
+	 */
+		CS(GL_FLOAT, float)
+		default:
+			return 1;
+	};
+	#undef CS
+}
+
 int Texture2::alloc(int w_, int h_){
 	int Nnew = w_*h_;
 	int Nold = w *h;
@@ -37,37 +72,40 @@ int Texture2::alloc(int w_, int h_){
 	if(Nnew != Nold){
 		dealloc();
 
-		int N=1;
-		switch(mFormat){
-			case GL_RGB:				N=3; break;
-			case GL_RGBA:				N=4; break;
-			case GL_LUMINANCE:	
-        /* not ES compatible
-			case GL_RED:
-			case GL_GREEN:
-			case GL_BLUE:
-         */
-			case GL_ALPHA:				N=1; break;
-			case GL_LUMINANCE_ALPHA:	N=2; break;
-		};
-		
+//		int N=1;
+//		switch(mFormat){
+//			case GL_RGB:				N=3; break;
+//			case GL_RGBA:				N=4; break;
+//			case GL_LUMINANCE:	
+//        /* not ES compatible
+//			case GL_RED:
+//			case GL_GREEN:
+//			case GL_BLUE:
+//         */
+//			case GL_ALPHA:				N=1; break;
+//			case GL_LUMINANCE_ALPHA:	N=2; break;
+//		};
+		int N = compsInFormat(mFormat);
+
 		N *= Nnew;
 
-		#define CS(a,b) case a: Nbytes=N*sizeof(b); mBuffer = malloc(Nbytes); break;
-		switch(mType){
-			CS(GL_BYTE, char)
-			CS(GL_UNSIGNED_BYTE, unsigned char)
-			CS(GL_SHORT, short)
-			CS(GL_UNSIGNED_SHORT, unsigned short)
-        /* not ES compatible
-			CS(GL_INT, int)
-			CS(GL_UNSIGNED_INT, unsigned int)
-			CS(GL_DOUBLE, double)
-         */
-			CS(GL_FLOAT, float)
-			default:;
-		};
-		#undef CS
+//		#define CS(a,b) case a: Nbytes=N*sizeof(b); mBuffer = malloc(Nbytes); break;
+//		switch(mType){
+//			CS(GL_BYTE, char)
+//			CS(GL_UNSIGNED_BYTE, unsigned char)
+//			CS(GL_SHORT, short)
+//			CS(GL_UNSIGNED_SHORT, unsigned short)
+//        /* not ES compatible
+//			CS(GL_INT, int)
+//			CS(GL_UNSIGNED_INT, unsigned int)
+//			CS(GL_DOUBLE, double)
+//         */
+//			CS(GL_FLOAT, float)
+//			default:;
+//		};
+//		#undef CS
+
+		mBuffer = malloc(N*bytesInType(mType));
 
 		if(mBuffer){
 			mPixels = mBuffer;
@@ -161,17 +199,27 @@ Texture2& Texture2::send(){
 							const GLvoid *pixels ) */
 	sendParams();
 
+	int tx = mUpdateRegion[0];
+	int ty = mUpdateRegion[1];
+
 	int tw = mUpdateRegion[2];
 	if(tw < 0) tw = w+1+tw;
 	int th = mUpdateRegion[3];
 	if(th < 0) th = h+1+th;
 	
+	int bytesPerTexel = compsInFormat(mFormat) * bytesInType(mType);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, w);
+
 	glTexSubImage2D(
 		GL_TEXTURE_2D, 0,
-		mUpdateRegion[0], mUpdateRegion[1],
+		tx, ty,
 		tw, th,
-		mFormat, mType, mPixels
+		mFormat, mType, (GLvoid*)((char*)mPixels + (ty*w + tx)*bytesPerTexel)
 	);
+	
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 	return *this;
 }
 
