@@ -459,6 +459,8 @@ public:
 	/// Fill array with children satisfying predicate
 	void getChildren(std::vector<View*>& children, TraversalAction& predicate);
 
+	/// Fill array with descendents satisfying predicate
+	void getDescendents(std::vector<View*>& descendents, TraversalAction& predicate);
 
 	/// Append draw handler
 

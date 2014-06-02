@@ -173,6 +173,8 @@ public:
 //		virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
 //	};
 
+	Texture2& texture(){ return mTex; }
+
 	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
 
 protected:

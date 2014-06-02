@@ -146,6 +146,22 @@ void View::getChildren(std::vector<View*>& children, TraversalAction& predicate)
 	}
 }
 
+void View::getDescendents(std::vector<View*>& descendents, TraversalAction& predicate){
+	descendents.clear();
+	
+	struct Action : TraversalAction {
+		std::vector<View*>& desc;
+		TraversalAction& pred;
+		
+		Action(std::vector<View*>& d, TraversalAction& p): desc(d), pred(p){}
+		bool operator()(View * v, int depth){
+			if(pred(v,depth)) desc.push_back(v);
+			return true;
+		}
+	} action(descendents, predicate);
+	traverseDepth(action);
+}
+
 
 // Compute translation from this View to target's parent
 // We do this by traversing the tree upwards and accumulating positions.
