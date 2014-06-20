@@ -815,7 +815,8 @@ PathEditor::PathEditor(const Rect& r)
 	mTransportPlay.symbolOff(TransportSymbols::play);
 	mTransportPlay.attachVariable(mPathView.mPlaying);
 
-	mPathView.w = r.w;
+	mPathView.w = 0;
+	mPathView.stretch(1,0);
 	mPathView.disable(DrawBorder);
 	mPathView.disable(DrawBack);
 	mPathView.attach(ntSelection, Update::Selection, this);
@@ -828,10 +829,12 @@ PathEditor::PathEditor(const Rect& r)
 
 	const float topBarH = mPathPresetControl.h;
 	mTransportPlay.extent(topBarH);
-	mPathView.mPlotWarp.extent(80, topBarH);
+	mPathView.mPlotWarp.extent(60, topBarH);
 	
 	mHeader.h = 10;
-	mScroll.extent(mPathView.w, r.h);
+
+	mScroll.extent(0, r.h);
+	mScroll.stretch(1, 0);
 	mScroll.mode(Scroll::VERTICAL);
 	(*this) 
 		<< mPathPresetControl << mTransportPlay << mPathView.mPlotWarp
