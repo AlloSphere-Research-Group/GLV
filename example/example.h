@@ -2,8 +2,8 @@
 	See COPYRIGHT file for authors and license information */
 
 #include <math.h>
-#include "glv.h"
-#include "glv_binding.h"
-#include "glv_util.h"
+#include "GLV/glv.h"
+#include "GLV/glv_binding.h"
+#include "GLV/glv_util.h"
 
 using namespace glv;
