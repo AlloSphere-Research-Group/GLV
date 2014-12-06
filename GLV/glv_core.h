@@ -656,7 +656,7 @@ public:
 	View * focusedView() const { return mFocusedView; }
 
 	/// Get reference to temporary graphics data for rendering
-	GraphicsData& graphicsData(){ return mGraphicsData; }
+	GraphicsData& graphicsData(int i=0){ return mGraphicsData[i]; }
 
 
 	/// Sends an event to everyone in tree (including self)
@@ -752,7 +752,7 @@ protected:
 	View * mFocusedView;	// current focused widget
 	Event::t mEventType;	// current event type
 	ModelManager mMM;
-	GraphicsData mGraphicsData;
+	GraphicsData mGraphicsData[2];
 
 	// Returns whether the event should be bubbled to parent
 	bool doEventCallbacks(View& target, Event::t e);
