@@ -555,7 +555,7 @@ void PathView::updatePlot(){
 	const int N = mPlotWarp.w/2;	
 	mPlotWarp.range(0,N-1, 0);
 	mPlotWarp.range(-1/mPlotWarp.h,1+1/mPlotWarp.h, 1);
-	mPlotWarp.showAxes(false).showGrid(false);
+	mPlotWarp.showAxis(false).showGrid(false);
 	mPlotWarp.disable(Controllable);
 
 	float crv = mCrv.getValue();
@@ -641,6 +641,7 @@ void PathView::saveFile(){
 
 	mm.name(pathsName());
 
+	// Copy path keyframes into model data structures
 	DataModel len, dur, crv, smt, name;
 	
 	int N = mPath.size();

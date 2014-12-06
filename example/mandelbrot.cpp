@@ -16,7 +16,7 @@ struct Canvas : public Plot{
 		add(plotDensity);
 		equalizeAxes(true);
 		showGrid(false);
-		showAxes(false);
+		showAxis(false);
 		disable(DrawBorder);
 	}
 

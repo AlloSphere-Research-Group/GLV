@@ -139,7 +139,7 @@ int main(int argc, char ** argv){
 		plotXY.data().assign(sigX, 0,i);
 		plotXY.data().assign(sigY, 1,i);
 	}
-	plotXY.numbering(true);
+	plotXY.showNumbering(true);
 	plotY.data() = plotXY.data().slice(0).shape(1,1,64).stride(2);
 	plotX.data() = plotXY.data().slice(1).shape(1,64,1).stride(2);
 	plotY.major(8,1).range(0, plotXY.data().size(1), 1);

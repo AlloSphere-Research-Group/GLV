@@ -14,7 +14,7 @@ struct Canvas : public Plot{
 		//plotDensity.interpolate(true).drawUnderGrid(true);
 		add(plotDensity);
 		equalizeAxes(true);
-		showAxes(false);
+		showAxis(false);
 		showGrid(false);
 		disable(DrawBorder);
 	}
