@@ -6,11 +6,13 @@
 namespace glv{
 
 Grid::Grid(const Rect& r, double rangeMin, double rangeMax, double majorDist, int minorDiv)
-:	View(r), mShowAxes(true), mShowGrid(true), mShowNumbering(false), mEqualize(false)
+:	View(r), mEqualize(false)
 {
+	showAxes(true);
+	showGrid(true);
+	showNumbering(false);
 	range(rangeMin, rangeMax);
 	major(majorDist); minor(minorDiv);
-	numbering(true);
 	for(int i=0; i<DIM; ++i){
 		mVel[i]=0;
 		lockScroll(false, i);
@@ -20,7 +22,7 @@ Grid::Grid(const Rect& r, double rangeMin, double rangeMax, double majorDist, in
 }
 
 // add grid lines to vertex buffer, returns number of lines added
-int Grid::addGridLines(int i, double dist, GraphicsData& gb){
+int Grid::addGridLines(int i, double dist, GraphicsData& gd){
 
 	float  p = gridToPix(i, floor(interval(i).min(), dist));				
 	float dp = gridToPix(i, dist) - gridToPix(i, 0);
@@ -36,7 +38,7 @@ int Grid::addGridLines(int i, double dist, GraphicsData& gb){
 			{p+idx*dp, 0},
 			{p+idx*dp, extentVector[j]}
 		};
-		gb.addVertex2(v[0][i], v[0][j], v[1][i], v[1][j]);
+		gd.addVertex2(v[0][i], v[0][j], v[1][i], v[1][j]);
 	}
 	return n;
 }
@@ -56,71 +58,82 @@ void Grid::onDraw(GLV& g){
 	if(mVelW != 0) zoomOnMousePos(mVelW, g.mouse());
 
 	using namespace glv::draw;
-	GraphicsData& gb = g.graphicsData();
+	GraphicsData& gd = g.graphicsData();
 
 	lineWidth(1);
 
-	// draw minor lines
-	if(showGrid()){
-		gb.reset();
-		color(colors().border.mix(colors().back, 14./16));
-		
-		for(int i=0; i<DIM; ++i){
-			if(mMinor[i] < 2) continue;
-			addGridLines(i, mMajor[i]/mMinor[i], gb);
+	// Draw minor lines
+	gd.reset();
+	color(colors().border.mix(colors().back, 14./16));
+	for(int i=0; i<DIM; ++i){
+		if(mShowGrid[i] && mMinor[i]>1){
+			addGridLines(i, mMajor[i]/mMinor[i], gd);
 		}
-		paint(Lines, &gb.vertices2()[0], gb.vertices2().size());
 	}
+	paint(Lines, &gd.vertices2()[0], gd.vertices2().size());
 
-	// draw major lines / numbering
-	if(showGrid() || showNumbering()){
-		gb.reset();
-		
-		for(int i=0; i<DIM; ++i){
-			int b = gb.vertices2().size();
-			int n = addGridLines(i, mMajor[i], gb);
 
-			if(showNumbering() && mNumbering[i]){
+	// Draw major lines / numbering
+	gd.reset();
+	for(int i=0; i<DIM; ++i){
+		if(mShowGrid[i] || mShowNumbering[i]){
+			int b = gd.vertices2().size();
+			int numMajLines = addGridLines(i, mMajor[i], gd);
+
+			if(mShowNumbering[i]){
 			
 				color(colors().border);
 			
-				for(int j=b; j<b+n*2; j+=2){
-					double p = gb.vertices2()[j].elems[i];
+				// iterate through major lines for this dimension
+				for(int j=b; j<b+numMajLines*2; j+=2){
+					double p = gd.vertices2()[j].elems[i];
 					double v[] = { 
 						i ?   4 : p+4,
 						i ? p+4 : h-(4+font().cap())
 					};
-					double gp = pixToGrid(i, p);
-					if(fabs(gp) < 1e-5) gp=0;
+					double val = pixToGrid(i, p);
+					if(fabs(val) < 1e-5) val=0;
 					char buf[16];
-					snprintf(buf, sizeof(buf), "%.3g", gp);
-					font().render(gb, buf, v[0], v[1]);
+					snprintf(buf, sizeof(buf), "%.3g", val);
+					font().render(g.graphicsData(1), buf, v[0], v[1]);
 				}
 			}
-		}
-		if(showGrid()){
-			color(colors().border.mix(colors().back, 10./16));
-			paint(Lines, &gb.vertices2()[0], gb.vertices2().size());
+
+			// remove lines if not showing grid
+			if(!mShowGrid[i]) gd.vertices2().size(b);
 		}
 	}
+	color(colors().border.mix(colors().back, 10./16));
+	paint(Lines, &gd.vertices2()[0], gd.vertices2().size());
 
-	// draw axes
-	if(showAxes()){
-		color(colors().border.mix(colors().back, 0./4));
-		if(interval(0).contains(0)){
-			float p = gridToPix(0, 0);
-			shape(Lines, p, 0, p, h);
-		}
-		if(interval(1).contains(0)){
-			float p = gridToPix(1, 0);
-			shape(Lines, 0, p, w, p);
-		}
+	// Draw axes
+	color(colors().border.mix(colors().back, 0./4));
+	if(mShowAxes[0] && interval(0).contains(0)){
+		float p = gridToPix(0, 0);
+		shape(Lines, p, 0, p, h);
+	}
+	if(mShowAxes[1] && interval(1).contains(0)){
+		float p = gridToPix(1, 0);
+		shape(Lines, 0, p, w, p);
 	}
 
 //	if(mEqualize){ // NOTE: this always works when called from draw loop
 //		w>=h	? interval(0).diameter(interval(1).diameter()*w/h)
 //				: interval(1).diameter(interval(0).diameter()*h/w);
 //	}
+}
+
+// Adds 1 to bool array treated like a binary number
+template <int N>
+void nextBoolArrayState(bool * arr){
+	int state = 0;
+	for(int i=0; i<N; ++i){
+		state |= int(arr[i])<<i;
+	}
+	++state;
+	for(int i=0; i<N; ++i){
+		arr[i] = (state>>i)&1;
+	}
 }
 
 bool Grid::onEvent(Event::t e, GLV& g){
@@ -154,9 +167,9 @@ bool Grid::onEvent(Event::t e, GLV& g){
 					case 'e': mVelW =-0.04; break;
 					case 'c': mVelW = 0.04; break;
 					case 's': origin(); break;
-					case 'g': mShowGrid ^= 1; break;
-					case 'b': mShowAxes ^= 1; break;
-					case 'n': mShowNumbering ^= 1; break;
+					case 'g': nextBoolArrayState<DIM>(mShowGrid); break;
+					case 'b': nextBoolArrayState<DIM>(mShowAxes); break;
+					case 'n': nextBoolArrayState<DIM>(mShowNumbering); break;
 //					case 'p': mPolarGrid ^= 1; break;
 					default: return true;
 				}
@@ -219,6 +232,24 @@ void Grid::zoomOnMousePos(double amt, const Mouse& m){
 	float px = m.xRel(m.button());	// pixel x coord
 	float py = m.yRel(m.button());	// pixel y coord					
 	zoom(amt, pixToGrid(0, px), pixToGrid(1, py));
+}
+
+Grid& Grid::showAxes(bool v, int dim){
+	if(dim != -1)	mShowAxes[dim] = v;
+	else			for(int i=0; i<DIM; ++i){ mShowAxes[i] = v; }
+	return *this;
+}
+
+Grid& Grid::showGrid(bool v, int dim){
+	if(dim != -1)	mShowGrid[dim] = v;
+	else			for(int i=0; i<DIM; ++i){ mShowGrid[i] = v; }
+	return *this;
+}
+
+Grid& Grid::showNumbering(bool v, int dim){
+	if(dim != -1)	mShowNumbering[dim] = v;
+	else			for(int i=0; i<DIM; ++i){ mShowNumbering[i] = v; }
+	return *this;
 }
 
 } // glv::

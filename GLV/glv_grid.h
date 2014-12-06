@@ -51,13 +51,13 @@ public:
 	bool lockZoom(int dim) const { return mLockZoom[dim]; }
 
 	/// Returns whether axes are showing
-	bool showAxes() const { return mShowAxes; }
+	const bool * showAxes() const { return mShowAxes; }
 
 	/// Returns whether grid lines are showing
-	bool showGrid() const { return mShowGrid; }
+	const bool * showGrid() const { return mShowGrid; }
 
 	/// Returns whether grid line numbering is showing
-	bool showNumbering() const { return mShowNumbering; }
+	const bool * showNumbering() const { return mShowNumbering; }
 
 	#define LOOP for(int i=0;i<DIM;++i)
 
@@ -67,12 +67,6 @@ public:
 
 	/// Set whether to lock zooming for a dimension
 	Grid& lockZoom(bool v, int dim){ mLockZoom[dim]=v; return *this; }
-	
-	/// Set whether grid line numbering is active for all dimensions
-	Grid& numbering(bool v){ LOOP{ numbering(v,i); } return *this; }
-
-	/// Set whether grid line numbering is active for a dimension
-	Grid& numbering(bool v, int dim){ mNumbering[dim]=v; return *this; }
 
 	/// Set minor division for all dimensions
 	Grid& minor(int v){ LOOP{ minor(v,i); } return *this; }
@@ -102,13 +96,22 @@ public:
 	Grid& range(double min, double max, int i){ interval(i).endpoints(min,max); return *this; }
 
 	/// Set whether to show axes
-	Grid& showAxes(bool v){ mShowAxes=v; return *this; }
+	
+	/// @param[in] v	whether to show axis
+	/// @param[in] dim	dimension or -1 for all dimensions
+	Grid& showAxes(bool v, int dim=-1);
 	
 	/// Set whether to show grid
-	Grid& showGrid(bool v){ mShowGrid=v; return *this; }
+
+	/// @param[in] v	whether to show grid
+	/// @param[in] dim	dimension or -1 for all dimensions
+	Grid& showGrid(bool v, int dim=-1);
 	
 	/// Set whether to show numbering
-	Grid& showNumbering(bool v){ mShowNumbering=v; return *this; }
+
+	/// @param[in] v	whether to show numbering
+	/// @param[in] dim	dimension or -1 for all dimensions
+	Grid& showNumbering(bool v, int dim=-1);
 
 	/// Zoom grid on a point
 	Grid& zoom(double amt, double x, double y);
@@ -126,8 +129,7 @@ protected:
 	double mMajor[DIM];
 	int mMinor[DIM];
 	float mVel[DIM], mVelW;
-	bool mNumbering[DIM];
-	bool mShowAxes, mShowGrid, mShowNumbering, mEqualize;
+	bool mShowAxes[DIM], mShowGrid[DIM], mShowNumbering[DIM], mEqualize;
 	bool mLockZoom[DIM];
 	bool mLockScroll[DIM];
 
