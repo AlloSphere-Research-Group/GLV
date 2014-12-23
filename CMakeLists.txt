@@ -38,6 +38,7 @@ set(GLV_SRC src/glv_buttons.cpp
         src/glv_widget.cpp)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/GLV)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
