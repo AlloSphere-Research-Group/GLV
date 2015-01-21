@@ -170,6 +170,8 @@ bool Grid::onEvent(Event::t e, GLV& g){
 					case 'g': nextBoolArrayState<DIM>(mShowGrid); break;
 					case 'b': nextBoolArrayState<DIM>(mShowAxis); break;
 					case 'n': nextBoolArrayState<DIM>(mShowNumbering); break;
+					case '+': for(int i=0;i<DIM;++i) interval(i).scale(0.5); break;
+					case '-': for(int i=0;i<DIM;++i) interval(i).scale(2.0); break;
 //					case 'p': mPolarGrid ^= 1; break;
 					default: return true;
 				}
