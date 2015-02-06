@@ -551,11 +551,11 @@ bool Plot::onEvent(Event::t e, GLV& g){
 		const Keyboard& k = g.keyboard();
 		
 		if(e == Event::KeyDown){
-			if(k.ctrl() && k.alt() && k.isNumber()){
+			if(k.isNumber()){
 				unsigned i = k.keyAsNumber();
 				i = i>0 ? i-1 : 10; 
 				if(i < plottables().size() && plottables()[i]){
-					mActive[i] ^= 1;
+					mActive[i] ^= true;
 				}
 				return false;
 			}

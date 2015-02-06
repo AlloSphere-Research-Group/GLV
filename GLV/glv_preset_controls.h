@@ -150,8 +150,8 @@ protected:
 	
 	// Get y position of ith element
 	float getY(double i) const { return dy()*i + 2.; }
-	float seqRight() const { return 32; }
-	float startRight() const { return 8; }
+	float seqRight() const { return 34; }
+	float startRight() const { return 6; }
 
 	int loadCurrentPos();
 

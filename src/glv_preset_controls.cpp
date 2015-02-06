@@ -335,19 +335,20 @@ void PathView::onDraw(GLV& g){
 		//drawHeader(0, 0);
 
 		// draw selected row highlight
-		draw::color(Color(colors().text, 0.1));
+		draw::color(Color(colors().text.mix(colors().back, 0.8)));
 		draw::frame(0, selected()*dy(), right(), (selected()+1)*dy());
-			
+
 		// draw start cursor
+		draw::stroke(2);
 		draw::color(colors().selection);
 		float pixStart = draw::pixc(mStart*dy());
 		pointerLine<6>(l,pixStart-8, right(),pixStart+8);
-	
+
 		// draw position indicator
 		//draw::color(colors().selection.mix(colors().back, 0.8)); // row hilite bar
 		//draw::rectTrunc<2,2,2,2>(2, dy()*mPos, w-2, dy()*(mPos+1));
 		draw::color(colors().selection);
-		draw::rectTrunc<2,2,2,2>(4, dy()*mPos, seqRight()-2, dy()*(mPos+1));
+		draw::rectTrunc<2,2,2,2>(2, dy()*mPos, seqRight()-4, dy()*(mPos+1));
 
 		Rect vrect = visibleRegion();
 //		vrect.print();
@@ -355,7 +356,7 @@ void PathView::onDraw(GLV& g){
 		int jbeg = vrect.top()   /dy();
 		int jend = (vrect.bottom()/dy()) + 1;
 		if(jend > sizeY()) jend = sizeY();
-		
+
 //		draw::color(1,0,0);
 //		draw::x(vrect.left(), vrect.top(), vrect.right(), vrect.bottom());			
 //		printf("%d %d\n", jbeg, jend);
@@ -364,7 +365,7 @@ void PathView::onDraw(GLV& g){
 		std::string s;
 //		float px = 0.375, py = 0.375;
 		float px = 0.5, py = 0.5;
-		
+
 		Color seqCol = colors().text;
 		seqCol = seqCol.mixRGB(colors().back, 0.2);
 
@@ -375,7 +376,7 @@ void PathView::onDraw(GLV& g){
 
 		for(int j=jbeg; j<jend; ++j){
 			float y = getY(j) + py;
-			
+
 			draw::color(seqCol);
 			toString(s, j, "%03i");	draw::text(s.c_str(), px+startRight(), y+2, 6);
 
@@ -420,7 +421,7 @@ void PathView::onDraw(GLV& g){
 
 bool PathView::onEvent(Event::t e, GLV& g){
 	//if(Event::MouseDown == e) selectFromMousePos(g);
-	
+
 	const Keyboard& k = g.keyboard();
 	const Mouse& m = g.mouse();
 	const float mx = m.xRel();
@@ -494,7 +495,8 @@ bool PathView::onEvent(Event::t e, GLV& g){
 		if(mx > seqRight()){
 			selectFromMousePos(g);
 		}
-		else if(mx <= startRight()){
+		//else if(mx <= startRight()){
+		else if(Mouse::Right == m.button()){
 			int yi = my / dy();
 			mStart = glv::clip<int>(yi, mPath.size()-1);
 		}
@@ -502,6 +504,7 @@ bool PathView::onEvent(Event::t e, GLV& g){
 			return onEvent(Event::MouseDrag, g);
 		}
 		return false;
+
 	case Event::MouseDrag:
 //		//printf("%d\n", yi);
 //		if(e == Event::MouseDown && mx >= seqRight()){
@@ -523,6 +526,7 @@ bool PathView::onEvent(Event::t e, GLV& g){
 			loadCurrentPos();
 		}
 		return false;
+
 	default:;
 	}
 	
@@ -538,7 +542,7 @@ void PathView::onCellChange(int iOld, int iNew){
 	mName.t= y;
 
 	Keyframe& kf = mPath[iNew];
-	
+
 	mDur.data().set(kf.dur);
 	mCrv.data().set(kf.crv);
 	mSmt.data().set(kf.smt);
@@ -555,7 +559,7 @@ void PathView::updatePlot(){
 	const int N = mPlotWarp.w/2;	
 	mPlotWarp.range(0,N-1, 0);
 	mPlotWarp.range(-1/mPlotWarp.h,1+1/mPlotWarp.h, 1);
-	mPlotWarp.showAxes(false).showGrid(false);
+	mPlotWarp.showAxis(false).showGrid(false);
 	mPlotWarp.disable(Controllable);
 
 	float crv = mCrv.getValue();
@@ -583,7 +587,7 @@ void PathView::loadFile(){
 	mm.name(pathsName());
 
 	DataModel len, dur, crv, smt, name;
-	
+
 	len.data().resize(Data::INT, 1);	
 	
 	mm.add("len", len);
@@ -612,12 +616,12 @@ void PathView::loadFile(){
 	mm.add("crv", crv);
 	mm.add("smt", smt);
 	mm.add("name", name);
-	
+
 	dur.data().resize(Data::FLOAT, N);
 	crv.data().resize(Data::FLOAT, N);
 	smt.data().resize(Data::FLOAT, N);
 	name.data().resize(Data::STRING, N);
-	
+
 	mm.snapshotsFromFile();
 	mm.loadSnapshot(snapshotName);
 //	mm.printSnapshots();
@@ -641,16 +645,17 @@ void PathView::saveFile(){
 
 	mm.name(pathsName());
 
+	// Copy path keyframes into model data structures
 	DataModel len, dur, crv, smt, name;
-	
+
 	int N = mPath.size();
-	
+
 	len.data().resize(Data::INT, 1);
 	dur.data().resize(Data::FLOAT, N);
 	crv.data().resize(Data::FLOAT, N);
 	smt.data().resize(Data::FLOAT, N);
 	name.data().resize(Data::STRING, N);
-	
+
 	len.data().assign(N);
 	for(int i=0; i<N; ++i){
 		const Keyframe& kf = mPath[i];
@@ -659,16 +664,16 @@ void PathView::saveFile(){
 		smt.data().assign(kf.smt, i);
 		name.data().assign(kf.name, i);
 	}
-	
+
 	mm.clearModels();
 	mm.clearSnapshots();
-	
+
 	mm.add("len", len);
 	mm.add("dur", dur);
 	mm.add("crv", crv);
 	mm.add("smt", smt);
 	mm.add("name", name);
-	
+
 	mm.saveSnapshot("default");
 	mm.snapshotsToFile();
 }
@@ -815,7 +820,8 @@ PathEditor::PathEditor(const Rect& r)
 	mTransportPlay.symbolOff(TransportSymbols::play);
 	mTransportPlay.attachVariable(mPathView.mPlaying);
 
-	mPathView.w = r.w;
+	mPathView.w = 0;
+	mPathView.stretch(1,0);
 	mPathView.disable(DrawBorder);
 	mPathView.disable(DrawBack);
 	mPathView.attach(ntSelection, Update::Selection, this);
@@ -828,10 +834,12 @@ PathEditor::PathEditor(const Rect& r)
 
 	const float topBarH = mPathPresetControl.h;
 	mTransportPlay.extent(topBarH);
-	mPathView.mPlotWarp.extent(80, topBarH);
+	mPathView.mPlotWarp.extent(60, topBarH);
 	
 	mHeader.h = 10;
-	mScroll.extent(mPathView.w, r.h);
+
+	mScroll.extent(0, r.h);
+	mScroll.stretch(1, 0);
 	mScroll.mode(Scroll::VERTICAL);
 	(*this) 
 		<< mPathPresetControl << mTransportPlay << mPathView.mPlotWarp
