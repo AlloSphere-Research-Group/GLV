@@ -190,7 +190,7 @@ Obtaining and Building
 \end_layout
 
 \begin_layout Standard
-The GLV source code can be downloaded from
+Stable versions of the GLV source code can be downloaded from
 \end_layout
 
 \begin_layout Standard
@@ -210,7 +210,8 @@ http://mat.ucsb.edu/glv/
 \end_layout
 
 \begin_layout Standard
-To obtain the most recent version, you can download the source code from
+The most recent (possibly unstable) version of the source code can be obtained
+ from
 \end_layout
 
 \begin_layout Standard
@@ -806,7 +807,7 @@ The
 \family typewriter
 View
 \family default
- class has the following enumerated property bit flags:
+ class understands the following property bit flags:
 \end_layout
 
 \begin_layout Standard
