@@ -844,7 +844,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 360718730B7ABDBB00D732E8 /* Build configuration list for PBXProject "GLV" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 360718700B7ABDBB00D732E8;
 			productRefGroup = 3657E4C50B7AC005005858EE /* Products */;
 			projectDirPath = "";
