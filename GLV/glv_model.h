@@ -38,6 +38,10 @@ inline std::string toString(const T& obj){ std::string r; toString(r,obj); retur
 template<class T>
 int fromToken(T& dst, const std::string& src);
 
+/// Convert C string token to object. Returns number of elements converted.
+template<class T>
+int fromToken(T& dst, const char * src);
+
 /// Convert string token to objects. Returns number of elements converted.
 template<class T>
 int fromToken(T * dst, int size, int stride, const std::string& src);

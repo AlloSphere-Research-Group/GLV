@@ -45,53 +45,78 @@ template<> int toString<std::string>(std::string& dst, const std::string& src){
 int toString(std::string& dst, const char * src){ return toString(dst, std::string(src)); }
 
 
-
-template<> int fromToken<bool>(bool& dst, const std::string& src){
-	char v = dst;
-	int r = sscanf(src.c_str(), "%hhi", &v) > 0;
-	dst = v;
+template<>
+int fromToken<bool>(bool& dst, const char * src){
+	int v = dst;
+	int r = sscanf(src, "%i", &v) > 0;
+	if(r) dst = v;
 	return r;
 }
+template<>
+int fromToken<int>(int& dst, const char * src){
+	return sscanf(src, "%i", &dst) > 0;
+}
+template<>
+int fromToken<float>(float& dst, const char * src){
+	return sscanf(src, "%g", &dst) > 0;
+}
+template<>
+int fromToken<double>(double& dst, const char * src){
+	return sscanf(src, "%lg", &dst) > 0;
+}
+template<>
+int fromToken<std::string>(std::string& dst, const char * src){
+	const char * beg = strchr(src, '\"');
+	if(beg){
+		++beg; // go to char past first "
+		const char * end = strchr(beg, '\"');
+		if(end){
+			dst.assign(beg, end-beg);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+template<> int fromToken<bool>(bool& dst, const std::string& src){
+	return fromToken(dst, src.c_str());
+}
 template<> int fromToken<int>(int& dst, const std::string& src){
-	return sscanf(src.c_str(), "%i", &dst) > 0;
+	return fromToken(dst, src.c_str());
 }
 template<> int fromToken<float>(float& dst, const std::string& src){
-	return sscanf(src.c_str(), "%g", &dst) > 0;
+	return fromToken(dst, src.c_str());
 }
 template<> int fromToken<double>(double& dst, const std::string& src){
-	return sscanf(src.c_str(), "%lg", &dst) > 0;
+	return fromToken(dst, src.c_str());
 }
 template<> int fromToken<std::string>(std::string& dst, const std::string& src){
-	int b = src.find_first_not_of("\"");
-	int e = src.find_last_not_of("\"");
-	dst = src.substr(b, e-b+1);
-	return 1;
+	return fromToken(dst, src.c_str());
 }
+
 template<class T>
 static int fromToken(
-	T * dst, int size, int stride, const std::string& src, const char * match, const char * format
-){
+	T * dst, int size, int stride, const std::string& src, const char * match){
 	const char * s = src.c_str();
 	int i=-1;
 	while(++i<size && s){
 		if(!(s = strpbrk(s, match))) break;
-		T v; sscanf(s, format, &v);
-		dst[i*stride] = v;
+		fromToken(dst[i*stride], s);
 		s = strpbrk(s, " ,");
 	}
 	return i;
 }
 template<> int fromToken<bool>(bool * dst, int size, int stride, const std::string& src){
-	return fromToken(dst,size,stride, src, "01","%hhi");
+	return fromToken(dst,size,stride, src, "01");
 }
 template<> int fromToken<int>(int * dst, int size, int stride, const std::string& src){
-	return fromToken(dst,size,stride, src, "0123456789-+","%i");
+	return fromToken(dst,size,stride, src, "0123456789-+");
 }
 template<> int fromToken<float>(float * dst, int size, int stride, const std::string& src){
-	return fromToken(dst,size,stride, src, "0123456789-+.","%g");
+	return fromToken(dst,size,stride, src, "0123456789-+.");
 }
 template<> int fromToken<double>(double * dst, int size, int stride, const std::string& src){
-	return fromToken(dst,size,stride, src, "0123456789-+.","%lg");
+	return fromToken(dst,size,stride, src, "0123456789-+.");
 }
 template<> int fromToken<std::string>(std::string * dst, int size, int stride, const std::string& src){
 	const char * s = src.c_str();
