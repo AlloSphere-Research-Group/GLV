@@ -4,6 +4,10 @@ project(GLV)
 message("==== Configuring GLV")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules")
 
+if(NOT DEFINED BUILD_ROOT_DIR)
+  set(BUILD_ROOT_DIR "${CMAKE_SOURCE_DIR}")
+endif(NOT DEFINED BUILD_ROOT_DIR)
+
 # Set window binding and openGL ES usage here
 set(WINDOW_BINDING GLUT)
 set(USE_OPENGL_ES 0)
@@ -40,8 +44,8 @@ set(GLV_SRC src/glv_buttons.cpp
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/GLV)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build/lib)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
+set(LIBRARY_OUTPUT_PATH "${BUILD_ROOT_DIR}/build/lib")
+set(EXECUTABLE_OUTPUT_PATH "${BUILD_ROOT_DIR}/build/bin")
 
 # Dependencies
 find_package(GLEW REQUIRED)
@@ -86,6 +90,13 @@ file(GLOB GLV_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} GLV/*.h)
 add_library(GLV ${GLV_SRC} ${WINDOW_BINDING_SRC} ${GLV_HEADERS})
 target_link_libraries(GLV ${GLV_LINK_LIBRARIES})
 
+# Copy headers to build directory (only if header has changed)
+foreach(header ${GLV_HEADERS})
+	execute_process(COMMAND ${CMAKE_COMMAND} -E
+					copy_if_different "${header}" "${BUILD_ROOT_DIR}/build/include/${header}"
+					WORKING_DIRECTORY  "${CMAKE_CURRENT_SOURCE_DIR}")
+endforeach()
+
 # Examples
 if(NOT NO_EXAMPLES)
 file(GLOB EXAMPLE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} example/*.cpp)
@@ -97,5 +108,5 @@ endforeach(example)
 endif(NOT NO_EXAMPLES)
 
 # installation
-install(DIRECTORY GLV/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include/GLV)
-install(TARGETS GLV DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(FILES ${GLV_HEADERS} DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
+install(TARGETS GLV DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
