@@ -466,6 +466,35 @@ bool ListView::onEvent(Event::t e, GLV& g){
 }
 
 
+
+DropDown::DropDown(const Rect& r, float textSize)
+:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
+{	init(); }
+
+DropDown::DropDown(
+	const Rect& r,
+	const std::string& item1, const std::string& item2,
+	float textSize
+)
+:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
+{	init(); addItem(item1).addItem(item2); }
+
+DropDown::DropDown(
+	const Rect& r,
+	const std::string& item1, const std::string& item2, const std::string& item3,
+	float textSize
+)
+:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
+{	init(); addItem(item1).addItem(item2).addItem(item3); }
+
+DropDown::DropDown(
+	const Rect& r,
+	const std::string& item1, const std::string& item2, const std::string& item3, const std::string& item4,
+	float textSize
+)
+:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
+{	init(); addItem(item1).addItem(item2).addItem(item3).addItem(item4); }
+
 DropDown::~DropDown(){
 	mItemList.remove();
 }
@@ -474,17 +503,17 @@ void DropDown::init(){ //printf("DropDown::init\n");
 	mItemList.disable(Visible);
 	
 	// Set padding so text appears vertically centered
-	paddingX(font().size()/2 + h/2);
-	//padding(6);
+	//paddingX(font().size()/2 + h/2);
 }
 
 DropDown& DropDown::addItem(const std::string& v){
 	items().push_back(v);
-	if(items().size() == 1) setValue(items()[0]);
 
 	mItemList.data().set(&items()[0], 1, items().size());
 	mItemList.clipIndices();
 	mItemList.fitExtent();
+
+	if(items().size() == 1) setValue(items()[0]);
 
 	return *this;
 }
@@ -623,8 +652,7 @@ bool DropDown::onEvent(Event::t e, GLV& g){
 }
 
 bool DropDown::onAssignData(Data& d, int ind1, int ind2){
-	//printf("DropDown: onAssignData\n");
-	//d.print();
+	//printf("DropDown: onAssignData\n"); d.print();
 	// ind1 and ind2 are always zero since TextView is one value
 	
 	// check if new string value is in our list
@@ -632,6 +660,7 @@ bool DropDown::onAssignData(Data& d, int ind1, int ind2){
 	int itemIndex = mItemList.data().indexOf(itemString);
 	if(Data::npos != itemIndex){
 		mSelectedItem = itemIndex;
+		//printf("DropDown: selectedItem = %d\n", itemIndex);
 		mItemList.selectValue(itemString);
 	}
 	TextView::onAssignData(d, ind1, ind2);
@@ -1038,7 +1067,7 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 			//case Key::Return:
 				if(!mTextEntryMode){ // bring up the text entry box
 					mTextEntryMode=true;
-					mTextEntry.filter(TextView::filterNumeric).paddingY(2);
+					mTextEntry.filter(TextView::filterNumeric).paddingY(3);
 					(*this) << mTextEntry;
 					mTextEntry.setValue(toString(getValue()));
 					mTextEntry.selectAll();
@@ -1076,49 +1105,18 @@ void NumberDialers::onCellChange(int indexOld, int indexNew){
 }
 
 
-// Old from NumberDialers:
-//	int mVal;				// current fixed-point value
-//	double mValMul;
 
-//	void setWidth(){ w = (h-2)*size(); }
-	
-//	int convert(double v) const { return (v/mValMul) + (v>0. ? 0.5:-0.5); }
-//	int mag() const { return pow(10., numDigits()-1-dig()); }
+NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
+:	NumberDialers(numInt,numFrac,max,min,1,1)
+{
+	padding(2);
+}
 
-//	void valAdd(int v){	valSet(v + mVal); }
-//	int valInt(int ix, int iy=0){ return convert(data().at<double>(ix,iy)); }
-//	void flipSign(){
-//		if((mVal>0 && -mVal>=convert(mMin)) || (mVal<0 && -mVal<=convert(mMax)))
-//			valSet(-mVal);
-//	}
-
-//	void valSet(int v){	// converts fixed point to floating point value
-////		mVal = glv::clip(v, convert(mMax), convert(mMin));
-////		double val = mVal * mValMul;
-////		Widget::setValue(val);
-//
-//		double val = v * mValMul;
-//		setValue(val);
-//	}
-
-//	NumberDialers& setValue(double v){ valSet(convert(v)); return *this; }
-
-//	virtual bool onAssignData(Data& d, int ind1, int ind2){
-//	
-////		double v = d.at<double>(ind1, ind2);		
-////		int vi = convert(v);
-//////		mVal = glv::clip(v, convert(mMax), convert(mMin));
-//////		double val = mVal * mValMul;		
-////		mVal = vi;
-//	
-//		if(Widget::onAssignData(d, ind1, ind2)){
-//			double v = d.at<double>(ind1, ind2);
-//			mVal = convert(v); //printf("%d\n", mVal);
-//			return true;
-//		}
-//		return false;
-//	}
-
+NumberDialer::NumberDialer(const NumberDialer& v)
+:	NumberDialers(v)
+{	
+	padding(2);
+}
 
 
 // Base class for number displaying/editing box(es)

@@ -25,7 +25,7 @@ TimeScope::TimeScope(const glv::Rect& r, int frames, int chans)
 {
 	range(-1,1, 1);
 	//range( 0,1, 0);
-	showAxes(false);
+	showAxis(false);
 	major(1, 1);
 	minor(4, 1);
 	

@@ -22,10 +22,26 @@ public:
 
 	virtual ~PresetControl();
 
-	bool setPreset(const std::string& v);
+	/// Load a given preset
+	bool setPreset(const std::string& name);
 
+	/// Load presets from the file configured through the model manager
 	bool loadFile();
+
+	/// Set the model manager from which to access preset data
 	PresetControl& modelManager(ModelManager& v){ mMM = &v; return *this; }
+
+	/// Bind to a top-level GLV interface
+
+	/// This prepares the GUI model manager and then attaches it to the preset
+	/// control. All widgets that are to be saved in the preset must be named
+	/// (through the View::name method) and added to the GUI before calling this
+	/// method.
+	///
+	/// @param[in] gui		GUI from which to attach its model manager
+	/// @param[in] name		A name given to the model manager and preset file.
+	///						An empty string bypasses this option.
+	void bind(GLV& gui, const char * name = "");
 
 	SearchBox& searchBox(){ return mSearchBox; }
 
@@ -134,8 +150,8 @@ protected:
 	
 	// Get y position of ith element
 	float getY(double i) const { return dy()*i + 2.; }
-	float seqRight() const { return 32; }
-	float startRight() const { return 8; }
+	float seqRight() const { return 34; }
+	float startRight() const { return 6; }
 
 	int loadCurrentPos();
 

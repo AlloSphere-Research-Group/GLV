@@ -137,6 +137,32 @@ void View::makeLastSibling(){
 }
 
 
+void View::getChildren(std::vector<View*>& children, TraversalAction& predicate){
+	children.clear();
+	View * c = child;
+	while(c){
+		if(predicate(c, 1)) children.push_back(c);
+		c = c->sibling;
+	}
+}
+
+void View::getDescendents(std::vector<View*>& descendents, TraversalAction& predicate){
+	descendents.clear();
+	
+	struct Action : TraversalAction {
+		std::vector<View*>& desc;
+		TraversalAction& pred;
+		
+		Action(std::vector<View*>& d, TraversalAction& p): desc(d), pred(p){}
+		bool operator()(View * v, int depth){
+			if(pred(v,depth)) desc.push_back(v);
+			return true;
+		}
+	} action(descendents, predicate);
+	traverseDepth(action);
+}
+
+
 // Compute translation from this View to target's parent
 // We do this by traversing the tree upwards and accumulating positions.
 bool View::absToRel(View * v, space_t & x, space_t & y) const{
@@ -329,6 +355,13 @@ void View::doDraw(GLV& g){
 	if(enabled(DrawBack)){
 		color(colors().back);
 		rectangle(0,0, w,h);
+		/*float verts[4*2] = { 0,0, 0,h, w,0, w,h };
+		Color& colbg = colors().back;
+		//Color& colfg = colors().fore;
+		Color& colbd = colors().border;
+		Color colsh = colbg*0.9 + colbd*0.1;
+		Color cols[4] = { colbg, colsh, colbg, colsh };
+		paint(TriangleStrip, (Point2 *)verts, cols, 4);*/
 	}
 
 	bool drawNext = true;
@@ -439,16 +472,23 @@ View * View::findTarget(space_t &x, space_t &y){
 }
 
 
-void View::fit(){
+void View::fit(bool moveChildren){
 	if(child){			
 		Rect r = unionOfChildren();
 		//printf("%s: ", name().c_str()); r.print(); print();
 		
-		// FIXME: If children have negative positions, this doesn't work.
-		// The children might need to be translated.
-		extent(r.right(), r.bottom());
-		//extent(r.width(), r.height());
-		//printf("%s: ", name().c_str()); print();
+		if(moveChildren){
+			View * v = child;
+			while(v){
+				v->l -= r.l;
+				v->t -= r.t;
+				v = v->sibling;
+			}
+			extent(r.width(), r.height());
+		}
+		else{
+			set(r);
+		}
 	}
 }
 
@@ -582,15 +622,15 @@ const View * View::posAbs(space_t& al, space_t& at) const{
 void View::printDescendents() const {
 
 	struct A : ConstTraversalAction{
-		bool operator()(const View * v, int depth){
+		bool operator()(const View * v, int depth) const {
 			for(int i=0; i<depth; ++i) printf("|\t");
 			const std::string& nm = v->name();
 			printf("%s %p %s\n", v->className(), v, (nm[0] ? "\"" + nm + "\"" : nm).c_str());
 			return true;
 		}	
-	} a;
+	};
 	
-	traverseDepth(a);
+	traverseDepth(A());
 }
 
 void View::printFlags() const{
@@ -683,7 +723,7 @@ View& View::root(){
 
 
 #define TRAVERSE_DEPTH(Qual, qual)\
-void View::traverseDepth(Qual##TraversalAction& action) qual {\
+void View::traverseDepth(qual Qual##TraversalAction& action) qual {\
 	qual View * const root = this;\
 	qual View * n = root;\
 	int depth = 0;\

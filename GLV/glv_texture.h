@@ -29,6 +29,7 @@ public:
 	/// @param[in] pixels	external texel buffer
 	/// @param[in] format	color format of external buffer
 	/// @param[in] type		color data type of external buffer
+	/// @param[in] doesLoad	whether or not to load texture onto GPU
 	Texture2(
 		GLsizei width, GLsizei height, GLvoid * pixels,
 		GLenum format=GL_RGB, GLenum type=GL_UNSIGNED_BYTE,
@@ -57,7 +58,9 @@ public:
 	void dealloc();
 
 	Texture2& bind();							///< Bind self to current context
-	Texture2& draw(								///< Draw texture to rectangular quad
+	
+	/// Draw texture to rectangular quad
+	Texture2& draw(
 		float ql, float qt, float qr, float qb,
 		float tl=0, float tt=1, float tr=1, float tb=0
 	);
@@ -76,6 +79,9 @@ public:
 	Texture2& magFilter(GLenum v);				///< Set mag filter
 	Texture2& wrapMode(GLenum v);				///< Set wrap mode
 
+	/// Set texel update region
+	Texture2& updateRegion(int x, int y, int w, int h);
+
 private:
 	GLuint mID;
 	GLsizei w, h;
@@ -90,6 +96,7 @@ private:
 
 	GLenum mMagFilter;	// GL_LINEAR, GL_NEAREST
 	GLenum mWrapMode;	// GL_CLAMP_TO_EDGE, GL_REPEAT
+	int mUpdateRegion[4]; // update region (x,y,w,h)
 
 	void sendParams();
 };
