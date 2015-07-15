@@ -108,5 +108,5 @@ endforeach(example)
 endif(NOT NO_EXAMPLES)
 
 # installation
-install(FILES ${GLV_HEADERS} DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
+install(FILES ${GLV_HEADERS} DESTINATION "${CMAKE_INSTALL_PREFIX}/include/GLV")
 install(TARGETS GLV DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
