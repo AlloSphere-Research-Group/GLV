@@ -73,6 +73,8 @@ public:
 	virtual const char * className() const { return "Label"; }
 	virtual void onDraw(GLV& g);
 
+	virtual std::string onDebug() const;
+
 protected:
 	float mAlignX, mAlignY;
 	unsigned short mStroke;
@@ -402,6 +404,8 @@ public:
 	virtual bool onEvent(Event::t e, GLV& g);
 
 	virtual void onCellChange(int indexOld, int indexNew);
+
+	virtual std::string onDebug() const;
 
 protected:
 	//Lazy<TextView> mTextEntry;

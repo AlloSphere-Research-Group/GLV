@@ -117,6 +117,14 @@ void Label::rotateRect(){
 	transpose();
 }
 
+std::string Label::onDebug() const{
+	std::string msg;
+	if(getValue().empty()){
+		msg += "\tString is empty.\n";
+	}
+	return msg;
+}
+
 
 
 
@@ -1104,6 +1112,23 @@ void NumberDialers::onCellChange(int indexOld, int indexNew){
 //	mTextEntry.remove();
 }
 
+std::string NumberDialers::onDebug() const {
+	std::string msg;
+	if(sizeInteger() < 0){
+		msg += "\tSize of integer part is negative.\n";
+	}
+	else if(sizeInteger() > 9){
+		msg += "\tSize of integer part is " + toString(sizeInteger()) + ".\n";
+	}
+
+	if(sizeFraction() < 0){
+		msg += "\tSize of fraction part is negative.\n";
+	}
+	else if(sizeFraction() > 9){
+		msg += "\tSize of fraction part is " + toString(sizeFraction()) + ".\n";
+	}
+	return msg;
+}
 
 
 NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
