@@ -144,12 +144,7 @@ bool PresetControl::loadFile(){
 		fprintf(stderr, "From PresetControl::loadFile: Attempt to load file without a ModelManager\n");
 	}
 	else if(mMM->snapshotsFromFile()){
-		const std::string name = "default";
-		if(mMM->snapshots().count(name)){
-			mMM->loadSnapshot(name);
-			mSearchBox.setValue(name);
-			mSearchBox.cursorEnd();
-		}
+		setPreset("default");
 		return true;
 	}
 	return false;
