@@ -909,6 +909,15 @@ ParamPanel& ParamPanel::addParamGroup(
 
 ParamPanel& ParamPanel::addParamGroup(
 	View& v1, const std::string& l1,
+	const std::string& groupName, bool prefixGroup, bool nameViews
+){
+	View * v[] = {&v1};
+	const std::string * l[] = {&l1};
+	return addParamGroup(v,l,1, groupName, prefixGroup, nameViews);
+}
+
+ParamPanel& ParamPanel::addParamGroup(
+	View& v1, const std::string& l1,
 	View& v2, const std::string& l2,
 	const std::string& groupName, bool prefixGroup, bool nameViews
 ){

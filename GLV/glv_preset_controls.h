@@ -220,7 +220,15 @@ public:
 		bool nameViewsFromLabels=true
 	);
 
-	/// Add two control widgets grouped in a row with labels underneath
+	/// Add control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View& view1, const std::string& label1,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
+	);
+
+	/// Add control widgets grouped in a row with labels underneath
 	ParamPanel& addParamGroup(
 		View& view1, const std::string& label1,
 		View& view2, const std::string& label2,
@@ -229,7 +237,7 @@ public:
 		bool nameViewsFromLabels=true
 	);
 
-	/// Add three control widgets grouped in a row with labels underneath
+	/// Add control widgets grouped in a row with labels underneath
 	ParamPanel& addParamGroup(
 		View& view1, const std::string& label1,
 		View& view2, const std::string& label2,
@@ -239,7 +247,7 @@ public:
 		bool nameViewsFromLabels=true
 	);
 
-	/// Add four control widgets grouped in a row with labels underneath
+	/// Add control widgets grouped in a row with labels underneath
 	ParamPanel& addParamGroup(
 		View& view1, const std::string& label1,
 		View& view2, const std::string& label2,
@@ -250,7 +258,7 @@ public:
 		bool nameViewsFromLabels=true
 	);
 
-	/// Add five control widgets grouped in a row with labels underneath
+	/// Add control widgets grouped in a row with labels underneath
 	ParamPanel& addParamGroup(
 		View& view1, const std::string& label1,
 		View& view2, const std::string& label2,
