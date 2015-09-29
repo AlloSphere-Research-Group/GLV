@@ -154,9 +154,6 @@ protected:
 	float startRight() const { return 6; }
 
 	int loadCurrentPos();
-
-	static void ntUpdatePlot(const Notification& n);
-	static float warp(float x, float crv, float smt);
 	std::string pathsName() const;
 };
 
@@ -176,9 +173,7 @@ public:
 	ModelManager& pathModelManager(){ return pathView().pathModelManager(); }
 
 	/// Set state model manager
-	PathEditor& stateModelManager(ModelManager& v){
-		mPathView.modelManager(v); return *this;
-	}
+	PathEditor& stateModelManager(ModelManager& v);
 	
 	virtual void onDraw(GLV& g);
 	virtual const char * className() const { return "PathEditor"; }
@@ -189,8 +184,6 @@ protected:
 	Scroll mScroll;
 	Group mHeader;
 	PathView mPathView;
-	
-	static void ntSelection(const Notification& n);
 };
 
 
