@@ -60,11 +60,11 @@ test: $(LIB_PATH) FORCE
 	@$(MAKE) --no-print-directory test/test_units.cpp
 
 buildtest: test
-	@$(MAKE) --no-print-directory example/*.cpp AUTORUN=0
+	@$(MAKE) --no-print-directory examples/*.cpp AUTORUN=0
 
 
-# Compile and run source files in example/ or test/ folder
-EXEC_TARGETS = example/%.cpp test/%.cpp
+# Compile and run source files in examples/ or test/ folder
+EXEC_TARGETS = examples/%.cpp test/%.cpp
 .PRECIOUS: $(EXEC_TARGETS)
 $(EXEC_TARGETS): $(LIB_PATH) FORCE
 	@$(CXX) $(CFLAGS) -o $(BIN_DIR)$(*F) $@ $(LIB_PATH) $(LDFLAGS)
