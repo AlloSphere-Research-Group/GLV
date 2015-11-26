@@ -101,7 +101,7 @@
 		}
 
 
-#elif defined(WIN32)
+#elif defined(_WIN32) || defined(WIN32)
 	
 	#define GLV_PLATFORM		"WIN32"
 	#define GLV_PLATFORM_WIN
