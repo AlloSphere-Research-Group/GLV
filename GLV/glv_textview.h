@@ -73,6 +73,8 @@ public:
 	virtual const char * className() const { return "Label"; }
 	virtual void onDraw(GLV& g);
 
+	virtual std::string onDebug() const;
+
 protected:
 	float mAlignX, mAlignY;
 	unsigned short mStroke;
@@ -403,6 +405,8 @@ public:
 
 	virtual void onCellChange(int indexOld, int indexNew);
 
+	virtual std::string onDebug() const;
+
 protected:
 	//Lazy<TextView> mTextEntry;
 	static TextView mTextEntry;
@@ -419,9 +423,9 @@ protected:
 	int numDigits() const { return mNI + mNF + numSignDigits(); }
 	int numSignDigits() const { return mShowSign ? 1:0; }
 	int signPos() const { return mShowSign ? 0 : -1; }
-	int valInt(int ix, int iy=0) const {
+	long long valInt(int ix, int iy=0) const {
 		double v = data().at<double>(ix,iy);
-		return (int)(v * pow(10., mNF) + (v>0. ? 0.5:-0.5));
+		return (long long)(v * pow(10., mNF) + (v>0. ? 0.5:-0.5));
 	}
 
 	double mag(int digit) const { return pow(10., numDigits()-1-digit - mNF); }

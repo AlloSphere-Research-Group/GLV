@@ -577,6 +577,13 @@ public:
 	/// Add models of all named child Views to model manager
 	void addModels(ModelManager& m);
 
+
+	/// Should return a message if an error/warning, otherwise, empty string
+	virtual std::string onDebug() const { return ""; }
+
+	/// Prints out any warnings/errors reported by the View and its descendents
+	void debug() const;
+
 protected:
 	friend class GLV;
 	typedef std::map<Event::t, EventHandlers> EventHandlersMap;

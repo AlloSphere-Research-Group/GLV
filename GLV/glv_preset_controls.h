@@ -154,9 +154,6 @@ protected:
 	float startRight() const { return 6; }
 
 	int loadCurrentPos();
-
-	static void ntUpdatePlot(const Notification& n);
-	static float warp(float x, float crv, float smt);
 	std::string pathsName() const;
 };
 
@@ -176,9 +173,7 @@ public:
 	ModelManager& pathModelManager(){ return pathView().pathModelManager(); }
 
 	/// Set state model manager
-	PathEditor& stateModelManager(ModelManager& v){
-		mPathView.modelManager(v); return *this;
-	}
+	PathEditor& stateModelManager(ModelManager& v);
 	
 	virtual void onDraw(GLV& g);
 	virtual const char * className() const { return "PathEditor"; }
@@ -189,8 +184,6 @@ protected:
 	Scroll mScroll;
 	Group mHeader;
 	PathView mPathView;
-	
-	static void ntSelection(const Notification& n);
 };
 
 
@@ -220,7 +213,15 @@ public:
 		bool nameViewsFromLabels=true
 	);
 
-	/// Add two control widgets grouped in a row with labels underneath
+	/// Add control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View& view1, const std::string& label1,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true
+	);
+
+	/// Add control widgets grouped in a row with labels underneath
 	ParamPanel& addParamGroup(
 		View& view1, const std::string& label1,
 		View& view2, const std::string& label2,
@@ -229,7 +230,7 @@ public:
 		bool nameViewsFromLabels=true
 	);
 
-	/// Add three control widgets grouped in a row with labels underneath
+	/// Add control widgets grouped in a row with labels underneath
 	ParamPanel& addParamGroup(
 		View& view1, const std::string& label1,
 		View& view2, const std::string& label2,
@@ -239,7 +240,7 @@ public:
 		bool nameViewsFromLabels=true
 	);
 
-	/// Add four control widgets grouped in a row with labels underneath
+	/// Add control widgets grouped in a row with labels underneath
 	ParamPanel& addParamGroup(
 		View& view1, const std::string& label1,
 		View& view2, const std::string& label2,
@@ -250,7 +251,7 @@ public:
 		bool nameViewsFromLabels=true
 	);
 
-	/// Add five control widgets grouped in a row with labels underneath
+	/// Add control widgets grouped in a row with labels underneath
 	ParamPanel& addParamGroup(
 		View& view1, const std::string& label1,
 		View& view2, const std::string& label2,

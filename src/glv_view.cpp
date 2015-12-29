@@ -619,6 +619,37 @@ const View * View::posAbs(space_t& al, space_t& at) const{
 	return toAbs(al, at);
 }
 
+
+void View::debug() const {
+	struct Action : ConstTraversalAction{
+		virtual bool operator()(const View * v, int depth) const {
+			std::string msg;
+			if(v->width() == 0 || v->height() == 0){
+				msg += "\tWidth or height is zero. View will not be visible.\n";
+			}
+			if(v->width() < 0 || v->height() < 0){
+				msg += "\tWidth or height is negative.\n";
+			}
+			/* This tends to print out too much
+			if(v->parent && (!v->intersects(*v->parent))){
+				msg += "\tRect does not intersect with parent.\n";
+			}//*/
+			msg += v->onDebug();
+			if(!msg.empty()){
+				fprintf(stderr, "%s%s(%p):\n%s\n",
+					v->className(),
+					v->name().empty() ? " " : (" \"" + v->name() + "\" ").c_str(),
+					v,
+					msg.c_str()
+				);
+			}
+			return true;
+		}
+	} action;
+
+	traverseDepth(action);
+}
+
 void View::printDescendents() const {
 
 	struct A : ConstTraversalAction{

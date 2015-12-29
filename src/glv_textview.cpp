@@ -117,6 +117,14 @@ void Label::rotateRect(){
 	transpose();
 }
 
+std::string Label::onDebug() const{
+	std::string msg;
+	if(getValue().empty()){
+		msg += "\tString is empty.\n";
+	}
+	return msg;
+}
+
 
 
 
@@ -959,8 +967,8 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 			float cy = dyCell*j;	// top edge of cell
 
 			// draw number
-			int vali = valInt(i,j);
-			int absVal = vali < 0 ? -vali : vali;
+			long long vali = valInt(i,j);
+			unsigned long absVal = vali < 0 ? -vali : vali;
 			int msd = mNF;	// position from right of most significant digit
 
 			if(absVal > 0){
@@ -977,10 +985,10 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 			str[ic] = '\0';
 			for(int i=0; i<numDigits(); ++i) str[i]=' ';
 
-			int power = 1;
-			bool drawChar = false; // don't draw until non-zero or past decimal point
-
 			if(mShowSign && vali < 0) str[0] = '-';
+
+			unsigned long long power = 1;
+			bool drawChar = false; // don't draw until non-zero or past decimal point
 
 			for(int i=0; i<=msd; ++i){
 				char c = '0' + (absVal % (power*10))/power;
@@ -1104,6 +1112,23 @@ void NumberDialers::onCellChange(int indexOld, int indexNew){
 //	mTextEntry.remove();
 }
 
+std::string NumberDialers::onDebug() const {
+	std::string msg;
+	if(sizeInteger() < 0){
+		msg += "\tSize of integer part is negative.\n";
+	}
+	else if(sizeInteger() > 9){
+		msg += "\tSize of integer part is " + toString(sizeInteger()) + ".\n";
+	}
+
+	if(sizeFraction() < 0){
+		msg += "\tSize of fraction part is negative.\n";
+	}
+	else if(sizeFraction() > 9){
+		msg += "\tSize of fraction part is " + toString(sizeFraction()) + ".\n";
+	}
+	return msg;
+}
 
 
 NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)

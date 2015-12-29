@@ -144,12 +144,7 @@ bool PresetControl::loadFile(){
 		fprintf(stderr, "From PresetControl::loadFile: Attempt to load file without a ModelManager\n");
 	}
 	else if(mMM->snapshotsFromFile()){
-		const std::string name = "default";
-		if(mMM->snapshots().count(name)){
-			mMM->loadSnapshot(name);
-			mSearchBox.setValue(name);
-			mSearchBox.cursorEnd();
-		}
+		setPreset("default");
 		return true;
 	}
 	return false;
@@ -184,8 +179,7 @@ bool PresetControl::onEvent(Event::t e, GLV& g){
 	return true;
 }
 
-
-
+////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 static void insertCopy(std::vector<T>& src, int to, int from){
@@ -210,6 +204,37 @@ static void pointerLine(float l, float t, float r, float b){
 	draw::paint(draw::LineStrip, (Point2*)pts, GLV_ARRAY_SIZE(pts)/2);
 }
 
+static float warp(float x, float crv, float smt){
+	static const float eps = 1e-8;
+	if(crv>eps || crv<-eps){	// avoid divide by zero when c is near 0
+		x = (1.f - exp(-crv*x))/(1.f - exp(-crv));
+	}
+	if(smt>0){
+		//x = x*x*(3.f - 2.f*x);
+
+		//float c = 1/smt;
+		//x = (2*x-1)/(c + fabs(2*x-1))*(c+1)*0.5 + 0.5;
+	}
+	
+//	if(smt <= -1)		smt =-0.999;
+//	else if(smt >= 1)	smt = 0.999;
+//	x = -cos(M_PI*x)/(1 + smt*cos(2*M_PI*x))*(1+smt)*0.5+0.5;
+	
+	/*
+		// truncated rational sigmoid
+		float c = 1/smt;
+		x = (2*x-1)/(c + abs(2*x-1))*(c+1)*0.5 + 0.5
+		
+		// smooth cosine rational
+		// c controls "knee" amount
+		// c in [0, 0.36)	flat tops (square-like)
+		// c in [0.36, 1)	overshoot
+		// c in [-0.2, 0)	smooth line (triangle-like)
+		// c in [x, -0.2)	mid-shelf
+		x = cos(PI*x)/(1 + c*cos(2*PI*x))*(1+c)*0.5+0.5
+	*/
+	return x;
+}
 
 
 PathView::PathView(space_t width)
@@ -237,9 +262,15 @@ PathView::PathView(space_t width)
 	mSmt.disable(DrawBorder | DrawBack);
 	mName.disable(DrawBorder | DrawBack);
 	mName.searchBox().disable(DrawBorder | DrawBack);
-	
-	mCrv.attach(ntUpdatePlot, Update::Value, this);
-	mSmt.attach(ntUpdatePlot, Update::Value, this);
+
+	struct F{
+		static void ntUpdatePlot(const Notification& n){
+			n.receiver<PathView>()->updatePlot();
+		}
+	};
+
+	mCrv.attach(F::ntUpdatePlot, Update::Value, this);
+	mSmt.attach(F::ntUpdatePlot, Update::Value, this);
 	
 	//mPlotWarp.disable(DrawBorder);
 	
@@ -251,9 +282,7 @@ PathView::PathView(space_t width)
 	(*this) << mDur << mCrv << mSmt << mName;
 }
 
-void PathView::ntUpdatePlot(const Notification& n){
-	n.receiver<PathView>()->updatePlot();
-}
+
 
 
 float PathView::duration() const {
@@ -750,43 +779,11 @@ int PathView::loadCurrentPos(){
 	return ix;
 }
 
-float PathView::warp(float x, float crv, float smt){
-	static const float eps = 1e-8;
-	if(crv>eps || crv<-eps){	// avoid divide by zero when c is near 0
-		x = (1.f - exp(-crv*x))/(1.f - exp(-crv));
-	}
-	if(smt>0){
-		//x = x*x*(3.f - 2.f*x);
-
-		//float c = 1/smt;
-		//x = (2*x-1)/(c + fabs(2*x-1))*(c+1)*0.5 + 0.5;
-	}
-	
-//	if(smt <= -1)		smt =-0.999;
-//	else if(smt >= 1)	smt = 0.999;
-//	x = -cos(M_PI*x)/(1 + smt*cos(2*M_PI*x))*(1+smt)*0.5+0.5;
-	
-	/*
-		// truncated rational sigmoid
-		float c = 1/smt;
-		x = (2*x-1)/(c + abs(2*x-1))*(c+1)*0.5 + 0.5
-		
-		// smooth cosine rational
-		// c controls "knee" amount
-		// c in [0, 0.36)	flat tops (square-like)
-		// c in [0.36, 1)	overshoot
-		// c in [-0.2, 0)	smooth line (triangle-like)
-		// c in [x, -0.2)	mid-shelf
-		x = cos(PI*x)/(1 + c*cos(2*PI*x))*(1+c)*0.5+0.5
-	*/
-	return x;
-}
-
-
 //static void ntPresetControlAction(const Notification& n){
 //	printf("action 52!\n");
 //}
 
+////////////////////////////////////////////////////////////////////////////////
 
 PathEditor::PathEditor(const Rect& r)
 :	Table("<<<,<--,<--")
@@ -824,7 +821,30 @@ PathEditor::PathEditor(const Rect& r)
 	mPathView.stretch(1,0);
 	mPathView.disable(DrawBorder);
 	mPathView.disable(DrawBack);
-	mPathView.attach(ntSelection, Update::Selection, this);
+
+	struct F{
+		static void ntSelection(const Notification& n){
+			PathView& S = *n.sender<PathView>();
+			PathEditor& R = *n.receiver<PathEditor>();
+			const ChangedSelection& D = *n.data<ChangedSelection>();
+
+			Rect vrect = S.visibleRegion();
+			int itop = vrect.top() / S.dy();
+			int ibot = vrect.bottom() / S.dy();
+			//int isel = snd.selected();
+
+			//printf("%d %d\n", itop, ibot);
+
+			if(D.newIndex <= itop || D.newIndex >= ibot){
+				//mScroll.pageY(-1);
+				//rcv.mScroll.scrollY(-snd.dy());
+				R.mScroll.scrollTopTo(D.newIndex * S.dy());
+				R.mScroll.pageY(0.5);
+			}
+		}
+	};
+
+	mPathView.attach(F::ntSelection, Update::Selection, this);
 
 	//mPathPresetControl.searchBox().attach(ntPresetControlAction, Update::Action, this);
 	
@@ -848,32 +868,18 @@ PathEditor::PathEditor(const Rect& r)
 	arrange();
 }
 
+PathEditor& PathEditor::stateModelManager(ModelManager& v){
+	mPathView.modelManager(v);
+	return *this;
+}
+
 void PathEditor::onDraw(GLV& g){
 	draw::color(colors().text);
 	mPathView.drawHeader(0, mHeader.top()+2);
 }
 
-void PathEditor::ntSelection(const Notification& n){
-	PathView& S = *n.sender<PathView>();
-	PathEditor& R = *n.receiver<PathEditor>();
-	const ChangedSelection& D = *n.data<ChangedSelection>();
 
-	Rect vrect = S.visibleRegion();
-	int itop = vrect.top() / S.dy();
-	int ibot = vrect.bottom() / S.dy();
-	//int isel = snd.selected();
-
-//	printf("%d %d\n", itop, ibot);
-
-	if(D.newIndex <= itop || D.newIndex >= ibot){
-		//mScroll.pageY(-1);
-		//rcv.mScroll.scrollY(-snd.dy());
-		R.mScroll.scrollTopTo(D.newIndex * S.dy());
-		R.mScroll.pageY(0.5);
-	}
-}
-
-
+////////////////////////////////////////////////////////////////////////////////
 
 ParamPanel::ParamPanel()
 :	Table("><")
@@ -910,6 +916,15 @@ ParamPanel& ParamPanel::addParamGroup(
 	table.arrange();
 	*this << table << (new Label(groupName))->size(6);
 	return *this;
+}
+
+ParamPanel& ParamPanel::addParamGroup(
+	View& v1, const std::string& l1,
+	const std::string& groupName, bool prefixGroup, bool nameViews
+){
+	View * v[] = {&v1};
+	const std::string * l[] = {&l1};
+	return addParamGroup(v,l,1, groupName, prefixGroup, nameViews);
 }
 
 ParamPanel& ParamPanel::addParamGroup(
