@@ -158,7 +158,7 @@ Texture2& Texture2::format(GLenum v){ mFormat=v; return *this; }
 Texture2& Texture2::magFilter(GLenum v){ mMagFilter=v; return *this; } 
 Texture2& Texture2::wrapMode(GLenum v){ mWrapMode=v; return *this; } 
 
-Texture2& Texture2::send(){
+Texture2& Texture2::send(const GLvoid * pixels){
 
 /*	void glTexSubImage2D(	GLenum target,
 							GLint level,
@@ -175,8 +175,6 @@ Texture2& Texture2::send(){
 	if(tw < 0) tw = w+1+tw;
 	int th = mUpdateRegion[3];
 	if(th < 0) th = h+1+th;
-	
-	int bytesPerTexel = compsInFormat(mFormat) * bytesInType(mType);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, w);
@@ -185,7 +183,7 @@ Texture2& Texture2::send(){
 		GL_TEXTURE_2D, 0,
 		tx, ty,
 		tw, th,
-		mFormat, mType, (GLvoid*)((char*)mPixels + (ty*w + tx)*bytesPerTexel)
+		mFormat, mType, pixels
 	);
 	
 	// change back to defaults
@@ -193,6 +191,13 @@ Texture2& Texture2::send(){
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 
 	return *this;
+}
+
+Texture2& Texture2::send(){
+	int tx = mUpdateRegion[0];
+	int ty = mUpdateRegion[1];
+	int bytesPerTexel = compsInFormat(mFormat) * bytesInType(mType);
+	return send((const char *)mPixels + (ty*w + tx)*bytesPerTexel);
 }
 
 void Texture2::sendParams(){

@@ -125,27 +125,23 @@ public:
 	/// @param[in] size1	size of dimension 1
 	/// @param[in] size2	size of dimension 2
 	/// @param[in] size3	size of dimension 3
-	Indexer(int size1=1, int size2=1, int size3=1){
-		reset();
-		int sizes[] = {size1,size2,size3};
-		setSizes(sizes);
-	}
+	Indexer(int size1=1, int size2=1, int size3=1);
 
 	/// @param[in] sizes	array of dimension sizes
-	Indexer(const int * sizes){
-		reset(); setSizes(sizes);
-	}
+	/// @param[in] offsets	starting indices
+	Indexer(const int * sizes, int * offsets = NULL);
+
 
 	/// Perform one iteration returning whether more elements exist
 	bool operator()() const {
-		if(++mIndex[0] == mSizes[0]){
-			if(++mIndex[1] == mSizes[1]){
-				if(++mIndex[2] == mSizes[2]){
+		if(++mIndex[0] >= mSizes[0]){
+			if(++mIndex[1] >= mSizes[1]){
+				if(++mIndex[2] >= mSizes[2]){
 					return false;
 				}
-				mIndex[1] = 0;
+				mIndex[1] = mOffsets[1];
 			}
-			mIndex[0] = 0;
+			mIndex[0] = mOffsets[0];
 		}
 		return true;
 	}
@@ -172,22 +168,21 @@ public:
 	int size() const { int r=1; for(int i=0; i<N; ++i) r*=size(i); return r; }
 
 	/// Reset position indices
-	Indexer& reset(){ mIndex[0]=-1; for(int i=1; i<N; ++i){mIndex[i]=0;} return *this; }
+	Indexer& reset();
 
 	/// Set dimensions
-	Indexer& shape(const int * sizes, int n){ setSizes(sizes,n); return *this; }
+	Indexer& shape(const int * sizes, int n);
 
 	/// Set dimensions
-	Indexer& shape(int size1, int size2=1, int size3=1){
-		int sizes[] = {size1, size2, size3};
-		return shape(sizes, 3);
-	}
+	Indexer& shape(int size1, int size2=1, int size3=1);
 
 protected:
 	enum{N=3};				// max number of dimensions
 	mutable int mIndex[N];	// indices of current position in array
 	int mSizes[N];			// dimensions of array
-	void setSizes(const int* v, int n=N){ for(int i=0;i<n;++i) mSizes[i]=v[i]; }
+	int mOffsets[N];		// starting offsets
+	void setSizes(const int * v, int n=N);
+	void setOffsets(const int * v=NULL, int n=N);
 };
 
 

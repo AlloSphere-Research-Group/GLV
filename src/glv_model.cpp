@@ -169,6 +169,44 @@ int toToken(std::string& s, const Data& d){
 }
 
 
+Indexer::Indexer(int size1, int size2, int size3){
+	int sizes[] = {size1,size2,size3};
+	setSizes(sizes);
+	setOffsets();
+	reset();
+}
+
+Indexer::Indexer(const int * sizes, int * offsets){
+	setSizes(sizes);
+	setOffsets(offsets);
+	reset();
+}
+
+Indexer& Indexer::reset(){
+	mIndex[0] = mOffsets[0]-1;
+	for(int i=1; i<N; ++i){ mIndex[i] = mOffsets[i]; }
+	return *this;
+}
+
+Indexer& Indexer::shape(const int * sizes, int n){
+	setSizes(sizes,n); return *this;
+}
+
+Indexer& Indexer::shape(int size1, int size2, int size3){
+	int sizes[] = {size1, size2, size3};
+	return shape(sizes, 3);
+}
+
+void Indexer::setSizes(const int * v, int n){
+	for(int i=0;i<n;++i) mSizes[i]=v[i];
+}
+
+void Indexer::setOffsets(const int * v, int n){
+	for(int i=0;i<n;++i) mOffsets[i] = v?v[i]:0;
+}
+
+
+
 // Get iteration count for element-wise operations
 static inline int count(const Data& a, const Data& b){
 	return a.size()<b.size() ? a.size() : b.size();

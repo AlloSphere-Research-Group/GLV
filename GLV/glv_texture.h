@@ -72,7 +72,8 @@ public:
 
 	Texture2& recreate();						///< Recreates texture on GPU using current settings
 
-	Texture2& send();							///< Send pointed to pixels to GPU
+	Texture2& send();							///< Send internal pixels to GPU
+	Texture2& send(const GLvoid * pix);			///< Send pointed to pixels to GPU
 
 	Texture2& format(GLenum v);					///< Set the color format
 	Texture2& type(GLenum v);					///< Set the color data type

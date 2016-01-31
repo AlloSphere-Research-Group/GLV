@@ -65,6 +65,7 @@ Plottable::Plottable(int prim, float stroke)
 :	mPrim(prim), mStroke(stroke), mBlendMode(TRANSLUCENT), mLineStipple(-1),
 	mDrawUnder(false), mUseStyleColor(true), mActive(true)
 {
+	updateRegion(0,0,-1,-1);
 	add(*this);
 }
 
@@ -72,6 +73,7 @@ Plottable::Plottable(int prim, float stroke, const Color& col)
 :	mPrim(prim), mStroke(stroke), mBlendMode(TRANSLUCENT), mLineStipple(-1),
 	mDrawUnder(false), mActive(true)
 {
+	updateRegion(0,0,-1,-1);
 	color(col);
 	add(*this);
 }
@@ -109,6 +111,14 @@ Plottable& Plottable::remove(GraphicsMap& v){
 	return *this;
 }
 
+Plottable& Plottable::updateRegion(int x, int y, int w, int h){
+	mUpdateRegion[0]=x;
+	mUpdateRegion[1]=y;
+	mUpdateRegion[2]=w;
+	mUpdateRegion[3]=h;
+	return *this;
+}
+
 void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	if(!d.hasData() || !active()) return;
 	draw::color(color());
@@ -125,8 +135,18 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 		draw::lineStippling(true);
 	}
 
-	Indexer ind(d.shape()+1); // dimension 0 is non-spatial
-	//onMap(gd, d, ind);
+	int ux = mUpdateRegion[0];
+	int uy = mUpdateRegion[1];
+	int uw = mUpdateRegion[2];
+	int uh = mUpdateRegion[3];
+
+	int endIndices[3] = {
+		ux + uw + (uw < 0 ? d.size(1)+1 : 0),
+		uy + uh + (uh < 0 ? d.size(2)+1 : 0),
+		d.size(3)
+	};
+	int startIndices[3] = { ux, uy, 0 };
+	Indexer ind(endIndices, startIndices);
 
 	{	GraphicsMaps::iterator it = mGraphicsMaps.begin();
 		while(it != mGraphicsMaps.end()){
@@ -198,13 +218,23 @@ PlotDensity::PlotDensity(const Color& c, float hueSpread, int ipol)
 //	add(defaultColorMap());
 }
 
+PlotDensity& PlotDensity::plotRegion(const Interval<double>& vx, const Interval<double>& vy){
+	mRegion[0] = vx; mRegion[1] = vy; return *this;
+}
+
+PlotDensity& PlotDensity::updateRegion(int x, int y, int w, int h){
+	Plottable::updateRegion(x,y,w,h);
+	mTex.updateRegion(x,y,w,h);
+	return *this;
+}
+
 void PlotDensity::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
-	
+
 	int N0 = d.size(0);	// number of "internal" dimensions
 
 	Color col = gd.colors()[0];
 	HSV hsv = col;
-	
+
 	Color col1 = HSV(hsv).rotateHue( mHueSpread);
 	Color col2 = HSV(hsv).rotateHue(-mHueSpread);
 
@@ -307,21 +337,14 @@ void PlotDensity::onContextDestroy(){
 //			Color c = HSV(a, 1, m);
 
 void PlotDensity::onDraw(GraphicsData& b, const Data& d){
-
-//	int Nbytes = mTex.alloc(d.size(1), d.size(2));
-//	if(Nbytes){
-//		mTex.create(); //printf("tex %d: %d bytes\n", mTex.id(), Nbytes);
-//	}
-
-	mTex.create(d.size(1), d.size(2), &b.colors()[0]);
+	// (re)creates texture on GPU only when size changes
+	mTex.create(d.size(1), d.size(2), NULL);
 
 	mTex.magFilter(mIpol ? GL_LINEAR : GL_NEAREST);
 	draw::enable(draw::Texture2D);
-//	draw::color(1,1,1,mColor.a);
 	draw::color(1,1,1,1);
-//	draw::color(mColor);
 	mTex.begin();
-	mTex.send();
+	mTex.send(&b.colors()[0]);
 	mTex.draw(mRegion[0].min(), mRegion[1].max(), mRegion[0].max(), mRegion[1].min());
 	mTex.end();
 	draw::disable(draw::Texture2D);
