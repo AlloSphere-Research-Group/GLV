@@ -21,6 +21,10 @@
 	#define GLV_DUO_PIPE
 #endif
 
+#ifndef M_PI
+	#define M_PI		3.14159265358979323846264338327950288
+#endif
+
 // OpenGL platform-dependent includes
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 //#if defined(__IPHONE_3_0)
@@ -63,7 +67,7 @@
 		#define GL_FUNC_REVERSE_SUBTRACT GL_FUNC_REVERSE_SUBTRACT_OES
 	#endif
 	
-#elif defined (__APPLE__) || defined (OSX)
+#elif defined (__APPLE__) || defined (OSX) || defined(AL_OSX)
 	
 	#define GLV_PLATFORM		"OSX"
 	#define GLV_PLATFORM_OSX
@@ -81,7 +85,7 @@
 			CGLSetParameter(ctx,  kCGLCPSwapInterval, &MacHackVBL); }
 
 
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(AL_LINUX)
 
 	#define GLV_PLATFORM		"UNIX"
 	#define GLV_PLATFORM_UNIX
@@ -101,7 +105,7 @@
 		}
 
 
-#elif defined(_WIN32) || defined(WIN32)
+#elif defined(_WIN32) || defined(WIN32) || defined(AL_WINDOWS)
 	
 	#define GLV_PLATFORM		"WIN32"
 	#define GLV_PLATFORM_WIN
@@ -110,7 +114,6 @@
 	#define WIN32_LEAN_AND_MEAN
 	#define VC_EXTRALEAN
 	#include <windows.h>
-	
 	#ifdef min
 	#undef min
 	#endif

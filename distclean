@@ -1,0 +1,5 @@
+#!/bin/sh
+
+rm -rf build/ CMakeCache.txt CMakeFiles/ cmake_install.cmake Makefile build.ninja rules.ninja GLV.xcodeproj GLV.build CMakeScripts
+rm -rf AlloSystem-build/
+rm -rf doc/html/
