@@ -4,6 +4,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include "glv_conf.h"
 #include <map>
 #include <vector>
 #include <string>
@@ -943,15 +944,9 @@ protected:
 
 template<class T>
 int toString(std::string& dst, const T& src, const char * format){
-	#ifdef WIN32
-		#define TO_STRING_FUNC _snprintf
-	#else
-		#define TO_STRING_FUNC snprintf
-	#endif
 	char buf[32]; 
-	TO_STRING_FUNC(buf, sizeof(buf), format, src);
+	snprintf(buf, sizeof(buf), format, src);
 	dst = buf;
-	#undef TO_STRING_FUNC
 	return 1;
 }
 

@@ -101,7 +101,7 @@
 		}
 
 
-#elif defined(_WIN32) || defined(WIN32)
+#elif defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64) || defined(__MSYS__)
 	
 	#define GLV_PLATFORM		"WIN32"
 	#define GLV_PLATFORM_WIN
@@ -125,7 +125,9 @@
 	#endif
 
 	// note: return value of snprintf() and _snprintf() differ!
-	#define snprintf _snprintf
+	#ifndef __MSYS__
+		#define snprintf _snprintf
+	#endif
 
 	#include <GL/glew.h>
 	#include <gl/gl.h>
