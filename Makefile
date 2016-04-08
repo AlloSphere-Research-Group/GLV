@@ -67,7 +67,7 @@ buildtest: test
 EXEC_TARGETS = examples/%.cpp test/%.cpp
 .PRECIOUS: $(EXEC_TARGETS)
 $(EXEC_TARGETS): $(LIB_PATH) FORCE
-	@$(CXX) $(CFLAGS) -o $(BIN_DIR)$(*F) $@ $(LIB_PATH) $(LDFLAGS)
+	$(CXX) $(CFLAGS) -o $(BIN_DIR)$(*F) $@ $(LIB_PATH) $(LDFLAGS)
 ifneq ($(AUTORUN), 0)
 	@cd $(BIN_DIR) && ./$(*F) &
 endif
@@ -77,5 +77,3 @@ endif
 clean:
 # Clean only removes object files for now; avoids unintentional removal of user files
 	$(call RemoveDir, $(OBJ_DIR))
-
-
