@@ -87,19 +87,24 @@
 	#define GLV_PLATFORM_UNIX
 	#define GLV_OPENGL
 
-	#include <time.h>
-	#include <GL/glew.h>
-	#include <GL/gl.h>
-	#include <GL/glext.h>
-//	#include <GL/glu.h>
-
-	#define GLV_PLATFORM_INIT_CONTEXT\
-		{	GLenum err = glewInit();\
-			if(GLEW_OK != err){\
-  				fprintf(stderr, "GLEW Init Error: %s\n", glewGetErrorString(err));\
-			}\
-		}
-
+    #ifndef GLV_GLFW
+    	#include <time.h>
+    	#include <GL/glew.h>
+    	#include <GL/gl.h>
+    	#include <GL/glext.h>
+    //	#include <GL/glu.h>
+    
+    	#define GLV_PLATFORM_INIT_CONTEXT\
+    		{	GLenum err = glewInit();\
+    			if(GLEW_OK != err){\
+      				fprintf(stderr, "GLEW Init Error: %s\n", glewGetErrorString(err));\
+    			}\
+    		}
+    #else
+        #define GLFW_NO_GLU
+        #define GL_GLEXT_PROTOTYPES
+        #include <GLFW/glfw3.h>
+    #endif
 
 #elif defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64) || defined(__MSYS__)
 	
