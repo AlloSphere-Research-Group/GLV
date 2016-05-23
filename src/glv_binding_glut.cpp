@@ -12,6 +12,8 @@
 #elif defined(GLV_PLATFORM_UNIX)
 	#include <GL/glut.h>
 #elif defined(GLV_PLATFORM_WIN)
+	#define WIN32_LEAN_AND_MEAN
+	#define VC_EXTRALEAN
 	#include <GL/glut.h>
 #endif
 

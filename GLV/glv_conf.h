@@ -105,23 +105,6 @@
 	#define GLV_PLATFORM_WIN
 	#define GLV_OPENGL
 
-	#define WIN32_LEAN_AND_MEAN
-	#define VC_EXTRALEAN
-	#include <windows.h>
-	
-	#ifdef min
-	#undef min
-	#endif
-	#ifdef max
-	#undef max
-	#endif
-	#ifdef far
-	#undef far
-	#endif
-	#ifdef near
-	#undef near
-	#endif
-
 	// note: return value of snprintf() and _snprintf() differ!
 	#ifndef __MSYS__
 		#define snprintf _snprintf
