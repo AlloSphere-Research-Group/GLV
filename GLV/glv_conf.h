@@ -72,7 +72,6 @@
 	#include <OpenGL/OpenGL.h>
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
-//	#include <OpenGL/glu.h>
 
 	#define GLV_PLATFORM_INIT_CONTEXT\
 		{	/* prevents tearing */\
@@ -91,7 +90,6 @@
 	#include <GL/glew.h>
 	#include <GL/gl.h>
 	#include <GL/glext.h>
-//	#include <GL/glu.h>
 
 	#define GLV_PLATFORM_INIT_CONTEXT\
 		{	GLenum err = glewInit();\
@@ -131,12 +129,10 @@
 
 	#include <GL/glew.h>
 	#include <gl/gl.h>
-//	#include <gl/glu.h>
 
 	#pragma comment( lib, "glew32.lib")
 	#pragma comment( lib, "winmm.lib")
 	#pragma comment( lib, "opengl32.lib" )
-//	#pragma comment( lib, "glu32.lib" )
 	
 	#define GLV_PLATFORM_INIT_CONTEXT\
 		{	GLenum err = glewInit();\
