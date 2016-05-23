@@ -14,6 +14,7 @@
 #elif defined(GLV_PLATFORM_WIN)
 	#define WIN32_LEAN_AND_MEAN
 	#define VC_EXTRALEAN
+	#include <windows.h> // Needed to get GLUT to link correctly with MSYS
 	#include <GL/glut.h>
 #endif
 
