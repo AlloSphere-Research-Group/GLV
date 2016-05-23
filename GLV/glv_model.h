@@ -930,12 +930,6 @@ protected:
 
 //	template <int N> bool loadSnapshot(const std::string ** names, const double * c);
 //	template <int N> bool loadSnapshot(const Snapshot ** snapshots, const double * c);
-
-	static std::string namedDataToString(const std::string& s, const Data& d){
-		std::string r;
-		if(d.toToken(r)) r = s + " = " + r + ",\r\n";
-		return r;
-	}
 };
 
 

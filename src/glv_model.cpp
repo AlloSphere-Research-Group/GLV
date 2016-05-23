@@ -824,6 +824,15 @@ int ModelManager::snapshotsFromFile(const std::string& path_in, bool add){
 	return r;
 }
 
+#define GLV_ENDL "\n"
+//#define GLV_ENDL "\r\n"
+
+static std::string namedDataToString(const std::string& s, const Data& d){
+	std::string r;
+	if(d.toToken(r)) r = s + " = " + r + "," GLV_ENDL;
+	return r;
+}
+
 //bool ModelManager::stateToToken(std::string& dst, const std::string& modelName) const {
 //	#define NEWLINE "\r\n"
 //	if(modelName.size())	dst = "[\"" + modelName + "\"] = {"NEWLINE;
@@ -854,9 +863,9 @@ int ModelManager::snapshotsToString(std::string& dst) const {
 	if(!name().empty())	dst = name() + " = ";
 	else				dst = "";
 
-	dst += "{\r\n";
+	dst += "{" GLV_ENDL;
 	while(it != mSnapshots.end()){
-		dst += "[\"" + it->first + "\"] = {\r\n";
+		dst += "[\"" + it->first + "\"] = {" GLV_ENDL;
 		
 		const Snapshot& snapshot = it->second;
 		Snapshot::const_iterator jt = snapshot.begin();
@@ -866,10 +875,10 @@ int ModelManager::snapshotsToString(std::string& dst) const {
 			}
 			++jt;
 		}
-		dst += "},\r\n\r\n";
+		dst += "}," GLV_ENDL GLV_ENDL;
 		++it;
 	}
-	dst += "}\r\n";
+	dst += "}" GLV_ENDL;
 	return dst.size();
 }
 
