@@ -105,11 +105,6 @@
 	#define GLV_PLATFORM_WIN
 	#define GLV_OPENGL
 
-	// note: return value of snprintf() and _snprintf() differ!
-	#ifndef __MSYS__
-		#define snprintf _snprintf
-	#endif
-
 	#include <GL/glew.h>
 	#include <gl/gl.h>
 

@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <stdio.h>
+#include <stdio.h> // snprintf
 
 namespace glv {
 
@@ -938,8 +938,13 @@ protected:
 
 template<class T>
 int toString(std::string& dst, const T& src, const char * format){
-	char buf[32]; 
+	char buf[32];
+	#ifdef GLV_PLATFORM_WIN
+	// This version works correctly on MinGW/MSYS
+	_snprintf(buf, sizeof(buf), format, src);
+	#else
 	snprintf(buf, sizeof(buf), format, src);
+	#endif
 	dst = buf;
 	return 1;
 }
