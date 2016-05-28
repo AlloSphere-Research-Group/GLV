@@ -1,8 +1,7 @@
 #include "glv_model.h"
-//#include <cctype>	// isalnum, isblank
-#include <ctype.h>	// isalnum, isblank
 #include <stdio.h>	// sscanf, FILE
-#include <string.h>	// strchr, strpbrk
+#include <cctype>	// isalnum, isblank
+#include <cstring>	// strchr, strpbrk
 
 //#ifndef WIN32
 //#define	sprintf_s(buffer, buffer_size, stringbuffer, ...) (snprintf(buffer, buffer_size, stringbuffer, __VA_ARGS__))
@@ -10,6 +9,7 @@
 
 namespace glv{
 
+// std::isblank not supported by some compilers!
 bool isBlank(char c){
 	return (c==' ') || (c=='\t');
 }
@@ -19,7 +19,7 @@ bool isIdentifier(const std::string& v){
 	if(isalpha(v[0]) || '_'==v[0]){
 		unsigned i=1;
 		for(; i<v.size(); ++i){
-			if(!(isalnum(v[i]) || '_'==v[i])) break;
+			if(!(std::isalnum(v[i]) || '_'==v[i])) break;
 		}
 		if(v.size()==i) return true;
 	}
@@ -66,10 +66,10 @@ int fromToken<double>(double& dst, const char * src){
 }
 template<>
 int fromToken<std::string>(std::string& dst, const char * src){
-	const char * beg = strchr(src, '\"');
+	const char * beg = std::strchr(src, '\"');
 	if(beg){
 		++beg; // go to char past first "
-		const char * end = strchr(beg, '\"');
+		const char * end = std::strchr(beg, '\"');
 		if(end){
 			dst.assign(beg, end-beg);
 			return 1;
@@ -100,9 +100,9 @@ static int fromToken(
 	const char * s = src.c_str();
 	int i=-1;
 	while(++i<size && s){
-		if(!(s = strpbrk(s, match))) break;
+		if(!(s = std::strpbrk(s, match))) break;
 		fromToken(dst[i*stride], s);
-		s = strpbrk(s, " ,");
+		s = std::strpbrk(s, " ,");
 	}
 	return i;
 }
@@ -122,12 +122,12 @@ template<> int fromToken<std::string>(std::string * dst, int size, int stride, c
 	const char * s = src.c_str();
 	int i=-1;
 	while(++i<size && s){
-		if(!(s = strchr(s, '\"'))) break;
+		if(!(s = std::strchr(s, '\"'))) break;
 		++s;
-		const char * e = strchr(s, '\"');
+		const char * e = std::strchr(s, '\"');
 		if(!e) break;
 		dst[i*stride].assign(s, e-s);
-		s = strpbrk(e, " ,");
+		s = std::strpbrk(e, " ,");
 	}
 	return i;
 }
@@ -900,13 +900,13 @@ struct KeyValueParser{
 		while(*b && *b!='}'){
 			if(isalpha(*b) || *b=='_'){	// is character valid start of identifier?
 				const char * e = b+1;
-				while(isalnum(*e) || *e=='_') ++e;	// go to end of key name
+				while(std::isalnum(*e) || *e=='_') ++e;	// go to end of key name
 				key.assign(b, e-b);
 
 				while(isBlank(*e) || *e=='=') ++e;	// go to '='
 				
 				// find next valid value token
-				b=e=strpbrk(e, "\"{0123456789.-+");
+				b=e=std::strpbrk(e, "\"{0123456789.-+");
 
 				if(!b) b=e=&src[src.size()];	// no more valid tokens, so go to end of string
 
