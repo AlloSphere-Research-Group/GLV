@@ -37,7 +37,7 @@ template<> int toString<float>(std::string& dst, const float& src){
 	return toString(dst, src, "%g");
 }
 template<> int toString<double>(std::string& dst, const double& src){
-	return toString(dst, src, "%lg");
+	return toString(dst, src, "%g");
 }
 template<> int toString<std::string>(std::string& dst, const std::string& src){
 	dst = src; return 1;
@@ -62,7 +62,7 @@ int fromToken<float>(float& dst, const char * src){
 }
 template<>
 int fromToken<double>(double& dst, const char * src){
-	return sscanf(src, "%lg", &dst) > 0;
+	return sscanf(src, "%lg", &dst) > 0; // l specifier only needed for scanf
 }
 template<>
 int fromToken<std::string>(std::string& dst, const char * src){
