@@ -5,7 +5,7 @@
 namespace glv{
 
 View3D::View3D(const Rect& r)
-: View(r), mNear(0.1), mFar(100), mFOVY(45)
+: View(r), mNear(0.1), mFar(100), mFOVY(45), mOrtho(false)
 {
 	resetModelView();
 //	double rxy = 0.1; // rotates opposite direction because its modelview?
@@ -66,7 +66,14 @@ void View3D::onDraw(GLV& g){
 	// Push 3D transforms
 	push(Projection);
 	identity();
-	perspective(mFOVY, (GLfloat)w/(GLfloat)h, mNear, mFar);
+	if(mOrtho){
+		float t = 1.04; // 4% padding
+		float r = t*float(w)/h;
+		draw::ortho(-r,r, -t,t, mNear, mFar);
+	}
+	else{
+		perspective(mFOVY, float(w)/h, mNear, mFar);
+	}
 	
 	push(ModelView);
 	identity();
@@ -89,6 +96,30 @@ void View3D::onDraw(GLV& g){
 
 	// Do 2D drawing
 	onDraw2D(g);
+}
+
+bool View3D::onEvent(Event::t e, GLV& g){
+
+	const Mouse& m = g.mouse();
+	const Keyboard& k = g.keyboard();
+	switch(e){
+		/*case Event::MouseDown:
+			return false;
+
+		case Event::MouseDrag:
+			return false;
+		*/
+
+		case Event::KeyDown:
+			switch(k.key()){
+				case 'i': resetModelView(); return false;
+				case 'o': mOrtho^=true; return false;
+				default:;
+			}
+		default:;
+	}
+
+	return true;
 }
 
 } // glv::
