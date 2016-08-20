@@ -123,9 +123,6 @@ namespace Event{
 		
 		// core events
 		Quit,			/**< Application quit */
-		WindowCreate,	/**< Sent by window upon creation to its attached GLV */ 
-		WindowDestroy,	/**< Sent by window upon destruction to its attached GLV */ 
-		WindowResize,	/**< Sent by window upon resize to its attached GLV */
 		
 		// view events
 		FocusGained,	/**< View got focus */
@@ -143,11 +140,15 @@ namespace Event{
 		KeyUp,			/**< Keyboard key released */
 		KeyRepeat,		/**< Keyboard key auto-repeated */
 		
-//		ValueChanged,	TODO: not system event, but could replace notifications
+		//ValueChanged,	TODO: not system event, but could replace notifications
 		
 		// window events
-	//	WindowActivated,	
-	//	WindowDeactivated,
+		WindowCreate,	/**< Host window created */
+		WindowDestroy,	/**< Host window destroyed */
+		WindowResize,	/**< Host window resized */
+		WindowShow,		/**< Host window just became visible */
+		WindowHide,		/**< Host window just became hidden */
+		
 		Unused,			/**< Add to this for runtime event types */
 		NumTypes		/**< Number of event types */
 	};

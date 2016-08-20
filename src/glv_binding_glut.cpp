@@ -282,7 +282,15 @@ static void glutSpecialUpCB(int key, int x, int y){ keyToGLV(key, false, true); 
 static void glutVisibilityCB(int v){
 	Window::Impl * w = Window::Impl::getWindowImpl();
 	if(w){
-		w->showing(v == GLUT_VISIBLE);
+		GLV * g = Window::Impl::getGLV();
+		if(GLUT_VISIBLE == v){
+			w->showing(true);
+			if(g) g->broadcastEvent(glv::Event::WindowShow);
+		}
+		else{
+			w->showing(false);
+			if(g) g->broadcastEvent(glv::Event::WindowHide);
+		}
 	}
 }
 
