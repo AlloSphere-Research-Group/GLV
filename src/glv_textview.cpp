@@ -103,7 +103,7 @@ void Label::fitExtent(){
 	// align text by translating its current position
 	space_t dw = tw - (w - paddingX()*2);
 	space_t dh = th - (h - paddingY()*2);
-	posAdd(-dw*mAlignX, -dh*mAlignY);
+	translate(-dw*mAlignX, -dh*mAlignY);
 
 	tw += paddingX()*2;
 	th += paddingY()*2;

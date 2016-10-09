@@ -560,7 +560,7 @@ View& View::maximize(){
 
 
 void View::move(space_t x, space_t y){
-	posAdd(x, y);
+	translate(x, y);
 	constrainWithinParent();
 }
 
@@ -676,13 +676,13 @@ void View::printFlags() const{
 void View::reanchor(space_t dx, space_t dy){
 	
 	if(!enabled(Maximized)){
-		posAdd(dx * mAnchorX, dy * mAnchorY);
+		translate(dx * mAnchorX, dy * mAnchorY);
 		extent(w + dx * mStretchX, h + dy * mStretchY);
 //		//printf("%s (%p): % g % g d(% g, % g) s(% g, % g)\n", className(), this, w,h, dx,dy, mStretchX, mStretchY);
 	}
 	else{
 		Rect& RR = mRestoreRect();
-		RR.posAdd(dx * mAnchorX, dy * mAnchorY);
+		RR.translate(dx * mAnchorX, dy * mAnchorY);
 		RR.extent(RR.w + dx * mStretchX, RR.h + dy * mStretchY);
 		if(parent) set(0,0, parent->w, parent->h);
 	}
