@@ -210,7 +210,8 @@ public:
 		View * views[], const std::string * labels[], unsigned count,
 		const std::string& groupName = "",
 		bool prefixViewNamesWithGroupName=true,
-		bool nameViewsFromLabels=true
+		bool nameViewsFromLabels=true,
+		Direction labelDir = Direction::S
 	);
 
 	/// Add control widgets grouped in a row with labels underneath
@@ -218,7 +219,8 @@ public:
 		View& view1, const std::string& label1,
 		const std::string& groupName = "",
 		bool prefixViewNamesWithGroupName=true,
-		bool nameViewsFromLabels=true
+		bool nameViewsFromLabels=true,
+		Direction labelDir = Direction::S
 	);
 
 	/// Add control widgets grouped in a row with labels underneath
@@ -227,7 +229,8 @@ public:
 		View& view2, const std::string& label2,
 		const std::string& groupName = "",
 		bool prefixViewNamesWithGroupName=true,
-		bool nameViewsFromLabels=true
+		bool nameViewsFromLabels=true,
+		Direction labelDir = Direction::S
 	);
 
 	/// Add control widgets grouped in a row with labels underneath
@@ -237,7 +240,8 @@ public:
 		View& view3, const std::string& label3,
 		const std::string& groupName = "",
 		bool prefixViewNamesWithGroupName=true,
-		bool nameViewsFromLabels=true
+		bool nameViewsFromLabels=true,
+		Direction labelDir = Direction::S
 	);
 
 	/// Add control widgets grouped in a row with labels underneath
@@ -248,7 +252,8 @@ public:
 		View& view4, const std::string& label4,
 		const std::string& groupName = "",
 		bool prefixViewNamesWithGroupName=true,
-		bool nameViewsFromLabels=true
+		bool nameViewsFromLabels=true,
+		Direction labelDir = Direction::S
 	);
 
 	/// Add control widgets grouped in a row with labels underneath
@@ -260,9 +265,39 @@ public:
 		View& view5, const std::string& label5,
 		const std::string& groupName = "",
 		bool prefixViewNamesWithGroupName=true,
-		bool nameViewsFromLabels=true
+		bool nameViewsFromLabels=true,
+		Direction labelDir = Direction::S
 	);
-	
+
+	/// Add control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View& view1, const std::string& label1,
+		View& view2, const std::string& label2,
+		View& view3, const std::string& label3,
+		View& view4, const std::string& label4,
+		View& view5, const std::string& label5,
+		View& view6, const std::string& label6,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true,
+		Direction labelDir = Direction::S
+	);
+
+	/// Add control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View& view1, const std::string& label1,
+		View& view2, const std::string& label2,
+		View& view3, const std::string& label3,
+		View& view4, const std::string& label4,
+		View& view5, const std::string& label5,
+		View& view6, const std::string& label6,
+		View& view7, const std::string& label7,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true,
+		Direction labelDir = Direction::S
+	);
+
 	/// Get preset control
 	PresetControl& presetControl(){ return mPresetControl; }
 

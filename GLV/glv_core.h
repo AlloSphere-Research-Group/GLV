@@ -103,7 +103,9 @@ struct Direction{
 		N = 1<<0,	/**< North */
 		E = 1<<1,	/**< East */
 		S = 1<<2,	/**< South */
-		W = 1<<3	/**< West */
+		W = 1<<3,	/**< West */
+
+		Null = 0,	/**< No direction */
 	};
 
 	Direction(): val(0){}
