@@ -913,6 +913,9 @@ public:
 
 	void makeClosed();
 
+	/// Zero values with magnitude less than eps
+	void zeroSmallValues(double eps=1e-12);
+
 protected:
 	std::string mName;				// name identifier
 	std::string mFileDir, mFileName;// directory and name of file

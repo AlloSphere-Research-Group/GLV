@@ -1306,5 +1306,21 @@ void ModelManager::makeClosed(){
 	}
 }
 
+void ModelManager::zeroSmallValues(double eps){
+	for(auto& its : snapshots()){ // (name, Snapshot)
+		for(auto& itd : its.second){ // (name, Data)
+			Data& d = itd.second;
+			if(d.type() == Data::FLOAT || d.type() == Data::DOUBLE){
+				for(int i=0; i<d.size(); ++i){
+					double v = d.at<double>(i);
+					if(-eps <= v && v <= eps){
+						d.assign(0., i);
+					}
+				}
+			}
+		}
+	}
+}
+
 
 } // glv::
