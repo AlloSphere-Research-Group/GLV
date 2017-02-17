@@ -942,12 +942,7 @@ protected:
 template<class T>
 int toString(std::string& dst, const T& src, const char * format){
 	char buf[32];
-	#ifdef GLV_PLATFORM_WIN
-	// This version works correctly on MinGW/MSYS
-	_snprintf(buf, sizeof(buf), format, src);
-	#else
-	snprintf(buf, sizeof(buf), format, src);
-	#endif
+	GLV_SNPRINTF(buf, sizeof(buf), format, src);
 	dst = buf;
 	return 1;
 }

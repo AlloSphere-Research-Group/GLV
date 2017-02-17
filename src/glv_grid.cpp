@@ -94,7 +94,7 @@ void Grid::onDraw(GLV& g){
 					double val = pixToGrid(i, p);
 					if(fabs(val) < 1e-5) val=0;
 					char buf[16];
-					snprintf(buf, sizeof(buf), "%.3g", val);
+					GLV_SNPRINTF(buf, sizeof(buf), "%.3g", val);
 					font().render(g.graphicsData(1), buf, v[0], v[1]);
 				}
 			}
