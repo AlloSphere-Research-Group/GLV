@@ -121,5 +121,12 @@
 
 #endif
 
+#define GLV_SNPRINTF snprintf
+
+#ifdef __MINGW32__
+	#undef GLV_SNPRINTF
+	#define GLV_SNPRINTF _snprintf
+#endif
+
 #endif /* include guard */
 

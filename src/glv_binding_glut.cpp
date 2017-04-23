@@ -451,7 +451,7 @@ void Window::implGameMode(){
 		// use current resolution and refresh rate
 		if(sw && sh){
 			char buf[32];
-			snprintf(buf, sizeof(buf), "%dx%d:24", sw, sh);
+			GLV_SNPRINTF(buf, sizeof(buf), "%dx%d:24", sw, sh);
 			glutGameModeString(buf);
 			
 			//int refresh = glutGameModeGet(GLUT_GAME_MODE_REFRESH_RATE);
