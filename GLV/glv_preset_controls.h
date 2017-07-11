@@ -299,6 +299,9 @@ public:
 		Direction labelDir = Direction::S
 	);
 
+	/// Remove single parameter or group by its name
+	ParamPanel& removeParam(const char * name);
+
 	/// Get preset control
 	PresetControl& presetControl(){ return mPresetControl; }
 

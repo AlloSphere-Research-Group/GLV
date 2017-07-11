@@ -1033,4 +1033,21 @@ ParamPanel& ParamPanel::addParamGroup(
 		groupName, prefixGroup, nameViews, labelDir);
 }
 
+ParamPanel& ParamPanel::removeParam(const char * name){
+	View * view = child;
+	View * prevView = NULL;
+	while(view){
+		if(view->className() == std::string("Label")){
+			if(view->getDataAsString() == name){
+				if(prevView) prevView->remove();
+				view->remove();
+				break;
+			}
+		}
+		prevView = view;
+		view = view->sibling;
+	}
+	return *this;
+}
+
 } // glv::
