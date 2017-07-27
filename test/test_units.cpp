@@ -1,6 +1,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#undef NDEBUG
 #include "glv.h"
 #include <assert.h>
 

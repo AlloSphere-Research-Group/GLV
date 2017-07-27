@@ -59,13 +59,13 @@ public:
 	TRect getOffset(T dl, T dt, T dw=0, T dh=0) const { return TRect(l+dl,t+dt,w+dw,h+dh); }
 
 	void copyUnder(const TRect<T>& from, T by=0);
-	void extent(T v);				///< Set extent to be square.
-	void extent(T w, T h);			///< Set extent.
-	void fitSquare(T v);			///< Set extent to fit in square.
-	void fixNegativeExtent();		///< Fixes negative width or height to be positive.
+	void extent(T v);				///< Set extent to be square
+	void extent(T w, T h);			///< Set extent
+	void fitSquare(T v);			///< Set extent to fit in square
+	void fixNegativeExtent();		///< Fixes negative width or height to be positive
 	void insetFrom(const TRect<T>& from, T inset);	///< Make TRect relative inset from 'from'
-	void pos(T left, T top);		///< Set left-top position.
-	void posAdd(T x, T y);			///< Translate by [x, y] units.
+	void pos(T left, T top);		///< Set left-top position
+	void translate(T x, T y);		///< Translate by [x, y] units
 	void posUnder(const TRect<T>& r, T by=0);
 	
 	/// Position myself relative to another rect.
@@ -76,21 +76,21 @@ public:
 	void posRelTo(const TRect<T>& r, float rxf, float ryf, float xf, float yf, float x=0, float y=0);
 	
 	void posRightOf(const TRect<T>& r, T by=0);
-	void resizeLeftTo(T v);			///< Resize by moving left edge to value.
-	void resizeTopTo(T v);			///< Resize by moving top edge to value.
-	void resizeRightTo(T v);		///< Resize by moving right edge to value.
-	void resizeBottomTo(T v);		///< Resize by moving bottom edge to value.
-	void resizeEdgesBy(T v);		///< Resize by moving edges by value.
-	void set(T left, T top, T width, T height);	///< Set components.
-	void set(const TRect<T>& r);		///< Set components from other TRect.
-	void transpose();				///< Swaps width and height.
+	void resizeLeftTo(T v);			///< Resize by moving left edge to value
+	void resizeTopTo(T v);			///< Resize by moving top edge to value
+	void resizeRightTo(T v);		///< Resize by moving right edge to value
+	void resizeBottomTo(T v);		///< Resize by moving bottom edge to value
+	void resizeEdgesBy(T v);		///< Resize by moving edges by value
+	void set(T left, T top, T width, T height);	///< Set components
+	void set(const TRect<T>& r);		///< Set components from other TRect
+	void transpose();				///< Swaps width and height
 	
-	void left(T v);					///< Set left position.
-	void top(T v);					///< Set top position.
-	void width(T v);				///< Set width.
-	void height(T v);				///< Set height.
-	void bottom(T v);				///< Set bottom edge preserving height.
-	void right(T v);				///< Set right edge preserving width.
+	void left(T v);					///< Set left position
+	void top(T v);					///< Set top position
+	void width(T v);				///< Set width
+	void height(T v);				///< Set height
+	void bottom(T v);				///< Set bottom edge preserving height
+	void right(T v);				///< Set right edge preserving width
 	
 	// Accessors
 	TRect& rect(){return *this;}	///< Returns self
@@ -105,8 +105,8 @@ public:
 	
 	T area() const;					///< Returns area (w x h).
 	void center(T & x, T & y) const;///< Gets center point
-	T centerX() const;				///< Returns center along x axis.
-	T centerY() const;				///< Returns center along y axis.
+	T centerX() const;				///< Returns center along x axis
+	T centerY() const;				///< Returns center along y axis
 	
 	bool containsPoint(T x, T y) const;	///< Returns whether the point is inside the TRect.
 	
@@ -131,6 +131,8 @@ private:
 	void onResizeProxy(T dx, T dy){	// calls onResize if at least 1 dimension has changed
 		if(dx!=T(0) || dy!=T(0)) onResizeRect(dx,dy);
 	}
+public:
+	void posAdd(T x, T y){translate(x,y);} ///< \deprecated
 };
 
 
@@ -172,7 +174,7 @@ TEM inline void TRect<T>::fixNegativeExtent(){
 }
 
 TEM inline void TRect<T>::pos(T le, T to){ l = le; t = to; }
-TEM inline void TRect<T>::posAdd(T x, T y){ l += x; t += y; }
+TEM inline void TRect<T>::translate(T x, T y){ l += x; t += y; }
 TEM inline void TRect<T>::posRightOf(const TRect<T> & r, T by){ pos(r.right() + by, r.t); }
 
 TEM inline void TRect<T>::posRelTo(const TRect<T>& r, float rxf, float ryf, float xf, float yf, float x, float y){

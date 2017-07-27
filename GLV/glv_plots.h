@@ -113,6 +113,9 @@ public:
 	/// Set line stroke width (for lines and points)
 	Plottable& stroke(float v){ mStroke=v; return *this; }
 
+	/// Hint to specify which region of the Data is updated
+	Plottable& updateRegion(int x, int y, int w, int h);
+
 	/// Add a graphics map
 	Plottable& add(GraphicsMap& v);
 
@@ -137,12 +140,12 @@ protected:
 	float mStroke;
 	BlendMode mBlendMode;
 	Color mColor;
+	int mUpdateRegion[4]; // x,y,w,h
 	short mLineStipple;
 	bool mDrawUnder;
 	bool mUseStyleColor;
 	bool mActive;
 	struct POD2{} mPOD2;
-
 };
 
 
@@ -153,19 +156,21 @@ class PlotDensity : public Plottable{
 public:
 
 	/// @param[in] color		plot color
-	/// @param[in] hueSpread	amount spread hue for positive and negative values
+	/// @param[in] hueSpread	hue spread for positive and negative values
 	/// @param[in] interpolate	interpolation (0=none, 1=linear)
 	PlotDensity(const Color& color=Color(1,0,0), float hueSpread=0, int interpolate=0);
 
+	/// Set hue spread for positive and negative values
 	PlotDensity& hueSpread(float v){ mHueSpread=v; return *this; }
 
 	/// Set interpolation mode (0=none, 1=linear)
 	PlotDensity& interpolate(int v){ mIpol=v; return *this; }
 
 	/// Set rectangular plotting region
-	PlotDensity& plotRegion(const Interval<double>& vx, const Interval<double>& vy){
-		mRegion[0] = vx; mRegion[1] = vy; return *this;
-	}
+	PlotDensity& plotRegion(const Interval<double>& vx, const Interval<double>& vy);
+
+	/// Set update region (of texture)
+	PlotDensity& updateRegion(int x, int y, int w, int h);
 
 //	static GraphicsMap& defaultColorMap();
 //

@@ -5,7 +5,7 @@
 	See COPYRIGHT file for authors and license information */
 
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include "glv_core.h"
 #include "glv_plots.h"
 
@@ -80,7 +80,7 @@ protected:
 		float max;
 		
 		void operator()(float v){
-			float absv = ::fabsf(v);
+			float absv = std::abs(v);
 			lastAbs = absv;
 			runSum += v;
 			if(absv > max) max = absv;
