@@ -4,9 +4,9 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include <cstdlib> // malloc
+#include <cstring> // memset
+#include <cmath>
 #include <list>
 #include <vector>
 
@@ -17,7 +17,7 @@ namespace glv {
 template <class T>
 inline T clip(const T& v, const T& max=T(1), const T& min=T(0)){ return v<min? min:(v>max? max:v); }
 
-template <class T> inline T floor(const T& v, const T& step){ return ::floor(v/step)*step; }
+template <class T> inline T floor(const T& v, const T& step){ return std::floor(v/step)*step; }
 
 template <class T> inline T max(const T& a, const T& b){ return a<b ? b:a; }
 template <class T> inline T min(const T& a, const T& b){ return a<b ? a:b; }
@@ -104,7 +104,7 @@ struct SmartObject {
 	void * operator new(size_t sz);
 	void * operator new(size_t sz, int flag);
 	void * operator new(size_t sz, void * m){ return m; }
-	void operator delete(void * m){ free(m); }
+	void operator delete(void * m){ std::free(m); }
 	
 	/// Returns true if the object was created dynamically with the new operator, false otherwise.
 	bool dynamicAlloc() const { return mDynamicAlloc; }
@@ -154,7 +154,7 @@ public:
 	int sizeX() const { return mSizeX; }
 	int sizeY() const { return mSizeY; }
 
-	void zero(){ memset(mVal, 0, size()*sizeof(T)); }
+	void zero(){ std::memset(mVal, 0, size()*sizeof(T)); }
 	
 protected:
 	int mSizeX, mSizeY;
@@ -431,7 +431,7 @@ SmartObject<T>::SmartObject(): mDynamicAlloc(false){
 
 template<class T>
 void * SmartObject<T>::operator new(size_t sz){
-	void * m = malloc(sz);	// this will point to the base class
+	void * m = std::malloc(sz);	// this will point to the base class
 	newObjects().push_back(m);
 	//printf("%x: SmartObject::operator new(size_t)\n", m);
 	return m;
@@ -439,7 +439,7 @@ void * SmartObject<T>::operator new(size_t sz){
 
 template<class T>
 void * SmartObject<T>::operator new(size_t sz, int flag){
-	void * m = malloc(sz);	// this will point to the base class
+	void * m = std::malloc(sz);	// this will point to the base class
 	newObjects().push_back(m);
 	return m;
 }

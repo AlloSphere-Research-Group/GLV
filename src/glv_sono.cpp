@@ -1,13 +1,14 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include <cstring> // memcpy
 #include "glv_sono.h"
 
 namespace glv{
 
 inline float linLog2(float v, float recMin = 1./16){
-	static const float lnToLog2 = 1.f/::logf(2.);
-	v = ::logf(::fabsf(v) + 0.000001f)*lnToLog2;// offset to avoid -inf
+	static const float lnToLog2 = 1./std::log(2.);
+	v = std::log(std::abs(v) + 0.000001f)*lnToLog2;// offset to avoid -inf
 	v *= recMin;
 	return v > -1.f ? v + 1.f : 0.f;
 }
@@ -125,7 +126,7 @@ void TimeScope::update(float * buf, int bufFrames, int bufChans){
 
 	if(mSync >= 0){				// sync found
 		for(int i=0; i<Nc; ++i){
-			memcpy(
+			std::memcpy(
 				mSamples + frames()*i + mFill,
 				buf + bufFrames*i + mSync,
 				(Nf-mSync)*sizeof(*mSamples)
@@ -136,7 +137,7 @@ void TimeScope::update(float * buf, int bufFrames, int bufChans){
 	}
 	else{
 		for(int i=0; i<Nc; ++i){
-			memcpy(mSamples + frames()*i + mFill, buf + bufFrames*i, Nf*sizeof(*mSamples));
+			std::memcpy(mSamples + frames()*i + mFill, buf + bufFrames*i, Nf*sizeof(*mSamples));
 		}
 		mFill += bufFrames;
 	}

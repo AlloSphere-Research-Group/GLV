@@ -22,7 +22,11 @@ void Notifier::detach(Callback cb, Update::t n, void * rcvr){
 	if(hasHandlers()){
 		for(unsigned int i=0; i<handlers()[n].size(); i++){
 			Handler& h = handlers()[n][i];
+			#ifdef GLV_USE_STD_FUNCTION
+			if(h.handler.template target<Callback>() == cb.template target<Callback>() && h.receiver == rcvr)
+			#else
 			if(h.handler == cb && h.receiver == rcvr)
+			#endif
 				handlers()[n].erase(handlers()[n].begin() + i);
 		}		
 	}

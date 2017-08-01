@@ -576,11 +576,23 @@ bool Plot::onEvent(Event::t e, GLV& g){
 		if(e == Event::KeyDown){
 			if(k.isNumber()){
 				unsigned i = k.keyAsNumber();
-				i = i>0 ? i-1 : 10; 
+				i = i>0 ? i-1 : 10;
 				if(i < plottables().size() && plottables()[i]){
 					mActive[i] ^= true;
 				}
 				return false;
+			}
+			else{
+				auto strokeInc = [this](double ds){
+					for(auto& p:plottables()){
+						auto newStroke = p->stroke()+ds;
+						if(newStroke >= 1) p->stroke(newStroke);
+					}
+				};
+				switch(k.key()){
+					case '>': strokeInc( 1); return false;
+					case '<': strokeInc(-1); return false;
+				}
 			}
 		}
 		

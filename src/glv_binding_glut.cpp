@@ -12,6 +12,9 @@
 #elif defined(GLV_PLATFORM_UNIX)
 	#include <GL/glut.h>
 #elif defined(GLV_PLATFORM_WIN)
+	#define WIN32_LEAN_AND_MEAN
+	#define VC_EXTRALEAN
+	#include <windows.h> // Needed to get GLUT to link correctly with MSYS
 	#include <GL/glut.h>
 #endif
 
@@ -279,7 +282,15 @@ static void glutSpecialUpCB(int key, int x, int y){ keyToGLV(key, false, true); 
 static void glutVisibilityCB(int v){
 	Window::Impl * w = Window::Impl::getWindowImpl();
 	if(w){
-		w->showing(v == GLUT_VISIBLE);
+		GLV * g = Window::Impl::getGLV();
+		if(GLUT_VISIBLE == v){
+			w->showing(true);
+			if(g) g->broadcastEvent(glv::Event::WindowShow);
+		}
+		else{
+			w->showing(false);
+			if(g) g->broadcastEvent(glv::Event::WindowHide);
+		}
 	}
 }
 
@@ -440,7 +451,7 @@ void Window::implGameMode(){
 		// use current resolution and refresh rate
 		if(sw && sh){
 			char buf[32];
-			snprintf(buf, sizeof(buf), "%dx%d:24", sw, sh);
+			GLV_SNPRINTF(buf, sizeof(buf), "%dx%d:24", sw, sh);
 			glutGameModeString(buf);
 			
 			//int refresh = glutGameModeGet(GLUT_GAME_MODE_REFRESH_RATE);

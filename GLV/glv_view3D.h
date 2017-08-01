@@ -24,13 +24,15 @@ public:
 	/// 3D drawing callback
 	virtual void onDraw3D(GLV& g){}
 
-	float far() const { return mFar; }			///< Get far clip distance
-	float near() const { return mNear; }		///< Get near clip distance
-	float fovy() const { return mFOVY; }		///< Get field of view angle, in degrees, in the y direction
+	float far() const { return mFar; }		///< Get far clip distance
+	float near() const { return mNear; }	///< Get near clip distance
+	float fovy() const { return mFOVY; }	///< Get field of view angle, in degrees, in the y direction
 
-	void far(float v){ mFar=v; }				///< Set far clip distance
-	void near(float v){ mNear=v; }				///< Set near clip distance
-	void fovy(float v){ mFOVY=v; }				///< Set field of view angle, in degrees, in the y direction
+	void far(float v){ mFar=v; }			///< Set far clip distance
+	void near(float v){ mNear=v; }			///< Set near clip distance
+	void fovy(float v){ mFOVY=v; }			///< Set field of view angle, in degrees, in the y direction
+
+	void ortho(bool v){ mOrtho=v; }			///< Set orthographic projection
 
 	/// Set 4x4 model transform matrix (column-major)
 	template <class T>
@@ -45,8 +47,10 @@ public:
 
 protected:
 	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
 	float mNear, mFar, mFOVY;
 	float mModelView[16];
+	bool mOrtho;
 	
 //	struct ViewModel : public Model{
 //		ViewModel(View3D& self): v(self){}

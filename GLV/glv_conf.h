@@ -76,7 +76,6 @@
 	#include <OpenGL/OpenGL.h>
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
-//	#include <OpenGL/glu.h>
 
 	#define GLV_PLATFORM_INIT_CONTEXT\
 		{	/* prevents tearing */\
@@ -95,7 +94,6 @@
 	#include <GL/glew.h>
 	#include <GL/gl.h>
 	#include <GL/glext.h>
-//	#include <GL/glu.h>
 
 	#define GLV_PLATFORM_INIT_CONTEXT\
 		{	GLenum err = glewInit();\
@@ -105,39 +103,18 @@
 		}
 
 
-#elif defined(_WIN32) || defined(WIN32) || defined(AL_WINDOWS)
+#elif defined(_WIN32) || defined(WIN32) || defined(AL_WINDOWS) || defined(_WIN64) || defined(WIN64) || defined(__MSYS__)
 	
 	#define GLV_PLATFORM		"WIN32"
 	#define GLV_PLATFORM_WIN
 	#define GLV_OPENGL
 
-	#define WIN32_LEAN_AND_MEAN
-	#define VC_EXTRALEAN
-	#include <windows.h>
-	#ifdef min
-	#undef min
-	#endif
-	#ifdef max
-	#undef max
-	#endif
-	#ifdef far
-	#undef far
-	#endif
-	#ifdef near
-	#undef near
-	#endif
-
-	// note: return value of snprintf() and _snprintf() differ!
-	#define snprintf _snprintf
-
 	#include <GL/glew.h>
 	#include <gl/gl.h>
-//	#include <gl/glu.h>
 
 	#pragma comment( lib, "glew32.lib")
 	#pragma comment( lib, "winmm.lib")
 	#pragma comment( lib, "opengl32.lib" )
-//	#pragma comment( lib, "glu32.lib" )
 	
 	#define GLV_PLATFORM_INIT_CONTEXT\
 		{	GLenum err = glewInit();\
@@ -146,6 +123,13 @@
 			}\
 		}
 
+#endif
+
+#define GLV_SNPRINTF snprintf
+
+#ifdef __MINGW32__
+	#undef GLV_SNPRINTF
+	#define GLV_SNPRINTF _snprintf
 #endif
 
 #endif /* include guard */

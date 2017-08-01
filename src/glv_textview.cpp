@@ -103,7 +103,7 @@ void Label::fitExtent(){
 	// align text by translating its current position
 	space_t dw = tw - (w - paddingX()*2);
 	space_t dh = th - (h - paddingY()*2);
-	posAdd(-dw*mAlignX, -dh*mAlignY);
+	translate(-dw*mAlignX, -dh*mAlignY);
 
 	tw += paddingX()*2;
 	th += paddingY()*2;
@@ -1056,12 +1056,13 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 	case Event::KeyDown:
 		if(k.ctrl() || k.alt() || k.meta()){}
 		else if(k.isNumber() && onNumber()){
-			int vali = valInt(selected());
-			int v = vali < 0 ? -vali : vali;
-			int p = pow(10., numDigits()-1-dig());
-			v += (k.keyAsNumber() - ((v / p) % 10)) * p;
-			v = vali < 0 ? -v : v;
-			setValue(v * pow(10., -mNF));
+			long vi = valInt(selected());
+			auto absvi = vi < 0 ? -vi : vi;
+			unsigned long p = pow(10., numDigits()-1-dig()) + 0.5;
+			//printf("%lu\n", p);
+			absvi += (k.keyAsNumber() - ((absvi / p) % 10)) * p;
+			auto newvi = vi < 0 ? -absvi : absvi;
+			setValue(newvi * pow(10., -mNF));
 			if(!mOverwriteMode) dig(dig()+1);
 			return false;
 		}

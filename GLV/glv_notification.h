@@ -6,6 +6,14 @@
 
 #include <vector>
 
+#if __cplusplus >= 201103L
+#define GLV_USE_STD_FUNCTION
+#endif
+
+#ifdef GLV_USE_STD_FUNCTION
+#include <functional>
+#endif
+
 namespace glv {
 
 class Notifier;
@@ -102,8 +110,12 @@ class Notifier{
 public:
 
 	/// Notification callback
+	#ifdef GLV_USE_STD_FUNCTION
+	typedef std::function<void (const Notification& n)> Callback;
+	#else
 	typedef void (* Callback)(const Notification& n);
-	
+	#endif
+
 	Notifier();
 
 	~Notifier();

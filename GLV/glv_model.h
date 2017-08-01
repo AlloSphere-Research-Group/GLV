@@ -4,10 +4,11 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
+#include "glv_conf.h"
 #include <map>
 #include <vector>
 #include <string>
-#include <stdio.h>
+#include <stdio.h> // snprintf
 
 namespace glv {
 
@@ -912,6 +913,9 @@ public:
 
 	void makeClosed();
 
+	/// Zero values with magnitude less than eps
+	void zeroSmallValues(double eps=1e-12);
+
 protected:
 	std::string mName;				// name identifier
 	std::string mFileDir, mFileName;// directory and name of file
@@ -929,12 +933,6 @@ protected:
 
 //	template <int N> bool loadSnapshot(const std::string ** names, const double * c);
 //	template <int N> bool loadSnapshot(const Snapshot ** snapshots, const double * c);
-
-	static std::string namedDataToString(const std::string& s, const Data& d){
-		std::string r;
-		if(d.toToken(r)) r = s + " = " + r + ",\r\n";
-		return r;
-	}
 };
 
 
@@ -943,15 +941,9 @@ protected:
 
 template<class T>
 int toString(std::string& dst, const T& src, const char * format){
-	#ifdef WIN32
-		#define TO_STRING_FUNC _snprintf
-	#else
-		#define TO_STRING_FUNC snprintf
-	#endif
-	char buf[32]; 
-	TO_STRING_FUNC(buf, sizeof(buf), format, src);
+	char buf[32];
+	GLV_SNPRINTF(buf, sizeof(buf), format, src);
 	dst = buf;
-	#undef TO_STRING_FUNC
 	return 1;
 }
 

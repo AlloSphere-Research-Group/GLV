@@ -4,7 +4,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-#include <math.h>
+#include <cmath>
 #include <stdio.h>
 #include "glv_conf.h"
 #include "glv_color.h"
@@ -827,7 +827,7 @@ inline void ortho(float l, float r, float b, float t, float n, float f){
 }
 
 inline void perspective(float fovy, float aspect, float near, float far) {
-	float f = 1.f/tan(fovy*(M_PI/180.f)/2.f);
+	float f = 1./std::tan(fovy*(C_PI/180.)/2.);
 	float m[] = {
 		f/aspect, 0, 0, 0, 
 		0, f, 0, 0, 
