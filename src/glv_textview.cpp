@@ -896,11 +896,11 @@ void NumberDialers::fitExtent(){
 }
 
 NumberDialers& NumberDialers::interval(double mx, double mn){
-	mInterval.endpoints(mn, mx);
+	Widget::interval(mn,mx);
 	double m = maxVal();	// do not allow numbers larger than can be displayed
 	if(min() < -m) mInterval.min(-m);
 	if(max() >  m) mInterval.max( m);
-	showSign(mn < 0);
+	showSign((min() < 0.) || (max() < 0.));
 //	valSet(mVal);
 	for(int i=0; i<data().size(); ++i) setValue(getValue(i), i);
 	return *this;
