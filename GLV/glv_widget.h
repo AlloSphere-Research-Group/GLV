@@ -81,7 +81,9 @@ public:
 
 	/// Set interval for numerical values
 	Widget& interval(const double& max, const double& min=0){
-		mInterval.endpoints(min,max); return *this;
+		if(min < max)	mInterval.endpoints(min,max);
+		else			mInterval.endpoints(max,min);
+		return *this;
 	}
 
 	/// Set padding around elements
