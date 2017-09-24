@@ -101,7 +101,9 @@ void Sliders::onDraw(GLV& g){
 
 bool Sliders::onEvent(Event::t e, GLV& g){
 	if(!Widget::onEvent(e,g)) return false;
-	
+
+	bool keyInput = e==Event::KeyDown;
+
 	switch(e){
 		case Event::MouseDrag:
 			// if drag settable
@@ -118,22 +120,21 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 		case Event::MouseDown:
 			selectSlider(g, true);
 			return false;
-			
-		case Event::KeyDown:{
+
+		case Event::MouseUp:
+			return false;
+
+		case Event::KeyDown:
+		case Event::KeyUp:
 			switch(g.keyboard().key()){
 			case 'x':
-			case 'a': setValue(getValue() + diam()/32.); return false;
-			case 'z': setValue(getValue() - diam()/32.); return false;
+			case 'a': if(keyInput) setValue(getValue() + diam()/32.); return false;
+			case 'z': if(keyInput) setValue(getValue() - diam()/32.); return false;
 			default:;
 			}
 			break;
-		
-		case Event::KeyUp:
-		case Event::MouseUp: return false;
-		}
 
 		default:;
-			
 	}
 	return true;
 }
@@ -173,6 +174,8 @@ Slider2D::Slider2D(const Rect& r, double valX, double valY, space_t knobSize, Sy
 
 bool Slider2D::onEvent(Event::t e, GLV& g){
 
+	bool keyInput = e==Event::KeyDown;
+
 	switch(e){
 		case Event::MouseDrag:
 			valueAdd( g.mouse().dx()/w * diam() * g.mouse().sens(), 0);
@@ -189,17 +192,18 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 		case Event::MouseUp:
 			clipAccs();
 			return false;
-		case Event::KeyUp: return false;
 		
 		case Event::KeyDown:
+		case Event::KeyUp:
 			switch(g.keyboard().key()){
-				case 'x': valueAdd(-diam()/w, 0); return false;
-				case 'c': valueAdd( diam()/w, 0); return false;
-				case 'a': valueAdd( diam()/h, 1); return false;
-				case 'z': valueAdd(-diam()/h, 1); return false;
+				case 'x': if(keyInput) valueAdd(-diam()/w, 0); return false;
+				case 'c': if(keyInput) valueAdd( diam()/w, 0); return false;
+				case 'a': if(keyInput) valueAdd( diam()/h, 1); return false;
+				case 'z': if(keyInput) valueAdd(-diam()/h, 1); return false;
 				default:;
 			}
 			break;
+
 		default:;
 	}
 	return true;
