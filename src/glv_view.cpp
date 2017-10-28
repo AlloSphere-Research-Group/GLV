@@ -654,7 +654,7 @@ void View::printDescendents() const {
 
 	struct A : ConstTraversalAction{
 		bool operator()(const View * v, int depth) const {
-			for(int i=0; i<depth; ++i) printf("|\t");
+			for(int i=0; i<depth; ++i) printf("|   ");
 			const std::string& nm = v->name();
 			printf("%s %p %s\n", v->className(), v, (nm[0] ? "\"" + nm + "\"" : nm).c_str());
 			return true;
@@ -760,19 +760,19 @@ void View::traverseDepth(qual Qual##TraversalAction& action) qual {\
 	int depth = 0;\
 	while(n){\
 		action(n, depth);\
-		if(n->child){			/* down to child */\
+		if(n->child){			/* Down to child */\
 			++depth;\
 			n = n->child;\
 		}\
-		else if(n->sibling){	/* across to sibling */\
+		else if(n->sibling){	/* Across to sibling */\
 			n = n->sibling;\
 		}\
-		else{					/* up and over to next branch */\
-			if(!n->parent) return; /* triggers if only node in tree */\
+		else{					/* Up and over to next branch */\
+			if(n == root || !n->parent) return; /* Triggers if only node in tree */\
 			while(n->parent){\
 				--depth;\
 				n = n->parent;\
-				if(root == n) return;\
+				if(n == root) return;\
 				else if(n->sibling){ n = n->sibling; break; }\
 			}\
 		}\
