@@ -299,6 +299,22 @@ public:
 		Direction labelDir = Direction::S
 	);
 
+	/// Add control widgets grouped in a row with labels underneath
+	ParamPanel& addParamGroup(
+		View& view1, const char * label1,
+		View& view2, const char * label2,
+		View& view3, const char * label3,
+		View& view4, const char * label4,
+		View& view5, const char * label5,
+		View& view6, const char * label6,
+		View& view7, const char * label7,
+		View& view8, const char * label8,
+		const std::string& groupName = "",
+		bool prefixViewNamesWithGroupName=true,
+		bool nameViewsFromLabels=true,
+		Direction labelDir = Direction::S
+	);
+
 	/// Remove single parameter or group by its name
 	ParamPanel& removeParam(const char * name);
 

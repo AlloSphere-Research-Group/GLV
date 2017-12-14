@@ -1033,6 +1033,22 @@ ParamPanel& ParamPanel::addParamGroup(
 		groupName, prefixGroup, nameViews, labelDir);
 }
 
+ParamPanel& ParamPanel::addParamGroup(
+	View& v1, const char * l1,
+	View& v2, const char * l2,
+	View& v3, const char * l3,
+	View& v4, const char * l4,
+	View& v5, const char * l5,
+	View& v6, const char * l6,
+	View& v7, const char * l7,
+	View& v8, const char * l8,
+	const std::string& groupName, bool prefixGroup, bool nameViews,
+	Direction labelDir
+){
+	return addParamGroup({{v1,l1},{v2,l2},{v3,l3},{v4,l4},{v5,l5},{v6,l6},{v7,l7},{v8,l8}},
+		groupName, prefixGroup, nameViews, labelDir);
+}
+
 ParamPanel& ParamPanel::removeParam(const char * name){
 	View * view = child;
 	View * prevView = NULL;
