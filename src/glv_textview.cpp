@@ -868,10 +868,38 @@ NumberDialers::NumberDialers(int numInt, int numFrac, double max, double min, in
 	CTOR_BODY;
 	data().resize(Data::DOUBLE, nx, ny);
 	resize(numInt, numFrac);
-	dig(mNI);
-	fitExtent();
 	interval(max, min);
 } 
+
+NumberDialers::NumberDialers(const std::string& range, double initVal, int nx, int ny)
+:	NumberDialers()
+{
+	bool neg=false, pos=false;
+	int numInt=0;
+	int numFrac=0;
+	bool dec = false;
+
+	if(range.size()>2 && range[0]=='+' && range[1]=='-'){
+		neg=pos=true;
+	} else if(range[0]=='-'){
+		neg=true;
+	}
+
+	for(auto c : range){
+		if('0' <= c && c <= '9'){
+			if(dec) ++numFrac;
+			else    ++numInt;
+		} else if(c=='.'){
+			dec=true;
+		}
+	}
+	if(!(neg || pos)) pos=true;
+	resize(numInt, numFrac);
+	double maxVal; glv::fromToken(maxVal, neg&&pos ? range.substr(1) : range);
+	maxVal = std::abs(maxVal);
+	interval(pos ? maxVal:0, neg ? -maxVal:0);
+	setValue(initVal);
+}
 
 NumberDialers::NumberDialers(const NumberDialers& v)
 :	Widget(v,2, false,false,true), CTOR_LIST
@@ -901,22 +929,23 @@ NumberDialers& NumberDialers::interval(double mx, double mn){
 	if(min() < -m) mInterval.min(-m);
 	if(max() >  m) mInterval.max( m);
 	showSign((min() < 0.) || (max() < 0.));
-//	valSet(mVal);
+	//valSet(mVal);
 	for(int i=0; i<data().size(); ++i) setValue(getValue(i), i);
 	return *this;
 }
 
 NumberDialers& NumberDialers::resize(int numInt, int numFrac){
 	mNI = numInt; mNF = numFrac;
-//	mValMul = 1. / pow(10., mNF);
-//	setWidth();
+	//mValMul = 1. / pow(10., mNF);
+	//setWidth();
+	dig(mNI); // go to first integer (or fraction) digit
 	fitExtent();
 	return *this;
 }
 
 NumberDialers& NumberDialers::showSign(bool v){
 	mShowSign=v;
-//	setWidth();
+	//setWidth();
 	fitExtent();
 	return *this;
 }
@@ -1134,6 +1163,12 @@ std::string NumberDialers::onDebug() const {
 
 NumberDialer::NumberDialer(int numInt, int numFrac, double max, double min)
 :	NumberDialers(numInt,numFrac,max,min,1,1)
+{
+	padding(2);
+}
+
+NumberDialer::NumberDialer(const std::string& range, double initVal)
+:	NumberDialers(range,initVal, 1,1)
 {
 	padding(2);
 }

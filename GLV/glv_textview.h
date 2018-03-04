@@ -357,6 +357,13 @@ public:
 	/// @param[in] ny		Number of instances along y
 	NumberDialers(int numInt=3, int numFrac=2, double max=100, double min=0, int nx=1, int ny=1);
 
+	/// @param[in] range	Number string describing min/max range;
+	///						if prefixed with "+-" it is the min/max value
+	/// @param[in] initVal	Initial value
+	/// @param[in] nx		Number of instances along x
+	/// @param[in] ny		Number of instances along y
+	NumberDialers(const std::string& range, double initVal=0., int nx=1, int ny=1);
+
 	/// Copy constructor
 	NumberDialers(const NumberDialers& v);
 
@@ -450,6 +457,11 @@ public:
 	/// @param[in] max		Maximum value
 	/// @param[in] min		Minimum value
 	NumberDialer(int numInt=3, int numFrac=2, double max=100, double min=0);
+
+	/// @param[in] range	Number string describing min/max range;
+	///						if prefixed with "+-" it is the min/max value
+	/// @param[in] initVal	Initial value
+	NumberDialer(const std::string& range, double initVal=0.);
 
 	/// Copy constructor
 	NumberDialer(const NumberDialer& v);
