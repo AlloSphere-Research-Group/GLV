@@ -6,6 +6,7 @@
 
 #include "glv_conf.h"
 #include <map>
+#include <memory>
 #include <vector>
 #include <string>
 #include <stdio.h> // snprintf
@@ -284,8 +285,14 @@ public:
 	/// Get element at 4D index, performing type conversion if necessary
 	template <class T> T at(int i1, int i2, int i3, int i4) const;
 
-	/// Copy all elements into another array
-	template <class T> void copyTo(T * dst) const { for(int i=0;i<size();++i) dst[i]=at<T>(i); }
+	/// Copy all elements into another array, 'dst' must match size of Data
+	template <class T> void copyTo(T * dst) const { copyTo(dst, size()); }
+
+	/// Copy maximum number of elements into another array
+	template <class T> void copyTo(T * dst, int len) const {
+		int N = size() > len ? len : size();
+		for(int i=0;i<N;++i) dst[i]=at<T>(i);
+	}
 
 	/// Get reference to element at 1D index using raw pointer casting
 	template <class T>
@@ -799,6 +806,7 @@ public:
 	typedef Map<std::string, Data>			Snapshot;
 	typedef Map<std::string, Snapshot>		Snapshots;
 
+
 	/// Prints currently stored snapshots
 	void printSnapshots() const;
 
@@ -844,7 +852,7 @@ public:
 	int snapshotsFromString(const std::string& src);
 
 
-	/// Add reference to readable-writable model
+	/// Add reference to mutable model
 	
 	/// The added Model should have the same lifecycle as 'this' since it is
 	/// referenced through a pointer.
@@ -855,6 +863,14 @@ public:
 	/// The added Model should have the same lifecycle as 'this' since it is
 	/// referenced through a pointer.
 	void add(const std::string& name, const Model& v);
+
+	/// Add reference to variable
+	template <class T>
+	ModelManager& addVar(const std::string& name, T& v){ return addVar(name, &v, 1); }
+
+	/// Add reference to variable array
+	template <class T>
+	ModelManager& addVar(const std::string& name, T * arr, int len);
 
 	/// Remove all models
 	void clearModels();
@@ -921,18 +937,19 @@ protected:
 	std::string mFileDir, mFileName;// directory and name of file
 	NamedModels mState;				// pointers to active readable/writable models
 	NamedConstModels mConstState;	// pointers to active read-only models
+	std::vector<std::unique_ptr<Model>> mManagedState;
 	Snapshots mSnapshots;			// repository of saved model data
 
-//	// Convert current model state to string
-//	bool stateToToken(std::string& dst, const std::string& modelName) const;
+	// Convert current model state to string
+	//bool stateToToken(std::string& dst, const std::string& modelName) const;
 	
-//	// Convert string to model state
-//	int stateFromToken(const std::string& src);
+	// Convert string to model state
+	//int stateFromToken(const std::string& src);
 
 	bool defaultFilePath(std::string& s) const;
 
-//	template <int N> bool loadSnapshot(const std::string ** names, const double * c);
-//	template <int N> bool loadSnapshot(const Snapshot ** snapshots, const double * c);
+	//template <int N> bool loadSnapshot(const std::string ** names, const double * c);
+	//template <int N> bool loadSnapshot(const Snapshot ** snapshots, const double * c);
 };
 
 
@@ -1107,6 +1124,23 @@ void Data::mix(const Data* D[], double c[]){
 	}
 }
 
+
+template <class T>
+ModelManager& ModelManager::addVar(const std::string& name, T * arr, int len){
+	auto it = mState.find(name);
+	if(it == mState.end()){
+		struct ArrayModel : public Model{
+			T * arr; int len;
+			ArrayModel(T * a, int l): arr(a), len(l){}
+			const Data& getData(Data& temp) const { temp.set(arr,len); return temp; }
+			void setData(const Data& d){ d.copyTo(arr,len); }
+		};
+		auto * model = new ArrayModel{arr,len};
+		mManagedState.emplace_back(model);
+		add(name, *model);
+	}
+	return *this;
+}
 
 /// This assumes that all snapshots are members of a closed set
 //template <int N>
