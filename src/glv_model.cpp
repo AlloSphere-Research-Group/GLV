@@ -733,9 +733,9 @@ void ModelManager::remove(const std::string& name){
 
 void ModelManager::printSnapshots() const {
 	for(const auto& its : mSnapshots){
-		printf("%s\n", its.first.c_str());			
+		printf("\"%s\"\n", its.first.c_str());			
 		for(const auto& itd : its.second){
-			printf("\t%s = ", itd.first.c_str());
+			printf("    \"%s\": ", itd.first.c_str());
 			itd.second.print();
 		}
 	}
