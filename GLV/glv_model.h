@@ -912,6 +912,8 @@ public:
 	///
 	bool loadSnapshot(const std::string& name);
 
+	bool loadSnapshot(int i);
+
 	/// Load linear mixture of two snapshots
 	
 	/// \returns whether snapshot mixture was loaded successfully

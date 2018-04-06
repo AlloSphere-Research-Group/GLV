@@ -1080,6 +1080,14 @@ void ModelManager::saveSnapshot(const std::string& name){
 }
 
 
+bool ModelManager::loadSnapshot(int i){
+	for(auto& ss : mSnapshots){
+		if(i-- == 0) return loadSnapshot(ss.first);
+	}
+	return false;
+}
+
+
 bool ModelManager::loadSnapshot(const std::string& name){
 	Snapshots::const_iterator ssit = mSnapshots.find(name);
 	if(mSnapshots.end() != ssit){
