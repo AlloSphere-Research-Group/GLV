@@ -7,7 +7,7 @@
 namespace glv{
 
 Sliders::Sliders(const Rect& r, int nx, int ny, bool dragSelect)
-:	Widget(r, 0.5, false, false, false),
+:	SliderBase(r, 0.5),
 	mOri(AUTO), mKnobSym(draw::rectangle), mAcc(0)
 {
 	data().resize(Data::DOUBLE, nx,ny);
@@ -112,7 +112,7 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 			}
 			if(g.mouse().right() || g.mouse().left()) {
 				// accumulate differences
-				mAcc += diam()*(vertOri() ? -g.mouse().dy()/h*sizeY() : g.mouse().dx()/w*sizeX()) * g.mouse().sens();
+				mAcc += diam()*(vertOri() ? -g.mouse().dy()/h*sizeY() : g.mouse().dx()/w*sizeX()) * dragSens() * g.mouse().sens();
 				setValue(mAcc);
 			}
 			return false;
@@ -178,8 +178,8 @@ bool Slider2D::onEvent(Event::t e, GLV& g){
 
 	switch(e){
 		case Event::MouseDrag:
-			valueAdd( g.mouse().dx()/w * diam() * g.mouse().sens(), 0);
-			valueAdd(-g.mouse().dy()/h * diam() * g.mouse().sens(), 1);
+			valueAdd( g.mouse().dx()/w * diam() * dragSens() * g.mouse().sens(), 0);
+			valueAdd(-g.mouse().dy()/h * diam() * dragSens() * g.mouse().sens(), 1);
 			return false;
 			
 		case Event::MouseDown:
@@ -441,7 +441,7 @@ bool SliderRange::onEvent(Event::t e, GLV& g){
 		return false;
 	
 	case Event::MouseDrag:
-		dv *= diam() * g.mouse().sens();
+		dv *= diam() * dragSens() * g.mouse().sens();
 		if(3==mDragMode){	// clicked on edge of bar
 			valueAdd(dv, 0, min(), max()-rg);
 			valueAdd(dv, 1, min()+rg, max());

@@ -11,12 +11,25 @@
 namespace glv {
 
 
+class SliderBase : public Widget {
+public:
+	/// Set sensitivity to mouse drag in units/pixel
+	SliderBase& dragSens(float v){ mDragSens=v; return *this; }
+	float dragSens() const { return mDragSens; }
+
+protected:
+	SliderBase(const Rect& r, space_t pad): Widget(r,pad, false,false,false){}
+
+	float mDragSens = 1.f;
+};
+
+
 /// Base class for sliders that control a fixed-size vector of values
 
 /// The foreground color determines the color of the slider.
 ///
 template <int Dim>
-class SliderVector : public Widget {
+class SliderVector : public SliderBase {
 public:
 
 	/// Constructor
@@ -161,7 +174,7 @@ protected:
 
 
 /// A grid of 1-D sliders
-class Sliders: public Widget{
+class Sliders: public SliderBase{
 public:
 
 	/// Sliding orientation
@@ -300,7 +313,7 @@ protected:
 #define TEM template <int Dim>
 
 TEM SliderVector<Dim>::SliderVector(const Rect& r)
-:	Widget(r, 0, false, false, false)
+:	SliderBase(r, 0)
 {
 	data().resize(Data::DOUBLE, Dim,1);
 	memset(mAcc, 0, sizeof(double) * Dim);
@@ -413,10 +426,11 @@ TEM void SliderGrid<Dim>::onDraw(GLV& g){
 TEM bool SliderGrid<Dim>::onEvent(Event::t e, GLV& g){
 
 	switch(e){
-	case Event::MouseDrag:
-					this->valueAdd( g.mouse().dx()/w * diam() * Dim * g.mouse().sens(), cx);
-		if(cx!=cy)	this->valueAdd(-g.mouse().dy()/h * diam() * Dim * g.mouse().sens(), cy);
-		break;
+	case Event::MouseDrag:{
+		float mul = diam() * Dim * this->dragSens() * g.mouse().sens();
+					this->valueAdd( g.mouse().dx()/w * mul, cx);
+		if(cx!=cy)	this->valueAdd(-g.mouse().dy()/h * mul, cy);
+		} break;
 		
 	case Event::MouseDown:
 		cx = int(g.mouse().xRel()/w * Dim);
