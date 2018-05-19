@@ -39,6 +39,12 @@ public:
 	template <class T>
 	T getValue(int i1, int i2) const { return data().Data::at<T>(i1, i2); }
 
+	/// Check if value changed
+
+	/// \returns index+1 of the changed value or 0 for no value change.
+	/// In the simplest use case, this can be used as a boolean to check for any
+	/// value change.
+	int changed() const { return mChangedElem; }
 
 	/// Returns whether this element coordinate is selected
 	bool isSelected(int x, int y) const { return x == selectedX() && y == selectedY(); }
@@ -152,11 +158,6 @@ public:
 		}
 	}
 
-//	virtual bool onAssignData(Data& d, int ind1, int ind2){
-//		data().assign(d, ind1, ind2);
-//		return true;
-//	}
-
 protected:
 	enum{ DIMS=2 };
 	typedef std::map<int, glv::Data> IndexDataMap;
@@ -166,6 +167,7 @@ protected:
 	short sx, sy;					// selected element position
 	Interval<double> mInterval;		
 	double mPrevVal;				// used for momentary value
+	int mChangedElem = 0;			// index+1 of changed element
 	bool mUseInterval;
 
 	bool hasVariables() const { return mVariables.created(); }
