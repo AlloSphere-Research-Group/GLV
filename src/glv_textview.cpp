@@ -872,7 +872,7 @@ NumberDialers::NumberDialers(int numInt, int numFrac, double max, double min, in
 } 
 
 NumberDialers::NumberDialers(const std::string& range, double initVal, int nx, int ny)
-:	NumberDialers()
+:	NumberDialers(1,0, 1.,0., nx,ny)
 {
 	bool neg=false, pos=false;
 	int numInt=0;
@@ -898,7 +898,7 @@ NumberDialers::NumberDialers(const std::string& range, double initVal, int nx, i
 	double maxVal; glv::fromToken(maxVal, neg&&pos ? range.substr(1) : range);
 	maxVal = std::abs(maxVal);
 	interval(pos ? maxVal:0, neg ? -maxVal:0);
-	setValue(initVal);
+	for(int i=0; i<size(); ++i){ setValue(initVal, i); }
 }
 
 NumberDialers::NumberDialers(const NumberDialers& v)
