@@ -217,7 +217,7 @@ protected:
 	double mAcc;
 
 	bool vertOri() const { return VERTICAL==mOri || (AUTO==mOri && tallElems()); }
-	void selectSlider(GLV& g, bool click);
+	void selectSlider(GLV& g, bool click, bool setVal=true);
 };
 
 

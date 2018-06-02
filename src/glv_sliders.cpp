@@ -139,7 +139,7 @@ bool Sliders::onEvent(Event::t e, GLV& g){
 	return true;
 }
 
-void Sliders::selectSlider(GLV& g, bool click){
+void Sliders::selectSlider(GLV& g, bool click, bool setVal){
 
 	const Mouse& m = g.mouse();
 	
@@ -151,13 +151,13 @@ void Sliders::selectSlider(GLV& g, bool click){
 	val = toInterval(val);
 	
 	// if left-button, set value
-	if(m.left() && !m.right()){
+	if(setVal && m.left() && !m.right()){
 		setValue(val);
 	}
 	
 	// if click or new slider, reset accumulator
 	if(click || (oldIdx != idx)){
-		if(m.left() && !m.right()) mAcc = val;
+		if(setVal && m.left() && !m.right()) mAcc = val;
 		else mAcc = getValue(idx);
 	}
 }
