@@ -20,12 +20,12 @@ void Color::setHSV6(float h, float s, float v){
 	float q = v * (1.f - s * ( i & 1U ? f : 1.f - f));
 
 	switch( i ) {
-		case 0: r = v; g = q; b = p; break;
+		default:r = v; g = q; b = p; break; // also catches hue=1
 		case 1:	r = q; g = v; b = p; break;
 		case 2:	r = p; g = v; b = q; break;
 		case 3:	r = p; g = q; b = v; break;
 		case 4: r = q; g = p; b = v; break;
-		default:r = v; g = p; b = q; break;
+		case 5: r = v; g = p; b = q; break;
 	}
 }
 
