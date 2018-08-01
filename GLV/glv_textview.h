@@ -415,11 +415,9 @@ public:
 	virtual std::string onDebug() const;
 
 protected:
-	//Lazy<TextView> mTextEntry;
-	static TextView mTextEntry;
-	int mNI, mNF, mPos;		// # digits in integer, # digits in fraction, selected digit position
-	float mAcc;
-	bool mShowSign, mOverwriteMode, mDimZero, mTextEntryMode;
+	int mNI=0, mNF=0, mPos=0;		// # digits in integer, # digits in fraction, selected digit position
+	float mAcc=0;
+	bool mShowSign=true, mOverwriteMode=true, mDimZero=false;
 
 	void fitExtent();
 
@@ -444,6 +442,16 @@ protected:
 		if((v>0 && -v>=min()) || (v<0 && -v<=max()))
 			setValue(-v);
 	}
+
+	class TextEntry : public TextView{
+	public:
+		TextEntry();
+		bool onEvent(Event::t e, GLV& g);
+		void bind(NumberDialers& nd);
+		void unbind(NumberDialers& nd);
+	};
+	static TextEntry mTextEntry;
+	bool textEntryMode() const { return mTextEntry.parent == this; }
 };
 
 

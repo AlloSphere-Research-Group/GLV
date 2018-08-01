@@ -852,18 +852,58 @@ bool SearchBox::ItemList::onEvent(Event::t e, GLV& g){
 }
 
 
+NumberDialers::TextEntry::TextEntry(){
+	filter(TextView::filterNumeric);
+	paddingY(3);
+}
 
-TextView NumberDialers::mTextEntry;
+bool NumberDialers::TextEntry::onEvent(Event::t e, GLV& g){
+	auto * nd = dynamic_cast<NumberDialers*>(parent);
 
-#define CTOR_LIST\
-	mNI(0), mNF(0), mAcc(0),\
-	mShowSign(true), mOverwriteMode(true), mDimZero(false), mTextEntryMode(false)
+	switch(e){
+	case Event::FocusLost:
+		if(nd){
+			unbind(*nd);
+			return false;
+		}
+		break;
+
+	case Event::KeyDown:
+		if(g.keyboard().key() == Key::Return || g.keyboard().key() == Key::Enter){
+			g.setFocus(nd);
+			unbind(*nd);
+			return false;
+		}
+		break;
+
+	default:;
+	}
+
+	return TextView::onEvent(e,g);
+}
+
+void NumberDialers::TextEntry::bind(NumberDialers& nd){
+	nd << (*this);
+	setValue(toString(nd.getValue()));
+	selectAll();
+}
+
+void NumberDialers::TextEntry::unbind(NumberDialers& nd){
+	remove();
+	if(!getValue().empty()){				
+		nd.setValue(data().at<double>(0));
+	}
+}
+
+decltype(NumberDialers::mTextEntry) NumberDialers::mTextEntry;
+
+
 #define CTOR_BODY\
 	font().letterSpacing(1./4);\
 	enable(DrawSelectionBox)
 
 NumberDialers::NumberDialers(int numInt, int numFrac, double max, double min, int nx, int ny)
-:	Widget(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 2, false,false,true), CTOR_LIST
+:	Widget(Rect(0,0, (12-2)*(numInt+numFrac+1), 12), 2, false,false,true)
 {
 	CTOR_BODY;
 	data().resize(Data::DOUBLE, nx, ny);
@@ -902,7 +942,7 @@ NumberDialers::NumberDialers(const std::string& range, double initVal, int nx, i
 }
 
 NumberDialers::NumberDialers(const NumberDialers& v)
-:	Widget(v,2, false,false,true), CTOR_LIST
+:	Widget(v,2, false,false,true)
 {
 	CTOR_BODY;
 	data() = v.data();
@@ -912,7 +952,6 @@ NumberDialers::NumberDialers(const NumberDialers& v)
 	interval(v.max(), v.min());
 }
 
-#undef CTOR_LIST
 #undef CTOR_BODY
 
 void NumberDialers::fitExtent(){
@@ -984,7 +1023,7 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 
 	lineWidth(1);
 
-	if(mTextEntryMode){
+	if(textEntryMode()){
 		mTextEntry.extent(dxCell, dyCell);
 		mTextEntry.pos(dxCell*selectedX(), dyCell*selectedY());
 	}
@@ -1047,8 +1086,6 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 
 bool NumberDialers::onEvent(Event::t e, GLV& g){
 
-	if(!Widget::onEvent(e,g)) return false;
-
 	const Keyboard& k = g.keyboard();
 	const Mouse& m    = g.mouse();
 
@@ -1102,22 +1139,15 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 			case '-': flipSign(); return false;
 			case 'c': setValue(0); return false;
 			case '=':
-			//case Key::Return:
-				if(!mTextEntryMode){ // bring up the text entry box
-					mTextEntryMode=true;
-					mTextEntry.filter(TextView::filterNumeric).paddingY(3);
-					(*this) << mTextEntry;
-					mTextEntry.setValue(toString(getValue()));
-					mTextEntry.selectAll();
+			case Key::Enter:
+			case Key::Return:
+				if(!textEntryMode()){ // bring up the text entry box
+					mTextEntry.bind(*this);
 					g.setFocus(&mTextEntry);
 				}
 				else{				// set value from text entry box, then remove it
-					mTextEntryMode=false;
 					g.setFocus(this);
-					mTextEntry.remove();
-					if(!mTextEntry.getValue().empty()){				
-						setValue(mTextEntry.data().at<double>(0));
-					}
+					mTextEntry.unbind(*this);
 				}
 				return false;
 			case '.': dig(numDigits()-mNF); return false; // go to first fraction digit (if any)
@@ -1133,7 +1163,7 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 	default:;
 	}
 
-	return true;
+	return Widget::onEvent(e,g);
 }
 
 
