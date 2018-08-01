@@ -279,8 +279,10 @@ bool TextView::onEvent(Event::t e, GLV& g){
 					else cursorPos(mPos+1);
 					return false;
 					
-				case Key::Down:	cursorPos(mText.size()); return false;
-				case Key::Up:	cursorPos(0); return false;
+				case Key::Down:
+				case Key::End:	cursorPos(mText.size()); return false;
+				case Key::Up:	
+				case Key::Home:	cursorPos(0); return false;
 					
 				case Key::Enter:
 				case Key::Return:
