@@ -871,7 +871,11 @@ bool NumberDialers::TextEntry::onEvent(Event::t e, GLV& g){
 		break;
 
 	case Event::KeyDown:
-		if(g.keyboard().key() == Key::Return || g.keyboard().key() == Key::Enter){
+		switch(g.keyboard().key()){
+		case Key::Escape:
+			setValue(""); // prevents NumberDialer from being set
+		case Key::Return:
+		case Key::Enter:
 			g.setFocus(nd);
 			unbind(*nd);
 			return false;
