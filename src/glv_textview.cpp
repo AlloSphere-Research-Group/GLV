@@ -511,6 +511,7 @@ DropDown::~DropDown(){
 
 void DropDown::init(){ //printf("DropDown::init\n");
 	mItemList.disable(Visible);
+	mItemList.font().size(font().size());
 	
 	// Set padding so text appears vertically centered
 	//paddingX(font().size()/2 + h/2);
