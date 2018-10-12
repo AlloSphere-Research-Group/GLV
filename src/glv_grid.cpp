@@ -108,15 +108,14 @@ void Grid::onDraw(GLV& g){
 
 	// Draw axes
 	color(colors().border.mix(colors().back, 0./4));
-	if(mShowAxis[0] && interval(0).contains(0)){
-		float p = gridToPix(0, 0);
-		shape(Lines, p, 0, p, h);
-	}
-	if(mShowAxis[1] && interval(1).contains(0)){
+	if(mShowAxis[0] && interval(1).contains(0)){
 		float p = gridToPix(1, 0);
 		shape(Lines, 0, p, w, p);
 	}
-
+	if(mShowAxis[1] && interval(0).contains(0)){
+		float p = gridToPix(0, 0);
+		shape(Lines, p, 0, p, h);
+	}
 //	if(mEqualize){ // NOTE: this always works when called from draw loop
 //		w>=h	? interval(0).diameter(interval(1).diameter()*w/h)
 //				: interval(1).diameter(interval(0).diameter()*h/w);
