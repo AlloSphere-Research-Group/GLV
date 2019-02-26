@@ -136,7 +136,6 @@ bool ColorPicker::onEvent(Event::t e, GLV& g){
 
 
 
-
 ColorSliders::ColorSliders(const Rect& r, bool isHSV, bool useAlpha)
 :	Sliders(r, 1, useAlpha ? 4:3),
 	mSliderStyle(false), mIsHSV(isHSV), mUseAlpha(useAlpha)
@@ -185,6 +184,68 @@ ColorSliders& ColorSliders::setValue(const HSV& v){
 }
 
 
+
+HSVBar::HSVBar(Rect r, const HSV& hsv)
+:	Sliders(r, 3,1)
+{
+	orientation(Sliders::VERTICAL);
+	setValue(hsv);
+	dragSens(1./8);
+}
+
+HSV HSVBar::getValue() const {
+	HSV hsv;
+	data().copyTo(&hsv.h, 3);
+	return hsv;
+}
+
+HSVBar& HSVBar::setValue(const HSV& v){
+	data().assignFromArray(&v.h, 3);
+	return *this;
+}
+
+void HSVBar::onDraw(GLV& g){
+	Widget::onDraw(g);
+	HSV hsv = getValue();
+	Color cols[3];
+	cols[0] = HSV(hsv.h);
+	cols[1] = HSV(hsv.h, hsv.s, 1);
+	cols[2] = hsv;
+	float dx = w/3;
+	for(int i=0; i<3; ++i){
+		float x = i * dx;
+		draw::color(cols[i]);
+		draw::rectangle(x,0, x+dx,h);
+	}
+	draw::color(colors().fore);
+	draw::shape(draw::Lines, dx,0, dx,h, 2*dx,0, 2*dx,h);
+}
+
+bool HSVBar::onEvent(Event::t e, GLV& g){
+	switch(e){
+	case Event::MouseDown:
+		selectSlider(g, true, false);
+		return false;
+
+	case Event::KeyDown:{
+		auto hsv = getValue();
+		switch(g.keyboard().key()){
+			case 'r': hsv.h= 0./12; setValue(hsv); return false;
+			case 'g': hsv.h= 4./12; setValue(hsv); return false;
+			case 'b': hsv.h= 8./12; setValue(hsv); return false;
+			case 'y': hsv.h= 2./12; setValue(hsv); return false;
+			case 'c': hsv.h= 6./12; setValue(hsv); return false;
+			case 'm': hsv.h=10./12; setValue(hsv); return false;
+			case 'o': hsv.h= 1./12; setValue(hsv); return false;
+			case 'v': hsv.h= 9./12; setValue(hsv); return false;
+			default:;
+		}
+		}
+	default:;
+	}
+
+	return Sliders::onEvent(e,g);
+}
 
 
 

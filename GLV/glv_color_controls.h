@@ -80,6 +80,25 @@ protected:
 };
 
 
+/// Ultra-compact color control in HSV space
+class HSVBar : public Sliders{
+public:
+
+	/// @param[in] r			geometry
+	/// @param[in] hsv			initial color
+	HSVBar(Rect r = Rect(12*3,12), const HSV& hsv = HSV(0,1,1));
+
+	/// Get value
+	HSV getValue() const;
+	
+	/// Set value
+	HSVBar& setValue(const HSV& v);
+
+	virtual const char * className() const { return "HSVBar"; }
+	virtual void onDraw(GLV& g);
+	virtual bool onEvent(Event::t e, GLV& g);
+};
+
 
 } // glv::
 
