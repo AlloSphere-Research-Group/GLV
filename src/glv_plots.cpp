@@ -160,50 +160,36 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 		case TRANSLUCENT: break;
 		case ADDITIVE:
 			glBlendEquation(GL_FUNC_ADD);
-			glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			break;
 		case SUBTRACTIVE:
 			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-			glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			break;
+		case SCREEN:
+			glBlendEquation(GL_FUNC_ADD);
+			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			break;
+		case MULTIPLICATIVE:
+			glBlendEquation(GL_FUNC_ADD);
+			glBlendFunc(GL_DST_COLOR, GL_ZERO);
 			break;
 		default:;
 	}
 
-//	glBlendFuncSeparate(GL_SRC_COLOR, GL_DST_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-//	glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
-//	glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA)
-
-	//glEnable(GL_ALPHA_TEST);
-	//glAlphaFunc(GL_GREATER, 0.99);
-
 	onDraw(gd, d);
 
-//	glDisable(GL_ALPHA_TEST);
-
-//	glBlendEquation(GL_MAX);
-//	glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
-//	
-//	draw::color(0,0,0,1);
-//	draw::rectangle(-1,-1,1,1);
-//	
-//	draw::blendTrans();
-
+	// Restore GLV's default blending function
 	switch(mBlendMode){
 		case TRANSLUCENT: break;
 		case ADDITIVE:
 		case SUBTRACTIVE:
+		case SCREEN:
+		case MULTIPLICATIVE:
 			draw::blendTrans();
 			break;
 		default:;
 	}
-
-//	glEnable(GL_ALPHA_TEST);
-//	glAlphaFunc(GL_GREATER, 0.9);
-//	draw::color(0,0,0,0.91);
-//	draw::rectangle(-1,-1,1,1);
-//	glDisable(GL_ALPHA_TEST);
 
     if(doLineStipple) draw::lineStippling(false);
 }

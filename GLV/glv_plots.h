@@ -37,8 +37,10 @@ public:
 
 	enum BlendMode {
 		TRANSLUCENT,
-		ADDITIVE,
-		SUBTRACTIVE
+		ADDITIVE,		///< Additive lighten
+		SUBTRACTIVE,	///< Additive darken
+		SCREEN,			///< Multiplicative lighten
+		MULTIPLICATIVE	///< Multiplicative darken
 	};
 
 	Plottable(const Plottable& src);
