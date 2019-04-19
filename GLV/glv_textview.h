@@ -5,8 +5,7 @@
 	See COPYRIGHT file for authors and license information */
 
 #include <string>
-#include <ctype.h>
-#include <string.h>
+#include <cmath> // pow
 #include "glv_core.h"
 #include "glv_font.h"
 #include "glv_widget.h"
@@ -76,9 +75,9 @@ public:
 	virtual std::string onDebug() const;
 
 protected:
-	float mAlignX, mAlignY;
+	float mAlignX=0.f, mAlignY=0.f;
 	unsigned short mStroke;
-	bool mVertical;
+	bool mVertical=false;
 	
 	void fitExtent();
 	void rotateRect();		// swap between vertical and horizontal
@@ -157,12 +156,12 @@ public:
 protected:
 	std::string mText;		// The text string
 
-	float mSpacing;
-//	float mPadX;
-	int mPos;
-	int mSel;	// selection range (0==none)
-	float mBlink;	// cursor blink phase ( on = [0, 0.5); off = [0.5, 1) )
-	CharacterInputFilter mFilter;
+	float mSpacing = 1.f;
+	//float mPadX;
+	int mPos = 0;
+	int mSel = 0; // selection range (0==none)
+	float mBlink = 0.f;	// cursor blink phase ( on = [0, 0.5); off = [0.5, 1) )
+	CharacterInputFilter mFilter = NULL;
 
 	bool validPos(){ return mPos<=int(mText.size()) && mPos>0; }
 	int xToPos(float x); // convert x pixel position to character position
@@ -264,12 +263,11 @@ protected:
 		ItemList(DropDown& v): dd(v){}
 		virtual bool onEvent(Event::t e, GLV& g);
 		DropDown& dd;
-	} mItemList;
+	} mItemList{*this};
 
 	Items mItems;		// list data that ItemList references
-	int mSelectedItem;
+	int mSelectedItem = -1;
 
-	void init();
 	void showList();
 	void hideList(GLV& g);
 	virtual bool onAssignData(Data& d, int ind1, int ind2);
@@ -329,7 +327,7 @@ protected:
 		ItemList(SearchBox& v): sb(v){}
 		virtual bool onEvent(Event::t e, GLV& g);
 		SearchBox& sb;
-	} mItemList;
+	} mItemList{*this};
 
 	Items mItems;
 };
@@ -416,7 +414,7 @@ public:
 
 protected:
 	int mNI=0, mNF=0, mPos=0;		// # digits in integer, # digits in fraction, selected digit position
-	float mAcc=0;
+	float mAcc=0.f;
 	bool mShowSign=true, mOverwriteMode=true, mDimZero=false;
 
 	void fitExtent();
@@ -424,16 +422,16 @@ protected:
 	bool onNumber() const { return mPos!=signPos(); }
 	int dig() const { return mPos; }
 	void dig(int v){ mPos = v<0 ? 0 : v>=numDigits() ? numDigits()-1 : v; }
-	double maxVal() const { return (pow(10., mNI+mNF)-1)/pow(10., mNF); }
+	double maxVal() const { return (std::pow(10., mNI+mNF)-1)/std::pow(10., mNF); }
 	int numDigits() const { return mNI + mNF + numSignDigits(); }
 	int numSignDigits() const { return mShowSign ? 1:0; }
 	int signPos() const { return mShowSign ? 0 : -1; }
 	long long valInt(int ix, int iy=0) const {
 		double v = data().at<double>(ix,iy);
-		return (long long)(v * pow(10., mNF) + (v>0. ? 0.5:-0.5));
+		return (long long)(v * std::pow(10., mNF) + (v>0. ? 0.5:-0.5));
 	}
 
-	double mag(int digit) const { return pow(10., numDigits()-1-digit - mNF); }
+	double mag(int digit) const { return std::pow(10., numDigits()-1-digit - mNF); }
 	double mag() const { return mag(dig()); }
 	void valAdd(double v){ setValue(getValue() + v); }
 

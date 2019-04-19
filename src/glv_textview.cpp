@@ -1,15 +1,12 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-#include <ctype.h>
-#include <math.h>
-#include <string>
-#include <string.h>
+#include <ctype.h> // tolower
+#include <string.h> // strncmp
 #include "glv_textview.h"
 
 namespace glv{
 
-#define CTOR_LIST mAlignX(0), mAlignY(0), mVertical(false)
 #define CTOR_BODY(stroke_, vert_)\
 	disable(CropSelf | DrawBack | DrawBorder | HitTest);\
 	padding(0);\
@@ -20,7 +17,7 @@ namespace glv{
 	vertical(vert_);
 
 Label::Label(const std::string& str, const Spec& s)
-:	Widget(Rect(0)), CTOR_LIST
+:	Widget(Rect(0))
 {
 	CTOR_BODY(s.stroke, s.vert);
 	size(s.size);
@@ -28,25 +25,21 @@ Label::Label(const std::string& str, const Spec& s)
 }
 
 Label::Label(const std::string& str, bool vert)
-:	Widget(Rect(0)), CTOR_LIST
-{
-	CTOR_BODY(1,vert);
-}
+:	Label(str, 0,0, vert)
+{}
 
 Label::Label(const std::string& str, space_t l, space_t t, bool vert)
-:	Widget(Rect(l,t,0,0)), CTOR_LIST
+:	Widget(Rect(l,t,0,0))
 {
 	CTOR_BODY(1,vert);
 }
 
 Label::Label(const std::string& str, Place::t p, space_t px, space_t py, bool vert)
-:	Widget(Rect(0)), CTOR_LIST
+:	Label(str, vert)
 {
-	CTOR_BODY(1,vert);
 	pos(p, px, py).anchor(p);
 }
 
-#undef CTOR_LIST
 #undef CTOR_BODY
 
 Label& Label::align(float vx, float vy){ mAlignX=vx; mAlignY=vy; return *this; }
@@ -101,8 +94,8 @@ void Label::fitExtent(){
 	font().getBounds(tw,th, data().toString().c_str());
 
 	// align text by translating its current position
-	space_t dw = tw - (w - paddingX()*2);
-	space_t dh = th - (h - paddingY()*2);
+	auto dw = tw - (w - paddingX()*2);
+	auto dh = th - (h - paddingY()*2);
 	translate(-dw*mAlignX, -dh*mAlignY);
 
 	tw += paddingX()*2;
@@ -136,7 +129,7 @@ bool TextView::filterNumeric(const std::string& text, int pos, int newChar){
 }
 
 TextView::TextView(const Rect& r, float textSize)
-:	Widget(r, 4), mSpacing(1), mSel(0), mBlink(0), mFilter(NULL)
+:	Widget(r, 4)
 {
 	data().resize(Data::STRING);
 	cursorPos(0);
@@ -172,15 +165,15 @@ void TextView::onAnimate(double dsec){
 void TextView::onDraw(GLV& g){
 	using namespace draw;
 
-	float padX = paddingX();
-	float padY = paddingY();
-	float addY =-4;//was -2		// subtraction from top since some letters go above cap
+	auto padX = paddingX();
+	auto padY = paddingY();
+	float addY = -4.f;//was -2 // subtraction from top since some letters go above cap
 
-	float tl = mPos * font().advance('M') + padX;
-//	float tr = tl + font().advance('M');
-	float tt = addY + padY;
-	float tb = tt + fabs(font().descent()+font().cap()) - addY;
-	float strokeWidth = 1;
+	auto tl = mPos * font().advance('M') + padX;
+	//auto tr = tl + font().advance('M');
+	auto tt = addY + padY;
+	auto tb = tt + fabs(font().descent()+font().cap()) - addY;
+	float strokeWidth = 1.f;
 	
 	// draw selection
 	if(textSelected()){
@@ -212,7 +205,7 @@ void TextView::onDraw(GLV& g){
 
 bool TextView::onEvent(Event::t e, GLV& g){
 
-	const Keyboard& k = g.keyboard();
+	const auto& k = g.keyboard();
 	int key = k.key();
 	float mx = g.mouse().xRel();
 
@@ -229,8 +222,8 @@ bool TextView::onEvent(Event::t e, GLV& g){
 
 				// preserve current text if something is selected
 				std::string oldText;
-				int oldSel = mSel;
-				int oldPos = mPos;
+				auto oldSel = mSel;
+				auto oldPos = mPos;
 				if(mSel){
 					oldText = mText;
 					deleteSelected();
@@ -339,8 +332,8 @@ void TextView::select(int v){
 }
 
 void TextView::selectAll(){
-//	mPos = 0;
-//	select(mText.size());
+	//mPos = 0;
+	//select(mText.size());
 	cursorEnd();
 	select(-mText.size());
 }
@@ -375,7 +368,7 @@ ListView::ListView(const Rect& r, int nx, int ny)
 }
 
 ListView& ListView::fitExtent(){
-	float maxw = 0;//, maxh = 0;
+	float maxw = 0.f;//, maxh = 0;
 	int nitems = data().size();
 
 	for(int i=0; i<nitems; ++i){
@@ -390,9 +383,9 @@ ListView& ListView::fitExtent(){
 }
 
 ListView& ListView::selectValue(const std::string& v){
-	int idx = data().indexOf(v);
+	auto idx = data().indexOf(v);
 	if(idx != Data::npos) select(idx);
-//	printf("ListView::selectValue = %d\n", idx);
+	//printf("ListView::selectValue = %d\n", idx);
 	return *this;
 }
 
@@ -402,7 +395,7 @@ const Data& ListView::getData(Data& dst) const {
 }
 
 void ListView::setData(const Data& d){
-	int idx = data().indexOf(d);
+	auto idx = data().indexOf(d);
 	if(idx != Data::npos){
 		select(idx);
 		ModelChange modelChange(data(), idx);
@@ -478,43 +471,41 @@ bool ListView::onEvent(Event::t e, GLV& g){
 
 
 DropDown::DropDown(const Rect& r, float textSize)
-:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
-{	init(); }
+:	TextView(r,textSize)
+{
+	mItemList.disable(Visible);
+	mItemList.font().size(font().size());
+	
+	// Set padding so text appears vertically centered
+	//paddingX(font().size()/2 + h/2);
+}
 
 DropDown::DropDown(
 	const Rect& r,
 	const std::string& item1, const std::string& item2,
 	float textSize
 )
-:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
-{	init(); addItem(item1).addItem(item2); }
+:	DropDown(r,textSize)
+{	addItem(item1).addItem(item2); }
 
 DropDown::DropDown(
 	const Rect& r,
 	const std::string& item1, const std::string& item2, const std::string& item3,
 	float textSize
 )
-:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
-{	init(); addItem(item1).addItem(item2).addItem(item3); }
+:	DropDown(r,textSize)
+{	addItem(item1).addItem(item2).addItem(item3); }
 
 DropDown::DropDown(
 	const Rect& r,
 	const std::string& item1, const std::string& item2, const std::string& item3, const std::string& item4,
 	float textSize
 )
-:	TextView(r,textSize), mItemList(*this), mSelectedItem(-1)
-{	init(); addItem(item1).addItem(item2).addItem(item3).addItem(item4); }
+:	DropDown(r,textSize)
+{	addItem(item1).addItem(item2).addItem(item3).addItem(item4); }
 
 DropDown::~DropDown(){
 	mItemList.remove();
-}
-
-void DropDown::init(){ //printf("DropDown::init\n");
-	mItemList.disable(Visible);
-	mItemList.font().size(font().size());
-	
-	// Set padding so text appears vertically centered
-	//paddingX(font().size()/2 + h/2);
 }
 
 DropDown& DropDown::addItem(const std::string& v){
@@ -716,7 +707,7 @@ bool DropDown::ItemList::onEvent(Event::t e, GLV& g){
 
 
 SearchBox::SearchBox(const Rect& r, float textSize)
-:	TextView(r,textSize), mItemList(*this)
+:	TextView(r,textSize)
 {}
 
 SearchBox::~SearchBox(){ mItemList.remove(); }
@@ -753,8 +744,7 @@ bool SearchBox::onEvent(Event::t e, GLV& g){
 		case Key::Tab:
 			if(!empty()){
 				const std::string& tstr = getValue();
-				for(unsigned i=0; i<mItems.size(); ++i){
-					const std::string& s = mItems[i];
+				for(const auto& s : mItems){
 					int r = strncmp(s.c_str(), tstr.c_str(), tstr.size());
 					if(0 == r){
 						setValue(s);
@@ -781,12 +771,11 @@ bool SearchBox::onEvent(Event::t e, GLV& g){
 		if(showList && !empty()){
 			std::vector<std::string> listItems;
 			const std::string& tstr = getValue();
-			for(unsigned i=0; i<mItems.size(); ++i){
-				const std::string& s = mItems[i];
+			for(const auto& s : mItems){
 				//int r = strncasecmp(s.c_str(), tstr.c_str(), tstr.size());
-				size_t res = s.find(tstr);
-				if(res != std::string::npos){
-//					printf("%s, %d\n", s.c_str(), res);
+				auto pos = s.find(tstr);
+				if(pos != std::string::npos){
+					//printf("%s, %d\n", s.c_str(), pos);
 					listItems.push_back(s);
 				}
 			}
@@ -818,8 +807,8 @@ bool SearchBox::onEvent(Event::t e, GLV& g){
 }
 
 bool SearchBox::ItemList::onEvent(Event::t e, GLV& g){
-	const Keyboard& k = g.keyboard();
-	const Mouse& m = g.mouse();
+	const auto& k = g.keyboard();
+	const auto& m = g.mouse();
 
 	switch(e){
 	case Event::KeyDown:
@@ -1105,7 +1094,7 @@ bool NumberDialers::onEvent(Event::t e, GLV& g){
 		float dxDig = font().advance('M');
 		int d = (m.xRel() - (dx() * selectedX() + paddingX())) / dxDig;
 		
-//		printf("%2d (%2d, %2d)\n", d, selectedX(), selectedY());
+		//printf("%2d (%2d, %2d)\n", d, selectedX(), selectedY());
 		dig(d);
 		if(dig() == 0 && oldDig == 0 && mShowSign) flipSign();
 		return false;
