@@ -480,29 +480,35 @@ DropDown::DropDown(const Rect& r, float textSize)
 	//paddingX(font().size()/2 + h/2);
 }
 
+DropDown::DropDown(const Rect& r, std::initializer_list<std::string> items, float textSize)
+:	DropDown(r,textSize)
+{
+	for(auto& s : items) addItem(s);
+}
+
 DropDown::DropDown(
 	const Rect& r,
 	const std::string& item1, const std::string& item2,
 	float textSize
 )
-:	DropDown(r,textSize)
-{	addItem(item1).addItem(item2); }
+:	DropDown(r, {item1,item2}, textSize)
+{}
 
 DropDown::DropDown(
 	const Rect& r,
 	const std::string& item1, const std::string& item2, const std::string& item3,
 	float textSize
 )
-:	DropDown(r,textSize)
-{	addItem(item1).addItem(item2).addItem(item3); }
+:	DropDown(r, {item1,item2,item3}, textSize)
+{}
 
 DropDown::DropDown(
 	const Rect& r,
 	const std::string& item1, const std::string& item2, const std::string& item3, const std::string& item4,
 	float textSize
 )
-:	DropDown(r,textSize)
-{	addItem(item1).addItem(item2).addItem(item3).addItem(item4); }
+:	DropDown(r, {item1,item2,item3,item4}, textSize)
+{}
 
 DropDown::~DropDown(){
 	mItemList.remove();

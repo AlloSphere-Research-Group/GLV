@@ -6,6 +6,7 @@
 
 #include <string>
 #include <cmath> // pow
+#include <initializer_list>
 #include "glv_core.h"
 #include "glv_font.h"
 #include "glv_widget.h"
@@ -241,6 +242,10 @@ public:
 		const std::string& item1, const std::string& item2, const std::string& item3, const std::string& item4,
 		float textSize=8
 	);
+
+	/// @param[in] r			geometry
+	/// @param[in] textSize		size of text, in pixels
+	DropDown(const Rect& r, std::initializer_list<std::string> items, float textSize=8);
 
 	virtual ~DropDown();
 
