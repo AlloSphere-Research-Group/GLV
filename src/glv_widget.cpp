@@ -49,8 +49,11 @@ void Widget::drawSelectionBox(){
 	}
 }
 
+void Widget::onAnimate(double dsec){
+	mChangedElem = 0;
+}
+
 void Widget::onDraw(GLV& g){
-	mChangedElem = 0; // FIXME: should be in an 'onTick' function
 	drawSelectionBox();
 	drawGrid(g.graphicsData());
 	g.graphicsData().reset();

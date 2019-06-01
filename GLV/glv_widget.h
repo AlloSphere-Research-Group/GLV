@@ -205,6 +205,7 @@ protected:
 	// @param[in] ind2	destitation index of second dimension
 	virtual bool onAssignData(Data& d, int ind1, int ind2);
 
+	virtual void onAnimate(double dsec);
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);
 
