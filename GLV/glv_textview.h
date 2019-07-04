@@ -259,6 +259,9 @@ public:
 	/// Add an item to the list
 	DropDown& addItem(const std::string& v);
 
+	/// Fit extent of bounding rectangle to match current list contents
+	DropDown& fitExtent();
+
 	virtual const char * className() const { return "DropDown"; }
 	virtual void onDraw(GLV& g);
 	virtual bool onEvent(Event::t e, GLV& g);

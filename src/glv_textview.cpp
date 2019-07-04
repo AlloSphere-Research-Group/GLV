@@ -526,6 +526,20 @@ DropDown& DropDown::addItem(const std::string& v){
 	return *this;
 }
 
+DropDown& DropDown::fitExtent(){
+	if(mItems.size()){
+		unsigned longest=0;
+		for(unsigned i=0; i<mItems.size(); ++i){
+			if(mItems[i].size() > mItems[longest].size()) longest=i;
+		}
+		float tw,th;
+		font().getBounds(tw,th, mItems[longest].c_str());
+		float texPad = 3.;
+		extent(tw + th + 2.*texPad + 4., th + 2.*texPad);
+	}
+	return *this;
+}
+
 void DropDown::hideList(GLV& g){
 	mItemList.disable(Visible);
 	g.setFocus(this);
@@ -553,8 +567,8 @@ void DropDown::onDraw(GLV& g){
 	TextView::onDraw(g);
 	
 	draw::color(colors().fore);
-	float ds = 3;
-	draw::triangleD(w - h + ds, ds, w-ds, h-ds);
+	auto pad = 3.;
+	draw::triangleD(w - h + pad, pad, w-pad, h-pad);
 }
 
 bool DropDown::onEvent(Event::t e, GLV& g){
