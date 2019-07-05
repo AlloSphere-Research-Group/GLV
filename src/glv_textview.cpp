@@ -540,6 +540,11 @@ DropDown& DropDown::fitExtent(){
 	return *this;
 }
 
+DropDown& DropDown::selectedItem(int i){
+	if(i<(int)mItems.size() && i>=0) setValue(mItems[i]);
+	return *this;
+}
+
 void DropDown::hideList(GLV& g){
 	mItemList.disable(Visible);
 	g.setFocus(this);

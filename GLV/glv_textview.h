@@ -253,6 +253,8 @@ public:
 	/// Get index of currently selected item
 	int selectedItem() const { return mSelectedItem; } //return mItemList.selected(); }
 
+	DropDown& selectedItem(int i);
+
 	/// Get reference to items
 	Items& items(){ return mItems; }
 
