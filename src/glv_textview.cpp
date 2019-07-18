@@ -552,16 +552,13 @@ void DropDown::hideList(GLV& g){
 
 void DropDown::showList(){
 	if(mItems.size()){
-
 		// Must place list in topmost view to register clicks
 		space_t ax = 0, ay = height();
 		auto& top = *const_cast<View *>(toAbs(ax, ay));
-
 		if(mItemList.parent == 0) top << mItemList;
-
 		ay -= (selectedItem()+1) * (mItemList.h / mItems.size());
-
-		mItemList.pos(ax,ay);
+		//FIXME: if ax,ay not integer, list may not appear!
+		mItemList.pos(draw::pix(ax), draw::pix(ay));
 		mItemList.bringToFront();
 		mItemList.enable(Visible);
 	}
