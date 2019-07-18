@@ -551,15 +551,15 @@ void DropDown::hideList(GLV& g){
 }
 
 void DropDown::showList(){
-	if(items().size()){
+	if(mItems.size()){
+
+		// Must place list in topmost view to register clicks
 		space_t ax = 0, ay = height();
-		const View& top = *toAbs(ax, ay);
+		auto& top = *const_cast<View *>(toAbs(ax, ay));
 
-		if(mItemList.parent == 0) root() << mItemList;
+		if(mItemList.parent == 0) top << mItemList;
 
-		if(ay > top.height()/2){
-			ay -= mItemList.height() + height();
-		}
+		ay -= (selectedItem()+1) * (mItemList.h / mItems.size());
 
 		mItemList.pos(ax,ay);
 		mItemList.bringToFront();
