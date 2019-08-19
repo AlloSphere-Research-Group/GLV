@@ -105,8 +105,11 @@
 	#define GLV_PLATFORM_WIN
 	#define GLV_OPENGL
 
+	#ifndef __MINGW32__
+		#define GLEW_NO_GLU // GLU not used and throws errors with Mingw-w64
+	#endif
 	#include <GL/glew.h>
-	#include <gl/gl.h>
+	#include <GL/gl.h>
 
 	#pragma comment( lib, "glew32.lib")
 	#pragma comment( lib, "winmm.lib")
