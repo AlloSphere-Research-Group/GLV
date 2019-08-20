@@ -100,8 +100,8 @@ void View3D::onDraw(GLV& g){
 
 bool View3D::onEvent(Event::t e, GLV& g){
 
-	const Mouse& m = g.mouse();
-	const Keyboard& k = g.keyboard();
+	//const auto& m = g.mouse();
+	const auto& k = g.keyboard();
 	switch(e){
 		/*case Event::MouseDown:
 			return false;
