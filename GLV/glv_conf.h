@@ -89,7 +89,6 @@
 	#include <time.h>
 	#include <GL/glew.h>
 	#include <GL/gl.h>
-	#include <GL/glext.h>
 
 	#define GLV_PLATFORM_INIT_CONTEXT\
 		{	GLenum err = glewInit();\
