@@ -261,6 +261,13 @@ public:
 	/// Add an item to the list
 	DropDown& addItem(const std::string& v);
 
+	/// Add items to the list
+	template <class... Strings>
+	DropDown& addItem(const std::string& v, Strings... strings){
+		addItem(v);
+		return addItem(strings...);
+	}
+
 	/// Fit extent of bounding rectangle to match current list contents
 	DropDown& fitExtent();
 
