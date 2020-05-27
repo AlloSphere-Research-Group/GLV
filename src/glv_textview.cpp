@@ -486,6 +486,12 @@ DropDown::DropDown(const Rect& r, std::initializer_list<std::string> items, floa
 	for(auto& s : items) addItem(s);
 }
 
+DropDown::DropDown(std::initializer_list<std::string> items, float textSize)
+:	DropDown(Rect(), items, textSize)
+{
+	fitExtent();
+}
+
 DropDown::DropDown(
 	const Rect& r,
 	const std::string& item1, const std::string& item2,

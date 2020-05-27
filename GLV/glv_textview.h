@@ -244,8 +244,13 @@ public:
 	);
 
 	/// @param[in] r			geometry
+	/// @param[in] items		items to populate list with
 	/// @param[in] textSize		size of text, in pixels
 	DropDown(const Rect& r, std::initializer_list<std::string> items, float textSize=8);
+
+	/// @param[in] items		items to populate list with
+	/// @param[in] textSize		size of text, in pixels
+	DropDown(std::initializer_list<std::string> items, float textSize=8);
 
 	virtual ~DropDown();
 
