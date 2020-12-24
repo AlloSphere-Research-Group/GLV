@@ -294,18 +294,6 @@ public:
 
 protected:
 	Plottables mPlottables;
-	std::vector<char> mActive;
-//	int mValInd[4];
-//	
-//	void resetValInd(){
-//		for(int i=0; i<4; ++i) mValInd[i]=i;
-//	}
-
-//	int valueIndex(int i) const { return mValInd[i]; }
-
-//	Plot& valueIndex(int from, int to){
-//		mValInd[from] = to; return *this;
-//	}
 };
 
 

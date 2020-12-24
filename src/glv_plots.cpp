@@ -528,7 +528,7 @@ void Plot::onDraw(GLV& g){
 	{ pushGrid();
 		for(unsigned i=0; i<plottables().size(); ++i){
 			Plottable& p = *plottables()[i];
-			if(mActive[i] && p.drawUnderGrid()){
+			if(p.active() && p.drawUnderGrid()){
 				gd.reset();
 				gd.colors()[0] = p.color();
 				p.doPlot(gd, p.data().hasData() ? p.data() : data());
@@ -545,7 +545,7 @@ void Plot::onDraw(GLV& g){
 	{ pushGrid();
 		for(unsigned i=0; i<plottables().size(); ++i){
 			Plottable& p = *plottables()[i];
-			if(mActive[i] && !p.drawUnderGrid()){
+			if(p.active() && !p.drawUnderGrid()){
 				gd.reset();
 				gd.colors()[0] = p.color();
 				p.doPlot(gd, p.data().hasData() ? p.data() : data());
@@ -564,7 +564,9 @@ bool Plot::onEvent(Event::t e, GLV& g){
 				unsigned i = k.keyAsNumber();
 				i = i>0 ? i-1 : 10;
 				if(i < plottables().size() && plottables()[i]){
-					mActive[i] ^= true;
+					auto& p = *plottables()[i];
+					p.active(!p.active());
+
 				}
 				return false;
 			}
@@ -590,7 +592,6 @@ bool Plot::onEvent(Event::t e, GLV& g){
 Plot& Plot::add(Plottable& v){
 	if(std::find(mPlottables.begin(), mPlottables.end(), &v) == mPlottables.end()){
 		mPlottables.push_back(&v);
-		mActive.push_back(1);
 	}
 	return *this;
 }
@@ -603,7 +604,6 @@ Plot& Plot::remove(Plottable& v){
 		Plottable* p = plottables()[i];
 		if(p == &v){
 			mPlottables.erase(mPlottables.begin() + i);
-			mActive.erase(mActive.begin() + i);
 			break;
 		}		
 	}
