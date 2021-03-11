@@ -186,8 +186,12 @@ static void modToGLV(){
 	}
 }
 
+
 static void keyToGLV(unsigned int key, bool down, bool special){
 //	printf("GLUT: keyboard event k:%3d d:%d s:%d\n", key, down, special);
+
+	// An invalid key to indicate an error
+	static const unsigned int INVALID_KEY = 0xffffffff;
 
 	GLV * g = Window::Impl::getGLV();
 	if(g){
@@ -202,6 +206,10 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 				CS(F1, F1) CS(F2, F2) CS(F3, F3) CS(F4, F4)
 				CS(F5, F5) CS(F6, F6) CS(F7, F7) CS(F8, F8)
 				CS(F9, F9) CS(F10, F10)	CS(F11, F11) CS(F12, F12)
+
+				// Sometimes GLUT will pass an unspecified key code to the 
+				// special function. The callee should consider this an error...
+				default: key = INVALID_KEY;
 			}
 			#undef CS
 		}
@@ -266,9 +274,11 @@ static void keyToGLV(unsigned int key, bool down, bool special){
 //			printf("GLUT o: %3d %c\n", key, key);
 		}
 		
-		down ? g->setKeyDown(key) : g->setKeyUp(key);
-		modToGLV();
-		g->propagateEvent();
+		if(INVALID_KEY != key){
+			down ? g->setKeyDown(key) : g->setKeyUp(key);
+			modToGLV();
+			g->propagateEvent();
+		}
 	}
 }
 
