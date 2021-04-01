@@ -758,6 +758,10 @@ void View::traverseDepth(qual Qual##TraversalAction& action) qual {\
 	qual View * const root = this;\
 	qual View * n = root;\
 	int depth = 0;\
+	if(!n->child){				/* Early exit if leaf */\
+		action(n, depth);\
+		return;\
+	}\
 	while(n){\
 		action(n, depth);\
 		if(n->child){			/* Down to child */\
