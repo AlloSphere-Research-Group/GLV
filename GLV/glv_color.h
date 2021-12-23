@@ -135,7 +135,7 @@ inline Color::Color(float r, float g, float b, float a)
 {}
 
 inline Color::Color(float v, float a)
-:	r(v), g(v), b(v), a(a)
+:	Color(v,v,v, a)
 {}
 
 inline Color::Color(const HSV& hsv, float a)
