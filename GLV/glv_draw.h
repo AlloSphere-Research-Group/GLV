@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "glv_conf.h"
 #include "glv_color.h"
+#include "glv_util.h" // Buffer
 
 #define GLV_ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
 
