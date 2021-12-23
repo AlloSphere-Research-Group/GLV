@@ -165,10 +165,8 @@ inline Color Color::mixRGB(const Color& c, float f) const {
 }
 
 inline void	Color::clamp(){
-	r<0.f ? r=0.f : (r>1.f ? r=1.f : 0);
-	g<0.f ? g=0.f : (g>1.f ? g=1.f : 0);
-	b<0.f ? b=0.f : (b>1.f ? b=1.f : 0);
-	a<0.f ? a=0.f : (a>1.f ? a=1.f : 0);
+	for(auto& v : components)
+		v<0.f ? v=0.f : (v>1.f ? v=1.f : 0);
 }
 
 inline void	Color::invert(){ set(1.f - r, 1.f - g, 1.f - b); }
