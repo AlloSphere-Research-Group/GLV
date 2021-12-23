@@ -1,7 +1,7 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-#include <stdio.h>
+#include <cstdio>
 #include "glv_color.h"
 
 namespace glv{
@@ -55,8 +55,8 @@ void Color::getHSV6(float &h, float &s, float &v) const{
 	}
 }
 
-void Color::print(const char * append, FILE * fp) const{
- 	fprintf(fp, "[%.2f, %.2f, %.2f, %.2f]%s", r, g, b, a, append);
+void Color::print(const char * append) const{
+ 	fprintf(stdout, "[%.2f, %.2f, %.2f, %.2f]%s", r, g, b, a, append);
 }
 
 } // end namespace glv

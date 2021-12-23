@@ -4,8 +4,6 @@
 /*	Graphics Library of Views (GLV) - GUI Building Toolkit
 	See COPYRIGHT file for authors and license information */
 
-#include <stdio.h>
-
 namespace glv {
 
 struct HSV;
@@ -84,7 +82,7 @@ struct Color{
 	/// Get H value in [0, 6] and SV values in [0, 1] from color.
 	void getHSV6(float &h, float &s, float &v) const;
 
-	void print(const char * append="\n", FILE * fp=stdout) const;
+	void print(const char * append="\n") const;
 };
 
 
