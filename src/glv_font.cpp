@@ -1,6 +1,7 @@
 #include <ctype.h>		// isgraph
 #include <string.h>		// strlen
 #include "glv_font.h"
+#include "glv_draw.h"	// GraphicsData
 
 namespace glv{
 

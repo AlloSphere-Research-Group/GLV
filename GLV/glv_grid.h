@@ -5,7 +5,7 @@
 	See COPYRIGHT file for authors and license information */
 
 #include "glv_core.h"
-#include "glv_font.h"
+#include "glv_util.h" // Interval
 
 #ifdef minor
 #undef minor

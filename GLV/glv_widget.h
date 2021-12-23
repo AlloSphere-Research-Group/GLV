@@ -6,6 +6,7 @@
 
 #include "glv_core.h"
 #include "glv_model.h"
+#include "glv_util.h" // Lazy
 
 namespace glv {
 

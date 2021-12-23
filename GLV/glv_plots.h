@@ -10,6 +10,7 @@
 #include "glv_core.h"
 #include "glv_draw.h"
 #include "glv_grid.h"
+#include "glv_model.h" // Data, Indexer
 #include "glv_texture.h"
 #include "glv_widget.h"
 
@@ -17,7 +18,6 @@ namespace glv{
 
 class Plot;
 class Plottable;
-
 
 
 /// Map from model data to graphics data

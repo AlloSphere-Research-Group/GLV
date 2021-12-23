@@ -8,7 +8,6 @@
 #include <cmath> // pow
 #include <initializer_list>
 #include "glv_core.h"
-#include "glv_font.h"
 #include "glv_widget.h"
 
 namespace glv{
