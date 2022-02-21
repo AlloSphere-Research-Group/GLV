@@ -31,10 +31,10 @@ public:
 	void resize(int plotFrames, int plotChans);
 
 	/// Update scope with new audio data
-	
-	/// Multi-channel audio data should be in a non-interleaved format.
+
 	/// This can be safely called from the audio thread.
-	void update(const float * buf, int bufFrames, int bufChans);
+	///
+	void update(const float * buf, int bufFrames, int bufChans, bool interleaved);
 
 	/// Set whether to synchronize waveform to first positive slope zero-crossing
 	TimeScope& sync(bool v);
@@ -44,10 +44,10 @@ public:
 
 protected:
 	std::vector<PlotFunction1D> mGraphs;
-	float * mSamples;
-	int mFill;
+	float * mSamples = nullptr;
+	int mFill = 0;
 	int mSync;
-	bool mLocked;
+	bool mLocked = false;
 };
 
 

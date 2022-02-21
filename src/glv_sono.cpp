@@ -22,7 +22,7 @@ enum{
 
 
 TimeScope::TimeScope(const glv::Rect& r, int frames, int chans)
-:	mSamples(NULL), mFill(0), mSync(SYNC_FIND), mLocked(false)
+:	mSync(SYNC_FIND)
 {
 	range(-1,1, 1);
 	//range( 0,1, 0);
@@ -42,7 +42,7 @@ TimeScope::TimeScope(const glv::Rect& r, int frames, int chans)
 
 TimeScope::~TimeScope(){
 	delete[] mSamples;
-	mSamples=NULL;
+	mSamples = nullptr;
 }
 
 
@@ -89,7 +89,7 @@ void TimeScope::resize(int frames, int chans){
 }
 
 
-void TimeScope::update(const float * buf, int bufFrames, int bufChans){
+void TimeScope::update(const float * buf, int bufFrames, int bufChans, bool interleaved){
 
 	if(!enabled(glv::Animate)) return;
 	if(!data().hasData() || !mSamples) return;
@@ -102,12 +102,14 @@ void TimeScope::update(const float * buf, int bufFrames, int bufChans){
 	int Nf = left < bufFrames ? left : bufFrames;
 	const int Nc = bufChans <= channels() ? bufChans : channels();
 
+	int M = interleaved ? bufChans : 1;
+
 	// search for sync point
 	if(SYNC_FIND == mSync){
 		//float maxSlope = 0;
 		for(int i=1; i<Nf-1; ++i){
-			float prev = buf[i-1];
-			float curr = buf[i  ];
+			float prev = buf[(i-1)*M];
+			float curr = buf[(i  )*M];
 			//float next = buf[i+1];
 			if(prev <= 0.f && curr > 0.f){
 				//float slope = curr - prev;
@@ -116,7 +118,7 @@ void TimeScope::update(const float * buf, int bufFrames, int bufChans){
 				//float slope = (next-prev)*0.5; slope *= slope;
 				//if(slope > maxSlope){
 				//	maxSlope = slope;
-					mSync = i-1;
+					mSync = i-1; // sync point
 				//}
 				break;
 			}
@@ -124,22 +126,27 @@ void TimeScope::update(const float * buf, int bufFrames, int bufChans){
 		if(SYNC_FIND == mSync) goto end;	// no sync found, so bail...
 	}
 
-	if(mSync >= 0){				// sync found
-		for(int i=0; i<Nc; ++i){
-			std::memcpy(
-				mSamples + frames()*i + mFill,
-				buf + bufFrames*i + mSync,
-				(Nf-mSync)*sizeof(*mSamples)
-			);
+	{
+		bool foundSync = mSync >= 0;
+		int less = foundSync ? mSync : 0;
+
+		if(interleaved){
+			for(int i=0; i<Nc; ++i){
+				for(int j=0; j<(Nf-less); ++j){
+					mSamples[frames()*i + j + mFill] = buf[i + (j+less)*bufChans];
+				}
+			}
+		} else {
+			for(int i=0; i<Nc; ++i){
+				std::memcpy(
+					mSamples + frames()*i + mFill,
+					buf + bufFrames*i + less,
+					(Nf-less)*sizeof(*mSamples)
+				);
+			}
 		}
-		mFill += bufFrames - mSync;
-		mSync = SYNC_WAIT;
-	}
-	else{
-		for(int i=0; i<Nc; ++i){
-			std::memcpy(mSamples + frames()*i + mFill, buf + bufFrames*i, Nf*sizeof(*mSamples));
-		}
-		mFill += bufFrames;
+		mFill += bufFrames - less;
+		if(foundSync) mSync = SYNC_WAIT;
 	}
 
 	// Is our sample buffer is full? If so, copy to draw buffer...
