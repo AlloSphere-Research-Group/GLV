@@ -34,7 +34,7 @@ public:
 	
 	/// Multi-channel audio data should be in a non-interleaved format.
 	/// This can be safely called from the audio thread.
-	void update(float * buf, int bufFrames, int bufChans);
+	void update(const float * buf, int bufFrames, int bufChans);
 
 	/// Set whether to synchronize waveform to first positive slope zero-crossing
 	TimeScope& sync(bool v);

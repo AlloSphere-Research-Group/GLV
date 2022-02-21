@@ -89,7 +89,7 @@ void TimeScope::resize(int frames, int chans){
 }
 
 
-void TimeScope::update(float * buf, int bufFrames, int bufChans){
+void TimeScope::update(const float * buf, int bufFrames, int bufChans){
 
 	if(!enabled(glv::Animate)) return;
 	if(!data().hasData() || !mSamples) return;
