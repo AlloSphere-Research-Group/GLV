@@ -199,7 +199,7 @@ void TextView::onDraw(GLV& g){
 
 	draw::lineWidth(strokeWidth);
 	color(colors().text);
-//	font().render(mText.c_str(), pixc(padX), pixc(padY-1));
+	//font().render(mText.c_str(), pixc(padX), pixc(padY-1));
 	font().render(g.graphicsData(), mText.c_str(), padX, padY-1);
 }
 
@@ -443,19 +443,20 @@ bool ListView::onEvent(Event::t e, GLV& g){
 		selectFromMousePos(g);
 		return false;
 
-//		case Event::MouseMove:
-//			if(containsPoint(g.mouse().xRel(), g.mouse().yRel())){
-//				selectFromMousePos(g);
-//				return false;
-//			}
-//			break;
-	
+	/*
+	case Event::MouseMove:
+		if(containsPoint(g.mouse().xRel(), g.mouse().yRel())){
+			selectFromMousePos(g);
+			return false;
+		}
+		break;
+	*/
 	case Event::KeyDown:
 		switch(g.keyboard().key()){
 			case Key::Enter:
 			case Key::Return:
 				notify(this, Update::Action);
-//				printf("action on %d\n", selected());
+				//printf("action on %d\n", selected());
 				return false;
 		default:;
 		}
@@ -624,7 +625,7 @@ bool DropDown::onEvent(Event::t e, GLV& g){
 
 */
 
-	const Keyboard& k = g.keyboard();
+	const auto& k = g.keyboard();
 
 	switch(e){
 	case Event::KeyDown:
@@ -699,8 +700,8 @@ bool DropDown::onAssignData(Data& d, int ind1, int ind2){
 }
 
 bool DropDown::ItemList::onEvent(Event::t e, GLV& g){
-	const Keyboard& k = g.keyboard();
-	const Mouse& m = g.mouse();
+	const auto& k = g.keyboard();
+	const auto& m = g.mouse();
 
 	switch(e){
 	case Event::KeyDown:
@@ -751,7 +752,7 @@ bool SearchBox::onEvent(Event::t e, GLV& g){
 //	printf("SearchBox::onEvent %s\n", toString(e));
 
 	bool showList = true;
-	const Keyboard& k = g.keyboard();
+	const auto& k = g.keyboard();
 
 	switch(e){
 	case Event::KeyDown:
@@ -1026,8 +1027,8 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 	float dyCell= dy();
 	float dxDig = font().advance('M');
 
-//	View::enable(DrawSelectionBox);
-//	View::enable(DrawGrid);
+	//View::enable(DrawSelectionBox);
+	//View::enable(DrawGrid);
 
 	// draw box at position (only if focused)
 	if(enabled(Focused)){
@@ -1037,7 +1038,7 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 		float y = dyCell*(selectedY()+0.5);
 		float ty= font().cap()/2. + 3;
 
-//		color(colors().fore, colors().fore.a*0.4);
+		//color(colors().fore, colors().fore.a*0.4);
 		color(colors().selection);
 		//rectangle(bx + dig()*dxDig, by, bx + (dig()+1)*dxDig, by + dyCell-0.5f);
 		rectangle(x + dig()*dxDig, y-ty, x + (dig()+1)*dxDig, y+ty);
@@ -1100,9 +1101,9 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 			} else {
 				color(colors().text.mix(colors().back, 0.8));
 			}
-		//	printf("%s\n", str);
-//			font().render(g.graphicsData(), str, pixc(tx), pixc(ty));
-//			if(mNF>0) font().render(g.graphicsData(), ".", pixc(dxDig*(mNI+numSignDigits()-0.5f) + tx), pixc(ty));
+			//printf("%s\n", str);
+			//font().render(g.graphicsData(), str, pixc(tx), pixc(ty));
+			//if(mNF>0) font().render(g.graphicsData(), ".", pixc(dxDig*(mNI+numSignDigits()-0.5f) + tx), pixc(ty));
 			font().render(g.graphicsData(), str, tx, ty);
 			if(mNF>0) font().render(g.graphicsData(), ".", dxDig*(mNI+numSignDigits()-0.5f) + tx, ty);
 		}
@@ -1111,8 +1112,8 @@ void NumberDialers::onDraw(GLV& g){ //printf("% g\n", value());
 
 bool NumberDialers::onEvent(Event::t e, GLV& g){
 
-	const Keyboard& k = g.keyboard();
-	const Mouse& m    = g.mouse();
+	const auto& k = g.keyboard();
+	const auto& m = g.mouse();
 
 	switch(e){
 	case Event::MouseDown:{
@@ -1233,124 +1234,5 @@ NumberDialer::NumberDialer(const NumberDialer& v)
 {	
 	padding(2);
 }
-
-
-// Base class for number displaying/editing box(es)
-
-// Deprecated in favor of NumberDialer.
-//template <class V>
-//class NumberBoxBase : public ValueWidget<V>{
-//public:
-//	GLV_INHERIT_VALUEWIDGET
-//
-//	NumberBoxBase(const Rect& r, int nx=1, int ny=1, const char * format="% g")
-//	:	ValueWidget<V>(r, nx, ny, 10, false, true, true),
-//		mStep(1), mFormat(format)
-//	{}
-//	
-//	NumberBoxBase& step(float v){ mStep=v; return *this; }
-//
-//	virtual void onDraw(){
-//		using namespace glv::draw;
-//
-//		float dx = w/sizeX();
-//		float dy = h/sizeY();
-//
-//		// draw the grid lines
-//		//ValueWidget<V>::drawGrid(*this);
-//
-//		// draw selected frame
-//		color(colors().fore);
-//		float fx = dx*selectedX(), fy = dy*selectedY();
-//		frame(fx, fy, fx+dx, fy+dy);
-//
-//		float p_2 = padding()*0.5;
-//		float textScale = (dy-padding())/Glyph::baseline();
-//		float rTextScale = 1./textScale;
-//		
-//		// Draw cursor
-//		color(colors().text, colors().text.a*0.3);
-//		float curx = mNumEnt.pos() * Glyph::width()*textScale + selectedX()*this->dx() + p_2;
-//		float cury = selectedY() * this->dy();
-//		draw::rect(curx, cury, curx+Glyph::width(), cury+this->dy());
-//		
-//		lineWidth(1);
-//		
-//		char buf[16]; // text buffer
-//		
-//		// Draw text
-//		// TODO: turn this into a display list
-//		color(colors().text);
-//		for(int i=0; i<sizeX(); ++i){
-//			
-//			float x = dx*i + p_2;
-//		
-//			for(int j=0; j<sizeY(); ++j){
-//				int ind = index(i,j);
-//				float y = dy*j + p_2;
-//
-//				float v = value()[ind];
-//				snprintf(buf, sizeof(buf), mFormat, v);
-//				//float len = strlen(buf);
-//				//text(buf, p - (8.f * len * 0.5f), 4); // center text
-//				
-//				push();
-//				scale(textScale, textScale);
-//				text(buf, pix(x)*rTextScale, pix(y)*rTextScale);
-//				pop();
-//			}
-//		}
-//		
-//	}
-//	
-//	virtual bool onEvent(Event::t e, GLV& g){
-//		switch(e){		
-//		case Event::MouseDown:
-//			ValueWidget<V>::onSelectClick(g);
-//			mNumEnt.value(value()[selected()]);
-//			return false;
-//			
-//		case Event::MouseUp:
-//			break;
-//			
-//		case Event::KeyDown:
-//		
-//			ValueWidget<V>::onSelectKey(g);
-//			#define SETVAL value()[selected()] = mNumEnt.value()
-//
-//			if(mNumEnt.read(g.keyboard.key())){
-//				SETVAL;
-//			}
-//
-//			switch(g.keyboard.key()){
-//			case 'w':	mNumEnt.bwd1(); return false;
-//			case 'e':	mNumEnt.fwd1(); return false;
-//			case 'a':	mNumEnt.addAtPos( 1); SETVAL; return false;
-//			case 'z':	mNumEnt.addAtPos(-1); SETVAL; return false;
-//			
-//			case Key::Delete:	mNumEnt.del(); SETVAL; return false;
-////			case 'a': value()[selected()] += mStep; return false;
-////			case 'z': value()[selected()] -= mStep; return false;
-////			case '\\': mNumEnt.reset(); return false;
-//			//case Key::Delete: mNumEnt.back1(); return false;
-//			default:;
-//			}
-//		
-//			break;
-//			#undef SETVAL
-//		default: break;
-//		}
-//		return true;
-//	}
-//
-//
-//protected:
-//	float mStep;
-//	const char * mFormat;
-//	NumberEntry mNumEnt;
-//};
-
-
-
 
 } // glv::
