@@ -78,7 +78,7 @@ namespace Property{
 		Maximized		=1<<11, /**< Whether geometry is matched to parent's */
 		KeepWithinParent=1<<12, /**< Ensure that View is fully contained within parent */
 		Animate			=1<<13, /**< Whether to animate */
-//		AlwaysOnTop		=1<<14, /**< Whether to always be on top of other views */
+		//AlwaysOnTop		=1<<14, /**< Whether to always be on top of other views */
 
 		DrawGrid		=1<<27,	/**< Whether to draw grid lines between widget elements */
 		DrawSelectionBox=1<<28,	/**< Whether to draw a box around selected widget elements */
@@ -506,6 +506,7 @@ public:
 	StyleColor& colors() const;					///< Get style colors
 	const std::string& descriptor() const;		///< Get descriptor
 	int enabled(Property::t v) const;			///< Returns whether a property is set
+	int disabled(Property::t v) const;			///< Returns whether a property is not set
 	Font& font();								///< Get font
 	const std::string& name() const;			///< Get name
 	const View * posAbs(space_t& al, space_t& at) const; ///< Computes absolute left-top position. Returns topmost parent view.
@@ -782,6 +783,7 @@ protected:
 
 // View
 inline int View::enabled(Property::t v) const { return mFlags & v; }
+inline int View::disabled(Property::t v) const { return enabled(v) ^ v; }
 inline const std::string& View::descriptor() const { return mDescriptor; }
 inline const std::string& View::name() const { return mName; }
 inline int View::visible() const { return enabled(Visible); }
