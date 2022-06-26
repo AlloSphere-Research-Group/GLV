@@ -115,8 +115,7 @@ struct Box : public Group{
 		Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4
 	)
 	:	p(*this, dir, align, 0,0, pad){
-		p << v1 << v2;
-		fit();
+		add(v1,v2);
 	}
 
 	Box(
@@ -124,8 +123,7 @@ struct Box : public Group{
 		Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4
 	)
 	:	p(*this, dir, align, 0,0, pad){
-		p << v1 << v2 << v3;
-		fit();
+		add(v1,v2,v3);
 	}
 
 	Box(
@@ -133,8 +131,7 @@ struct Box : public Group{
 		Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4
 	)
 	:	p(*this, dir, align, 0,0, pad){
-		p << v1 << v2 << v3 << v4;
-		fit();
+		add(v1,v2,v3,v4);
 	}
 
 	Box(
@@ -142,8 +139,7 @@ struct Box : public Group{
 		Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4
 	)
 	:	p(*this, dir, align, 0,0, pad){
-		p << v1 << v2 << v3 << v4 << v5;
-		fit();
+		add(v1,v2,v3,v4,v5);
 	}
 
 	Box(
@@ -151,20 +147,27 @@ struct Box : public Group{
 		Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4
 	)
 	:	p(*this, dir, align, 0,0, pad){
-		p << v1 << v2 << v3 << v4 << v5 << v6;
-		fit();
+		add(v1,v2,v3,v4,v5,v6);
 	}
 
-	Box& operator<< (View* v){ p<<v; fit(); return *this; }
-	Box& operator<< (View& v){ p<<v; fit(); return *this; }
+	template <class... Views>
+	Box& add(View& v, Views&... views){
+		p << v;
+		return add(views...);
+	}
 
 	Box& padding (space_t v){ return paddingX(v).paddingY(v); }
 	Box& paddingX(space_t v){ p.absX(v); return *this; }
 	Box& paddingY(space_t v){ p.absY(v); return *this; }
 
 	virtual const char * className() const { return "Box"; }
+
 private:
 	Placer p;
+	Box& add(){ fit(); return *this; } // terminal case
+	// privatizing for now as won't work with non-TL alignments
+	Box& operator<< (View* v){ p<<v; fit(); return *this; }
+	Box& operator<< (View& v){ p<<v; fit(); return *this; }
 };
 
 

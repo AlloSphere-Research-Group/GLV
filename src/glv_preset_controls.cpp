@@ -32,8 +32,8 @@ void PresetControl::init(){
 	mBtnPanel.enable(Momentary);
 	mBtnPanel.padding(4,0).padding(8,1);
 	paddingX(0).paddingY(0);
-	(*this) << mStatus << mSearchBox;// << mBtnPanel;
-	fit();
+	add(mStatus, mSearchBox);// , mBtnPanel;
+	//fit();
 }
 
 
