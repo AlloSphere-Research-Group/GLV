@@ -69,15 +69,16 @@
 	#define GLV_PLATFORM_OSX
 	#define GLV_OPENGL
 
+	#define GL_SILENCE_DEPRECATION
 	#include <OpenGL/OpenGL.h>
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
 
 	#define GLV_PLATFORM_INIT_CONTEXT\
 		{	/* prevents tearing */\
-			GLint MacHackVBL = 1;\
+			GLint vsync = 1;\
 			CGLContextObj ctx = CGLGetCurrentContext();\
-			CGLSetParameter(ctx,  kCGLCPSwapInterval, &MacHackVBL); }
+			CGLSetParameter(ctx,  kCGLCPSwapInterval, &vsync); }
 
 
 #elif defined(__linux__)
