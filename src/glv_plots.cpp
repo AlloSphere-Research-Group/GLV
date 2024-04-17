@@ -388,11 +388,9 @@ void PlotFunction2D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 
 struct EvPlotCreateContext : public EventHandler{
 	bool onEvent(View& v, GLV& g){
-		auto& p = *static_cast<Plot *>(&v);
-		auto it = p.plottables().begin();
-		while(it != p.plottables().end()){
-			(**it).onContextCreate();
-			++it;
+		auto * plot = static_cast<Plot *>(&v);
+		for(auto& p : plot->plottables()){
+			p->onContextCreate();
 		}
 		return true;
 	}
@@ -400,12 +398,9 @@ struct EvPlotCreateContext : public EventHandler{
 
 struct EvPlotDestroyContext : public EventHandler{
 	bool onEvent(View& v, GLV& g){
-//		printf("destroy\n");
-		auto& p = *static_cast<Plot *>(&v);
-		auto it = p.plottables().begin();
-		while(it != p.plottables().end()){
-			(**it).onContextDestroy();
-			++it;
+		auto * plot = static_cast<Plot *>(&v);
+		for(auto& p : plot->plottables()){
+			p->onContextDestroy();
 		}
 		return true;
 	}
