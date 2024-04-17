@@ -70,12 +70,9 @@ Plottable::Plottable(int prim, float stroke)
 }
 
 Plottable::Plottable(int prim, float stroke, const Color& col)
-:	mPrim(prim), mStroke(stroke), mBlendMode(TRANSLUCENT), mLineStipple(-1),
-	mDrawUnder(false), mActive(true)
+:	Plottable(prim, stroke)
 {
-	updateRegion(0,0,-1,-1);
 	color(col);
-	add(*this);
 }
 
 Plottable& Plottable::operator= (const Plottable& src){
@@ -88,13 +85,14 @@ Plottable& Plottable::operator= (const Plottable& src){
 	// Deep copy data members
 	memcpy(&mPOD1, &(src.mPOD1), (char*)&mPOD2 - (char*)&mPOD1);
 
-	const GraphicsMap * srcGraphicsMap = dynamic_cast<const GraphicsMap*>(&src);
-	GraphicsMaps::iterator it = mGraphicsMaps.begin();
-	for(;it!=mGraphicsMaps.end();++it){
-		if(*it == srcGraphicsMap){
-			*it = dynamic_cast<GraphicsMap*>(this);
+	// Re-assign any graphics maps that were assigned from parent object
+	const auto * srcGraphicsMap = dynamic_cast<const GraphicsMap*>(&src);
+	for(auto& gmap : mGraphicsMaps){
+		if(srcGraphicsMap == gmap){
+			gmap = dynamic_cast<GraphicsMap*>(this);
 		}
 	}
+
 	return *this;
 }
 
@@ -148,12 +146,9 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 	int startIndices[3] = { ux, uy, 0 };
 	Indexer ind(endIndices, startIndices);
 
-	{	GraphicsMaps::iterator it = mGraphicsMaps.begin();
-		while(it != mGraphicsMaps.end()){
-			ind.reset();
-			(*it)->onMap(gd, d, ind);
-			++it;
-		}
+	for(auto& gmap : mGraphicsMaps){
+		ind.reset();
+		gmap->onMap(gd, d, ind);
 	}
 
 	switch(mBlendMode){
@@ -193,6 +188,7 @@ void Plottable::doPlot(GraphicsData& gd, const Data& d){
 
     if(doLineStipple) draw::lineStippling(false);
 }
+
 
 
 PlotDensity::PlotDensity(const Color& c, float hueSpread, int ipol)
@@ -256,53 +252,6 @@ void PlotDensity::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
 	}
 }
 
-
-//GraphicsMap& PlotDensity::defaultColorMap(){
-//	static GraphicsMap * m = new DefaultColorMap; return *m;
-//}
-//
-//void PlotDensity::DefaultColorMap::onMap(GraphicsData& gd, const Data& d, const Indexer& i){
-//	
-//	int N0 = d.size(0);	// number of "internal" dimensions
-//
-//	Color col = gd.colors()[0];
-//	HSV hsv = col;
-//	
-//	Color col1 = HSV(hsv).rotateHue( 1./16);
-//	Color col2 = HSV(hsv).rotateHue(-1./16);
-//
-//	switch(N0){
-//	case 1:
-//		while(i()){
-//			float w0 = d.at<float>(0,i[0],i[1],i[2]);
-//
-//			Color c((w0 > 0 ? col1*w0 : col2*-w0), col.a);
-//			
-//			//Color c(col * w0, col.a);			
-//			gd.addColor(c);
-//		}
-//		break;
-//
-//	case 2:
-//		while(i()){
-//			float w0 = d.at<float>(0,i[0],i[1],i[2]);
-//			float w1 = d.at<float>(1,i[0],i[1],i[2]);
-//			Color c = HSV(hsv.h, hsv.s*w1, hsv.v*w0);
-//			gd.addColor(c);
-//		}
-//		break;
-//
-//	default:
-//		while(i()){
-//			float w0 = d.at<float>(0,i[0],i[1],i[2]);
-//			float w1 = d.at<float>(1,i[0],i[1],i[2]);
-//			float w2 = d.at<float>(2,i[0],i[1],i[2]);
-//			Color c = Color(w0, w1, w2);
-//			gd.addColor(c);
-//		}
-//	}
-//}
-
 void PlotDensity::onContextCreate(){
 	// note: texture created in onPlot since we don't know the size
 	//mTex.create();
@@ -340,27 +289,20 @@ void PlotDensity::onDraw(GraphicsData& b, const Data& d){
 PlotFunction1D::PlotFunction1D(const Color& c, float stroke, int prim, PathStyle path)
 :	Plottable(prim, stroke,c), mPathStyle(path), mDomainOffset(0)
 {
-//	add(defaultVertexMap());
 }
 
+template <class R>
+void getFX(float& x, float& y, const Data& d, const Indexer& i, int offset){
+	x = i[0] + offset;
+	y = d.elem<R>(0, i[0]);
+}
 
-template<class R>
-struct getFX{
-	getFX(float& x, float& y, const Data& d, const Indexer& i, int offset){
-		x = i[0] + offset;
-		y = d.elem<R>(0, i[0]);
-	}
-};
+template <class R>
+void getFY(float& x, float& y, const Data& d, const Indexer& i, int offset){
+	x = d.elem<R>(0, 0, i[1]);
+	y = i[1] + offset;
+}
 
-template<class R>
-struct getFY{
-	getFY(float& x, float& y, const Data& d, const Indexer& i, int offset){
-		x = d.elem<R>(0, 0, i[1]);
-		y = i[1] + offset;
-	}
-};
-
-//void PlotFunction1D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 //	Indexer j(i.size());
 //	while(j()){
@@ -426,51 +368,31 @@ void PlotFunction1D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	}
 }
 
-//GraphicsMap& PlotFunction1D::defaultVertexMap(){
-//	static GraphicsMap * m = new DefaultVertexMap; return *m;
-//}
 
-
-
-
-//void PlotFunction2D::DefaultVertexMap::onMap(GraphicsData& g, const Data& d, const Indexer& i){
-//	if(d.size(0) < 2) return;
-//	while(i()){
-//		double x = d.at<double>(0, i[0], i[1]);
-//		double y = d.at<double>(1, i[0], i[1]);
-//		g.addVertex(x, y);
-//	}
-//}
 
 PlotFunction2D::PlotFunction2D(const Color& c)
 :	Plottable(draw::LineStrip, 1,c)
 {
-//	add(defaultVertexMap());
 }
 
 void PlotFunction2D::onMap(GraphicsData& g, const Data& d, const Indexer& i){
 	if(d.size(0) < 2) return;
 	while(i()){
-		float x = d.at<float>(0, i[0], i[1]);
-		float y = d.at<float>(1, i[0], i[1]);
+		auto x = d.at<float>(0, i[0], i[1]);
+		auto y = d.at<float>(1, i[0], i[1]);
 		g.addVertex(x, y);
 	}
 }
-
-//GraphicsMap& PlotFunction2D::defaultVertexMap(){
-//	static GraphicsMap * m = new DefaultVertexMap; return *m;
-//}
-
 
 
 
 struct EvPlotCreateContext : public EventHandler{
 	bool onEvent(View& v, GLV& g){
-		Plot& p = *static_cast<Plot *>(&v);
-		Plot::Plottables::iterator i = p.plottables().begin();
-		while(i != p.plottables().end()){
-			(**i).onContextCreate();
-			++i;
+		auto& p = *static_cast<Plot *>(&v);
+		auto it = p.plottables().begin();
+		while(it != p.plottables().end()){
+			(**it).onContextCreate();
+			++it;
 		}
 		return true;
 	}
@@ -479,55 +401,45 @@ struct EvPlotCreateContext : public EventHandler{
 struct EvPlotDestroyContext : public EventHandler{
 	bool onEvent(View& v, GLV& g){
 //		printf("destroy\n");
-		Plot& p = *static_cast<Plot *>(&v);
-		Plot::Plottables::iterator i = p.plottables().begin();
-		while(i != p.plottables().end()){
-			(**i).onContextDestroy();
-			++i;
+		auto& p = *static_cast<Plot *>(&v);
+		auto it = p.plottables().begin();
+		while(it != p.plottables().end()){
+			(**it).onContextDestroy();
+			++it;
 		}
 		return true;
 	}
 } evPlotDestroyContext;
 
-void Plot_addEvents(Plot& p){
-	p.addHandler(Event::WindowCreate, evPlotCreateContext);
-	p.addHandler(Event::WindowDestroy, evPlotDestroyContext);
-	p.addHandler(Event::Quit, evPlotDestroyContext);
-}
-
-void Plot_init(Plot& p){
-	p.data().type(Data::FLOAT);
-	Plot_addEvents(p);
-}
-
 Plot::Plot(const Rect& r)
 :	Grid(r)
 {
-	Plot_init(*this);
+	data().type(Data::FLOAT);
+	addHandler(Event::WindowCreate, evPlotCreateContext);
+	addHandler(Event::WindowDestroy, evPlotDestroyContext);
+	addHandler(Event::Quit, evPlotDestroyContext);
 }
 
 Plot::Plot(const Rect& r, Plottable& p)
-:	Grid(r)
+:	Plot(r)
 {
-	Plot_init(*this);
 	add(p);
 }
 
 Plot::Plot(const Rect& r, Plottable& p1, Plottable& p2)
-:	Grid(r)
+:	Plot(r)
 {
-	Plot_init(*this);
 	add(p1); add(p2);
 }
 
 void Plot::onDraw(GLV& g){
 
-	GraphicsData& gd = g.graphicsData();
+	auto& gd = g.graphicsData();
 	draw::color(colors().fore);
 
 	{ pushGrid();
-		for(unsigned i=0; i<plottables().size(); ++i){
-			Plottable& p = *plottables()[i];
+		for(auto& plottable : plottables()){
+			auto& p = *plottable;
 			if(p.active() && p.drawUnderGrid()){
 				gd.reset();
 				gd.colors()[0] = p.color();
@@ -543,8 +455,8 @@ void Plot::onDraw(GLV& g){
 
 	// push into grid space and call attached plottables
 	{ pushGrid();
-		for(unsigned i=0; i<plottables().size(); ++i){
-			Plottable& p = *plottables()[i];
+		for(auto& plottable : plottables()){
+			auto& p = *plottable;
 			if(p.active() && !p.drawUnderGrid()){
 				gd.reset();
 				gd.colors()[0] = p.color();
@@ -557,7 +469,7 @@ void Plot::onDraw(GLV& g){
 bool Plot::onEvent(Event::t e, GLV& g){
 	if(Grid::onEvent(e,g)){
 		
-		const Keyboard& k = g.keyboard();
+		const auto& k = g.keyboard();
 		
 		if(e == Event::KeyDown){
 			if(k.isNumber()){
@@ -601,7 +513,7 @@ Plot& Plot::remove(Plottable& v){
 	//std::remove(mPlottables.begin(), mPlottables.end(), &v);
 
 	for(unsigned i=0; i<plottables().size(); ++i){
-		Plottable* p = plottables()[i];
+		auto * p = plottables()[i];
 		if(p == &v){
 			mPlottables.erase(mPlottables.begin() + i);
 			break;
