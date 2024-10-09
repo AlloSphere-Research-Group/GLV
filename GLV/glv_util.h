@@ -380,9 +380,9 @@ public:
 		set(keySeq, begin);
 	};
 
-	static const int size(){ return N; }
+	static int size(){ return N; }
 
-	const char& operator[](int key) const { return mMap[key-KeyMin]; }
+	char operator[](int key) const { return mMap[key-KeyMin]; }
 	char& operator[](int key){ return mMap[key-KeyMin]; }
 
 	bool mapped(int key) const { return (*this)[key] != mUnmapped; }
