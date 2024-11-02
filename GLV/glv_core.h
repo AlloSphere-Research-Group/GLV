@@ -600,7 +600,7 @@ protected:
 private:
 	Lazy<Rect> mRestoreRect;		// Restoration geometry
 	Lazy<Font> mFont;
-	virtual void onResizeRect(space_t dx, space_t dy);
+	void onResizeRect(space_t dx, space_t dy) override;
 };
 
 
@@ -731,7 +731,7 @@ public:
 	/// Add models of named children to model manager
 	void refreshModels(bool clearExistingModels=false);
 
-	virtual const char * className() const { return "GLV"; }
+	const char * className() const override { return "GLV"; }
 
 protected:
 	Keyboard mKeyboard;

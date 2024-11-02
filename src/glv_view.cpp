@@ -154,7 +154,7 @@ void View::getDescendents(std::vector<View*>& descendents, TraversalAction& pred
 		TraversalAction& pred;
 		
 		Action(std::vector<View*>& d, TraversalAction& p): desc(d), pred(p){}
-		bool operator()(View * v, int depth){
+		bool operator()(View * v, int depth) override {
 			if(pred(v,depth)) desc.push_back(v);
 			return true;
 		}
@@ -287,7 +287,7 @@ int View::numEventHandlers(Event::t e) const {
 void View::addModels(ModelManager& mm){
 	struct Add : TraversalAction{
 		Add(ModelManager& v): m(v){}
-		bool operator()(View * v, int depth){
+		bool operator()(View * v, int depth) override {
 			if(v->hasName()) m.add(v->name(), *v);
 			return true;
 		}
@@ -526,9 +526,9 @@ View& View::maximize(){
 //
 //	ModelManager mm;
 //
-//	struct Add : TraversalAction{
+//	struct Add : ConstTraversalAction{
 //		Add(ModelManager& v): m(v){}
-//		bool operator()(const View * v, int depth){
+//		bool operator()(const View * v, int depth) override {
 //			if(v->hasName()) m.add(v->name(), *v);
 //			return true;
 //		}
@@ -546,7 +546,7 @@ View& View::maximize(){
 //
 //	struct Add : TraversalAction{
 //		Add(ModelManager& v): m(v){}
-//		bool operator()(View * v, int depth){
+//		bool operator()(View * v, int depth) override {
 //			if(v->hasName()) m.add(v->name(), *v);
 //			return true;
 //		}
@@ -622,7 +622,7 @@ const View * View::posAbs(space_t& al, space_t& at) const{
 
 void View::debug() const {
 	struct Action : ConstTraversalAction{
-		virtual bool operator()(const View * v, int depth) const {
+		bool operator()(const View * v, int depth) const override {
 			std::string msg;
 			if(v->width() == 0 || v->height() == 0){
 				msg += "\tWidth or height is zero. View will not be visible.\n";
@@ -653,7 +653,7 @@ void View::debug() const {
 void View::printDescendents() const {
 
 	struct A : ConstTraversalAction{
-		bool operator()(const View * v, int depth) const {
+		bool operator()(const View * v, int depth) const override {
 			for(int i=0; i<depth; ++i) printf("|   ");
 			const std::string& nm = v->name();
 			printf("%s %p %s\n", v->className(), v, (nm[0] ? "\"" + nm + "\"" : nm).c_str());

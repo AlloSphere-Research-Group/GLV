@@ -27,11 +27,10 @@ void GLV::broadcastEvent(Event::t e){
 	struct A : TraversalAction{
 		GLV& glv; Event::t event;
 		A(GLV& g, Event::t e): glv(g), event(e){}
-		bool operator()(View * v, int depth){
+		bool operator()(View * v, int depth) override {
 			glv.doEventCallbacks(*v, event);
 			return true;
 		}
-		bool operator()(const View * v, int depth){ return false; }
 	} a(*this, e);
 	
 	traverseDepth(a);
@@ -198,7 +197,7 @@ void GLV::drawWidgets(unsigned int ww, unsigned int wh, double dsec){
 	// Animate all the views
 	struct AnimateViews : public TraversalAction{
 		AnimateViews(double dt_): dt(dt_){}
-		virtual bool operator()(View * v, int depth){
+		bool operator()(View * v, int depth) override {
 			if(v->enabled(Animate)) v->onAnimate(dt);
 			return true;
 		}
