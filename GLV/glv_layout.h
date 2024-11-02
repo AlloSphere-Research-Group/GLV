@@ -22,7 +22,7 @@ struct Group : public View{
 	:	View(r)
 	{	disable(DrawBack | DrawBorder | CropChildren | FocusHighlight | Controllable); }
 	
-	virtual const char * className() const { return "Group"; }
+	const char * className() const override { return "Group"; }
 };
 
 
@@ -32,8 +32,8 @@ class Divider : public Group{
 public:
 	Divider(float thickness=6, float strokeWidth=1, bool vertical=false);
 
-	virtual void onDraw(GLV& g);
-	virtual const char * className() const { return "Divider"; }
+	void onDraw(GLV& g) override;
+	const char * className() const override { return "Divider"; }
 
 protected:
 	float mStrokeWidth;
@@ -160,7 +160,7 @@ struct Box : public Group{
 	Box& paddingX(space_t v){ p.absX(v); return *this; }
 	Box& paddingY(space_t v){ p.absY(v); return *this; }
 
-	virtual const char * className() const { return "Box"; }
+	const char * className() const override { return "Box"; }
 
 private:
 	Placer p;
@@ -220,7 +220,7 @@ struct LayoutGrid : public LayoutFunc{
 	LayoutGrid(View& parent, int numH, int numV, space_t pad);
 	
 	/// Generate next layout rect going left-to-right, then top-to-bottom.
-	virtual Rect& operator()();
+	Rect& operator()() override;
 
 
 	LayoutGrid& operator<< (View& v){
@@ -296,9 +296,9 @@ public:
 	space_t paddingY() const { return mPad2; }
 
 
-	virtual const char * className() const { return "Table"; }
-	virtual void onDraw(GLV& g);	
-	//virtual void onResize(space_t dx, space_t dy){ arrange(); }
+	const char * className() const override { return "Table"; }
+	void onDraw(GLV& g) override;
+	//void onResize(space_t dx, space_t dy) override { arrange(); }
 
 protected:
 
@@ -369,9 +369,9 @@ public:
 		return *this;
 	}
 
-	virtual const char * className() const { return "Scroll"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "Scroll"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 protected:
 	float mPadding[2];
@@ -384,8 +384,6 @@ protected:
 inline Scroll::Mode operator| (const Scroll::Mode& a, const Scroll::Mode& b){
 	return static_cast<Scroll::Mode>(+a|+b);
 }
-
-
 
 } // glv::
 

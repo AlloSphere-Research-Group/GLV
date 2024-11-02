@@ -14,13 +14,13 @@ namespace glv {
 class Buttons : public Widget {
 public:
 
-	/// @param[in] r			geometry
-	/// @param[in] nx			number along x
-	/// @param[in] ny			number along y
-	/// @param[in] momentary	whether the button state matches button press state
-	/// @param[in] mutExc		whether multiple buttons can be on
-	/// @param[in] on			the on state symbol
-	/// @param[in] off			the off state symbol
+	/// \param[in] r			geometry
+	/// \param[in] nx			number along x
+	/// \param[in] ny			number along y
+	/// \param[in] momentary	whether the button state matches button press state
+	/// \param[in] mutExc		whether multiple buttons can be on
+	/// \param[in] on			the on state symbol
+	/// \param[in] off			the off state symbol
 	Buttons(
 		const Rect& r=Rect(), int nx=1, int ny=1,
 		bool momentary=false, bool mutExc=false,
@@ -42,9 +42,9 @@ public:
 	/// Set on state symbol
 	Buttons& symbolOn (const SymbolFunc& f){ mSymOn =f; return *this; }
 
-	virtual const char * className() const { return "Buttons"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "Buttons"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 	bool getValue() const { return Widget::getValue<bool>(); }
 	bool getValue(int i) const { return Widget::getValue<bool>(i); }
@@ -52,7 +52,6 @@ public:
 
 protected:
 	SymbolFunc mSymOff, mSymOn;	// state symbols
-//	Icon * mIconOff, mIconOn;
 };
 
 
@@ -60,15 +59,15 @@ protected:
 /// Single button
 class Button : public Buttons {
 public:
-	/// @param[in] r			geometry
-	/// @param[in] momentary	whether the button state matches button press state
-	/// @param[in] on			the on state symbol
-	/// @param[in] off			the off state symbol
+	/// \param[in] r			geometry
+	/// \param[in] momentary	whether the button state matches button press state
+	/// \param[in] on			the on state symbol
+	/// \param[in] off			the off state symbol
 	Button(const Rect& r=Rect(20), bool momentary=false, SymbolFunc on=draw::rectangle, SymbolFunc off=0)
 	:	Buttons(r, 1,1, momentary, false, on, off)
 	{}
 	
-	virtual const char * className() const { return "Button"; }
+	const char * className() const override { return "Button"; }
 };
 
 

@@ -69,10 +69,10 @@ public:
 	/// Get value
 	const std::string& getValue() const { return data().elems<std::string>()[0]; }
 
-	virtual const char * className() const { return "Label"; }
-	virtual void onDraw(GLV& g);
+	const char * className() const override { return "Label"; }
+	void onDraw(GLV& g) override;
 
-	virtual std::string onDebug() const;
+	std::string onDebug() const override;
 
 protected:
 	float mAlignX=0.f, mAlignY=0.f;
@@ -82,7 +82,7 @@ protected:
 	void fitExtent();
 	void rotateRect();		// swap between vertical and horizontal
 
-	virtual bool onAssignData(Data& d, int ind1, int ind2){
+	bool onAssignData(Data& d, int ind1, int ind2) override {
 		if(Widget::onAssignData(d, ind1, ind2)){
 			fitExtent();
 			return true;
@@ -90,7 +90,7 @@ protected:
 		return false;
 	}
 
-	virtual void onResize(space_t dx, space_t dy){
+	void onResize(space_t dx, space_t dy) override {
 		Widget::onResize(dx,dy);
 		fitExtent();
 	}
@@ -148,10 +148,10 @@ public:
 	void deselect(){ mSel=0; }
 
 
-	virtual const char * className() const { return "TextView"; }
-	virtual void onAnimate(double dsec);
-	virtual void onDraw(GLV& g);	
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "TextView"; }
+	void onAnimate(double dsec) override;
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 protected:
 	std::string mText;		// The text string
@@ -169,7 +169,7 @@ protected:
 	bool textSelected(){ return mSel!=0; }
 	void deleteText(int start, int num);
 
-	virtual bool onAssignData(Data& d, int ind1, int ind2);
+	bool onAssignData(Data& d, int ind1, int ind2) override;
 };
 
 
@@ -184,16 +184,16 @@ public:
 
 	ListView& selectValue(const std::string& v);
 
-	const std::string getValue() const { return Widget::getValue<std::string>(); }
-	const std::string getValue(int i) const { return Widget::getValue<std::string>(i); }
-	const std::string getValue(int i1, int i2) const { return Widget::getValue<std::string>(i1, i2); }
+	std::string getValue() const { return Widget::getValue<std::string>(); }
+	std::string getValue(int i) const { return Widget::getValue<std::string>(i); }
+	std::string getValue(int i1, int i2) const { return Widget::getValue<std::string>(i1, i2); }
 
-	virtual const Data& getData(Data& dst) const;
-	virtual void setData(const Data& d);
+	const Data& getData(Data& dst) const override;
+	void setData(const Data& d) override;
 
-	virtual const char * className() const { return "ListView"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "ListView"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 protected:
 };
@@ -275,9 +275,9 @@ public:
 	/// Fit extent of bounding rectangle to match current list contents
 	DropDown& fitExtent();
 
-	virtual const char * className() const { return "DropDown"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "DropDown"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 protected:
 	struct ItemList : public ListView{
@@ -291,7 +291,7 @@ protected:
 
 	void showList();
 	void hideList(GLV& g);
-	virtual bool onAssignData(Data& d, int ind1, int ind2);
+	bool onAssignData(Data& d, int ind1, int ind2) override;
 
 /* TODO from ListSelect:
 	/// Get index of an item
@@ -340,8 +340,8 @@ public:
 	/// Add item to search
 	SearchBox& addItem(const std::string& v);
 
-	virtual const char * className() const { return "SearchBox"; }
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "SearchBox"; }
+	bool onEvent(Event::t e, GLV& g) override;
 
 protected:
 	struct ItemList : public ListView{
@@ -425,13 +425,13 @@ public:
 	NumberDialers& showSign(bool v);
 
 
-	virtual const char * className() const { return "NumberDialers"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "NumberDialers"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
-	virtual void onCellChange(int indexOld, int indexNew);
+	void onCellChange(int indexOld, int indexNew) override;
 
-	virtual std::string onDebug() const;
+	std::string onDebug() const override;
 
 protected:
 	int mNI=0, mNF=0, mPos=0;		// # digits in integer, # digits in fraction, selected digit position
@@ -493,7 +493,7 @@ public:
 	/// Copy constructor
 	NumberDialer(const NumberDialer& v);
 
-	virtual const char * className() const { return "NumberDialer"; }
+	const char * className() const override { return "NumberDialer"; }
 };
 
 } // glv::

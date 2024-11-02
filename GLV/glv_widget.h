@@ -27,7 +27,6 @@ public:
 	);
 
 
-
 	/// Get selected element value type-casted to template parameter
 	template <class T>
 	T getValue() const { return getValue<T>(selectedX(), selectedY()); }
@@ -134,11 +133,9 @@ public:
 
 	Widget& useInterval(bool v){ mUseInterval=v; return *this; }
 	
-	virtual void onDataModelSync();
-	virtual const char * className() const { return "Widget"; }
-
-	virtual const Data& getData(Data& temp) const { return data(); }
-	virtual void setData(const Data& d){ assignData(d); }
+	void onDataModelSync() override;
+	const Data& getData(Data& temp) const override { return data(); }
+	void setData(const Data& d) override { assignData(d); }
 
 	void assignData(const Data& d, const int& ind=0){
 		int i1=0,i2=0; data().indexDim(i1,i2, ind);
@@ -158,6 +155,8 @@ public:
 			}
 		}
 	}
+
+	const char * className() const override { return "Widget"; }
 
 protected:
 	enum{ DIMS=2 };
@@ -206,9 +205,9 @@ protected:
 	// @param[in] ind2	destitation index of second dimension
 	virtual bool onAssignData(Data& d, int ind1, int ind2);
 
-	virtual void onAnimate(double dsec);
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	void onAnimate(double dsec) override;
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 	void drawGrid(GraphicsData& g);
 	void drawSelectionBox();	

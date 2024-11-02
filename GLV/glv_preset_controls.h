@@ -46,14 +46,14 @@ public:
 
 	SearchBox& searchBox(){ return mSearchBox; }
 
-	virtual const char * className() const { return "PresetControl"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "PresetControl"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 protected:
 	struct PresetSearchBox : public SearchBox{
 		PresetSearchBox(PresetControl& p): pc(p){}
-		virtual bool onEvent(Event::t e, GLV& g);
+		bool onEvent(Event::t e, GLV& g) override;
 		PresetControl& pc;
 	} mSearchBox;
 
@@ -96,11 +96,11 @@ public:
 	void loadFile();
 	void saveFile();
 
-	virtual void onAnimate(double dsec);
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
-	virtual void onCellChange(int iOld, int iNew);
-	virtual const char * className() const { return "PathView"; }
+	void onAnimate(double dsec) override;
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
+	void onCellChange(int iOld, int iNew) override;
+	const char * className() const override { return "PathView"; }
 
 protected:
 	friend class PathEditor;
@@ -113,7 +113,7 @@ protected:
 		
 		KeyframeElemModel(PathView& v): pv(v){}
 	
-		virtual const Data& getData(Data& temp) const {
+		const Data& getData(Data& temp) const override {
 			const int N = pv.mPath.size();
 			temp.resize(Data::getType<T>(), N);
 			for(int i=0; i<N; ++i){
@@ -122,7 +122,7 @@ protected:
 			return temp;
 		}
 
-		virtual void setData(const Data& d){
+		void setData(const Data& d) override {
 //			const int N = d.size();
 //			if(pv.mPath.size() != N) pv.mPath.resize(N);
 //			for(int i=0; i<N; ++i){
@@ -176,8 +176,8 @@ public:
 	/// Set state model manager
 	PathEditor& stateModelManager(ModelManager& v);
 	
-	virtual void onDraw(GLV& g);
-	virtual const char * className() const { return "PathEditor"; }
+	void onDraw(GLV& g) override;
+	const char * className() const override { return "PathEditor"; }
 
 protected:
 	PresetControl mPathPresetControl;
@@ -321,7 +321,7 @@ public:
 	/// Get preset control
 	PresetControl& presetControl(){ return mPresetControl; }
 
-	virtual const char * className() const { return "ParamPanel"; }
+	const char * className() const override { return "ParamPanel"; }
 
 private:
 	PresetControl mPresetControl;

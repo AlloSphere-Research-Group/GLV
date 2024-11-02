@@ -50,7 +50,7 @@ protected:
 	SliderVector& valueAdd(double val, int idx, double min, double max);
 
 	void clipAccs(){ for(int i=0; i<Dim; ++i) mAcc[i]=glv::clip(mAcc[i],max(),min()); }
-	virtual bool onAssignData(Data& d, int ind1, int ind2);
+	bool onAssignData(Data& d, int ind1, int ind2) override;
 };
 
 
@@ -82,9 +82,9 @@ public:
 	/// Set whether knob is constrained to always fit within view
 	Slider2D& constrainKnob(bool v){ mConstrainKnob=v; return *this; }
 
-	virtual const char * className() const { return "Slider2D"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "Slider2D"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 protected:
 	space_t mKnobSize;
@@ -120,9 +120,9 @@ public:
 	double jump() const;			///< Get click jump amount
 	double range() const;			///< Get distance of interval
 	
-	virtual const char * className() const { return "SliderRange"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "SliderRange"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 	
 private:
 	int mDragMode;	// 0,1,2,3: off, lower, upper, center
@@ -154,9 +154,9 @@ public:
 	/// Set knob symbol
 	SliderGrid& knobSymbol(SymbolFunc f){ mKnobSym=f; return *this; }
 
-	virtual const char * className() const { return "SliderGrid"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "SliderGrid"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 	using SliderVector<Dim>::colors;
 	using SliderVector<Dim>::w;
@@ -207,9 +207,9 @@ public:
 	/// Get value at 2D index
 	double getValue(int i1, int i2) const { return Widget::getValue<double>(i1,i2); }
 
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
-	virtual const char * className() const { return "Sliders"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
+	const char * className() const override { return "Sliders"; }
 	
 protected:
 	Orientation mOri;
@@ -229,7 +229,7 @@ public:
 	:	Sliders(r, 1,1)
 	{	setValue(v); }
 
-	virtual const char * className() const { return "Slider"; }
+	const char * className() const override { return "Slider"; }
 };
 
 
@@ -252,9 +252,9 @@ public:
 	FunctionGraph(const Rect& r, int nKnots, int res);
 	virtual ~FunctionGraph();
 	
-	virtual const char * className() const { return "FunctionGraph"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "FunctionGraph"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 	void eval(int n, float *vals);
 	void tension(float v) {mTension = v; calcCurves();}

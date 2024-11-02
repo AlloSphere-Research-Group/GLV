@@ -11,7 +11,7 @@ namespace glv{
 namespace Behavior{
 
 	struct MouseMove : public EventHandler {
-		bool onEvent(View& v, GLV& g){
+		bool onEvent(View& v, GLV& g) override {
 			if(g.mouse().left()){
 				v.move(g.mouse().dx(), g.mouse().dy());
 				return false;
@@ -21,7 +21,7 @@ namespace Behavior{
 	};
 
 	struct MouseResizeCorner : public EventHandler {
-		bool onEvent(View& v, GLV& g){
+		bool onEvent(View& v, GLV& g) override {
 			if(g.mouse().left()){
 
 				float dx = g.mouse().dx();
@@ -41,7 +41,7 @@ namespace Behavior{
 	};
 
 	struct MouseResize : public EventHandler {
-		bool onEvent(View& v, GLV& g){
+		bool onEvent(View& v, GLV& g) override {
 			if(g.mouse().middle()){
 			
 				float dx = g.mouse().dx();

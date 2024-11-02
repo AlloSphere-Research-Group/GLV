@@ -119,10 +119,10 @@ public:
 	/// Zoom grid on a point
 	Grid& zoom(double amt, double x, double y);
 
-	virtual bool onEvent(Event::t e, GLV& g);
-	virtual void onAnimate(double dt);
-	virtual void onDraw(GLV& g);
-	virtual void onResize(space_t dx, space_t dy);
+	bool onEvent(Event::t e, GLV& g) override;
+	void onAnimate(double dt) override;
+	void onDraw(GLV& g) override;
+	void onResize(space_t dx, space_t dy) override;
 	
 protected:
 	typedef Interval<double> interval_t;

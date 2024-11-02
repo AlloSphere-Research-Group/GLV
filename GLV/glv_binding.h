@@ -169,10 +169,9 @@ protected:
 /// Key event handler to toggle fullscreen
 struct FullScreenToggler : EventHandler {
 
-	///
 	FullScreenToggler(Window& w, int key_ = Key::Escape): win(w), key(key_){}
 
-	bool onEvent(View& v, GLV& g){
+	bool onEvent(View& v, GLV& g) override {
 		if(g.keyboard().key() == key){
 			win.fullScreenToggle();
 			return false;

@@ -682,101 +682,11 @@ public:
 
 	virtual ~DataModel(){}
 
-	virtual const Data& getData(Data& temp) const { return data(); }
-	virtual void setData(const Data& d){ data().assign(d); }
+	const Data& getData(Data& temp) const override { return data(); }
+	void setData(const Data& d) override { data().assign(d); }
 };
 
 
-/*
-class DataModel : public Model{
-public:
-
-	DataModel(){}
-	DataModel(Data& d): mData(d){}
-
-	virtual ~DataModel(){}
-
-	virtual const Data& getData(Data& temp) const { return data(); }
-
-	virtual void setData(const Data& d){ assignData(d); }
-
-//	virtual std::string modelToString(){
-//		return data().toToken();
-//	}
-//
-	int modelFromString(const std::string& v){
-		Data d = data();
-		d.clone();
-		int r = d.fromToken(v);
-		if(r) assignData(d);
-		return r;
-	}
-
-	const Data& data() const { return mData; }
-
-	Data& data(){ return mData; }
-	
-	void assignData(const Data& d, const int& idx=0){
-		int i1=0,i2=0; data().indexDim(i1,i2, idx);
-		assignData(d, i1,i2);
-	}
-
-	// Assigns argument to elements at specified index.
-	
-	// assignData() is called with the input data if the indices are valid.
-	// assignData() can be used to constrain the input data before it is
-	// assigned.
-	void assignData(const Data& d, int ind1, int ind2){
-		if(data().inBounds(ind1, ind2)){
-			Data t=d; t.clone();
-			if(onAssignData(t, ind1, ind2)){
-				//model().assign(t, ind1, ind2);
-			}
-		}
-	}
-
-protected:
-	Data mData;
-	
-	virtual bool onAssignData(Data& d, int ind1, int ind2){
-		data().assign(d, ind1, ind2);
-		return true;
-	}
-};
-*/
-
-
-/*
-memento		object that stores snapshot of another object
-originator	object from which snapshot is taken
-caretaker	keeps a list of mementos
-
-undo mechanism will request memento object from originator
-
-class ModelState{
-public:
-	virtual void toToken(std::string& dst);
-	virtual void fromToken(const std::string& src);
-};
-
-{
-["preset 1"] = {
-	author = "John Doe",
-	time = 10293339107,
-	keywords = "fuzzy, buzzy",
-	buttons = {0, 1, 0, 1},
-	label = "hello",
-},
-
-["preset 2"] = {
-	author = "Don Jo",
-	time = 10293339108,
-	keywords = "funny, bunny",
-	buttons = {0, 0, 0, 1},
-	label = "world",
-},
-}
-*/
 
 /// Manages the saving/restoring of model parameters to/from memory and disk.
 

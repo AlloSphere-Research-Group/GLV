@@ -16,7 +16,6 @@ public:
 	View3D(const Rect& r=Rect(0));
 	virtual ~View3D(){}
 
-	virtual const char * className() const { return "View3D"; }
 
 	/// 2D drawing callback called after 3D
 	virtual void onDraw2D(GLV& g){}
@@ -45,9 +44,11 @@ public:
 
 	void resetModelView();
 
+	const char * className() const override { return "View3D"; }
+
 protected:
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 	float mNear, mFar, mFOVY;
 	float mModelView[16];
 	bool mOrtho;

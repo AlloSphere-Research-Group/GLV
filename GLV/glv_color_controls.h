@@ -13,8 +13,8 @@ namespace glv {
 class ColorPicker : public View{
 public:
 
-	/// @param[in] r			geometry
-	/// @param[in] hueHeight	height of hue slider
+	/// \param[in] r			geometry
+	/// \param[in] hueHeight	height of hue slider
 	ColorPicker(const Rect& r=Rect(60), float hueHeight=12);
 
 	/// Get value
@@ -23,12 +23,12 @@ public:
 	/// Set value
 	ColorPicker& setValue(const HSV& v);
 
-	virtual const Data& getData(Data& temp) const;
-	virtual void setData(const Data& d);
+	const Data& getData(Data& temp) const override;
+	void setData(const Data& d) override;
 
-	virtual const char * className() const { return "ColorPicker"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "ColorPicker"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 protected:
 	Slider mCtrlH;
@@ -42,9 +42,9 @@ public:
 
 	using Sliders::setValue;
 
-	/// @param[in] r			geometry
-	/// @param[in] isHSV		whether to control HSV (versus RGB)
-	/// @param[in] useAlpha		whether to include an extra slider for alpha
+	/// \param[in] r			geometry
+	/// \param[in] isHSV		whether to control HSV (versus RGB)
+	/// \param[in] useAlpha		whether to include an extra slider for alpha
 	ColorSliders(const Rect& r=Rect(100, 10*3), bool isHSV=true, bool useAlpha=false);
 	
 	bool isHSV() const { return mIsHSV; }
@@ -58,7 +58,7 @@ public:
 	/// Set value
 	ColorSliders& setValue(const HSV& v);
 
-	virtual const char * className() const { return "ColorSliders"; }
+	const char * className() const override { return "ColorSliders"; }
 	
 protected:
 	Color mColor;
@@ -84,8 +84,8 @@ protected:
 class HSVBar : public Sliders{
 public:
 
-	/// @param[in] r			geometry
-	/// @param[in] hsv			initial color
+	/// \param[in] r			geometry
+	/// \param[in] hsv			initial color
 	HSVBar(Rect r = Rect(12*3,12), const HSV& hsv = HSV(0,1,1));
 
 	/// Get value
@@ -94,9 +94,9 @@ public:
 	/// Set value
 	HSVBar& setValue(const HSV& v);
 
-	virtual const char * className() const { return "HSVBar"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "HSVBar"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 };
 
 

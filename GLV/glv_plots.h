@@ -68,8 +68,7 @@ public:
 		draw::paint(prim(), gd);
 	}
 
-	/// Defines how data should be mapped to graphics primitives
-	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind){}
+	void onMap(GraphicsData& b, const Data& d, const Indexer& ind) override {}
 
 
 	/// Set whether active
@@ -182,12 +181,12 @@ public:
 
 	Texture2& texture(){ return mTex; }
 
-	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+	void onMap(GraphicsData& b, const Data& d, const Indexer& ind) override;
 
 protected:
-	virtual void onContextCreate();
-	virtual void onContextDestroy();
-	virtual void onDraw(GraphicsData& gd, const Data& d);
+	void onContextCreate() override;
+	void onContextDestroy() override;
+	void onDraw(GraphicsData& gd, const Data& d) override;
 	Texture2 mTex;
 	Interval<double> mRegion[2];
 	float mHueSpread;
@@ -231,7 +230,7 @@ public:
 	/// Set drawing path style
 	PlotFunction1D& pathStyle(PathStyle v){ mPathStyle=v; return *this; }
 
-	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+	void onMap(GraphicsData& b, const Data& d, const Indexer& ind) override;
 
 //	static GraphicsMap& defaultVertexMap();
 //
@@ -252,7 +251,7 @@ public:
 	/// @param[in] color	plot color
 	PlotFunction2D(const Color& color=Color(0));
 
-	virtual void onMap(GraphicsData& b, const Data& d, const Indexer& ind);
+	void onMap(GraphicsData& b, const Data& d, const Indexer& ind) override;
 
 //	static GraphicsMap& defaultVertexMap();
 //
@@ -288,9 +287,9 @@ public:
 
 	Plot& remove(Plottable& v);
 
-	virtual const char * className() const { return "Plot"; }
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
+	const char * className() const override { return "Plot"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
 
 protected:
 	Plottables mPlottables;

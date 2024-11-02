@@ -5,13 +5,12 @@
 	See COPYRIGHT file for authors and license information */
 
 #include <vector>
-#include <cmath>
 #include "glv_core.h"
 #include "glv_plots.h"
 
 namespace glv{
 
-
+/// Plots time-domain signal
 class TimeScope : public Plot{
 public:
 
@@ -39,8 +38,8 @@ public:
 	/// Set whether to synchronize waveform to first positive slope zero-crossing
 	TimeScope& sync(bool v);
 
-	virtual bool onEvent(Event::t e, GLV& g);
-	virtual const char * className() const { return "TimeScope"; }
+	bool onEvent(Event::t e, GLV& g) override;
+	const char * className() const override { return "TimeScope"; }
 
 protected:
 	std::vector<PlotFunction1D> mGraphs;
@@ -69,9 +68,9 @@ public:
 		mMonitors[chan](v);
 	}
 
-	virtual void onDraw(GLV& g);
-	virtual bool onEvent(Event::t e, GLV& g);
-	virtual const char * className() const { return "PeakMeters"; }
+	void onDraw(GLV& g) override;
+	bool onEvent(Event::t e, GLV& g) override;
+	const char * className() const override { return "PeakMeters"; }
 
 protected:
 	struct Monitor{
@@ -80,7 +79,7 @@ protected:
 		float max;
 		
 		void operator()(float v){
-			float absv = std::abs(v);
+			float absv = v>0.f?v:-v;
 			lastAbs = absv;
 			runSum += v;
 			if(absv > max) max = absv;
