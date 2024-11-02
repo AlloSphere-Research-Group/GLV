@@ -158,6 +158,7 @@ bool TextView::onAssignData(Data& d, int ind1, int ind2){
 }
 
 void TextView::onAnimate(double dsec){
+	Widget::onAnimate(dsec);
 	mBlink += dsec * 0.8;
 	if(mBlink >= 1) mBlink-=1;
 }
