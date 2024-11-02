@@ -12,7 +12,7 @@ namespace glv {
 class View3D : public View {
 public:
 
-	/// @param[in] r	geometry
+	/// \param[in] r	geometry
 	View3D(const Rect& r=Rect(0));
 	virtual ~View3D(){}
 

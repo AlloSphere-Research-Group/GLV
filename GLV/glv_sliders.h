@@ -59,11 +59,11 @@ protected:
 class Slider2D : public SliderVector<2>{
 public:
 
-	/// @param[in] r			geometry
-	/// @param[in] valX			initial value along x
-	/// @param[in] valY			initial value along y
-	/// @param[in] knobSize		size of slider knob in pixels
-	/// @param[in] knobSym		knob symbol
+	/// \param[in] r			geometry
+	/// \param[in] valX			initial value along x
+	/// \param[in] valY			initial value along y
+	/// \param[in] knobSize		size of slider knob in pixels
+	/// \param[in] knobSym		knob symbol
 	Slider2D(
 		const Rect& r=glv::Rect(100),
 		double valX=0, double valY=0,
@@ -98,9 +98,9 @@ protected:
 class SliderRange : public SliderVector<2>{
 public:
 
-	/// @param[in] r		geometry
-	/// @param[in] val1		initial minimum value (on left or bottom)
-	/// @param[in] val2		initial maximum value (on right or top)
+	/// \param[in] r		geometry
+	/// \param[in] val1		initial minimum value (on left or bottom)
+	/// \param[in] val2		initial maximum value (on right or top)
 	SliderRange(const Rect& r=glv::Rect(100,20), double val1=0.25, double val2=0.5);
 	
 	SliderRange& center(double v);							///< Set center of interval
@@ -111,7 +111,7 @@ public:
 
 	/// Sets how much the slider should move when an empty region is clicked.
 	
-	/// @param[in] v	jump distance in [0, 1] of current value interval
+	/// \param[in] v	jump distance in [0, 1] of current value interval
 	/// The slider is constrained to not jump past the click point.
 	SliderRange& jump(double v);
 	SliderRange& range(double v);	///< Set range
@@ -141,8 +141,8 @@ template <int Dim>
 class SliderGrid : public SliderVector<Dim>{
 public:
 
-	/// @param[in] r			geometry
-	/// @param[in] knobSize		size of slider knob in pixels
+	/// \param[in] r			geometry
+	/// \param[in] knobSize		size of slider knob in pixels
 	SliderGrid(const Rect& r=glv::Rect(100), space_t knobSize=4);
 
 	/// Get size of slider knob
@@ -184,10 +184,10 @@ public:
 		AUTO				/**< Orient in direction of largest dimension */
 	};
 
-	/// @param[in] r			geometry
-	/// @param[in] nx			number along x
-	/// @param[in] ny			number along y
-	/// @param[in] dragSelect	whether new sliders are selected while dragging
+	/// \param[in] r			geometry
+	/// \param[in] nx			number along x
+	/// \param[in] ny			number along y
+	/// \param[in] dragSelect	whether new sliders are selected while dragging
 	Sliders(const Rect& r=Rect(100, 20), int nx=1, int ny=1, bool dragSelect=false);
 
 	virtual ~Sliders(){}
@@ -223,8 +223,8 @@ protected:
 
 class Slider: public Sliders{
 public:
-	/// @param[in] r			geometry
-	/// @param[in] v			initial value between 0 and 1
+	/// \param[in] r			geometry
+	/// \param[in] v			initial value between 0 and 1
 	Slider(const Rect& r=Rect(100, 20), double v=0)
 	:	Sliders(r, 1,1)
 	{	setValue(v); }

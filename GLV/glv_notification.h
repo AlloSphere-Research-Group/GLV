@@ -41,8 +41,8 @@ template <class T>
 class ChangedValue{
 public:
 	
-	/// @param[in] v	value
-	/// @param[in] i	index of value
+	/// \param[in] v	value
+	/// \param[in] i	index of value
 	ChangedValue(const T& v, int i=0): mIndex(i), mValue(v){}
 	
 	const T& value() const { return mValue; }	///< Get value
@@ -68,9 +68,9 @@ struct ChangedSelection{
 class Notification{
 public:
 
-	/// @param[in] sndr		Pointer to sending object (subject)
-	/// @param[in] rcvr		Pointer to receiving object (observer)
-	/// @param[in] data		Pointer to data object
+	/// \param[in] sndr		Pointer to sending object (subject)
+	/// \param[in] rcvr		Pointer to receiving object (observer)
+	/// \param[in] data		Pointer to data object
 	Notification(void * sndr, void * rcvr=0, const void * data=0)
 	:	mSender(sndr), mReceiver(rcvr), mData(data)
 	{}

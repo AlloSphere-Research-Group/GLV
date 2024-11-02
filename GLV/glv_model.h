@@ -124,13 +124,13 @@ protected:
 class Indexer{
 public:
 
-	/// @param[in] size1	size of dimension 1
-	/// @param[in] size2	size of dimension 2
-	/// @param[in] size3	size of dimension 3
+	/// \param[in] size1	size of dimension 1
+	/// \param[in] size2	size of dimension 2
+	/// \param[in] size3	size of dimension 3
 	Indexer(int size1=1, int size2=1, int size3=1);
 
-	/// @param[in] sizes	array of dimension sizes
-	/// @param[in] offsets	starting indices
+	/// \param[in] sizes	array of dimension sizes
+	/// \param[in] offsets	starting indices
 	Indexer(const int * sizes, int * offsets = NULL);
 
 
@@ -227,34 +227,34 @@ public:
 	/// This sets the data type to void and does not allocate memory
 	Data();
 	
-	/// @param[in] v		data to reference
+	/// \param[in] v		data to reference
 	Data(Data& v);
 	
-	/// @param[in] v		data to make clone of
+	/// \param[in] v		data to make clone of
 	Data(const Data& v);
 
 	/// Constructor that sets internal attributes without allocating memory
 
-	/// @param[in] type		type of data
-	/// @param[in] size1	size of dimension 1 
-	/// @param[in] size2	size of dimension 2
-	/// @param[in] size3	size of dimension 3
-	/// @param[in] size4	size of dimension 4
+	/// \param[in] type		type of data
+	/// \param[in] size1	size of dimension 1
+	/// \param[in] size2	size of dimension 2
+	/// \param[in] size3	size of dimension 3
+	/// \param[in] size4	size of dimension 4
 	Data(Data::Type type, int size1=1, int size2=1, int size3=1, int size4=1);
 
-	/// @param[in] value	external value to reference
+	/// \param[in] value	external value to reference
 	template <class T>
 	explicit Data(T& value){ init(); set(&value, 1); }
 
-	/// @param[in] value	value to make clone of
+	/// \param[in] value	value to make clone of
 	template <class T>
 	explicit Data(const T& value){ init(); set(&value, 1); }
 
-	/// @param[in] data		pointer to external data to reference
-	/// @param[in] size1	size of dimension 1 of external data
-	/// @param[in] size2	size of dimension 2 of external data
-	/// @param[in] size3	size of dimension 3 of external data
-	/// @param[in] size4	size of dimension 4 of external data
+	/// \param[in] data		pointer to external data to reference
+	/// \param[in] size1	size of dimension 1 of external data
+	/// \param[in] size2	size of dimension 2 of external data
+	/// \param[in] size3	size of dimension 3 of external data
+	/// \param[in] size4	size of dimension 4 of external data
 	template <class T>
 	Data(T * data, int size1, int size2=1, int size3=1, int size4=1){
 		init();
@@ -399,9 +399,9 @@ public:
 
 	/// Returns 1D slice with given offset, size, and stride
 	
-	/// @param[in] offset	element offset from source data
-	/// @param[in] size		number of elements in slice
-	/// @param[in] stride	element stride through source data
+	/// \param[in] offset	element offset from source data
+	/// \param[in] size		number of elements in slice
+	/// \param[in] stride	element stride through source data
 	Data slice(int offset, int size, int stride) const;
 
 	/// Get index stride
@@ -461,10 +461,10 @@ public:
 
 	/// Assign elements from an external array
 	
-	/// @param[in] src		source array
-	/// @param[in] size		size of source array
-	/// @param[in] stride	amount to stride through source array
-	/// @param[in] idx		destination starting index
+	/// \param[in] src		source array
+	/// \param[in] size		size of source array
+	/// \param[in] stride	amount to stride through source array
+	/// \param[in] idx		destination starting index
 	template <class T>
 	Data& assignFromArray(const T * src, int size, int stride=1, int idx=0){
 		return assign(Data(const_cast<T*>(src), size).stride(stride), idx);
@@ -635,7 +635,7 @@ public:
 
 	/// Get data associated with the model, if any
 	
-	/// @param[in] temp		Default constructed Data object passed in by callee.
+	/// \param[in] temp		Default constructed Data object passed in by callee.
 	///						This can be used as a return value in situations
 	///						where either the base class does not have its own 
 	///						Data object or when some kind of conversion of the
@@ -732,7 +732,7 @@ public:
 
 	/// Save all snapshots to a file
 
-	/// @param[in] path		path to file; if empty, then uses "<name>.txt"
+	/// \param[in] path		path to file; if empty, then uses "<name>.txt"
 	/// \returns			number of characters written
 	int snapshotsToFile(const std::string& path="") const;
 
@@ -752,9 +752,9 @@ public:
 
 	/// Load snapshots from a file
 
-	/// @param[in] path				path to file; 
+	/// \param[in] path				path to file;
 	///								if empty, then uses model name with ".txt" extension
-	/// @param[in] addtoExisting	whether to add to or replace any existing snapshots
+	/// \param[in] addtoExisting	whether to add to or replace any existing snapshots
 	/// \returns					number of characters read
 	int snapshotsFromFile(const std::string& path="", bool addtoExisting=true);
 
@@ -793,14 +793,14 @@ public:
 	
 	/// Set the default file directory and name
 	
-	/// @param[in] name		file name without directory; 
+	/// \param[in] name		file name without directory;
 	///						if empty, then uses model name with ".txt" extension
-	/// @param[in] dir		file directory
+	/// \param[in] dir		file directory
 	ModelManager& filePath(const std::string& name, const std::string& dir="");
 
 	/// Set the default file directory
 
-	/// @param[in] dir		file directory
+	/// \param[in] dir		file directory
 	///
 	ModelManager& fileDir(const std::string& dir);
 

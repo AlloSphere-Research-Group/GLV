@@ -32,23 +32,23 @@ public:
 
 	/// Construct from square extent with position set to (0,0).
 
-	/// @param[in] extent	initial width and height
+	/// \param[in] extent	initial width and height
 	///	
 	TRect(T extent);
 
 	/// Construct from width and height with position set to (0,0).
 
-	/// @param[in] width	initial width
-	/// @param[in] height	initial height	
+	/// \param[in] width	initial width
+	/// \param[in] height	initial height
 	TRect(T width, T height);
 
-	/// @param[in] left		initial left edge position
-	/// @param[in] top		initial top edge position
-	/// @param[in] width	initial width
-	/// @param[in] height	initial height
+	/// \param[in] left		initial left edge position
+	/// \param[in] top		initial top edge position
+	/// \param[in] width	initial width
+	/// \param[in] height	initial height
 	TRect(T left, T top, T width, T height);
 	
-	/// @param[in]	other	other rectangle to set geometry from
+	/// \param[in]	other	other rectangle to set geometry from
 	TRect(const TRect& other);
 	
 	virtual ~TRect(){}
@@ -122,10 +122,10 @@ public:
 	bool withinXBounds(T xmin, T xmax) const;	///< Returns whether the TRect is within the x range.
 	bool withinYBounds(T ymin, T ymax) const;	///< Returns whether the TRect is within the y range.
 
-	/// Called when the width or height change.  Changes in extent are passed in.
+	/// Called when the width or height change. Changes in extent are passed in.
 	virtual void onResizeRect(T dx, T dy){}
 	
-	void print(FILE * fp=stdout) const;	///< write about TRect to a file
+	void print(FILE * fp=stdout) const;	///< Write about TRect to a file
 	
 private:
 	void onResizeProxy(T dx, T dy){	// calls onResize if at least 1 dimension has changed

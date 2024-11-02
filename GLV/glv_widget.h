@@ -16,11 +16,11 @@ typedef ChangedValue<Data> ModelChange;
 class Widget : public View, public DataObject {
 public:
 
-	/// @param[in] r			geometry
-	/// @param[in] pad			padding from border
-	/// @param[in] momentary	whether the value elements are momentary
-	/// @param[in] mutExc		whether value elements operate mutually exclusively
-	/// @param[in] drawGrid		whether to draw grid separater for multiple elements
+	/// \param[in] r			geometry
+	/// \param[in] pad			padding from border
+	/// \param[in] momentary	whether the value elements are momentary
+	/// \param[in] mutExc		whether value elements operate mutually exclusively
+	/// \param[in] drawGrid		whether to draw grid separater for multiple elements
 	Widget(
 		const Rect& r, space_t pad=3,
 		bool momentary=false, bool mutExc=false, bool drawGrid=true
@@ -200,9 +200,9 @@ protected:
 	// and for sending out Update::Value notifications.
 	// The order of events is 1) update widget's data, 2) update attached
 	// variables, if any, and 3) send out notifications.
-	// @param[in] d		the source data
-	// @param[in] ind1	destination index of first dimension
-	// @param[in] ind2	destitation index of second dimension
+	// \param[in] d		the source data
+	// \param[in] ind1	destination index of first dimension
+	// \param[in] ind2	destitation index of second dimension
 	virtual bool onAssignData(Data& d, int ind1, int ind2);
 
 	void onAnimate(double dsec) override;

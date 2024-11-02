@@ -54,7 +54,7 @@ protected:
 class SmartPointer{
 public:
 
-	/// @param[in] del	whether the object is deleted with smartDelete()
+	/// \param[in] del	whether the object is deleted with smartDelete()
 	SmartPointer(bool del=true): mDeletable(del){}
 
 	virtual ~SmartPointer(){}
@@ -168,7 +168,7 @@ template <class T, class Alloc=std::allocator<T> >
 class Buffer : protected Alloc{
 public:
 
-	/// @param[in] capacity		capacity of buffer
+	/// \param[in] capacity		capacity of buffer
 	explicit Buffer(int capacity=0): mSize(0), mElems(capacity){}
 
 	~Buffer(){}
@@ -337,8 +337,8 @@ public:
 
 	/// Scale interval
 	
-	/// @param[in] v			scale amount
-	/// @param[in] centerFrac	scaling center as fraction between endpoints 
+	/// \param[in] v			scale amount
+	/// \param[in] centerFrac	scaling center as fraction between endpoints 
 	Interval& scale(const T& v, const T& centerFrac){
 		T trans = fromUnit(centerFrac);
 		translate(-trans);
@@ -453,250 +453,6 @@ bool SmartObject<T>::withinFootPrint(void * m){
 	//printf("%x, %x, %x\n", t, b, b+sizeof(T));
 	return (t >= b) && (t < (b + sizeof(T)));
 }
-
-
-
-///// One or more static values
-//template <class T, int Nx=1, int Ny=1>
-//class Values{
-//public:
-//
-//	// interface methods
-//	T& operator[](int i){ return mVal[i]; }
-//	const T& operator[](int i) const { return mVal[i]; }
-//	
-//	Values& operator= (const T& v){ for(int i=0; i<size(); ++i) (*this)[i]=v; return *this; }
-//	
-//	Values& data(){ return *this; }
-//	const Values& data() const { return *this; }
-//	
-//	void resize(int nx, int ny){}
-//	
-//	int size()  const { return sizeX()*sizeY(); }
-//	int sizeX() const { return Nx; }
-//	int sizeY() const { return Ny; }
-//	
-//	void zero(){ memset(mVal, 0, size()*sizeof(T)); }
-//
-//protected:
-//	T mVal[Nx*Ny];
-//};
-
-//
-//// Triply-linked node
-//
-//// Getters must return pointers since it is possible that some linked nodes
-//// are zero, i.e. nonexistant.
-//template <class T>
-//class Node3{
-//public:
-//
-//	Node3(): mParent(0), mChild(0), mSibling(0){}
-//
-//	virtual ~Node3(){ remove(); }
-//
-//	void makeLastSibling();
-//
-//	void pushBack(Node3 * node);		///< Add node to back of my children
-//	void pushBack(Node3 & node);		///< Add node to back of my children
-//	
-//	/// Remove myself from parent. Does not delete instance.
-//	
-//	/// This method should always be called from the instance's destructor.
-//	///
-//	void remove();
-//
-//	void child(Node3 * o){ mChild=o; }
-//	void parent(Node3 * o){ mParent=o; }
-//	void sibling(Node3 * o){ mSibling=o; }
-//	void child(Node3& o){ mChild=&o; }
-//	void parent(Node3& o){ mParent=&o; }
-//	void sibling(Node3& o){ mSibling=&o; }
-//
-//	Node3 * child() const { return mChild; }
-//	Node3 * parent() const { return mParent; }
-//	Node3 * sibling() const { return mSibling; }
-//
-//	Node3 * lastSibling();
-//	
-//	bool firstChild() const { return parent() && (parent()->child() == this); }
-//
-//private:
-//	Node3 * mParent;			// My parent view
-//	Node3 * mChild;				// My first child (next to be drawn)
-//	Node3 * mSibling;			// My next sibling view (drawn after all my children)
-//};
-//
-//
-//
-//template <class T>
-//void Node3<T>::pushBack(Node3 * node){
-//	if(node) pushBack(*node);
-//}
-//
-//template <class T>
-//void Node3<T>::pushBack(Node3 & node){
-//	node.remove();
-//	node.parent(this);
-//	
-//	// I didn't have any children until now
-//	if(!child())	child(node);
-//	else			child()->lastSibling()->sibling(node);
-//}
-//
-//template <class T>
-//Node3<T> * Node3<T>::lastSibling(){
-//	Node3 * t = this;
-//	while(t->sibling()) t = t->sibling();
-//	return t;
-//}
-//
-//template <class T>
-//void Node3<T>::makeLastSibling(){
-//	if(parent() && sibling()){
-//		parent()->pushBack(this); // this automatically removes node
-//	}
-//}
-//
-//template <class T>
-//void Node3<T>::remove(){
-//
-//	if(parent() && parent()->child()){
-//
-//		// re-patch parent's child?
-//		if(firstChild()){
-//			// remove my reference, but keep the sibling list healthy
-//			parent()->child(sibling());
-//		}
-//		
-//		// re-patch the sibling chain?
-//		else{
-//			// I must be one of parent->child's siblings
-//			Node3 * temp = parent()->child();
-//			while(temp->sibling()){
-//				if(temp->sibling() == this) {
-//					// I'm temp's sibling
-//					// - remove my reference, keep the sibling list healthy
-//					temp->sibling(this->sibling()); 
-//					break; 
-//				}
-//				temp = temp->sibling();
-//			}
-//		}
-//		
-//		parent(0); sibling(0); // no more parent or sibling, but child is still valid
-//	}
-//}
-
-//class NumberEntry{
-//public:
-//	#define BUFSIZE 16
-//	// 123456789012345678901234567890
-//	// 1234567890123456
-//
-//	NumberEntry(){ reset(); }
-//	
-//	// interpret key press
-//	// returns true if successful, false otherwise
-//	bool read(char c){
-//	
-//		if(		mPos < BUFSIZE
-//			&&	(isdigit(c) || (c == '.' && !mHasPoint) || c == '-')
-//		){
-//			switch(c){
-//			case '-': mBuf[0] = mBuf[0] == '-' ? ' ' : '-'; break;
-//			case '.': mHasPoint = true;
-//			default : 
-//				if(mBuf[mPos] == '.') mHasPoint=false;
-//				mBuf[mPos++] = c;
-//				if(mPos>=mNum) mNum++;
-//			}
-//			//printf("%s\n", mBuf); printf("%f\n", value());
-//			return true;
-//		}
-//		return false;
-//	}
-//
-//	
-//	double value(){		
-//		char * end;
-//		double v = strtod(mBuf, &end);
-//		if(end != mBuf) mVal = v;
-//		return mVal;
-//	}
-//	
-//
-//	void value(double v){
-//		char t[BUFSIZE];
-//#ifdef WIN32
-//#define snprintf _snprintf
-//#endif
-//		int n = snprintf(t, BUFSIZE-1, "% g", v);	// %f is not precise enough!
-//#ifdef WIN32
-//#undef snprintf
-//#endif
-//		
-//		if(n>1){
-//			reset();
-//
-//			// eliminate trailing zeros
-//			while(n-1){
-//				if(t[n-1] == '0' || t[n-1] == '.'){ t[n-1] = '\0'; --n; }
-//				else break;
-//			}
-//			
-//			if(n==1) read('0');
-//			else{
-//				for(int i=0; i<n; ++i){ read(t[i]); /*printf(" %d", t[i]);*/}
-//			}
-//		}
-//		printf("\n");
-//	}
-//
-//
-//	void reset(){
-//		mBuf[0] = ' ';
-//		memset(mBuf + 1, 0, (BUFSIZE-1));
-//		mPos = 1, mNum = 1;
-//		mHasPoint = false;
-//		mVal = 0;
-//	}
-//
-//	
-//	void del(){
-//		if(pos() > 1){
-//			for(int i=pos(); i<=mNum; ++i){
-//				if(mBuf[i-1] == '.') mHasPoint = false;
-//				mBuf[i-1] = mBuf[i];
-//			}
-//			mBuf[mNum] = '\0';
-//			bwd1(); mNum--;
-//		}
-//	}
-//
-//	
-//	void bwd1(){ if(pos() > 1) mPos--; }
-//	void fwd1(){ if(pos() < mNum) mPos++; }
-//	
-//	void addAtPos(int v){
-//		char c = mBuf[pos()];
-//		if(isdigit(c)){
-//			c += v;
-//			mBuf[pos()] = c > '9' ? '9' : c < '0' ? '0' : c;
-//		}
-//	}
-//	
-//	const char * buf(){ return mBuf; }
-//	int pos(){ return mPos; }
-//	
-//private:
-//	char mBuf[BUFSIZE];
-//	int mPos, mNum;
-//	double mVal;
-//	bool mHasPoint;
-//	#undef BUFSIZE
-//};
-
 
 }	// glv::
 

@@ -20,11 +20,11 @@ namespace glv{
 class Grid : public View{
 public:
 	
-	/// @param[in] r			geometry
-	/// @param[in] intervalMin	minimum displayed value for all dimensions
-	/// @param[in] intervalMax	maximum displayed value for all dimensions
-	/// @param[in] majorDist	distance between major grid lines
-	/// @param[in] minorDiv		number of minor divisions between major lines
+	/// \param[in] r			geometry
+	/// \param[in] intervalMin	minimum displayed value for all dimensions
+	/// \param[in] intervalMax	maximum displayed value for all dimensions
+	/// \param[in] majorDist	distance between major grid lines
+	/// \param[in] minorDiv		number of minor divisions between major lines
 	Grid(
 		const Rect& r=Rect(100,100),
 		double intervalMin=-1, double intervalMax=1,
@@ -66,14 +66,14 @@ public:
 
 	/// Set minor division
 
-	/// @param[in] v	number of minor divisions per major division
-	/// @param[in] dim	dimension or -1 for all dimensions
+	/// \param[in] v	number of minor divisions per major division
+	/// \param[in] dim	dimension or -1 for all dimensions
 	Grid& minor(int v, int dim=-1);
 
 	/// Set major division width
 
-	/// @param[in] v	width of major division
-	/// @param[in] dim	dimension or -1 for all dimensions
+	/// \param[in] v	width of major division
+	/// \param[in] dim	dimension or -1 for all dimensions
 	Grid& major(double v, int dim=-1);
 
 	/// Center grid on origin
@@ -84,9 +84,9 @@ public:
 
 	/// Set dimension interval to [min, max]
 	
-	/// @param[in] min	minimum value
-	/// @param[in] max	maximum value
-	/// @param[in] dim	dimension or -1 for all dimensions
+	/// \param[in] min	minimum value
+	/// \param[in] max	maximum value
+	/// \param[in] dim	dimension or -1 for all dimensions
 	Grid& range(double min, double max, int dim=-1);
 
 	/// Set all dimension intervals to [-v, v]
@@ -94,20 +94,20 @@ public:
 
 	/// Set whether to show axis
 	
-	/// @param[in] v	whether to show axis
-	/// @param[in] dim	dimension or -1 for all dimensions
+	/// \param[in] v	whether to show axis
+	/// \param[in] dim	dimension or -1 for all dimensions
 	Grid& showAxis(bool v, int dim=-1);
 	
 	/// Set whether to show grid
 
-	/// @param[in] v	whether to show grid
-	/// @param[in] dim	dimension or -1 for all dimensions
+	/// \param[in] v	whether to show grid
+	/// \param[in] dim	dimension or -1 for all dimensions
 	Grid& showGrid(bool v, int dim=-1);
 	
 	/// Set whether to show numbering
 
-	/// @param[in] v	whether to show numbering
-	/// @param[in] dim	dimension or -1 for all dimensions
+	/// \param[in] v	whether to show numbering
+	/// \param[in] dim	dimension or -1 for all dimensions
 	Grid& showNumbering(bool v, int dim=-1);
 
 	/// Set whether to lock interactive scrolling

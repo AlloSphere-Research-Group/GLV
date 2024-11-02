@@ -14,22 +14,22 @@ public:
 
 	/// Construct a texture that allocates an internal pixel buffer
 	
-	/// @param[in] width	width, in texels
-	/// @param[in] height	height, in texels
-	/// @param[in] format	color format
-	/// @param[in] type		color data type
+	/// \param[in] width	width, in texels
+	/// \param[in] height	height, in texels
+	/// \param[in] format	color format
+	/// \param[in] type		color data type
 	Texture2(
 		GLsizei width, GLsizei height, 
 		GLenum format=GL_RGB, GLenum type=GL_UNSIGNED_BYTE);
 
 	/// Construct a texture that references an external pixel buffer
 
-	/// @param[in] width	width, in texels, of external buffer
-	/// @param[in] height	height, in texels, of external buffer
-	/// @param[in] pixels	external texel buffer
-	/// @param[in] format	color format of external buffer
-	/// @param[in] type		color data type of external buffer
-	/// @param[in] doesLoad	whether or not to load texture onto GPU
+	/// \param[in] width	width, in texels, of external buffer
+	/// \param[in] height	height, in texels, of external buffer
+	/// \param[in] pixels	external texel buffer
+	/// \param[in] format	color format of external buffer
+	/// \param[in] type		color data type of external buffer
+	/// \param[in] doesLoad	whether or not to load texture onto GPU
 	Texture2(
 		GLsizei width, GLsizei height, GLvoid * pixels,
 		GLenum format=GL_RGB, GLenum type=GL_UNSIGNED_BYTE,

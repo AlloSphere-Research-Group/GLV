@@ -36,27 +36,27 @@ public:
 
 	/// Create label using a prototype
 
-	/// @param[in] text		Label text
-	/// @param[in] spec		Label spec prototype
+	/// \param[in] text		Label text
+	/// \param[in] spec		Label spec prototype
 	Label(const std::string& text, const Spec& spec);
 
-	/// @param[in] text		Label text
-	/// @param[in] vert		Whether to draw label vertically
+	/// \param[in] text		Label text
+	/// \param[in] vert		Whether to draw label vertically
 	Label(const std::string& text, bool vert);
 
-	/// @param[in] text		Label text
-	/// @param[in] l		Left position
-	/// @param[in] t		Top position
-	/// @param[in] vert		Whether to draw label vertically
+	/// \param[in] text		Label text
+	/// \param[in] l		Left position
+	/// \param[in] t		Top position
+	/// \param[in] vert		Whether to draw label vertically
 	Label(const std::string& text="", space_t l=0, space_t t=0, bool vert=false);
 
 	/// Ctor for adding label to inside of another View
 
-	/// @param[in] text		Label text
-	/// @param[in] posAnch	Position/anchor place relative to parent
-	/// @param[in] px		X position offset
-	/// @param[in] py		Y position offset
-	/// @param[in] vert		Whether to draw label vertically
+	/// \param[in] text		Label text
+	/// \param[in] posAnch	Position/anchor place relative to parent
+	/// \param[in] px		X position offset
+	/// \param[in] py		Y position offset
+	/// \param[in] vert		Whether to draw label vertically
 	Label(const std::string& text, Place::t posAnch, space_t px, space_t py, bool vert=false);
 
 	float stroke() const { return mStroke/256.; }
@@ -103,9 +103,9 @@ public:
 
 	/// Character input filter predicate
 
-	/// @param[in] text			the current text
-	/// @param[in] pos			insertion position within text
-	/// @param[in] newChar		the new character to be added to the string
+	/// \param[in] text			the current text
+	/// \param[in] pos			insertion position within text
+	/// \param[in] newChar		the new character to be added to the string
 	/// \returns whether the character should be inserted into the string
 	typedef bool (*CharacterInputFilter)(const std::string& text, int pos, int newChar);
 
@@ -205,50 +205,50 @@ class DropDown : public TextView {
 public:
 	typedef std::vector<std::string> Items;
 
-	/// @param[in] r			geometry
-	/// @param[in] textSize		size of text, in pixels
+	/// \param[in] r			geometry
+	/// \param[in] textSize		size of text, in pixels
 	DropDown(const Rect& r=glv::Rect(200,16), float textSize=8);
 
-	/// @param[in] r			geometry
-	/// @param[in] item1		item 1
-	/// @param[in] item2		item 2
-	/// @param[in] textSize		size of text, in pixels
+	/// \param[in] r			geometry
+	/// \param[in] item1		item 1
+	/// \param[in] item2		item 2
+	/// \param[in] textSize		size of text, in pixels
 	DropDown(
 		const Rect& r,
 		const std::string& item1, const std::string& item2,
 		float textSize=8
 	);
 
-	/// @param[in] r			geometry
-	/// @param[in] item1		item 1
-	/// @param[in] item2		item 2
-	/// @param[in] item3		item 3
-	/// @param[in] textSize		size of text, in pixels
+	/// \param[in] r			geometry
+	/// \param[in] item1		item 1
+	/// \param[in] item2		item 2
+	/// \param[in] item3		item 3
+	/// \param[in] textSize		size of text, in pixels
 	DropDown(
 		const Rect& r,
 		const std::string& item1, const std::string& item2, const std::string& item3,
 		float textSize=8
 	);
 
-	/// @param[in] r			geometry
-	/// @param[in] item1		item 1
-	/// @param[in] item2		item 2
-	/// @param[in] item3		item 3
-	/// @param[in] item4		item 4
-	/// @param[in] textSize		size of text, in pixels
+	/// \param[in] r			geometry
+	/// \param[in] item1		item 1
+	/// \param[in] item2		item 2
+	/// \param[in] item3		item 3
+	/// \param[in] item4		item 4
+	/// \param[in] textSize		size of text, in pixels
 	DropDown(
 		const Rect& r,
 		const std::string& item1, const std::string& item2, const std::string& item3, const std::string& item4,
 		float textSize=8
 	);
 
-	/// @param[in] r			geometry
-	/// @param[in] items		items to populate list with
-	/// @param[in] textSize		size of text, in pixels
+	/// \param[in] r			geometry
+	/// \param[in] items		items to populate list with
+	/// \param[in] textSize		size of text, in pixels
 	DropDown(const Rect& r, std::initializer_list<std::string> items, float textSize=8);
 
-	/// @param[in] items		items to populate list with
-	/// @param[in] textSize		size of text, in pixels
+	/// \param[in] items		items to populate list with
+	/// \param[in] textSize		size of text, in pixels
 	DropDown(std::initializer_list<std::string> items, float textSize=8);
 
 	virtual ~DropDown();
@@ -325,8 +325,8 @@ class SearchBox : public TextView{
 public:
 	typedef std::vector<std::string> Items;
 
-	/// @param[in] r			geometry
-	/// @param[in] textSize		size of text, in pixels
+	/// \param[in] r			geometry
+	/// \param[in] textSize		size of text, in pixels
 	SearchBox(const Rect& r=glv::Rect(200,16), float textSize=8);
 
 	virtual ~SearchBox();
@@ -368,19 +368,19 @@ protected:
 class NumberDialers : public Widget{
 public:
 
-	/// @param[in] numInt	Number of places in integer part
-	/// @param[in] numFrac	Number of places in fraction part
-	/// @param[in] max		Maximum value
-	/// @param[in] min		Minimum value
-	/// @param[in] nx		Number of instances along x
-	/// @param[in] ny		Number of instances along y
+	/// \param[in] numInt	Number of places in integer part
+	/// \param[in] numFrac	Number of places in fraction part
+	/// \param[in] max		Maximum value
+	/// \param[in] min		Minimum value
+	/// \param[in] nx		Number of instances along x
+	/// \param[in] ny		Number of instances along y
 	NumberDialers(int numInt=3, int numFrac=2, double max=100, double min=0, int nx=1, int ny=1);
 
-	/// @param[in] range	Number string describing min/max range;
+	/// \param[in] range	Number string describing min/max range;
 	///						if prefixed with "+-" it is the min/max value
-	/// @param[in] initVal	Initial value
-	/// @param[in] nx		Number of instances along x
-	/// @param[in] ny		Number of instances along y
+	/// \param[in] initVal	Initial value
+	/// \param[in] nx		Number of instances along x
+	/// \param[in] ny		Number of instances along y
 	NumberDialers(const std::string& range, double initVal=0., int nx=1, int ny=1);
 
 	/// Copy constructor
@@ -479,15 +479,15 @@ protected:
 class NumberDialer: public NumberDialers{
 public:
 
-	/// @param[in] numInt	Number of places in integer part
-	/// @param[in] numFrac	Number of places in fraction part
-	/// @param[in] max		Maximum value
-	/// @param[in] min		Minimum value
+	/// \param[in] numInt	Number of places in integer part
+	/// \param[in] numFrac	Number of places in fraction part
+	/// \param[in] max		Maximum value
+	/// \param[in] min		Minimum value
 	NumberDialer(int numInt=3, int numFrac=2, double max=100, double min=0);
 
-	/// @param[in] range	Number string describing min/max range;
+	/// \param[in] range	Number string describing min/max range;
 	///						if prefixed with "+-" it is the min/max value
-	/// @param[in] initVal	Initial value
+	/// \param[in] initVal	Initial value
 	NumberDialer(const std::string& range, double initVal=0.);
 
 	/// Copy constructor

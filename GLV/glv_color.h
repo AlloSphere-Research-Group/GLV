@@ -22,21 +22,21 @@ struct Color{
 	};
 
 
-	/// @param[in] r		red component
-	/// @param[in] g		green component
-	/// @param[in] b		blue component
-	/// @param[in] a		alpha component
+	/// \param[in] r		red component
+	/// \param[in] g		green component
+	/// \param[in] b		blue component
+	/// \param[in] a		alpha component
 	Color(float r, float g, float b, float a = 1.f);
 	
-	/// @param[in] gray		red/green/blue components
-	/// @param[in] a		alpha component
+	/// \param[in] gray		red/green/blue components
+	/// \param[in] a		alpha component
 	Color(float gray=1.f, float a=1.f);
 
-	/// @param[in] hsv		HSV color space
-	/// @param[in] a		alpha component
+	/// \param[in] hsv		HSV color space
+	/// \param[in] a		alpha component
 	Color(const HSV& hsv, float a=1.f);
 
-	/// @param[in] rgba		4-vector of RGBA components
+	/// \param[in] rgba		4-vector of RGBA components
 	template<class T>
 	Color(T * rgba): r(rgba[0]), g(rgba[1]), b(rgba[2]), a(rgba[3]){}
 
@@ -99,15 +99,15 @@ struct HSV{
 	};
 
 
-	/// @param[in] h	hue
-	/// @param[in] s	saturation
-	/// @param[in] v	value
+	/// \param[in] h	hue
+	/// \param[in] s	saturation
+	/// \param[in] v	value
 	HSV(float h=0, float s=1, float v=1): h(h), s(s), v(v){}
 	
-	/// @param[in] c	RGB color to convert from
+	/// \param[in] c	RGB color to convert from
 	HSV(const Color& c){ *this = c; }
 
-	/// @param[in] hsv	3-vector of HSV components
+	/// \param[in] hsv	3-vector of HSV components
 	template<class T>
 	HSV(T * hsv): h(hsv[0]), s(hsv[1]), v(hsv[2]){}
 

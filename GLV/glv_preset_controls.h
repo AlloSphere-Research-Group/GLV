@@ -39,8 +39,8 @@ public:
 	/// (through the View::name method) and added to the GUI before calling this
 	/// method.
 	///
-	/// @param[in] gui		GUI from which to attach its model manager
-	/// @param[in] name		A name given to the model manager and preset file.
+	/// \param[in] gui		GUI from which to attach its model manager
+	/// \param[in] name		A name given to the model manager and preset file.
 	///						An empty string bypasses this option.
 	void bind(GLV& gui, const char * name = "");
 
@@ -163,7 +163,7 @@ protected:
 class PathEditor : public Table{
 public:
 
-	/// @param[in] r	geometry
+	/// \param[in] r	geometry
 	PathEditor(const Rect& r = Rect(400,180));
 	
 	/// Get PathView component
@@ -198,9 +198,9 @@ public:
 
 	/// Add a control widget with label
 	
-	/// @param[in] v					The control widget
-	/// @param[in] label				The control's label
-	/// @param[in] nameViewFromLabel	Whether to set the control's name to the 
+	/// \param[in] v					The control widget
+	/// \param[in] label				The control's label
+	/// \param[in] nameViewFromLabel	Whether to set the control's name to the
 	///									label (so it's a preset parameter)
 	ParamPanel& addParam(
 		View& v, const std::string& label, bool nameViewFromLabel=true

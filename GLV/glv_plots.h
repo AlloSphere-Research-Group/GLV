@@ -45,13 +45,13 @@ public:
 
 	Plottable(const Plottable& src);
 
-	/// @param[in] prim		drawing primitive
-	/// @param[in] stroke	width of lines or points
+	/// \param[in] prim		drawing primitive
+	/// \param[in] stroke	width of lines or points
 	Plottable(int prim=draw::Points, float stroke=1);
 
-	/// @param[in] prim		drawing primitive
-	/// @param[in] stroke	width of lines or points
-	/// @param[in] col		color
+	/// \param[in] prim		drawing primitive
+	/// \param[in] stroke	width of lines or points
+	/// \param[in] col		color
 	Plottable(int prim, float stroke, const Color& col);
 
 	virtual ~Plottable(){}
@@ -156,9 +156,9 @@ protected:
 class PlotDensity : public Plottable{
 public:
 
-	/// @param[in] color		plot color
-	/// @param[in] hueSpread	hue spread for positive and negative values
-	/// @param[in] interpolate	interpolation (0=none, 1=linear)
+	/// \param[in] color		plot color
+	/// \param[in] hueSpread	hue spread for positive and negative values
+	/// \param[in] interpolate	interpolation (0=none, 1=linear)
 	PlotDensity(const Color& color=Color(1,0,0), float hueSpread=0, int interpolate=0);
 
 	/// Set hue spread for positive and negative values
@@ -213,10 +213,10 @@ public:
 	};
 
 
-	/// @param[in] color	plot color
-	/// @param[in] stroke	stroke width
-	/// @param[in] prim		drawing primitive
-	/// @param[in] path		path style
+	/// \param[in] color	plot color
+	/// \param[in] stroke	stroke width
+	/// \param[in] prim		drawing primitive
+	/// \param[in] path		path style
 	PlotFunction1D(
 		const Color& color = Color(0),
 		float stroke = 1,
@@ -248,7 +248,7 @@ protected:
 class PlotFunction2D : public Plottable{
 public:
 
-	/// @param[in] color	plot color
+	/// \param[in] color	plot color
 	PlotFunction2D(const Color& color=Color(0));
 
 	void onMap(GraphicsData& b, const Data& d, const Indexer& ind) override;
@@ -267,16 +267,16 @@ class Plot : public Grid, public DataObject {
 public:
 	typedef std::vector<Plottable *> Plottables;
 
-	/// @param[in] r	geometry
+	/// \param[in] r	geometry
 	Plot(const Rect& r=Rect(0));
 
-	/// @param[in] r	geometry
-	/// @param[in] p	plottable
+	/// \param[in] r	geometry
+	/// \param[in] p	plottable
 	Plot(const Rect& r, Plottable& p);
 	
-	/// @param[in] r	geometry
-	/// @param[in] p1	first plottable
-	/// @param[in] p2	second plottable
+	/// \param[in] r	geometry
+	/// \param[in] p1	first plottable
+	/// \param[in] p2	second plottable
 	Plot(const Rect& r, Plottable& p1, Plottable& p2);
 
 	Plottables& plottables(){ return mPlottables; }

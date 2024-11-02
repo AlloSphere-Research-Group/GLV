@@ -32,7 +32,11 @@ typedef TRect<space_t> Rect;
 struct DrawHandler{
 	virtual ~DrawHandler(){}
 	
-	/// Drawing callback. Returns whether to execute subsequent handlers.
+	/// Drawing callback
+
+	/// \param[in] v	The View to be drawn
+	/// \param[in] g	GLV context
+	/// \returns whether to execute subsequent handlers
 	virtual bool onDraw(View& v, GLV& g) = 0;
 };
 
@@ -43,9 +47,10 @@ struct EventHandler{
 	
 	/// Event callback
 
-	/// The first parameter is the View receiving the event and the second is the
-	/// GLV context sending the event.  The function returns true if the event is
-	/// to be bubbled up to the receiver's parent View.
+	/// \param[in] v	The View receiving the event
+	/// \param[in] g	GLV context sending the event
+	/// \returns true if the event is to be bubbled up to the receiver's parent
+	/// View. Normally, unhandled events should be bubbled.
 	virtual bool onEvent(View& v, GLV& g) = 0;
 };
 
@@ -55,7 +60,7 @@ struct CEventHandler : public EventHandler{
 	typedef bool (* EventFunction)(View& v, GLV& g);
 
 	CEventHandler(EventFunction func): function(func){}
-	virtual bool onEvent(View& v, GLV& g){ return function(v,g); }
+	bool onEvent(View& v, GLV& g) override { return function(v,g); }
 
 	EventFunction function;
 };
@@ -338,12 +343,6 @@ public:
 	void set(const Color& c, float contrast=0.7);
 };
 
-//class StyleShape{
-//public:
-//
-//	void (* back  )(float l, float t, float r, float b);
-//	void (* border)(float l, float t, float r, float b);
-//};
 
 
 /// Overall appearance scheme
@@ -355,10 +354,6 @@ public:
 
 	/// Get reference to standard style
 	static Style& standard(){
-	
-		// Note: This uses a Construct On First Use Idiom to avoid unpredictable
-		// static initialization order.  The memory allocated will get freed from 
-		// the heap when the program exits.
 		static Style * v = new Style(false);
 		return *v;
 	}
@@ -385,40 +380,35 @@ public:
 	typedef std::list<EventHandler *> EventHandlers;
 
 
-	/// @param[in] rect		Rect geometry of View
-	/// @param[in] anchor	Anchor place
+	/// \param[in] rect		Rect geometry of View
+	/// \param[in] anchor	Anchor place
 	View(const Rect& rect=Rect(200, 200), Place::t anchor=Place::TL);
 
 	virtual ~View();
 
 
-	/// Get class name
-	virtual const char * className() const { return "View"; }
+	/// Drawing callback
+	virtual void onDraw(GLV& g){}
+
+	/// Event callback to be called after those in callback list
+	virtual bool onEvent(Event::t e, GLV& g){ return true; }
 
 	/// Animation callback
 
 	/// This is called once before the drawing callback and is where the View's
 	/// model state should be updated.
 	///
-	/// @param[in] dsec		Number of seconds elapsed since last animation frame
+	/// \param[in] dsec		Number of seconds elapsed since last animation frame
 	virtual void onAnimate(double dsec){}
-
-	/// Drawing callback
-	virtual void onDraw(GLV& g){}
-
-	/// Event callback to be called after those in callback list
-
-	/// @param[in] e	The event that triggered the callback
-	/// @param[in] g	Top GLV object (for access to keyboard and mouse)
-	/// \returns whether event should be bubbled to parent. Normally, events
-	/// that are not handled by a View should be bubbled to its parent.
-	virtual bool onEvent(Event::t e, GLV& g){return true;}
 
 	/// Resize callback called when the parent changes size
 	virtual void onResize(space_t dx, space_t dy){}
 
 	/// Update internal values if different from attached model variables
 	virtual void onDataModelSync(){}
+
+	/// Get class name
+	virtual const char * className() const { return "View"; }
 
 
 	// Doubly linked tree list of views
@@ -446,8 +436,8 @@ public:
 
 		/// Called on visiting a node
 
-		/// @param[in] v		The node being visited
-		/// @param[in] depth	The depth of the node
+		/// \param[in] v		The node being visited
+		/// \param[in] depth	The depth of the node
 		virtual bool operator()(View * v, int depth) = 0;
 	};
 	struct ConstTraversalAction{
@@ -549,7 +539,7 @@ public:
 	/// This uses the geometric union of all the children to resize the extent
 	/// of the view.
 	///
-	/// @param[in] moveChildren		If true, children are moved to fit within
+	/// \param[in] moveChildren		If true, children are moved to fit within
 	///								the current view. If false, the view is set
 	///								to the union of the children.
 	void fit(bool moveChildren=true);
@@ -601,19 +591,6 @@ protected:
 	std::string mName;				// Settable name identifier
 	std::string mDescriptor;		// String describing view
 
-//	space_t mScale;
-//	space_t mTranslate[2];
-//
-//	void transform(space_t& x, space_t& y) const {
-//		x = x*mScale + mTranslate[0];
-//		y = y*mScale + mTranslate[1];
-//	}
-//	
-//	void untransform(space_t& x, space_t& y) const {
-//		x = (x - mTranslate[0])/mScale;
-//		y = (y - mTranslate[1])/mScale;
-//	}
-
 	void doDraw(GLV& g);
 //	bool doEventHandlers(View& v, Event::t e);
 	bool hasName() const { return ""!=mName; }
@@ -646,8 +623,8 @@ public:
 
 	/// Constructor
 
-	/// @param[in] width		width, in pixels
-	/// @param[in] height		height, in pixels
+	/// \param[in] width		width, in pixels
+	/// \param[in] height		height, in pixels
 	///
 	/// Note that in practice, the dimensions of this view will usually match 
 	/// the dimensions of the window it is attached to.
@@ -675,16 +652,16 @@ public:
 	
 	/// Draw all Views in the GLV
 
-	/// @param[in] contextWidth		width of context, in pixels
-	/// @param[in] contextHeight	height of context, in pixels
-	/// @param[in] dsec				change in seconds from last call to this method
+	/// \param[in] contextWidth		width of context, in pixels
+	/// \param[in] contextHeight	height of context, in pixels
+	/// \param[in] dsec				change in seconds from last call to this method
 	virtual void drawGLV(unsigned contextWidth, unsigned contextHeight, double dsec);
 	
 	/// Draws all active widgets in the GLV
 	
-	/// @param[in] contextWidth		width of context, in pixels
-	/// @param[in] contextHeight	height of context, in pixels
-	/// @param[in] dsec				change in seconds from last call to this method
+	/// \param[in] contextWidth		width of context, in pixels
+	/// \param[in] contextHeight	height of context, in pixels
+	/// \param[in] dsec				change in seconds from last call to this method
 	void drawWidgets(unsigned contextWidth, unsigned contextHeight, double dsec);
 	
 	/// Set event type to propagate
@@ -853,4 +830,3 @@ inline void	Mouse::posRel(space_t rx, space_t ry){ mXRel=rx; mYRel=ry;}
 } // glv::
 
 #endif
-

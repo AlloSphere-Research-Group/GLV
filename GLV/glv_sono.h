@@ -55,7 +55,7 @@ protected:
 class PeakMeters : public View{
 public:
 
-	/// @param[in] r			geometry
+	/// \param[in] r			geometry
 	PeakMeters(const Rect& r=Rect(100), int chans=4);
 
 	/// Set number of channels

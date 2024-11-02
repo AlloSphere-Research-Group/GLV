@@ -104,9 +104,9 @@ protected:
 /// A Group that automatically fits itself to child Views
 struct Box : public Group{
 
-	/// @param[in] dir		flow direction of successively added views
-	/// @param[in] align	alignment of views in each "cell"
-	/// @param[in] pad		padding, in pixels, between each view
+	/// \param[in] dir		flow direction of successively added views
+	/// \param[in] align	alignment of views in each "cell"
+	/// \param[in] pad		padding, in pixels, between each view
 	Box(Direction dir=Direction::E, Place::t align=Place::TL, space_t pad=4)
 	:	p(*this, dir, align, 0,0, pad){}
 
@@ -175,9 +175,9 @@ private:
 // Base interface class for View auto-layout functors
 struct LayoutFunc{
 
-	/// @param[in] w		Width of rect element
-	/// @param[in] h		Height of rect element
-	/// @param[in] bounds	Layout bounding rect
+	/// \param[in] w		Width of rect element
+	/// \param[in] h		Height of rect element
+	/// \param[in] bounds	Layout bounding rect
 	LayoutFunc(space_t w, space_t h, const Rect& bounds);
 	virtual ~LayoutFunc();
 	
@@ -199,21 +199,21 @@ struct LayoutFunc{
 //
 struct LayoutGrid : public LayoutFunc{
 
-	/// @param[in] w		Width of rect element
-	/// @param[in] h		Height of rect element
-	/// @param[in] bounds	Layout bounding rect
-	/// @param[in] numV		Number of vertical divisions
-	/// @param[in] numH		Number of horizontal divisions
+	/// \param[in] w		Width of rect element
+	/// \param[in] h		Height of rect element
+	/// \param[in] bounds	Layout bounding rect
+	/// \param[in] numV		Number of vertical divisions
+	/// \param[in] numH		Number of horizontal divisions
 	LayoutGrid(space_t w, space_t h, const Rect& bounds, int numV, int numH);
 	virtual ~LayoutGrid();
 	
 	
 	/// Constructor for auto-sized elements with uniform padding 
 	
-	/// @param[in] pad		Padding between elements
-	/// @param[in] bounds	Layout bounding rect
-	/// @param[in] numV		Number of vertical divisions
-	/// @param[in] numH		Number of horizontal divisions	
+	/// \param[in] pad		Padding between elements
+	/// \param[in] bounds	Layout bounding rect
+	/// \param[in] numV		Number of vertical divisions
+	/// \param[in] numH		Number of horizontal divisions
 	LayoutGrid(space_t pad, const Rect& bounds, int numV, int numH);
 	
 	
@@ -240,10 +240,10 @@ protected:
 class Table : public Group{
 public:
 
-	/// @param[in] arrangement	Arrangement string (see arrangement())
-	/// @param[in] padX			Padding in x-direction between cells
-	/// @param[in] padY			Padding in y-direction between cells
-	/// @param[in] r			Geometry
+	/// \param[in] arrangement	Arrangement string (see arrangement())
+	/// \param[in] padX			Padding in x-direction between cells
+	/// \param[in] padY			Padding in y-direction between cells
+	/// \param[in] r			Geometry
 	Table(const char * arrangement="<", space_t padX=3, space_t padY=3, const Rect& r=Rect(0));
 
 	/// Arrange child Views according to cell arrangement specification.
@@ -345,10 +345,10 @@ public:
 		ALWAYS		= 1<<2,		/**< Always show activated scrollbars */
 	};
 
-	/// @param[in] r				geometry
-	/// @param[in] scrollBarWidth	scroll bar width
-	/// @param[in] padX				padding along x direction
-	/// @param[in] padY				padding along y direction
+	/// \param[in] r				geometry
+	/// \param[in] scrollBarWidth	scroll bar width
+	/// \param[in] padX				padding along x direction
+	/// \param[in] padY				padding along y direction
 	Scroll(const Rect& r=Rect(200), float scrollBarWidth=12, float padX=0, float padY=0);
 
 	Mode mode() const { return mMode; }
