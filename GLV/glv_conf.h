@@ -21,8 +21,10 @@
 	#define GLV_DUO_PIPE
 #endif
 
+
 // OpenGL platform-dependent includes
-#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+//#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 //#if defined(__IPHONE_3_0)
 
 	#define GLV_PLATFORM		"IPHONE"
