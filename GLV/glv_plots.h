@@ -272,18 +272,26 @@ public:
 
 	/// \param[in] r	geometry
 	/// \param[in] p	plottable
-	Plot(const Rect& r, Plottable& p);
-	
-	/// \param[in] r	geometry
-	/// \param[in] p1	first plottable
-	/// \param[in] p2	second plottable
-	Plot(const Rect& r, Plottable& p1, Plottable& p2);
+	/// \param[in] ps	more plottables
+	template <class... Ps>
+	Plot(const Rect& r, Plottable& p, Ps&&... ps)
+	:	Plot(r)
+	{
+		add(p, std::forward<Ps>(ps)...);
+	}
 
 	Plottables& plottables(){ return mPlottables; }
 	const Plottables& plottables() const { return mPlottables; }
 
 	/// Add new plotting routine
 	Plot& add(Plottable& v);
+
+	/// Add new plotting routines
+	template <class... Ps>
+	Plot& add(Plottable& p, Ps&&... ps){
+		add(p);
+		return add(std::forward<Ps>(ps)...);
+	}
 
 	Plot& remove(Plottable& v);
 

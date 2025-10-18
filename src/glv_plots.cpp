@@ -415,18 +415,6 @@ Plot::Plot(const Rect& r)
 	addHandler(Event::Quit, evPlotDestroyContext);
 }
 
-Plot::Plot(const Rect& r, Plottable& p)
-:	Plot(r)
-{
-	add(p);
-}
-
-Plot::Plot(const Rect& r, Plottable& p1, Plottable& p2)
-:	Plot(r)
-{
-	add(p1); add(p2);
-}
-
 void Plot::onDraw(GLV& g){
 
 	auto& gd = g.graphicsData();
