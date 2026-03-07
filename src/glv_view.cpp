@@ -53,6 +53,19 @@ View::~View(){
 }
 
 
+int View::enabled(Property::t v) const { return mFlags & v; }
+int View::disabled(Property::t v) const { return enabled(v) ^ v; }
+const std::string& View::descriptor() const { return mDescriptor; }
+const std::string& View::name() const { return mName; }
+int View::visible() const { return enabled(Visible); }
+
+View& View::disable	(Property::t p){ mFlags = mFlags & Property::t(~int(p)); return *this; }
+View& View::enable	(Property::t p){ mFlags = mFlags | p; return *this; }
+View& View::property(Property::t p, bool v){ v ? enable(p) : disable(p); return *this; }
+View& View::toggle	(Property::t p){ mFlags = mFlags ^ p; return *this; }
+View& View::descriptor(const std::string& v){ mDescriptor=v; return *this; }
+
+
 View& View::add(View& newChild){
 
 	View * op = newChild.parent; // old parent
