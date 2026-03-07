@@ -498,9 +498,9 @@ void Window::implHideCursor(bool v){
 void Window::implIconify(){ glutIconifyWindow(); }
 
 void Window::implInitialize(){
-	int   argc   = 1;
-	char name[] = {'G', 'L', 'V'};
-	char *argv[] = {name, NULL};
+	int argc = 1;
+	char name[] = {'G','L','V','\0'};
+	char *argv[] = {name};
 	glutInit(&argc,argv);
 }
 
