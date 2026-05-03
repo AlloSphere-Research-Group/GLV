@@ -66,7 +66,9 @@ public:
 	Button(const Rect& r=Rect(20), bool momentary=false, SymbolFunc on=draw::rectangle, SymbolFunc off=0)
 	:	Buttons(r, 1,1, momentary, false, on, off)
 	{}
-	
+
+	operator bool() const { return getValue(); }
+
 	const char * className() const override { return "Button"; }
 };
 
